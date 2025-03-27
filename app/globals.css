@@ -3,9 +3,14 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Set Inter as default font */
 body {
   font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+}
+
+.container{
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
 .primary_color{
