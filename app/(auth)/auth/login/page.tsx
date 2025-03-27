@@ -1,7 +1,103 @@
-import React from 'react'
+'use client';
 
-export default function Login() {
+import { useState } from 'react';
+
+export default function LoginPage() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
+
   return (
-    <div>Login</div>
-  )
+    <div className="min-h-screen flex items-center justify-center  px-4">
+      <div className="max-w-[1224px] w-full flex flex-col md:flex-row ounded-lg overflow-hidden shadow-lg">
+        {/* Left Illustration */}
+        <div className="hidden md:flex items-center justify-center w-1/2 p-6">
+          <img src="/Login.png" alt="Login Illustration" className="w-full h-auto" />
+        </div>
+
+        {/* Right Login Form */}
+        <div className="w-full md:w-1/2  p-8">
+          <h1 className="text-[32px] font-medium leading-[126%] tracking-[-0.96px] heading_color mb-6">
+            Login to your account
+          </h1>
+
+          <form className="flex flex-col gap-4">
+            {/* Email */}
+            <div>
+              <label className="text-sm text-black block mb-2">Email address<span className="text-red-500">*</span></label>
+              <input
+                type="text"
+                placeholder="Input your full name"
+                className="w-full px-4 py-2 rounded-[8px] border border-[#20B894] bg-transparent text-black focus:outline-none"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+
+            {/* Password */}
+            <div>
+              <label className="text-sm text-black block mb-2">Password<span className="text-red-500">*</span></label>
+              <input
+                type="password"
+                className="w-full px-4 py-2 rounded-[8px] border border-[#20B894] bg-transparent text-black focus:outline-none"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+
+            {/* Remember Me & Forgot Password */}
+            <div className="flex justify-between items-center text-sm text-gray-300">
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  className="accent-[#20B894]"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                />
+                Remember Me
+              </label>
+              <button type="button" className="hover:underline">
+                Forgot Password
+              </button>
+            </div>
+
+            {/* Login Button */}
+            <button
+              type="submit"
+              className="w-full primary_color hover:opacity-90 text-black py-2 rounded-full font-medium transition-all"
+            >
+              Log in ↗
+            </button>
+          </form>
+
+          {/* Divider */}
+          <div className="flex items-center gap-4 my-6">
+            <div className="flex-1 h-px bg-gray-600" />
+            <span className="text-gray-400 text-sm">Or</span>
+            <div className="flex-1 h-px bg-gray-600" />
+          </div>
+
+          {/* Social Buttons */}
+          <div className="flex flex-col md:flex-row gap-4">
+            <button className="flex-1 border border-[#20B894] rounded-full py-2 text-sm flex items-center justify-center gap-2 hover:bg-[#20B894]/10 transition">
+              <img src="/google.svg" alt="Google" className="h-5 w-5" />
+              Login with Google
+            </button>
+            <button className="flex-1 border border-[#20B894] rounded-full py-2 text-sm flex items-center justify-center gap-2 hover:bg-[#20B894]/10 transition">
+              <img src="/facebook.svg" alt="Facebook" className="h-5 w-5" />
+              Login with Facebook
+            </button>
+          </div>
+
+          {/* Sign Up Link */}
+          <p className="mt-6 text-center text-sm text-gray-400">
+            You're new in here?{' '}
+            <a href="/register" className="text-[#20B894] hover:underline">
+              Create Account
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
 }
