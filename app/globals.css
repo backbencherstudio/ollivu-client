@@ -1,2 +1,30 @@
 @import "tailwindcss";
 
+/* Set Inter as default font */
+body {
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+}
+
+.primary_colour{
+    background-color: #20B894;
+}
+
+.secondary_colour{
+    background-color: #D2B9A1;
+}
+
+.denger_colour{
+    background-color: #FE5050;
+}
+
+.heading_colour{
+    color: #070707;
+}
+
+.sub_heading_colour{
+    color: #4A4C56;
+}
+
+.para_color{
+    color: #777980;
+}
