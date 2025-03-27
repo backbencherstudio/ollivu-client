@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "@/Public/client/home/logo.png";
@@ -102,7 +102,28 @@ const serviceCategories = [
 export default function Navbar() {
   const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const pathname = usePathname();
+
+  // Add scroll event handler
+  useEffect(() => {
+    const controlNavbar = () => {
+      if (window.scrollY > lastScrollY) { // scrolling down
+        setIsVisible(false);
+      } else { // scrolling up
+        setIsVisible(true);
+      }
+      setLastScrollY(window.scrollY);
+    };
+
+    window.addEventListener('scroll', controlNavbar);
+
+    // cleanup function
+    return () => {
+      window.removeEventListener('scroll', controlNavbar);
+    };
+  }, [lastScrollY]);
 
   const toggleServices = () => {
     setIsServicesOpen(!isServicesOpen);
@@ -114,7 +135,9 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="secondary_color shadow-sm relative">
+    <nav className={`secondary_color shadow-sm sticky top-0 z-50 transition-transform duration-300 ${
+      isVisible ? 'translate-y-0' : '-translate-y-full'
+    }`}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           {/* Logo */}
