@@ -26,7 +26,7 @@ export default function SignupPage() {
       <div className="max-w-[1224px] w-full flex flex-col md:flex-row overflow-hidden shadow-lg">
         {/* Left Illustration */}
         <div className="hidden md:flex items-center justify-center w-1/2 p-6">
-          <img src="/Frame 2147227308.png" alt="Signup Illustration" className="w-full h-auto" />
+          <img src="/signup.png" alt="Signup Illustration" className="w-full h-auto" />
         </div>
 
         {/* Right Signup Form */}
@@ -106,7 +106,7 @@ export default function SignupPage() {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full primary_color hover:opacity-90 text-black py-2 rounded-full font-medium transition-all"
+              className="w-full primary_color hover:opacity-90 text-white py-2 rounded-full font-medium transition-all"
             >
               Create Account ↗
             </button>
