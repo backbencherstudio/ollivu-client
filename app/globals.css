@@ -5,26 +5,30 @@ body {
   font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
 }
 
-.primary_colour{
+.primary_color{
     background-color: #20B894;
 }
 
-.secondary_colour{
+.secondary_color{
     background-color: #D2B9A1;
 }
 
-.denger_colour{
+.denger_color{
     background-color: #FE5050;
 }
 
-.heading_colour{
+.heading_color{
     color: #070707;
 }
 
-.sub_heading_colour{
+.sub_heading_color{
     color: #4A4C56;
 }
 
 .para_color{
     color: #777980;
+}
+
+.border_color{
+    color: #E8E8E9;
 }
