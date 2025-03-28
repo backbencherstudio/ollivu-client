@@ -5,6 +5,7 @@ import ValuePropositionSection from "./_components/home-page/value-proposition";
 import ServiceCategoriesSection from "./_components/home-page/Service-categories";
 import HowWorks from "./_components/home-page/how-it-works";
 import Community from "./_components/home-page/community";
+import Footer from "./_components/footer";
 
 export default function HomePage() {
   return <div className="">
@@ -14,5 +15,6 @@ export default function HomePage() {
     <ServiceCategoriesSection />
     <HowWorks />
     <Community />
+    <Footer/>
   </div>;
 }

@@ -5,16 +5,16 @@ import Link from 'next/link';
 
 export default function Community() {
   return (
-    <section className="bg-[#F1FCF9] py-20 px-6 md:px-16">
-      <div className="max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center justify-between gap-10">
+    <section className="py-20 px-6 md:px-16">
+      <div className="max-w-[1320px] mx-auto flex flex-col md:flex-row items-center justify-between gap-10">
         {/* Left Text Content */}
-        <div className="max-w-xl text-center md:text-left">
+        <div className="w-full md:w-1/2 text-center md:text-left">
           <h1 className="text-4xl md:text-5xl font-bold text-[#070707] leading-tight mb-6">
-          Exchange Your Services. Build Your Community. 
+            Exchange Your Services. Build Your Community. 
           </h1>
           <p className="text-gray-600 text-base md:text-lg mb-8">
-          Join Ollivu today and discover a world where everyone has
-          something valuable to offer.
+            Join Ollivu today and discover a world where everyone has
+            something valuable to offer.
           </p>
           <Link
             href="/signup"
@@ -25,7 +25,7 @@ export default function Community() {
         </div>
 
         {/* Right Illustration */}
-        <div className="w-full md:w-1/2">
+        <div className="w-full md:w-1/2 flex justify-center">
           <Image
             src="/community.png"
             alt="Service Exchange Illustration"
