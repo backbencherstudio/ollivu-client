@@ -18,7 +18,7 @@ export default function BannerSection() {
             all without spending a dime!
           </p>
           <Link
-            href="/signup"
+            href="/auth/signup"
             className="inline-flex items-center gap-2 bg-[#20B894] text-white text-sm md:text-base font-medium px-6 py-3 rounded-full hover:opacity-90 transition"
           >
             Start Trading Skills Now! ↗
