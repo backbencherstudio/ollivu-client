@@ -9,14 +9,20 @@ import ReviewList from "./_components/review-list";
 import ProfileHeader from "./_components/profile-header";
 import About from "./_components/about";
 import RatingOverview from "./_components/rating-overview";
+import ReviewModal from './_components/review-modal';
 
-// First, add this state near the top of your component
 const ServiceDetails = () => {
   const params = useParams();
   const router = useRouter();
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
-  // Add these new states
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+
+  const handleReviewSubmit = (rating: number, feedback: string) => {
+    // Handle the review submission here
+    console.log('Rating:', rating, 'Feedback:', feedback);
+    setIsReviewModalOpen(false);
+  };
 
   const service = serviceCategories
     .flatMap((category) => category.items)
@@ -116,7 +122,10 @@ const ServiceDetails = () => {
                 <h2 className="text-xl font-semibold text-[#070707]">
                   Reviews
                 </h2>
-                <button className="px-4 py-2 bg-[#20B894] text-white rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors">
+                <button 
+                  onClick={() => setIsReviewModalOpen(true)}
+                  className="px-4 py-2 bg-[#20B894] text-white rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors"
+                >
                   Write Review
                 </button>
               </div>
@@ -201,6 +210,13 @@ const ServiceDetails = () => {
           </div>
         </div>
       </div>
+
+      {/* Review Modal */}
+      <ReviewModal
+        isOpen={isReviewModalOpen}
+        onClose={() => setIsReviewModalOpen(false)}
+        onSubmit={handleReviewSubmit}
+      />
     </div>
   );
 };
