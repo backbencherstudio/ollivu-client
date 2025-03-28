@@ -9,9 +9,9 @@ interface ServiceCardProps {
 }
 
 export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => (
-  <Card className="w-full bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+  <Card className="w-full bg-white rounded-xl overflow-hidden shadow hover:shadow-md transition-all">
     {/* Image Section */}
-    <div className="relative w-full h-48">
+    <div className="relative w-full h-44">
       <Image 
         src={service.image} 
         alt={service.title}
@@ -19,23 +19,22 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => (
         className="object-cover"
         priority
       />
-      <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black/50 to-transparent"/>
     </div>
 
     {/* Content Section */}
-    <div className="p-4">
+    <div className="p-3">
       {/* Title and Rating */}
-      <div className="flex justify-between items-center mb-3">
-        <h3 className="text-xl font-medium text-[#070707]">{service.title}</h3>
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-lg font-medium text-[#070707]">{service.title}</h3>
         <div className="flex items-center gap-1">
-          <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+          <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
           <span className="text-gray-700 font-medium">{service.rating}</span>
         </div>
       </div>
 
       {/* Instructor Info */}
-      <div className="flex items-center gap-3 mb-3">
-        <div className="w-10 h-10 rounded-full bg-gray-200 relative overflow-hidden">
+      <div className="flex items-center gap-2 mb-1">
+        <div className="w-8 h-8 rounded-full bg-gray-200 relative overflow-hidden">
           <Image
             src={service.image}
             alt={service.instructor.name}
@@ -45,20 +44,22 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => (
         </div>
         <div>
           <h4 className="font-medium text-gray-900">{service.instructor.name}</h4>
-          <p className="text-sm text-gray-600">Experience: {service.instructor.experience}</p>
+          <div className="flex items-center gap-2 text-sm text-gray-500">
+            <span>Experience: {service.instructor.experience}</span>
+          </div>
         </div>
       </div>
 
       {/* Review Count */}
-      <p className="text-sm text-gray-600 mb-4">
+      <p className="text-sm text-gray-500 mb-3">
         Review: {service.reviewCount} Reviews
       </p>
 
       {/* Connect Button */}
-      <button className="w-full py-3 bg-emerald-500 text-white rounded-lg font-medium hover:bg-emerald-600 transition-colors flex items-center justify-center gap-2">
+      <button className="w-full py-2.5 bg-emerald-500 text-white rounded-lg font-medium hover:bg-emerald-600 transition-colors flex items-center justify-center gap-1.5">
         Connect Request
         <svg 
-          className="w-4 h-4" 
+          className="w-3.5 h-3.5" 
           viewBox="0 0 24 24" 
           fill="none" 
           stroke="currentColor" 
