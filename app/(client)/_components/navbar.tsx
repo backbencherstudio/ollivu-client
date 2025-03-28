@@ -313,20 +313,23 @@ export default function Navbar() {
               {isServicesOpen && (
                 <div className="pl-4 pr-2 py-2">
                   {serviceCategories.map((category) => (
-                    <div key={category.title} className="mb-4">
-                      <h3 className="font-semibold text-sm text-gray-900">
+                    <div key={category.title} className="group/item">
+                      <h3 className="font-semibold text-sm mb-2 md:mb-3 text-gray-900 group-hover/item:text-teal-600">
                         {category.title}
                       </h3>
-                      <ul className="mt-2 space-y-1">
+                      <ul className="space-y-2">
                         {category.items.map((item) => (
                           <li key={item}>
                             <Link
-                              href={`/service-result?category=${encodeURIComponent(
-                                category.title
-                              )}&service=${encodeURIComponent(item)}`}
-                              className="block px-3 py-1 text-sm text-gray-600 hover:text-teal-600"
+                              href={`/service-result?item=${encodeURIComponent(item)}`}
+                              className="text-sm text-gray-600 hover:text-teal-600 flex items-center group-hover/item:translate-x-1 transition-transform"
+                              onClick={() => {
+                                setIsMobileMenuOpen(false);
+                                setIsServicesOpen(false);
+                              }}
                             >
                               {item}
+                              <MoveUpRight className="w-3 h-3 ml-1 opacity-0 group-hover/item:opacity-100" />
                             </Link>
                           </li>
                         ))}

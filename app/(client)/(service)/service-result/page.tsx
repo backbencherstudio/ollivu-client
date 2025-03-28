@@ -23,19 +23,26 @@ const ServicesPage = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(
     searchParams.get("category")
   );
-  const [selectedItem, setSelectedItem] = useState<string | null>(null);
+  const [selectedItem, setSelectedItem] = useState<string | null>(
+    searchParams.get("item")
+  );
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Filter services based on selection
+  // Update filtering logic to match exact item title
   const filteredServices = services.filter((service) => {
     if (selectedItem) {
-      return service.title === selectedItem;
+      return service.title.toLowerCase() === selectedItem.toLowerCase();
     }
     if (selectedCategory) {
       return service.category === selectedCategory;
     }
     return true;
   });
+
+  // Reset pagination when filters change
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedItem, selectedCategory]);
 
   // Calculate pagination
   const totalPages = Math.ceil(filteredServices.length / ITEMS_PER_PAGE);
@@ -53,7 +60,6 @@ const ServicesPage = () => {
   return (
     <div className="container mx-auto p-4">
       <div className="flex gap-6 mt-20">
-        {/* Sidebar */}
         <div className="w-1/4 my-7">
           <CategorySidebar
             selectedCategory={selectedCategory}
