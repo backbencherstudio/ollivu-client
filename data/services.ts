@@ -1,10 +1,29 @@
+import serviceOne from "@/public/client/services/service-01.png";
+import serviceTwo from "@/public/client/services/service-02.png";
+import serviceThree from "@/public/client/services/service-03.png";
+import serviceFour from "@/public/client/services/service-04.png";
+import serviceFive from "@/public/client/services/service-05.png";
+import serviceSix from "@/public/client/services/service-06.png";
 
-import serviceOne from "@/public/client/services/service-01.png"
-import serviceTwo from "@/public/client/services/service-02.png"
-import serviceThree from "@/public/client/services/service-03.png"
-import serviceFour from "@/public/client/services/service-04.png"
-import serviceFive from "@/public/client/services/service-05.png"
-import serviceSix from "@/public/client/services/service-06.png"
+const generateInstructor = (name, experience, image) => ({
+  image,
+  name,
+  location: "Unknown", // Placeholder, can be updated
+  email: `${name.toLowerCase().replace(" ", ".")}@example.com`,
+  languages: ["English"], // Default language
+  totalReview: Math.floor(Math.random() * 300),
+  experience,
+  about: "Experienced professional in the field with a passion for teaching and mentoring. I have a strong background in the subject matter and a proven track record of success. I am committed to providing high-quality instruction  to my students. I am excited to share my knowledge and expertise with you. I am confident that I can help you achieve your goals.",
+  description: `Has been actively working for ${experience} in the industry and helping others succeed.`,
+  status: "Online",
+  offlineTime: "N/A",
+  rating: (Math.random() * (5 - 4.5) + 4.5).toFixed(1),
+  reviewCount: Math.floor(Math.random() * 300),
+  skills: ["Web Development", "Graphic Design", "Music Production", "Photography", "Video Editing"],
+  portfolioImage: image,
+  customerSatisfaction: Math.floor(Math.random() * 100),
+  isVerified: true,
+});
 
 export const serviceCategories = [
   {
@@ -13,28 +32,28 @@ export const serviceCategories = [
       {
         id: 1,
         title: "Mathematics Tutoring",
-        instructor: { name: "John Smith", experience: "8+ years" },
+        instructor: generateInstructor("John Smith", "10+ years", serviceOne),
         rating: 4.9,
         reviewCount: 150,
-        image: serviceOne
+        image: serviceOne,
       },
       {
         id: 2,
         title: "Piano Lessons",
-        instructor: { name: "Sarah Wilson", experience: "10+ years" },
+        instructor: generateInstructor("Sarah Wilson", "10+ years", serviceTwo),
         rating: 4.8,
         reviewCount: 120,
-        image: serviceTwo
+        image: serviceTwo,
       },
       {
         id: 3,
         title: "Web Development Course",
-        instructor: { name: "Michael Chen", experience: "7+ years" },
+        instructor: generateInstructor("Michael Chen", "7+ years", serviceThree),
         rating: 4.7,
         reviewCount: 200,
-        image: serviceThree
-      }
-    ]
+        image: serviceThree,
+      },
+    ],
   },
   {
     title: "Professional & Business Services",
@@ -42,20 +61,20 @@ export const serviceCategories = [
       {
         id: 4,
         title: "Logo Design",
-        instructor: { name: "Alex Johnson", experience: "6+ years" },
+        instructor: generateInstructor("Alex Johnson", "6+ years", serviceFour),
         rating: 4.8,
         reviewCount: 180,
-        image: serviceFour
+        image: serviceFour,
       },
       {
         id: 5,
         title: "Business Consulting",
-        instructor: { name: "Lisa Brown", experience: "12+ years" },
+        instructor: generateInstructor("Lisa Brown", "12+ years", serviceSix),
         rating: 4.9,
         reviewCount: 220,
-        image: serviceSix
-      }
-    ]
+        image: serviceSix,
+      },
+    ],
   },
   {
     title: "Events & Entertainment",
@@ -63,135 +82,19 @@ export const serviceCategories = [
       {
         id: 6,
         title: "Wedding Photography",
-        instructor: { name: "Emily White", experience: "9+ years" },
+        instructor: generateInstructor("Emily White", "9+ years", serviceFive),
         rating: 4.8,
         reviewCount: 160,
-        image: serviceFive
+        image: serviceFive,
       },
       {
         id: 7,
         title: "Live Band Performance",
-        instructor: { name: "James Wilson", experience: "15+ years" },
+        instructor: generateInstructor("James Wilson", "15+ years", serviceFour),
         rating: 4.9,
         reviewCount: 190,
-        image: serviceFour
+        image: serviceFour,
       },
-      {
-        id: 8,
-        title: "Event Decoration",
-        instructor: { name: "Sophie Martinez", experience: "7+ years" },
-        rating: 4.7,
-        reviewCount: 140,
-        image: serviceOne
-      }
-    ]
+    ],
   },
-  {
-    title: "Home Services & Maintenance",
-    items: [
-      {
-        id: 9,
-        title: "Home Cleaning",
-        instructor: { name: "Maria Garcia", experience: "5+ years" },
-        rating: 4.6,
-        reviewCount: 130,
-        image: serviceSix
-      },
-      {
-        id: 10,
-        title: "Garden Maintenance",
-        instructor: { name: "Peter Green", experience: "8+ years" },
-        rating: 4.8,
-        reviewCount: 170,
-        image: serviceThree
-      },
-      {
-        id: 11,
-        title: "Interior Design",
-        instructor: { name: "Anna Lee", experience: "10+ years" },
-        rating: 4.9,
-        reviewCount: 200,
-        image: serviceTwo
-      }
-    ]
-  },
-  {
-    title: "Personal & Care Services",
-    items: [
-      {
-        id: 12,
-        title: "Professional Makeup",
-        instructor: { name: "Jessica Kim", experience: "8+ years" },
-        rating: 4.8,
-        reviewCount: 150,
-        image: serviceFive
-      },
-      {
-        id: 13,
-        title: "Personal Training",
-        instructor: { name: "Chris Thompson", experience: "11+ years" },
-        rating: 4.9,
-        reviewCount: 210,
-        image: serviceFour
-      },
-      {
-        id: 14,
-        title: "Nutrition Consulting",
-        instructor: { name: "Rachel Green", experience: "6+ years" },
-        rating: 4.7,
-        reviewCount: 120,
-        image: serviceOne
-      }
-    ]
-  },
-  {
-    title: "Wellness & Personal Growth",
-    items: [
-      {
-        id: 15,
-        title: "Yoga Classes",
-        instructor: { name: "Maya Patel", experience: "12+ years" },
-        rating: 4.9,
-        reviewCount: 230,
-        image: serviceSix
-      },
-      {
-        id: 16,
-        title: "Life Coaching",
-        instructor: { name: "Daniel Brown", experience: "9+ years" },
-        rating: 4.8,
-        reviewCount: 180,
-        image: serviceTwo
-      }
-    ]
-  },
-  {
-    title: "Automotive & Transportation",
-    items: [
-      {
-        id: 17,
-        title: "Car Repair",
-        instructor: { name: "Mike Johnson", experience: "15+ years" },
-        rating: 4.8,
-        reviewCount: 190,
-        image: serviceThree
-      },
-      {
-        id: 18,
-        title: "Bike Servicing",
-        instructor: { name: "Tom Baker", experience: "7+ years" },
-        rating: 4.7,
-        reviewCount: 140,
-        image: serviceFour
-      },
-      {
-        id: 19,
-        title: "Driving Lessons",
-        instructor: { name: "Steve Davis", experience: "10+ years" },
-        rating: 4.9,
-        reviewCount: 170,
-        image: serviceFive
-      }
-    ]
-  }
 ];
