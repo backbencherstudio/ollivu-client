@@ -1,16 +1,16 @@
-export interface ServiceProvider {
-    id: string;
+// src/types/service.ts
+// Update Service interface to accept both string and StaticImageData
+import { StaticImageData } from "next/image";
+
+export interface Service {
+  id: number;
+  title: string;
+  category: string;
+  instructor: {
     name: string;
-    avatar: string;
-    rating: number;
-    reviewCount: number;
-  }
-  
-  export interface ServiceItem {
-    id: string;
-    title: string;
-    category: string;
-    price: number;
-    provider: ServiceProvider;
-    image: string;
-  }
+    experience: string;
+  };
+  rating: number;
+  reviewCount: number;
+  image: string | StaticImageData;
+}

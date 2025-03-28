@@ -100,11 +100,13 @@ const serviceCategories = [
 ];
 
 export default function Navbar() {
-  const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [isServicesOpen, setIsServicesOpen] = useState(false); // Add this state
   const pathname = usePathname();
+
+  // Remove isServicesOpen state and toggleServices function since we'll use hover
 
   // Add scroll event handler
   useEffect(() => {
@@ -125,13 +127,14 @@ export default function Navbar() {
     };
   }, [lastScrollY]);
 
-  const toggleServices = () => {
-    setIsServicesOpen(!isServicesOpen);
-  };
-
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
     if (isServicesOpen) setIsServicesOpen(false);
+  };
+
+  // Fix the toggleServices function
+  const toggleServices = () => {
+    setIsServicesOpen(!isServicesOpen);
   };
 
   return (
@@ -158,44 +161,44 @@ export default function Navbar() {
               </Link>
 
               {/* Services Dropdown */}
-              <div className="relative">
-                <button 
-                  className={`flex items-center space-x-1 font-medium hover:text-teal-600 ${pathname.includes('/services') ? 'text-[#070707]' : 'text-[#777980]'}`}
-                  onClick={toggleServices}
+              <div className="relative group">
+                <Link 
+                  href="/service-result"
+                  className={`flex items-center space-x-1 font-medium hover:text-teal-600 ${
+                    pathname.includes('/service-result') ? 'text-[#070707]' : 'text-[#777980]'
+                  }`}
                 >
                   <span>Services</span>
-                  {isServicesOpen ? (
-                    <ChevronUp className="w-4 h-4 ml-1" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4 ml-1" />
-                  )}
-                </button>
+                  <ChevronDown className="w-4 h-4 ml-1 group-hover:rotate-180 transition-transform" />
+                </Link>
 
-                {isServicesOpen && (
-                  <div className="absolute top-full mt-5 -left-40 w-[calc(100vw-2rem)] md:w-[700px] lg:w-[1000px] bg-white shadow-lg rounded-md p-4 md:p-6 z-50">
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                      {serviceCategories.map((category) => (
-                        <div key={category.title} className="group">
-                          <h3 className="font-semibold text-sm mb-2 md:mb-3 text-gray-900 group-hover:text-teal-600">
-                            {category.title}
-                          </h3>
-                          <ul className="space-y-1 md:space-y-2">
-                            {category.items.map((item) => (
-                              <li 
-                                key={item}
-                                className="text-xs md:text-sm text-gray-600 hover:text-teal-600 transition-colors"
+                {/* Dropdown Menu - Shows on Hover */}
+                <div className="absolute top-full mt-5 -left-40 w-[calc(100vw-2rem)] md:w-[700px] lg:w-[1000px] bg-white shadow-lg rounded-md p-4 md:p-6 z-50 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-300">
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                    {serviceCategories.map((category) => (
+                      <div key={category.title} className="group/item">
+                        <h3 className="font-semibold text-sm mb-2 md:mb-3 text-gray-900 group-hover/item:text-teal-600">
+                          {category.title}
+                        </h3>
+                        <ul className="space-y-1 md:space-y-2">
+                          {category.items.map((item) => (
+                            <li 
+                              key={item}
+                              className="text-xs md:text-sm text-gray-600 hover:text-teal-600 transition-colors"
+                            >
+                              <Link 
+                                href={`/service-result?category=${encodeURIComponent(category.title)}&service=${encodeURIComponent(item)}`} 
+                                className="block py-1"
                               >
-                                <Link href="#" className="block py-1">
-                                  {item}
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      ))}
-                    </div>
+                                {item}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
                   </div>
-                )}
+                </div>
               </div>
 
               <Link 
@@ -217,13 +220,13 @@ export default function Navbar() {
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
             <Link 
-              href="/login" 
+              href="/auth/login" 
               className={`font-medium hover:text-teal-600 ${pathname === '/login' ? 'text-[#070707]' : 'text-[#777980]'}`}
             >
               Login
             </Link>
             <Link
-              href="/signup"
+              href="/auth/signup"
               className="bg-teal-500 text-white px-4 py-2 rounded-md hover:bg-teal-600 transition-colors"
             >
               Sign Up
@@ -285,7 +288,7 @@ export default function Navbar() {
                         {category.items.map((item) => (
                           <li key={item}>
                             <Link
-                              href="#"
+                              href={`/service-result?category=${encodeURIComponent(category.title)}&service=${encodeURIComponent(item)}`}
                               className="block px-3 py-1 text-sm text-gray-600 hover:text-teal-600"
                             >
                               {item}
