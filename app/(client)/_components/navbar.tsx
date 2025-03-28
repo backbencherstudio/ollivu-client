@@ -4,8 +4,8 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "@/Public/client/home/logo.png";
-import { ChevronDown, ChevronUp, Menu, X } from "lucide-react";
-import { usePathname } from 'next/navigation';
+import { ChevronDown, ChevronUp, Menu, MoveUpRight, X } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 // Define service categories and their items
 const serviceCategories = [
@@ -111,19 +111,21 @@ export default function Navbar() {
   // Add scroll event handler
   useEffect(() => {
     const controlNavbar = () => {
-      if (window.scrollY > lastScrollY) { // scrolling down
+      if (window.scrollY > lastScrollY) {
+        // scrolling down
         setIsVisible(false);
-      } else { // scrolling up
+      } else {
+        // scrolling up
         setIsVisible(true);
       }
       setLastScrollY(window.scrollY);
     };
 
-    window.addEventListener('scroll', controlNavbar);
+    window.addEventListener("scroll", controlNavbar);
 
     // cleanup function
     return () => {
-      window.removeEventListener('scroll', controlNavbar);
+      window.removeEventListener("scroll", controlNavbar);
     };
   }, [lastScrollY]);
 
@@ -138,9 +140,11 @@ export default function Navbar() {
   };
 
   return (
-    <nav className={`secondary_color shadow-sm sticky top-0 z-50 transition-transform duration-300 ${
-      isVisible ? 'translate-y-0' : '-translate-y-full'
-    }`}>
+    <nav
+      className={`secondary_color shadow-sm sticky top-0 z-50 transition-transform duration-300 ${
+        isVisible ? "translate-y-0" : "-translate-y-full"
+      }`}
+    >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           {/* Logo */}
@@ -153,19 +157,23 @@ export default function Navbar() {
           {/* Desktop Navigation Menu - Centered */}
           <div className="hidden md:flex flex-1 justify-center items-center">
             <div className="flex items-center space-x-8 text-[#777980]">
-              <Link 
-                href="/" 
-                className={`font-medium hover:text-teal-600 ${pathname === '/' ? 'text-[#070707]' : 'text-[#777980]'}`}
+              <Link
+                href="/"
+                className={`font-medium hover:text-teal-600 ${
+                  pathname === "/" ? "text-[#070707]" : "text-[#777980]"
+                }`}
               >
                 Home
               </Link>
 
               {/* Services Dropdown */}
               <div className="relative group">
-                <Link 
+                <Link
                   href="/service-result"
                   className={`flex items-center space-x-1 font-medium hover:text-teal-600 ${
-                    pathname.includes('/service-result') ? 'text-[#070707]' : 'text-[#777980]'
+                    pathname.includes("/service-result")
+                      ? "text-[#070707]"
+                      : "text-[#777980]"
                   }`}
                 >
                   <span>Services</span>
@@ -182,12 +190,14 @@ export default function Navbar() {
                         </h3>
                         <ul className="space-y-1 md:space-y-2">
                           {category.items.map((item) => (
-                            <li 
+                            <li
                               key={item}
                               className="text-xs md:text-sm text-gray-600 hover:text-teal-600 transition-colors"
                             >
-                              <Link 
-                                href={`/service-result?category=${encodeURIComponent(category.title)}&service=${encodeURIComponent(item)}`} 
+                              <Link
+                                href={`/service-result?category=${encodeURIComponent(
+                                  category.title
+                                )}&service=${encodeURIComponent(item)}`}
                                 className="block py-1"
                               >
                                 {item}
@@ -201,16 +211,22 @@ export default function Navbar() {
                 </div>
               </div>
 
-              <Link 
-                href="/how-it-works" 
-                className={`font-medium hover:text-teal-600 ${pathname === '/how-it-works' ? 'text-[#070707]' : 'text-[#777980]'}`}
+              <Link
+                href="/how-it-works"
+                className={`font-medium hover:text-teal-600 ${
+                  pathname === "/how-it-works"
+                    ? "text-[#070707]"
+                    : "text-[#777980]"
+                }`}
               >
                 How it works
               </Link>
 
-              <Link 
-                href="/terms" 
-                className={`font-medium hover:text-teal-600 ${pathname === '/terms' ? 'text-[#070707]' : 'text-[#777980]'}`}
+              <Link
+                href="/terms"
+                className={`font-medium hover:text-teal-600 ${
+                  pathname === "/terms" ? "text-[#070707]" : "text-[#777980]"
+                }`}
               >
                 Terms & Policy
               </Link>
@@ -219,17 +235,32 @@ export default function Navbar() {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link 
-              href="/auth/login" 
-              className={`font-medium hover:bg-teal-500 hover:text-white px-4 py-2 rounded-md border border-teal-600 ease-in duration-200 text-[#777870] `}
-            >
-              Login
-            </Link>
+            <div className="">
+              <Link
+                href="/auth/login"
+                className="group font-medium px-4 py-2 rounded-full border border-teal-600 transition-all duration-300 text-[#777870] flex items-center gap-2 hover:bg-teal-500 hover:border-teal-500"
+              >
+                <span className="group-hover:text-white transition-colors duration-300">
+                  Login
+                </span>
+                <MoveUpRight
+                  className="text-[#777870] group-hover:text-white transition-colors duration-300"
+                  size={20}
+                />
+              </Link>
+            </div>
+
             <Link
               href="/auth/signup"
-              className=" hover:text-white px-4 py-2 rounded-md hover:bg-teal-600 transition-colors text-[#777980] border border-teal-600 ease-in duration-200 "
+              className="group font-medium px-4 py-2 rounded-full border border-teal-600 transition-all duration-300 text-[#777870] flex items-center gap-2 hover:bg-teal-500 hover:border-teal-500"
             >
-              Sign Up
+              <span className="group-hover:text-white transition-colors duration-300">
+                Sign Up
+              </span>
+              <MoveUpRight
+                className="text-[#777870] group-hover:text-white transition-colors duration-300"
+                size={20}
+              />
             </Link>
           </div>
 
@@ -256,17 +287,19 @@ export default function Navbar() {
             <Link
               href="/"
               className={`block px-3 py-2 rounded-md text-base font-medium ${
-                pathname === '/' ? 'text-[#070707]' : 'text-[#777980]'
+                pathname === "/" ? "text-[#070707]" : "text-[#777980]"
               } hover:text-teal-600`}
             >
               Home
             </Link>
-            
+
             <div>
               <button
                 onClick={toggleServices}
                 className={`flex items-center w-full px-3 py-2 rounded-md text-base font-medium ${
-                  pathname.includes('/services') ? 'text-[#070707]' : 'text-[#777980]'
+                  pathname.includes("/services")
+                    ? "text-[#070707]"
+                    : "text-[#777980]"
                 } hover:text-teal-600`}
               >
                 <span>Services</span>
@@ -276,7 +309,7 @@ export default function Navbar() {
                   <ChevronDown className="w-4 h-4 ml-1" />
                 )}
               </button>
-              
+
               {isServicesOpen && (
                 <div className="pl-4 pr-2 py-2">
                   {serviceCategories.map((category) => (
@@ -288,7 +321,9 @@ export default function Navbar() {
                         {category.items.map((item) => (
                           <li key={item}>
                             <Link
-                              href={`/service-result?category=${encodeURIComponent(category.title)}&service=${encodeURIComponent(item)}`}
+                              href={`/service-result?category=${encodeURIComponent(
+                                category.title
+                              )}&service=${encodeURIComponent(item)}`}
                               className="block px-3 py-1 text-sm text-gray-600 hover:text-teal-600"
                             >
                               {item}
@@ -305,7 +340,9 @@ export default function Navbar() {
             <Link
               href="/how-it-works"
               className={`block px-3 py-2 rounded-md text-base font-medium ${
-                pathname === '/how-it-works' ? 'text-[#070707]' : 'text-[#777980]'
+                pathname === "/how-it-works"
+                  ? "text-[#070707]"
+                  : "text-[#777980]"
               } hover:text-teal-600`}
             >
               How it works
@@ -314,7 +351,7 @@ export default function Navbar() {
             <Link
               href="/terms"
               className={`block px-3 py-2 rounded-md text-base font-medium ${
-                pathname === '/terms' ? 'text-[#070707]' : 'text-[#777980]'
+                pathname === "/terms" ? "text-[#070707]" : "text-[#777980]"
               } hover:text-teal-600`}
             >
               Terms & Policy
