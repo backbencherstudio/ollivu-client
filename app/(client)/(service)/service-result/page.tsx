@@ -2,12 +2,13 @@
 
 import React, { useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Filter } from "lucide-react";
 import { Service } from "@/types/service.types";
 import { serviceCategories } from "@/data/services";
 import { CategorySidebar } from "./_components/category-sidebar";
 import { ServiceCard } from "./_components/service-card";
-import Image from "next/image";
+import { Pagination } from "@/components/reusable/pagination";
+
+const ITEMS_PER_PAGE = 6; 
 
 const ServicesPage = () => {
   const searchParams = useSearchParams();
@@ -23,8 +24,9 @@ const ServicesPage = () => {
     searchParams.get("category")
   );
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  // Updated filtering logic
+  // Filter services based on selection
   const filteredServices = services.filter((service) => {
     if (selectedItem) {
       return service.title === selectedItem;
@@ -34,6 +36,19 @@ const ServicesPage = () => {
     }
     return true;
   });
+
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredServices.length / ITEMS_PER_PAGE);
+  const paginatedServices = filteredServices.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  // Handle page change
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <div className="container mx-auto p-4">
@@ -55,14 +70,22 @@ const ServicesPage = () => {
               {selectedItem || selectedCategory || "All Services"} (
               {filteredServices.length})
             </h1>
-            <p>2 Filters applied Clear All</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredServices.map((service) => (
+            {paginatedServices.map((service) => (
               <ServiceCard key={service.id} service={service} />
             ))}
           </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          )}
         </div>
       </div>
     </div>

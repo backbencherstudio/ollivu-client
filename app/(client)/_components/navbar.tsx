@@ -221,13 +221,13 @@ export default function Navbar() {
           <div className="hidden md:flex items-center space-x-4">
             <Link 
               href="/auth/login" 
-              className={`font-medium hover:text-teal-600 ${pathname === '/login' ? 'text-[#070707]' : 'text-[#777980]'}`}
+              className={`font-medium hover:bg-teal-500 hover:text-white px-4 py-2 rounded-md border border-teal-600 ease-in duration-200 text-[#777870] `}
             >
               Login
             </Link>
             <Link
               href="/auth/signup"
-              className="bg-teal-500 text-white px-4 py-2 rounded-md hover:bg-teal-600 transition-colors"
+              className=" hover:text-white px-4 py-2 rounded-md hover:bg-teal-600 transition-colors text-[#777980] border border-teal-600 ease-in duration-200 "
             >
               Sign Up
             </Link>
