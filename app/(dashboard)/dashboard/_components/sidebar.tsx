@@ -16,6 +16,7 @@ export default function Sidebar() {
     { icon: MessageSquare, label: 'Message', href: '/dashboard/message' },
     { icon: Star, label: 'Review', href: '/dashboard/review' },
     { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
+    { icon: Settings, label: 'admin-terms-policy', href: '/dashboard/admin-terms-policy' },
   ];
 
   return (
