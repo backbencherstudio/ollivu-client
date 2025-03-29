@@ -50,9 +50,24 @@ export default function AdminReviewsPage() {
     <div className="bg-white text-[#1D1F2C] min-h-screen p-6 md:p-10 space-y-6">
       {/* Stats Section */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <StatCard title="Total Reviews" value="1k+" subtitle="Growth in reviews on this year" />
-        <StatCard title="Average Rating" value="4.5" subtitle="Average Rating on this year" stars />
-        <StatCard title="Customer Satisfaction" value="90%" subtitle="Average Rating on this year" />
+        <StatCard
+          title="Total Reviews"
+          value="1k+"
+          valueClass="text-[#20B894]"
+          subtitle="Growth in reviews on this year"
+        />
+        <StatCard
+          title="Average Rating"
+          value="4.5"
+          subtitle="Average Rating on this year"
+          stars
+        />
+        <StatCard
+          title="Customer Satisfaction"
+          value="90%"
+          valueClass="text-[#20B894]"
+          subtitle="Average Rating on this year"
+        />
         <RatingBreakdown />
       </div>
 
@@ -115,7 +130,7 @@ export default function AdminReviewsPage() {
           <button
             key={i}
             className={`px-3 py-1.5 rounded ${
-              item === 1 ? 'bg-black text-white' : 'text-gray-600 hover:bg-gray-100'
+              item === 1 ? 'bg-[#20B894] text-white' : 'text-gray-600 hover:bg-gray-100'
             } text-sm`}
           >
             {item}
@@ -129,16 +144,34 @@ export default function AdminReviewsPage() {
   );
 }
 
-function StatCard({ title, value, subtitle, stars = false }: any) {
+function StatCard({
+  title,
+  value,
+  subtitle,
+  stars = false,
+  valueClass = 'text-black',
+}: {
+  title: string;
+  value: string;
+  subtitle: string;
+  stars?: boolean;
+  valueClass?: string;
+}) {
   return (
-    <div className="border rounded-xl p-4">
+    <div className="bg-white border rounded-xl p-4 shadow-sm">
       <h4 className="text-sm text-[#4A4C56] mb-1">{title}</h4>
-      <div className="text-2xl font-bold flex items-center gap-1">
-        {value}
+      <div className="text-2xl font-bold flex items-center gap-2">
+        <span className={valueClass}>{value}</span>
         {stars && (
-          <div className="flex ml-2">
-            {Array.from({ length: 5 }, (_, i) => (
-              <Star key={i} size={16} fill={i < Math.round(parseFloat(value)) ? '#FBBF24' : 'none'} stroke="#FBBF24" />
+          <div className="flex items-center">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <svg
+                key={i}
+                className={`w-4 h-4 ${i < 4 ? 'fill-[#FBBF24]' : 'fill-gray-200'} stroke-[#FBBF24]`}
+                viewBox="0 0 20 20"
+              >
+                <path d="M10 15l-5.878 3.09 1.122-6.545L.488 6.91l6.561-.955L10 0l2.951 5.955 6.561.955-4.756 4.635 1.122 6.545z" />
+              </svg>
             ))}
           </div>
         )}
@@ -149,28 +182,42 @@ function StatCard({ title, value, subtitle, stars = false }: any) {
 }
 
 function RatingBreakdown() {
-  const data = [100, 50, 20, 15, 5];
+  const data = [
+    { stars: 5, count: 100, color: '#20B894' },
+    { stars: 4, count: 50, color: '#FBBF24' },
+    { stars: 3, count: 20, color: '#D6B084' },
+    { stars: 2, count: 15, color: '#FBBF24' },
+    { stars: 1, count: 5, color: '#F87171' },
+  ];
+  const max = Math.max(...data.map((d) => d.count));
+
   return (
-    <div className="border rounded-xl p-4 space-y-1">
-      {data.map((count, index) => (
-        <div key={index} className="flex items-center gap-2 text-sm">
-          <div className="flex items-center gap-1 text-[#4A4C56]">
-            {Array.from({ length: 5 }, (_, i) => (
-              <Star
+    <div className="bg-white border rounded-xl p-4 shadow-sm space-y-2">
+      {data.map((item) => (
+        <div key={item.stars} className="flex items-center gap-2">
+          <div className="flex items-center gap-[1px] min-w-[80px]">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <svg
                 key={i}
-                size={12}
-                fill={i < 5 - index ? '#FBBF24' : 'none'}
-                stroke="#FBBF24"
-              />
+                className={`w-3.5 h-3.5 ${
+                  i < item.stars ? 'fill-[#FBBF24]' : 'fill-gray-200'
+                } stroke-[#FBBF24]`}
+                viewBox="0 0 20 20"
+              >
+                <path d="M10 15l-5.878 3.09 1.122-6.545L.488 6.91l6.561-.955L10 0l2.951 5.955 6.561.955-4.756 4.635 1.122 6.545z" />
+              </svg>
             ))}
           </div>
-          <div className="w-full h-2 bg-gray-100 rounded overflow-hidden">
+          <div className="w-full h-2 bg-gray-200 rounded overflow-hidden">
             <div
-              className="h-full bg-[#20B894]"
-              style={{ width: `${(count / 100) * 100}%` }}
+              className="h-full"
+              style={{
+                width: `${(item.count / max) * 100}%`,
+                backgroundColor: item.color,
+              }}
             />
           </div>
-          <span className="text-xs text-[#4A4C56]">{count}</span>
+          <span className="text-xs text-[#4A4C56] w-6 text-right">{item.count}</span>
         </div>
       ))}
     </div>
