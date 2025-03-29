@@ -1,7 +1,378 @@
-import React from 'react'
+'use client';
 
-export default function DashboardHome() {
+import { useState } from 'react';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from 'recharts';
+import { BadgeCheck, CheckCircle, Lock } from 'lucide-react';
+import Image from 'next/image';
+
+const exchangeData = [
+  { month: 'Jan', count: 0 },
+  { month: 'Feb', count: 5 },
+  { month: 'Mar', count: 9 },
+  { month: 'Apr', count: 18 },
+  { month: 'May', count: 15 },
+  { month: 'Jun', count: 22 },
+  { month: 'Jul', count: 8 },
+  { month: 'Aug', count: 6 },
+  { month: 'Sep', count: 10 },
+  { month: 'Oct', count: 17 },
+  { month: 'Nov', count: 10 },
+  { month: 'Dec', count: 3 },
+];
+
+export default function UserDashboardHome() {
+  const [filter, setFilter] = useState('Month');
+
   return (
-    <div>DashboardHome</div>
-  )
+    <div className="bg-white min-h-screen p-6 space-y-6">
+      {/* Top Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { title: 'Total Exchange Request', value: 20 },
+          { title: 'Confirmed Exchange', value: 5 },
+          { title: 'New Connect Requests', value: 12 },
+          { title: 'Total Reviews', value: 32 },
+        ].map((stat, idx) => (
+          <div
+            key={idx}
+            className="border rounded-xl p-4 text-center shadow-sm bg-white"
+          >
+            <p className="text-sm text-gray-500 mb-2">{stat.title}</p>
+            <h3 className="text-2xl font-semibold text-[#20B894]">
+              {stat.value}
+            </h3>
+          </div>
+        ))}
+      </div>
+
+      {/* Connection Requests & Active Chats */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="border rounded-xl bg-white shadow-sm">
+          <div className="flex justify-between items-center p-4 border-b">
+            <h3 className="font-semibold">Connection Request</h3>
+            <select className="text-sm text-gray-600">
+              <option>Most Recent</option>
+            </select>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm">
+              <thead className="bg-gray-50 text-left">
+                <tr>
+                  <th className="p-3">Request To</th>
+                  <th className="p-3">Service Requested</th>
+                  <th className="p-3">Status</th>
+                  <th className="p-3">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  {
+                    name: 'Kristin Watson',
+                    service: 'Graphic design',
+                    status: 'Accepted',
+                  },
+                  {
+                    name: 'Eleanor Pena',
+                    service: 'Legal Advice',
+                    status: 'Accepted',
+                  },
+                  {
+                    name: 'Courtney Henry',
+                    service: 'Caricature Drawing',
+                    status: 'Canceled',
+                  },
+                  {
+                    name: 'Dianne Russell',
+                    service: 'Event Planning',
+                    status: 'Pending',
+                  },
+                  {
+                    name: 'Albert Flores',
+                    service: 'Moving Help',
+                    status: 'Canceled',
+                  },
+                ].map((req, i) => (
+                  <tr key={i} className="border-b">
+                    <td className="p-3">{req.name}</td>
+                    <td className="p-3">{req.service}</td>
+                    <td className="p-3">
+                      <span
+                        className={`text-xs px-2 py-1 rounded-full font-medium ${
+                          req.status === 'Accepted'
+                            ? 'bg-green-100 text-green-600'
+                            : req.status === 'Pending'
+                            ? 'bg-yellow-100 text-yellow-600'
+                            : 'bg-red-100 text-red-500'
+                        }`}
+                      >
+                        {req.status}
+                      </span>
+                    </td>
+                    <td className="p-3 text-[#20B894] cursor-pointer">
+                      View details
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Active Chats */}
+        <div className="border rounded-xl bg-white shadow-sm p-4">
+          <h3 className="font-semibold mb-4">Active Chats</h3>
+          <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-[#D0A07A]">
+            {[
+              {
+                name: 'Corina McCoy',
+                message:
+                  'Hey! 👋 I saw your post about Marketing & Social Media...',
+                time: '8:24 PM',
+                avatar: '/badges/Ellipse 6451.png'
+              },
+              {
+                name: 'Patricia Sanders',
+                message:
+                  'Hello! The experience looks amazing. May I know what is the...',
+                time: '8:24 PM',
+                avatar: '/badges/Ellipse 6452.png',
+              },
+              {
+                name: 'Lorri Warf',
+                message:
+                  'May I know what is the process of your service exchanging? Is it d...',
+                time: '8:24 PM',
+                avatar: '/badges/Ellipse 6452 (1).png',
+              },
+            ].map((chat, idx) => (
+              <div
+                key={idx}
+                className="flex justify-between items-center p-4 bg-[#F9FAFB] rounded-lg"
+              >
+                <div className="flex items-start gap-3">
+                  <Image
+                    src={chat.avatar}
+                    alt={chat.name}
+                    width={40}
+                    height={40}
+                    className="rounded-full object-cover"
+                  />
+                  <div>
+                    <p className="font-semibold text-sm text-[#1D1F2C]">
+                      {chat.name}
+                    </p>
+                    <p className="text-xs text-[#6B7280] truncate w-[180px]">
+                      {chat.message}
+                    </p>
+                    <span className="text-[10px] text-gray-400">
+                      {chat.time}
+                    </span>
+                  </div>
+                </div>
+                <button className="text-[#20B894] border border-[#20B894] px-4 py-1 text-xs rounded-full font-medium hover:bg-[#20B894]/10">
+                  Open Chat
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Badges & Graph */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+       {/* Badges & Achievements */}
+       <div className="border rounded-xl bg-white shadow-sm p-4">
+        <h3 className="font-semibold mb-4">Badges & Achievements</h3>
+        <div className="grid grid-cols-2 gap-4">
+          {[
+            {
+              label: 'Years Expertise',
+              status: 'claim',
+              icon: '/badges/icon.png',
+              progress: 75,
+            },
+            {
+              label: 'Quality Service Ensured',
+              status: 'claim',
+              icon: '/badges/icon (2).png',
+              progress: 60,
+            },
+            {
+              label: '100% Customer Satisfaction',
+              status: 'claim-green',
+              icon: '/badges/icon.png',
+              verified: true,
+              progress: 80,
+            },
+            {
+              label: 'Verified Trainer',
+              status: 'locked',
+              icon: '/badges/lock.png',
+              progress: 50,
+            },
+          ].map((badge, i) => (
+            <div
+              key={i}
+              className="relative border rounded-xl px-3 py-4 flex flex-col items-center text-center shadow-sm bg-white"
+            >
+              <div className="absolute top-2 right-2 text-gray-400">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-4 h-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="16" x2="12" y2="12" />
+                  <line x1="12" y1="8" x2="12.01" y2="8" />
+                </svg>
+              </div>
+
+              <div className="relative w-20 h-20 mb-3">
+                <svg className="w-20 h-20 transform -rotate-90" viewBox="0 0 36 36">
+                  <path
+                    className="text-gray-200"
+                    strokeWidth="4"
+                    stroke="currentColor"
+                    fill="none"
+                    d="M18 2.0845
+                    a 15.9155 15.9155 0 0 1 0 31.831
+                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                  />
+                  <path
+                    className="text-[#FACC15]"
+                    strokeWidth="4"
+                    strokeDasharray={`${badge.progress}, 100`}
+                    strokeLinecap="round"
+                    stroke="currentColor"
+                    fill="none"
+                    d="M18 2.0845
+                    a 15.9155 15.9155 0 0 1 0 31.831
+                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                  />
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Image
+                    src={badge.icon}
+                    alt={badge.label}
+                    width={24}
+                    height={24}
+                    className="object-contain"
+                  />
+                </div>
+              </div>
+
+              <p className="text-sm text-[#4A4C56] mb-2">{badge.label}</p>
+
+              {badge.status === 'locked' ? (
+                <button className="bg-gray-300 text-white text-sm px-4 py-2 rounded-full w-full">
+                  Locked
+                </button>
+              ) : badge.status === 'claim-green' ? (
+                <button className="bg-[#20B894] text-white text-sm px-4 py-2 rounded-full w-full">
+                  Claim
+                </button>
+              ) : (
+                <button className="bg-[#C5C7CD] text-white text-sm px-4 py-2 rounded-full w-full">
+                  Claim
+                </button>
+              )}
+
+              {badge.verified && (
+                <div className="absolute bottom-14 right-10 w-5 h-5 rounded-full bg-white shadow flex items-center justify-center">
+                  <Image
+                    src="/badges/check.png"
+                    alt="check"
+                    width={14}
+                    height={14}
+                  />
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+        {/* Chart */}
+        <div className="border rounded-2xl bg-white shadow-sm p-4">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="font-semibold text-[#1D1F2C] text-base md:text-lg">
+              Exchange Request History
+            </h3>
+            <select
+              className="text-sm border border-gray-300 rounded px-3 py-1 text-gray-600"
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+            >
+              <option>Month</option>
+              <option>Week</option>
+            </select>
+          </div>
+
+          <ResponsiveContainer width="100%" height={300}>
+            <AreaChart
+              data={exchangeData}
+              margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+            >
+              <defs>
+                <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#20B894" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#20B894" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid
+                strokeDasharray="3 3"
+                vertical={false}
+                stroke="#F3F4F6"
+              />
+              <XAxis
+                dataKey="month"
+                stroke="#6B7280"
+                fontSize={12}
+                axisLine={false}
+                tickLine={false}
+              />
+              <YAxis
+                stroke="#6B7280"
+                fontSize={12}
+                axisLine={false}
+                tickLine={false}
+                domain={[0, 30]}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: '#fff',
+                  borderRadius: '10px',
+                  borderColor: '#E5E7EB',
+                }}
+                labelStyle={{ color: '#20B894', fontWeight: 'bold' }}
+                formatter={(value: number) => ['Exchange request', value]}
+              />
+              <Area
+                type="monotone"
+                dataKey="count"
+                stroke="#20B894"
+                fillOpacity={1}
+                fill="url(#colorCount)"
+                strokeWidth={2}
+                activeDot={{ r: 5 }}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    </div>
+  );
 }
