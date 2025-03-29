@@ -49,27 +49,32 @@ export default function AdminReviewsPage() {
   return (
     <div className="bg-white text-[#1D1F2C] min-h-screen p-6 md:p-10 space-y-6">
       {/* Stats Section */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <StatCard
-          title="Total Reviews"
-          value="1k+"
-          valueClass="text-[#20B894]"
-          subtitle="Growth in reviews on this year"
-        />
-        <StatCard
-          title="Average Rating"
-          value="4.5"
-          subtitle="Average Rating on this year"
-          stars
-        />
-        <StatCard
-          title="Customer Satisfaction"
-          value="90%"
-          valueClass="text-[#20B894]"
-          subtitle="Average Rating on this year"
-        />
-        <RatingBreakdown />
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div className="md:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <StatCard
+            title="Total Reviews"
+            value="1k+"
+            valueClass="text-[#20B894]"
+            subtitle="Growth in reviews on this year"
+          />
+          <StatCard
+            title="Average Rating"
+            value="4.5"
+            subtitle="Average Rating on this year"
+            stars
+          />
+          <StatCard
+            title="Customer Satisfaction"
+            value="90%"
+            valueClass="text-[#20B894]"
+            subtitle="Average Rating on this year"
+          />
+        </div>
+        <div className="md:col-span-2">
+          <RatingBreakdown />
+        </div>
       </div>
+
 
       {/* Sort + Header */}
       <div className="flex items-center justify-between mt-8 border-b pb-3">
@@ -129,9 +134,8 @@ export default function AdminReviewsPage() {
         {[1, 2, '...', 5].map((item, i) => (
           <button
             key={i}
-            className={`px-3 py-1.5 rounded ${
-              item === 1 ? 'bg-[#20B894] text-white' : 'text-gray-600 hover:bg-gray-100'
-            } text-sm`}
+            className={`px-3 py-1.5 rounded ${item === 1 ? 'bg-[#20B894] text-white' : 'text-gray-600 hover:bg-gray-100'
+              } text-sm`}
           >
             {item}
           </button>
@@ -199,9 +203,8 @@ function RatingBreakdown() {
             {Array.from({ length: 5 }).map((_, i) => (
               <svg
                 key={i}
-                className={`w-3.5 h-3.5 ${
-                  i < item.stars ? 'fill-[#FBBF24]' : 'fill-gray-200'
-                } stroke-[#FBBF24]`}
+                className={`w-3.5 h-3.5 ${i < item.stars ? 'fill-[#FBBF24]' : 'fill-gray-200'
+                  } stroke-[#FBBF24]`}
                 viewBox="0 0 20 20"
               >
                 <path d="M10 15l-5.878 3.09 1.122-6.545L.488 6.91l6.561-.955L10 0l2.951 5.955 6.561.955-4.756 4.635 1.122 6.545z" />
