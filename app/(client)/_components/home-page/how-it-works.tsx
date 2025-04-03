@@ -52,7 +52,7 @@ export default function HowWorks() {
   }, [stepsData]);
 
   return (
-    <div className=' bg-[#F9F9F9] px-4 sm:px-6 lg:px-8 py-16' id='how-it-works' ref={sectionRef}>
+    <div  className=' bg-[#F9F9F9] px-4 sm:px-6 lg:px-8 py-16' id='how-it-works' ref={sectionRef}>
       <div className='flex max-w-[1320px] mx-auto flex-col lg:flex-row justify-between items-stretch gap-8'>
         {/* Mobile Title */}
 

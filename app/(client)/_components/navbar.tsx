@@ -212,9 +212,9 @@ export default function Navbar() {
               </div>
 
               <Link
-                href="/how-it-works"
+                href="http://localhost:3000/#how-it-works"
                 className={`font-medium hover:text-teal-600 ${
-                  pathname === "/how-it-works"
+                  pathname === "http://localhost:3000/#how-it-works"
                     ? "text-[#070707]"
                     : "text-[#777980]"
                 }`}
@@ -223,9 +223,9 @@ export default function Navbar() {
               </Link>
 
               <Link
-                href="/terms"
+                href="/terms-and-conditions"
                 className={`font-medium hover:text-teal-600 ${
-                  pathname === "/terms" ? "text-[#070707]" : "text-[#777980]"
+                  pathname === "/terms-and-conditions" ? "text-[#070707]" : "text-[#777980]"
                 }`}
               >
                 Terms & Policy

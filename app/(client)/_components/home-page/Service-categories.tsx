@@ -250,43 +250,107 @@ export default function ServiceExchangeFlow() {
 
             {modalStep === 'users' && (
               <>
-                <h3 className="text-lg font-semibold mb-4">Select Specific Users</h3>
-                <div className="space-y-3 max-h-60 overflow-y-auto mb-6">
-                  {suggestedUsers.map(user => (
-                    <div
-                      key={user.id}
-                      className={`flex justify-between items-center p-3 border rounded-xl ${selectedUsers.includes(user.id) ? 'border-[#20B894]' : 'border-gray-200'}`}
-                    >
-                      <div className="flex items-center gap-4">
-                        <Image src={user.avatar} alt={user.name} width={40} height={40} className="rounded-full" />
-                        <div>
-                          <p className="font-medium text-[#070707]">{user.name} <span className="text-yellow-500 ml-1">★ {user.rating}</span></p>
-                          <p className="text-sm text-gray-500">{user.email}</p>
-                        </div>
-                      </div>
-                      <input
-                        type="checkbox"
-                        checked={selectedUsers.includes(user.id)}
-                        onChange={() => handleUserToggle(user.id)}
-                        className="w-5 h-5"
-                      />
+
+                <div className=" flex justify-between items-center mb-10">
+                  <div className="flex items-center  gap-4 ">
+                    <Image src={selectedService.user.avatar} alt="avatar" width={48} height={48} className="rounded-full" />
+                    <div>
+                      <h3 className="font-semibold text-[#070707]">{selectedService.user.name}</h3>
+                      <p className="text-sm text-gray-500">{selectedService.user.email}</p>
                     </div>
-                  ))}
+                  </div>
+                  <div className="flex justify-between mt-4 gap-4">
+                    <button
+                      onClick={() => setModalStep('users')}
+                      className="border border-[#B49378] text-[#4A4C56] px-4 py-2 rounded-full"
+                    >
+                      Select Specific Users
+                    </button>
+                    <button
+                      onClick={() => setModalStep('success')}
+                      className="bg-[#20B894] text-white px-6 py-2 rounded-full flex items-center gap-2"
+                    >
+                      Request Exchange Service <ArrowUpRight className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
-                <div className="flex justify-end gap-4">
-                  <button
-                    onClick={() => setModalStep('success')}
-                    className="bg-[#20B894] text-white px-6 py-2 rounded-full"
-                  >
-                    Send Request
-                  </button>
-                  <button
-                    onClick={() => setModalStep('none')}
-                    className="border border-red-500 text-red-500 px-6 py-2 rounded-full"
-                  >
-                    Cancel
-                  </button>
+                <div className="bg-[#EDE3D9] p-10 rounded-2xl">
+
+                  <h3 className="text-lg font-semibold  mb-4">Select Specific Users</h3>
+                  <div className="space-y-3 max-h-60 overflow-y-auto mb-6  bg-[#EDE3D9]">
+                    {suggestedUsers.map(user => (
+                      <div
+                        key={user.id}
+                        className={`flex justify-between items-center bg-white p-3 border rounded-xl ${selectedUsers.includes(user.id) ? 'border-[#20B894]' : 'border-gray-200'}`}
+                      >
+                        <div className="flex items-center gap-4">
+                          <Image src={user.avatar} alt={user.name} width={40} height={40} className="rounded-full" />
+                          <div>
+                            <p className="font-medium text-[#070707]">{user.name} <span className="text-yellow-500 ml-1">★ {user.rating}</span></p>
+                            <p className="text-sm text-gray-500">{user.email}</p>
+                          </div>
+                        </div>
+                        <input
+                          type="checkbox"
+                          checked={selectedUsers.includes(user.id)}
+                          onChange={() => handleUserToggle(user.id)}
+                          className="w-5 h-5"
+                        />
+                      </div>
+                    ))}
+
+
+
+
+
+                  </div>
+                  <div className="flex justify-end gap-4">
+                    <button
+                      onClick={() => setModalStep('success')}
+                      className="bg-[#20B894] text-white px-6 py-2 rounded-full"
+                    >
+                      Send Request
+                    </button>
+                    <button
+                      onClick={() => setModalStep('none')}
+                      className="border border-red-500 text-red-500 px-6 py-2 rounded-full"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+
+
+
                 </div>
+
+                <div className="flex flex-col sm:flex-row gap-4 mt-10 mb-6">
+                  <div className="bg-[#F5F5F5] p-4 rounded w-full">
+                    <p className="text-sm text-gray-400 mb-1">Request skill:</p>
+                    <p className="font-medium">{selectedService.user.requestSkill}</p>
+                  </div>
+                  {/* Swap Icon */}
+                  <div className="flex items-center justify-center my-4 sm:my-0">
+                    <Image
+                      src="/swapicon.png"
+                      alt="Swap Icon"
+                      width={100}
+                      height={100}
+                    />
+                  </div>
+                  <div className="bg-[#F5F5F5] p-4 rounded w-full">
+                    <p className="text-sm text-gray-400 mb-1">My skill:</p>
+                    <select
+                      value={selectedSkill}
+                      onChange={(e) => setSelectedSkill(e.target.value)}
+                      className="w-full p-2 rounded border border-gray-300 text-sm"
+                    >
+                      <option value="Web Development">Web Development</option>
+                      <option value="Graphic Design">Graphic Design</option>
+                      <option value="Coding">Coding</option>
+                    </select>
+                  </div>
+                </div>
+
               </>
             )}
 
