@@ -2,6 +2,7 @@ import { Inter } from 'next/font/google';
 import { AppConfig } from "@/config/app.config";
 import "./globals.css";
 import type { Metadata } from "next";
+import { Toaster } from "sonner";
 
 const inter = Inter({
   subsets: ['latin'],
@@ -23,6 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable}`}>
       <body className={`${inter.className}`}>{children}</body>
+      <Toaster position="top-right" richColors />
     </html>
   );
 }

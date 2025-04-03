@@ -120,7 +120,7 @@ export default function Header() {
 
             {/* Notification Dropdown */}
             {showNotifications && (
-              <div className="absolute top-12 right-0 bg-white shadow-md rounded-md p-4 w-[500px]">
+              <div className="absolute top-12 right-0 bg-gray-50 shadow-lg rounded-md p-4 w-[500px]">
                 <h3 className="text-lg font-medium mb-2">
                   Your Notifications
                 </h3>
