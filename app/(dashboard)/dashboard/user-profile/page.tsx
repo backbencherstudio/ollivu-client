@@ -15,12 +15,34 @@ import {
 } from "@/components/ui/select";
 import { BsArrowUpRight } from "react-icons/bs";
 import { LuPencilLine } from "react-icons/lu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+// Change this import
+import MyService from "./_components/add-skill";
+import Portfolio from './_components/portfolio';
 
-
+// Update imports
+import Certificate from './_components/certificate';
 
 export default function UserProfile() {
   const [profileImage, setProfileImage] = useState(profile);
+  const [showServiceModal, setShowServiceModal] = useState(false);
+  const [services, setServices] = useState([
+    "Web Development",
+    "Coding",
+    "Cooking"
+  ]);
 
+  // Add this near your existing code
+  const handleAddService = () => {
+    setShowServiceModal(true);
+  };
+
+  // Update the My Service card section
   return (
     <div className="space-y-6">
       {/* Profile Photo Section */}
@@ -153,61 +175,54 @@ export default function UserProfile() {
 
       {/* My Service and Portfolio */}
       <div className="grid grid-cols-2 gap-6">
-        <Card className="p-6">
-          <h2 className="text-lg font-medium mb-4">My Service</h2>
-          <p className="text-sm text-gray-500 mb-4">Add the service you have expertise in for exchanging services in this platform.</p>
-          <div className="flex gap-2">
-            <button className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678]">
-              Add service
-            </button>
-            <button className="px-3 py-1.5 text-sm text-red-500 border border-red-500 rounded-md hover:bg-red-50">
-              Remove
-            </button>
-          </div>
-        </Card>
-
-        <Card className="p-6">
-          <h2 className="text-lg font-medium mb-4">Portfolio</h2>
-          <p className="text-sm text-gray-500 mb-4">Upload necessary documents or photos to showcase your portfolio/services.</p>
-          <div className="flex gap-2">
-            <button className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678]">
-              Add file
-            </button>
-            <button className="px-3 py-1.5 text-sm text-red-500 border border-red-500 rounded-md hover:bg-red-50">
-              Remove
-            </button>
-          </div>
-        </Card>
+        <MyService />
+        <Portfolio />
       </div>
 
       {/* Extra Skills and Certificate */}
       <div className="grid grid-cols-2 gap-6">
-        <Card className="p-6">
-          <h2 className="text-lg font-medium mb-4">Extra Skills</h2>
-          <p className="text-sm text-gray-500 mb-4">Showcase additional skills you can offer to enhance your exchanges.</p>
-          <div className="flex gap-2">
-            <button className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678]">
-              Add skills
-            </button>
-            <button className="px-3 py-1.5 text-sm text-red-500 border border-red-500 rounded-md hover:bg-red-50">
-              Remove
-            </button>
-          </div>
-        </Card>
-
-        <Card className="p-6">
-          <h2 className="text-lg font-medium mb-4">Certificate</h2>
-          <p className="text-sm text-gray-500 mb-4">Upload necessary documents or certificates to verify your service and profile.</p>
-          <div className="flex gap-2">
-            <button className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678]">
-              Add file
-            </button>
-            <button className="px-3 py-1.5 text-sm text-red-500 border border-red-500 rounded-md hover:bg-red-50">
-              Remove
-            </button>
-          </div>
-        </Card>
+        <MyService 
+          title="Extra Skills"
+          description="Showcase additional skills you can offer to enhance your exchanges."
+          buttonText="Add skills"
+        />
+        <Certificate />
       </div>
+
+      {/* Add Service Modal */}
+      <Dialog open={showServiceModal} onOpenChange={setShowServiceModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Service</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block">Service name</label>
+              <Input placeholder="Enter service name" />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-2 block">Service description (optional)</label>
+              <Textarea 
+                placeholder="Describe your service..."
+                className="min-h-[100px]"
+              />
+            </div>
+            <div className="flex justify-end gap-2 mt-4">
+              <button 
+                onClick={() => setShowServiceModal(false)}
+                className="px-4 py-2 text-sm text-gray-500 border rounded-md hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button 
+                className="px-4 py-2 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678]"
+              >
+                Add Service
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
