@@ -159,6 +159,7 @@ export default function LoginSecurity() {
               <Switch
                 checked={twoFactorEnabled}
                 onCheckedChange={setTwoFactorEnabled}
+                className="data-[state=checked]:bg-[#20B894]"
               />
             </div>
           </div>
