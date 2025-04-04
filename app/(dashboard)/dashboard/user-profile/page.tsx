@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
@@ -22,11 +22,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 // Change this import
-import MyService from "./_components/add-skill";
-import Portfolio from './_components/portfolio';
+import MyService from "./_components/my-services";
+import Portfolio from "./_components/portfolio";
 
 // Update imports
-import Certificate from './_components/certificate';
+import Certificate from "./_components/certificate";
+import ExtraSkills from "./_components/extra-skills";
 
 export default function UserProfile() {
   const [profileImage, setProfileImage] = useState(profile);
@@ -34,7 +35,7 @@ export default function UserProfile() {
   const [services, setServices] = useState([
     "Web Development",
     "Coding",
-    "Cooking"
+    "Cooking",
   ]);
 
   // Add this near your existing code
@@ -49,7 +50,12 @@ export default function UserProfile() {
       <Card className="p-6">
         <div className="flex items-center gap-4">
           <div className="relative w-16 h-16 rounded-full overflow-hidden">
-            <Image src={profileImage} alt="Profile" fill className="object-cover" />
+            <Image
+              src={profileImage}
+              alt="Profile"
+              fill
+              className="object-cover"
+            />
           </div>
           <div>
             <h2 className="text-lg font-medium">Katie Sims</h2>
@@ -57,7 +63,6 @@ export default function UserProfile() {
               <button className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678] flex justify-center items-center gap-x-2">
                 Replace Photo
                 <BsArrowUpRight />
-
               </button>
               <button className="px-3 py-1.5 text-sm text-red-500 border border-red-500 rounded-md hover:bg-red-50">
                 Remove
@@ -72,9 +77,9 @@ export default function UserProfile() {
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-lg font-medium">Personal Information</h2>
           <button className="text-[#20B894] text-sm border p-3 rounded-full flex items-center gap-x-2 cursor-pointer">
-          <LuPencilLine />
-
-            Edit</button>
+            <LuPencilLine />
+            Edit
+          </button>
         </div>
 
         <div className="grid grid-cols-2 gap-6">
@@ -136,11 +141,15 @@ export default function UserProfile() {
             </Select>
           </div>
           <div>
-            <label className="text-sm text-gray-600">Street address (optional)</label>
+            <label className="text-sm text-gray-600">
+              Street address (optional)
+            </label>
             <Input placeholder="e.g. 123 Main St." className="mt-1" />
           </div>
           <div>
-            <label className="text-sm text-gray-600">Apt, suite, (optional)</label>
+            <label className="text-sm text-gray-600">
+              Apt, suite, (optional)
+            </label>
             <Input placeholder="e.g. Apt #123" className="mt-1" />
           </div>
           <div>
@@ -148,7 +157,9 @@ export default function UserProfile() {
             <Input placeholder="e.g. San Antonio #123" className="mt-1" />
           </div>
           <div>
-            <label className="text-sm text-gray-600">State / Province / County / Region</label>
+            <label className="text-sm text-gray-600">
+              State / Province / County / Region
+            </label>
             <Input placeholder="e.g. State #123" className="mt-1" />
           </div>
           <div>
@@ -163,11 +174,11 @@ export default function UserProfile() {
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-lg font-medium">About Me</h2>
           <button className="text-[#20B894] text-sm border p-3 rounded-full flex items-center gap-x-2 cursor-pointer">
-          <LuPencilLine />
-
-            Edit</button>
+            <LuPencilLine />
+            Edit
+          </button>
         </div>
-        <Textarea 
+        <Textarea
           className="min-h-[100px]"
           placeholder="Passionate about learning and sharing skills! Whether it's web development or graphic design, I'm here to help and exchange knowledge with like-minded people. I believe in the power of collaboration!"
         />
@@ -181,11 +192,9 @@ export default function UserProfile() {
 
       {/* Extra Skills and Certificate */}
       <div className="grid grid-cols-2 gap-6">
-        <MyService 
-          title="Extra Skills"
-          description="Showcase additional skills you can offer to enhance your exchanges."
-          buttonText="Add skills"
-        />
+        {/* add extra skills */}
+        <ExtraSkills />
+
         <Certificate />
       </div>
 
@@ -197,26 +206,28 @@ export default function UserProfile() {
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Service name</label>
+              <label className="text-sm font-medium mb-2 block">
+                Service name
+              </label>
               <Input placeholder="Enter service name" />
             </div>
             <div>
-              <label className="text-sm font-medium mb-2 block">Service description (optional)</label>
-              <Textarea 
+              <label className="text-sm font-medium mb-2 block">
+                Service description (optional)
+              </label>
+              <Textarea
                 placeholder="Describe your service..."
                 className="min-h-[100px]"
               />
             </div>
             <div className="flex justify-end gap-2 mt-4">
-              <button 
+              <button
                 onClick={() => setShowServiceModal(false)}
                 className="px-4 py-2 text-sm text-gray-500 border rounded-md hover:bg-gray-50"
               >
                 Cancel
               </button>
-              <button 
-                className="px-4 py-2 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678]"
-              >
+              <button className="px-4 py-2 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678]">
                 Add Service
               </button>
             </div>

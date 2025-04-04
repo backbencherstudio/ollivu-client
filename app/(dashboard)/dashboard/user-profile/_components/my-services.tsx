@@ -230,61 +230,6 @@ export default function MyService({
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Portfolio Modal */}
-      <Dialog open={showPortfolioModal} onOpenChange={setShowPortfolioModal}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-semibold">Add Portfolio</DialogTitle>
-            <button 
-              onClick={() => setShowPortfolioModal(false)}
-              className="absolute right-4 top-4 text-gray-400 hover:text-gray-500"
-            >
-              <CloseIcon className="h-4 w-4" />
-            </button>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div>
-              <label className="text-base font-medium mb-1 block">Service name</label>
-              <Input 
-                placeholder="Web development" 
-                value={serviceName}
-                onChange={(e) => setServiceName(e.target.value)}
-              />
-            </div>
-            <div>
-              <label className="text-base font-medium mb-1 block">Media</label>
-              <div className="mt-1 border rounded-lg p-4">
-                <input
-                  type="file"
-                  id="file-upload"
-                  className="hidden"
-                  onChange={handleFileChange}
-                  accept="image/*,video/*,application/pdf"
-                />
-                <label 
-                  htmlFor="file-upload"
-                  className="cursor-pointer inline-flex items-center"
-                >
-                  <span className="bg-white px-3 py-2 rounded border hover:bg-gray-50">
-                    Choose files
-                  </span>
-                  <span className="ml-3 text-gray-500">
-                    {selectedFile ? selectedFile.name : 'No file chosen'}
-                  </span>
-                </label>
-                <p className="text-xs text-gray-500 mt-2">Maximum file size: 50 MB</p>
-              </div>
-            </div>
-            <div className="pt-4">
-              <button 
-                className="px-4 py-2 bg-[#20B894] text-white rounded-md hover:bg-[#1a9678] w-24"
-              >
-                Add file
-              </button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </>
   );
 }
