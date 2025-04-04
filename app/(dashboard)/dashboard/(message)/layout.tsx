@@ -1,6 +1,3 @@
-import React from 'react'
-
-// app/(message)/message/layout.tsx
 export default function MessageLayout({
     children,
   }: {
