@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import Link from "next/link";
+import { FlagTriangleRight } from "lucide-react";
 
 interface RightSidebarProps {
   selectedUser: {
@@ -49,31 +51,23 @@ export default function RightSidebar({
             </svg>
           </Button>
         </div>
-        <div className="mt-2">
-          <Button className="w-full bg-white text-gray-700 border border-gray-300 hover:bg-gray-50">
+        <div className="mt-2 cursor-pointer">
+          <Link href='/dashboard/user-profile'>
+          <Button  className="w-full bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 cursor-pointer">
             Give Review
           </Button>
+          
+          </Link>
         </div>
       </div>
       
       <div className="border-t border-gray-200 p-3">
         <div 
-          className="flex items-center p-2 text-sm text-gray-600 hover:bg-gray-50 rounded cursor-pointer"
+          className="flex items-center justify-between p-2 text-sm text-gray-600 hover:bg-gray-50 rounded cursor-pointer"
           onClick={onOpenReportModal}
         >
           <span>Report profile</span>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 ml-auto"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fillRule="evenodd"
-              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-              clipRule="evenodd"
-            />
-          </svg>
+          <FlagTriangleRight className="w-5 h-5"/>
         </div>
         <div className="flex items-center p-2 text-sm text-gray-600 hover:bg-gray-50 rounded cursor-pointer">
           <span>Star profile</span>
