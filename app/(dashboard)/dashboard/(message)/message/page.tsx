@@ -8,6 +8,8 @@ import RightSidebar from "./_components/right-sidebar";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SelectedUserData } from "./_types";
+import ConfirmServiceModal from "./_components/confirm-service-modal";
+import ReportProfileModal from "./_components/report-profile-modal";
 
 
 export default function MessagePage() {
@@ -15,6 +17,8 @@ export default function MessagePage() {
   const [typing, setTyping] = useState(false);
   const [isDetailsPanelOpen, setIsDetailsPanelOpen] = useState(false);
   const [currentMessages, setCurrentMessages] = useState(messages);
+  const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
   // Handle conversation selection
   const handleConversationSelect = (userName: string) => {
@@ -80,19 +84,38 @@ export default function MessagePage() {
         transform transition-transform duration-300 ease-in-out
         ${isDetailsPanelOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}
       `}>
-        <div className="lg:hidden absolute left-4 top-4">
-          <Button variant="ghost" onClick={() => setIsDetailsPanelOpen(false)}>
-            <X className="h-6 w-4" />
-          </Button>
-        </div>
-        <RightSidebar selectedUser={selectedUser} />
+        <RightSidebar 
+          selectedUser={selectedUser} 
+          onOpenServiceModal={() => setIsServiceModalOpen(true)}
+          onOpenReportModal={() => setIsReportModalOpen(true)}
+        />
       </div>
 
       {/* Overlay for details panel */}
       {isDetailsPanelOpen && (
         <div 
-          className="fixed inset-0 bg-black/50  lg:hidden"
+          className="fixed inset-0 bg-black/50 lg:hidden"
           onClick={() => setIsDetailsPanelOpen(false)}
+        />
+      )}
+
+      {/* Service confirmation modal */}
+      {selectedUser && (
+        <ConfirmServiceModal
+          isOpen={isServiceModalOpen}
+          onClose={() => setIsServiceModalOpen(false)}
+          userName={selectedUser.name}
+          userEmail={selectedUser.email}
+          userImage={selectedUser.image}
+        />
+      )}
+
+      {/* Report Profile Modal */}
+      {selectedUser && (
+        <ReportProfileModal
+          isOpen={isReportModalOpen}
+          onClose={() => setIsReportModalOpen(false)}
+          userName={selectedUser.name}
         />
       )}
     </div>

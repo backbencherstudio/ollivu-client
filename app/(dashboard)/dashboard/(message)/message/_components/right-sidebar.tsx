@@ -1,7 +1,7 @@
+import { useState } from "react";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import profileOne from "@/public/avatars/john.png";
 
 interface RightSidebarProps {
   selectedUser: {
@@ -9,9 +9,15 @@ interface RightSidebarProps {
     email: string;
     image: string;
   } | null;
+  onOpenServiceModal: () => void;
+  onOpenReportModal: () => void;  // Add this prop
 }
 
-export default function RightSidebar({ selectedUser }: RightSidebarProps) {
+export default function RightSidebar({ 
+  selectedUser, 
+  onOpenServiceModal,
+  onOpenReportModal 
+}: RightSidebarProps) {
   if (!selectedUser) return null;
 
   return (
@@ -24,7 +30,10 @@ export default function RightSidebar({ selectedUser }: RightSidebarProps) {
         <p className="text-sm text-gray-500 mt-1">{selectedUser.email}</p>
         
         <div className="mt-4">
-          <Button className="w-full bg-emerald-500 hover:bg-emerald-600 text-white">
+          <Button 
+            className="w-full bg-emerald-500 hover:bg-emerald-600 text-white"
+            onClick={onOpenServiceModal}  // Update this
+          >
             Confirm Exchange Service
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -48,7 +57,10 @@ export default function RightSidebar({ selectedUser }: RightSidebarProps) {
       </div>
       
       <div className="border-t border-gray-200 p-3">
-        <div className="flex items-center p-2 text-sm text-gray-600 hover:bg-gray-50 rounded cursor-pointer">
+        <div 
+          className="flex items-center p-2 text-sm text-gray-600 hover:bg-gray-50 rounded cursor-pointer"
+          onClick={onOpenReportModal}
+        >
           <span>Report profile</span>
           <svg
             xmlns="http://www.w3.org/2000/svg"

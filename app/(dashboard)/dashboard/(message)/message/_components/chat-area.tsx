@@ -74,11 +74,10 @@ export default function ChatArea({
     setTyping(false);
   };
 
-  // Update the header section in the return statement
   return (
     <div className="flex flex-col h-[90vh] relative">
       {/* Chat header */}
-      <div className="flex justify-between items-center p-3 border-b border-gray-200">
+      <div className="flex justify-between items-center p-3 border-b border-gray-200 ">
         <div className="flex items-center">
           <button onClick={onBack} className="mr-2 text-gray-500 md:hidden">
             <svg
@@ -94,22 +93,17 @@ export default function ChatArea({
               />
             </svg>
           </button>
-          <div 
-            className="flex items-center cursor-pointer" 
-            onClick={onOpenDetails}
-          >
-            <Avatar className="h-8 w-8">
-              <Image 
-                src={selectedUserImage} 
-                alt={selectedUser} 
-                className="rounded-full"
-                width={32}
-                height={32}
-              />
-            </Avatar>
-            <div className="ml-3">
-              <div className="font-medium text-sm">{selectedUser}</div>
-            </div>
+          <Avatar className="h-8 w-8">
+            <Image 
+              src={selectedUserImage} 
+              alt={selectedUser} 
+              className="rounded-full"
+              width={32}
+              height={32}
+            />
+          </Avatar>
+          <div className="ml-3">
+            <div className="font-medium text-sm">{selectedUser}</div>
           </div>
         </div>
         <div>
