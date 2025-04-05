@@ -45,21 +45,16 @@ export default function UserProfile() {
 
   // Update the My Service card section
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* Profile Photo Section */}
-      <Card className="p-6">
-        <div className="flex items-center gap-4">
-          <div className="relative w-16 h-16 rounded-full overflow-hidden">
-            <Image
-              src={profileImage}
-              alt="Profile"
-              fill
-              className="object-cover"
-            />
+      <Card className="p-4 md:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+          <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden mx-auto sm:mx-0">
+            <Image src={profileImage} alt="Profile" fill className="object-cover" />
           </div>
-          <div>
+          <div className="text-center sm:text-left">
             <h2 className="text-lg font-medium">Katie Sims</h2>
-            <div className="flex gap-2 mt-2">
+            <div className="flex flex-col sm:flex-row gap-2 mt-2">
               <button className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678] flex justify-center items-center gap-x-2">
                 Replace Photo
                 <BsArrowUpRight />
@@ -73,8 +68,8 @@ export default function UserProfile() {
       </Card>
 
       {/* Personal Information */}
-      <Card className="p-6">
-        <div className="flex justify-between items-center mb-6">
+      <Card className="p-4 md:p-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <h2 className="text-lg font-medium">Personal Information</h2>
           <button className="text-[#20B894] text-sm border p-3 rounded-full flex items-center gap-x-2 cursor-pointer">
             <LuPencilLine />
@@ -82,7 +77,7 @@ export default function UserProfile() {
           </button>
         </div>
 
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           <div>
             <label className="text-sm text-gray-600">First name</label>
             <Input defaultValue="Katie" className="mt-1" />
@@ -124,9 +119,9 @@ export default function UserProfile() {
       </Card>
 
       {/* Address Information */}
-      <Card className="p-6">
+      <Card className="p-4 md:p-6">
         <h2 className="text-lg font-medium mb-6">Address Information</h2>
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           <div>
             <label className="text-sm text-gray-600">Country (optional)</label>
             <Select>
@@ -170,8 +165,8 @@ export default function UserProfile() {
       </Card>
 
       {/* About Me */}
-      <Card className="p-6">
-        <div className="flex justify-between items-center mb-6">
+      <Card className="p-4 md:p-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <h2 className="text-lg font-medium">About Me</h2>
           <button className="text-[#20B894] text-sm border p-3 rounded-full flex items-center gap-x-2 cursor-pointer">
             <LuPencilLine />
@@ -180,27 +175,25 @@ export default function UserProfile() {
         </div>
         <Textarea
           className="min-h-[100px]"
-          placeholder="Passionate about learning and sharing skills! Whether it's web development or graphic design, I'm here to help and exchange knowledge with like-minded people. I believe in the power of collaboration!"
+          placeholder="Passionate about learning and sharing skills!..."
         />
       </Card>
 
       {/* My Service and Portfolio */}
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         <MyService />
         <Portfolio />
       </div>
 
       {/* Extra Skills and Certificate */}
-      <div className="grid grid-cols-2 gap-6">
-        {/* add extra skills */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         <ExtraSkills />
-
         <Certificate />
       </div>
 
       {/* Add Service Modal */}
       <Dialog open={showServiceModal} onOpenChange={setShowServiceModal}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[425px] p-4 md:p-6">
           <DialogHeader>
             <DialogTitle>Add Service</DialogTitle>
           </DialogHeader>

@@ -20,15 +20,17 @@ export default function Sidebar() {
   ];
 
   return (
-    <div className="bg-white w-[280px] h-screen shadow-sm flex flex-col">
-      <div className="p-6 border-b">
+    <div className="bg-white h-screen shadow-sm flex flex-col sticky top-0">
+      {/* Logo section */}
+      <div className="p-6 border-b shrink-0">
         <Link href="/dashboard" className="block">
           <Image src={logo} alt="Logo" width={100} height={40} />
         </Link>
       </div>
 
-      <div className="flex-1 py-6">
-        <nav className="px-4">
+      {/* Navigation section with overflow scroll */}
+      <div className="flex-1 overflow-y-auto min-h-0">
+        <nav className="px-4 py-6">
           {menuItems.map((item) => (
             <Link
               key={item.href}
@@ -46,7 +48,8 @@ export default function Sidebar() {
         </nav>
       </div>
 
-      <div className="p-6 border-t">
+      {/* Logout button section */}
+      <div className="p-6 border-t shrink-0 bg-white">
         <button className="flex items-center gap-3 text-red-500 hover:text-red-600 transition-colors w-full px-4 py-2">
           <LogOut className="w-5 h-5" />
           <span>Log out</span>

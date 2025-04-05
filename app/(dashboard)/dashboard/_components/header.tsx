@@ -93,10 +93,8 @@ export default function Header() {
   }, []);
 
   return (
-    <div className="bg-white shadow-sm py-4 px-6 relative">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-[#070707]">Overview</h2>
-
+    <div className="bg-white shadow-sm py-[21px] px-6 relative">
+      <div className="flex items-center justify-end">
         <div className="flex items-center gap-6">
           {/* Message Icon */}
           <button className="relative">
