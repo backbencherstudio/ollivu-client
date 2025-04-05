@@ -14,7 +14,7 @@ export default function LeftSidebar({ connections, selectedUser, setSelectedUser
   const [activeTab, setActiveTab] = useState<'connections' | 'requests'>('connections');
 
   return (
-    <div className="w-64 border-r border-gray-200 flex flex-col -z-10">
+    <div className=" border-r border-gray-200 flex flex-col -z-10">
       {/* Search bar */}
       <div className="p-3 border-b border-gray-200">
         <div className="relative">

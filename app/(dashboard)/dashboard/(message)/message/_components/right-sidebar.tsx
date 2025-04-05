@@ -3,7 +3,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
-import { FlagTriangleRight } from "lucide-react";
+import { FlagTriangleRight, X } from "lucide-react";
 
 interface RightSidebarProps {
   selectedUser: {
@@ -12,19 +12,27 @@ interface RightSidebarProps {
     image: string;
   } | null;
   onOpenServiceModal: () => void;
-  onOpenReportModal: () => void;  // Add this prop
+  onOpenReportModal: () => void;
+  onClose: () => void;  // Add this prop
 }
 
 export default function RightSidebar({ 
   selectedUser, 
   onOpenServiceModal,
-  onOpenReportModal 
+  onOpenReportModal,
+  onClose
 }: RightSidebarProps) {
   if (!selectedUser) return null;
 
   return (
-    <div className="w-64 border-l border-gray-200 flex flex-col">
-      <div className="p-4 text-center ">
+    <div className="w-full md:w-64 border-l border-gray-200 flex flex-col bg-white h-full -mt-24 md:-mt-0 relative">
+      <button 
+        className="absolute left-4 top-4 text-gray-500 hover:text-gray-700 lg:hidden" 
+        onClick={onClose}
+      >
+        <X className="h-6 w-4" />
+      </button>
+      <div className="p-4 text-center mt-14 md:mt-0">
         <Avatar className="mx-auto">
           <Image src={selectedUser.image} width={150} height={150} alt={selectedUser.name} className="rounded-full" />
         </Avatar>

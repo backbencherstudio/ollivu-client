@@ -80,21 +80,22 @@ export default function MessagePage() {
 
       {/* Right sidebar - Details panel */}
       <div className={`
-        fixed right-0 lg:relative w-80 h-full bg-white
-        transform transition-transform duration-300 ease-in-out
+        fixed right-0 lg:relative w-full md:w-80 h-full bg-white
+        transform transition-transform duration-300 ease-in-out z-50 md:z-0
         ${isDetailsPanelOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}
       `}>
         <RightSidebar 
           selectedUser={selectedUser} 
           onOpenServiceModal={() => setIsServiceModalOpen(true)}
           onOpenReportModal={() => setIsReportModalOpen(true)}
+          onClose={() => setIsDetailsPanelOpen(false)}  // Add this prop
         />
       </div>
 
       {/* Overlay for details panel */}
       {isDetailsPanelOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 lg:hidden"
+          className="fixed inset-0 bg-black/50 lg:hidden z-40"
           onClick={() => setIsDetailsPanelOpen(false)}
         />
       )}

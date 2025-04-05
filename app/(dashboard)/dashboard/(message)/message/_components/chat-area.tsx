@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send } from "lucide-react";
 import Image from "next/image";
-import profileOne from "@/public/avatars/john.png";
 import { Message } from "../_types";
 import MessageItem from "./message-item";
 import TypingIndicator from "./typing-indicator";
@@ -15,9 +14,9 @@ interface ChatAreaProps {
   setTyping: (typing: boolean) => void;
   selectedUser: string;
   selectedUserImage: string;
-  onOpenDetails: () => void;
-  setMessages: (messages: Message[]) => void;  // Add this prop
-  onBack: () => void;  // Add this prop
+  onOpenDetails: () => void;  // This prop will be used
+  setMessages: (messages: Message[]) => void;
+  onBack: () => void;
 }
 
 export default function ChatArea({ 
@@ -77,7 +76,7 @@ export default function ChatArea({
   return (
     <div className="flex flex-col h-[90vh] relative">
       {/* Chat header */}
-      <div className="flex justify-between items-center p-3 border-b border-gray-200 ">
+      <div className="flex justify-between items-center p-3 border-b border-gray-200">
         <div className="flex items-center">
           <button onClick={onBack} className="mr-2 text-gray-500 md:hidden">
             <svg
@@ -93,17 +92,22 @@ export default function ChatArea({
               />
             </svg>
           </button>
-          <Avatar className="h-8 w-8">
-            <Image 
-              src={selectedUserImage} 
-              alt={selectedUser} 
-              className="rounded-full"
-              width={32}
-              height={32}
-            />
-          </Avatar>
-          <div className="ml-3">
-            <div className="font-medium text-sm">{selectedUser}</div>
+          <div 
+            className="flex items-center cursor-pointer lg:cursor-default" 
+            onClick={() => onOpenDetails()}
+          >
+            <Avatar className="h-8 w-8">
+              <Image 
+                src={selectedUserImage} 
+                alt={selectedUser} 
+                className="rounded-full"
+                width={32}
+                height={32}
+              />
+            </Avatar>
+            <div className="ml-3">
+              <div className="font-medium text-sm">{selectedUser}</div>
+            </div>
           </div>
         </div>
         <div>
