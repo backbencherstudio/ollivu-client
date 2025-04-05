@@ -1,3 +1,4 @@
+import { connectionRequests } from './../_data/mock-data';
 export interface Connection {
   id: string;
   name: string;
@@ -23,4 +24,12 @@ export interface SelectedUserData {
   name: string;
   email: string;
   image: string;
+}
+
+export interface ConnectionRequest {
+  id: string;
+  name: string;
+  image: string,
+  time: string,
+  message: string
 }

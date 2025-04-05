@@ -2,7 +2,7 @@ import profile from "@/public/avatars/emily.png"
 import profileOne from "@/public/avatars/john.png"
 import profileTwo from "@/public/avatars/michael.png"
 import profileThree from "@/public/avatars/sophia.png"
-import { Connection, Message } from "../_types";
+import { Connection, Message, ConnectionRequest } from "../_types";
 
 // Sample connections data
 export const connections: Connection[] = [
@@ -51,6 +51,31 @@ export const connections: Connection[] = [
     time: "2 days ago",
     online: false,
     image: profileThree.src
+  }
+];
+
+// Connection requests data
+export const connectionRequests: ConnectionRequest[] = [
+  {
+    id: '1',
+    name: 'Corina McCoy',
+    image: profileOne.src,
+    time: '9:18 PM',
+    message: 'Corina McCoy sent you a request'
+  },
+  {
+    id: '2',
+    name: 'Lorri Warf',
+    image: profileTwo.src,
+    time: '13h ago',
+    message: 'Lorri Warf sent you a request'
+  },
+  {
+    id: '3',
+    name: 'Joshua Jones',
+    image: profileThree.src,
+    time: '2 days ago',
+    message: 'Joshua Jones sent you a request'
   }
 ];
 
@@ -161,6 +186,32 @@ const messagesByUser = {
     }
   ]
 };
+
+
+  // Mock request data (move this to your mock data file later)
+  export const requests: ConnectionRequest[] = [
+    {
+      id: '1',
+      name: 'Corina McCoy',
+      image: '/avatars/emily.png',
+      time: '9:18 PM',
+      message: 'Corina McCoy sent you a request'
+    },
+    {
+      id: '2',
+      name: 'Lorri Warf',
+      image: '/avatars/john.png',
+      time: '13h ago',
+      message: 'Lorri Warf sent you a request'
+    },
+    {
+      id: '3',
+      name: 'Joshua Jones',
+      image: '/avatars/emily.png',
+      time: '2 days ago',
+      message: 'Joshua Jones sent you a request'
+    }
+  ];
 
 // Helper function to get messages by user
 export const getMessagesByUser = (userName: string): Message[] => {
