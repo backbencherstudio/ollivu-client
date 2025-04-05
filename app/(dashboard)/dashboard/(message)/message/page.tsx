@@ -35,10 +35,10 @@ export default function MessagePage() {
   };
 
   return (
-    <div className="relative flex h-screen bg-white">
+    <div className="relative flex h-full bg-white">
       {/* Left sidebar with conversations */}
       <div className={`
-        w-full md:w-80 h-full bg-white
+        w-full md:w-80 h-full bg-white overflow-y-auto
         ${selectedUser ? 'hidden md:block' : 'block'}
       `}>
         <LeftSidebar 
@@ -50,26 +50,21 @@ export default function MessagePage() {
 
       {/* Main chat area */}
       <div className={`
-        flex-1 flex flex-col
+        flex-1 flex flex-col h-full
         ${selectedUser ? 'block' : 'hidden md:block'}
       `}>
         {selectedUser ? (
-          <div className="relative w-full h-full">
-            <button
-              onClick={() => setSelectedUser(null)}
-              className="md:hidden absolute left-4 top-4 z-10 p-2 rounded-full hover:bg-gray-100"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M19 12H5M12 19l-7-7 7-7"/>
-              </svg>
-            </button>
+          // Remove the standalone back button from page.tsx
+          <div className="relative w-full h-full flex flex-col">
             <ChatArea 
               messages={currentMessages} 
               typing={typing} 
               setTyping={setTyping}
               selectedUser={selectedUser.name}
-              selectedUserImage={selectedUser.image}  // Add this prop
+              selectedUserImage={selectedUser.image}
               onOpenDetails={() => setIsDetailsPanelOpen(true)}
+              setMessages={setCurrentMessages}
+              onBack={() => setSelectedUser(null)}  // Add this prop
             />
           </div>
         ) : (
@@ -81,7 +76,7 @@ export default function MessagePage() {
 
       {/* Right sidebar - Details panel */}
       <div className={`
-        fixed right-0 lg:relative w-80 h-full bg-white z-40
+        fixed right-0 lg:relative w-80 h-full bg-white
         transform transition-transform duration-300 ease-in-out
         ${isDetailsPanelOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}
       `}>
@@ -96,7 +91,7 @@ export default function MessagePage() {
       {/* Overlay for details panel */}
       {isDetailsPanelOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+          className="fixed inset-0 bg-black/50  lg:hidden"
           onClick={() => setIsDetailsPanelOpen(false)}
         />
       )}

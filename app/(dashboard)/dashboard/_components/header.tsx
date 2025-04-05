@@ -93,7 +93,7 @@ export default function Header() {
   }, []);
 
   return (
-    <div className="bg-white shadow-sm py-[21px] px-6 relative">
+    <div className="bg-white shadow-sm py-4 px-6 top-0  z-50">
       <div className="flex items-center justify-end">
         <div className="flex items-center gap-6">
           {/* Message Icon */}
