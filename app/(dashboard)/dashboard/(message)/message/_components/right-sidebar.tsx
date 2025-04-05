@@ -16,7 +16,7 @@ export default function RightSidebar({ selectedUser }: RightSidebarProps) {
 
   return (
     <div className="w-64 border-l border-gray-200 flex flex-col">
-      <div className="p-4 text-center">
+      <div className="p-4 text-center ">
         <Avatar className="mx-auto">
           <Image src={selectedUser.image} width={150} height={150} alt={selectedUser.name} className="rounded-full" />
         </Avatar>
