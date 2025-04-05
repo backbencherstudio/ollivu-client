@@ -22,9 +22,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable}`}>
-      <body className={`${inter.className}`}>{children}</body>
-      <Toaster position="top-right" richColors />
+    <html lang="en" className="inter_cbef4b12-module__km-56a__variable">
+      <body>{children}</body>
     </html>
   );
 }

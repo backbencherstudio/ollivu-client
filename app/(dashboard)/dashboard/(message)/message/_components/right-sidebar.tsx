@@ -1,37 +1,49 @@
+import { useState } from "react";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import profileOne from "@/public/avatars/john.png";
+import Link from "next/link";
+import { FlagTriangleRight, X } from "lucide-react";
 
-export default function RightSidebar() {
+interface RightSidebarProps {
+  selectedUser: {
+    name: string;
+    email: string;
+    image: string;
+  } | null;
+  onOpenServiceModal: () => void;
+  onOpenReportModal: () => void;
+  onClose: () => void;  // Add this prop
+}
+
+export default function RightSidebar({ 
+  selectedUser, 
+  onOpenServiceModal,
+  onOpenReportModal,
+  onClose
+}: RightSidebarProps) {
+  if (!selectedUser) return null;
+
   return (
-    <div className="w-64 border-l border-gray-200 flex flex-col">
-      <div className="flex justify-between items-center p-3 border-b border-gray-200">
-        <span className="text-sm font-medium">Details</span>
-        <button className="text-gray-500">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fillRule="evenodd"
-              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </button>
-      </div>
-      <div className="p-4 text-center">
+    <div className="w-full md:w-64 border-l border-gray-200 flex flex-col bg-white h-full -mt-24 md:-mt-0 relative">
+      <button 
+        className="absolute left-4 top-4 text-gray-500 hover:text-gray-700 lg:hidden" 
+        onClick={onClose}
+      >
+        <X className="h-6 w-4" />
+      </button>
+      <div className="p-4 text-center mt-14 md:mt-0">
         <Avatar className="mx-auto">
-          <Image src={profileOne} width={150} height={150} alt="Chris Glasser" className="rounded-full" />
+          <Image src={selectedUser.image} width={150} height={150} alt={selectedUser.name} className="rounded-full" />
         </Avatar>
-        <h3 className="font-medium mt-2">Chris Glasser</h3>
-        <p className="text-sm text-gray-500">chris_glasser@gmail.com</p>
+        <h3 className="font-medium mt-2">{selectedUser.name}</h3>
+        <p className="text-sm text-gray-500 mt-1">{selectedUser.email}</p>
         
         <div className="mt-4">
-          <Button className="w-full bg-emerald-500 hover:bg-emerald-600 text-white">
+          <Button 
+            className="w-full bg-emerald-500 hover:bg-emerald-600 text-white"
+            onClick={onOpenServiceModal}  // Update this
+          >
             Confirm Exchange Service
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -47,28 +59,23 @@ export default function RightSidebar() {
             </svg>
           </Button>
         </div>
-        <div className="mt-2">
-          <Button className="w-full bg-white text-gray-700 border border-gray-300 hover:bg-gray-50">
+        <div className="mt-2 cursor-pointer">
+          <Link href='/dashboard/user-profile'>
+          <Button  className="w-full bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 cursor-pointer">
             Give Review
           </Button>
+          
+          </Link>
         </div>
       </div>
       
       <div className="border-t border-gray-200 p-3">
-        <div className="flex items-center p-2 text-sm text-gray-600 hover:bg-gray-50 rounded cursor-pointer">
+        <div 
+          className="flex items-center justify-between p-2 text-sm text-gray-600 hover:bg-gray-50 rounded cursor-pointer"
+          onClick={onOpenReportModal}
+        >
           <span>Report profile</span>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 ml-auto"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fillRule="evenodd"
-              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-              clipRule="evenodd"
-            />
-          </svg>
+          <FlagTriangleRight className="w-5 h-5"/>
         </div>
         <div className="flex items-center p-2 text-sm text-gray-600 hover:bg-gray-50 rounded cursor-pointer">
           <span>Star profile</span>
