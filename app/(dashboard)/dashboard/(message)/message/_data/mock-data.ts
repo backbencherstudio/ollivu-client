@@ -4,12 +4,12 @@ import profileTwo from "@/public/avatars/michael.png"
 import profileThree from "@/public/avatars/sophia.png"
 import { Connection, Message } from "../_types";
 
-
 // Sample connections data
 export const connections: Connection[] = [
   {
     id: "1",
     name: "Corina McCoy",
+    email: "corina.mccoy@example.com",
     lastMessage: "Awesome. This experience looks amazing! May I know what it...",
     time: "5:15 PM",
     online: true,
@@ -19,6 +19,7 @@ export const connections: Connection[] = [
   {
     id: "2",
     name: "Patricia Sanders",
+    email: "patricia.sanders@example.com",
     lastMessage: "Hey! Thanks for accepting the request. May I know what is...",
     time: "5:15 PM",
     online: true,
@@ -27,6 +28,7 @@ export const connections: Connection[] = [
   {
     id: "3",
     name: "Chris Glasser",
+    email: "chris.glasser@example.com",
     lastMessage: "BTW, What kind of service would you be interested in ex...",
     time: "5:14 PM",
     online: true,
@@ -35,6 +37,7 @@ export const connections: Connection[] = [
   {
     id: "4",
     name: "Lori Ward",
+    email: "lori.ward@example.com",
     lastMessage: "These times are tough to manage when you have lot to...",
     time: "13h ago",
     online: false,
@@ -43,6 +46,7 @@ export const connections: Connection[] = [
   {
     id: "5",
     name: "Joshua Jones",
+    email: "joshua.jones@example.com",
     lastMessage: "Yes, you're on point! That's what I meant when I wanted t...",
     time: "2 days ago",
     online: false,
@@ -50,46 +54,118 @@ export const connections: Connection[] = [
   }
 ];
 
-// Sample messages data for Chris Glasser
-export const messages: Message[] = [
-  {
-    id: "1",
-    sender: "user",
-    image: profile.src,
-    text: "Hey! 👋 I saw your post about Marketing & Social Media Management services. I've expertise in it! Are you open to an exchange?",
-    time: "Thu, Apr, 2024",
-    read: true
-  },
-  {
-    id: "2",
-    sender: "Chris Glasser",
-    image: profile.src,
-    text: "Would you be available for a quick call to discuss the details? 📞",
-    time: "8:24 PM",
-    read: true
-  },
-  {
-    id: "3",
-    sender: "user",
-    image: profile.src,
-    text: "Hey, thanks for reaching out!",
-    time: "Read 8:45",
-    read: true
-  }, 
-  {
-    id: "4",
-    sender: "user",
-    image: profile.src,
-    text: "A call sounds great! When would be a good time for you?",
-    time: "8:44 PM",
-    read: true
-  },
-  {
-    id: "5",
-    sender: "Chris Glasser",
-    image: profileOne.src,
-    text: "BTW, What kind of service would you be interested in swapping for the Marketing & Social Media Management? I see that you can swap with web development.",
-    time: "8:50 PM",
-    read: false
-  }
-];
+// Messages for different conversations
+const messagesByUser = {
+  "Corina McCoy": [
+    {
+      id: "1",
+      sender: "user",
+      email: "user@example.com",
+      image: profile.src,
+      text: "Hi Corina! I saw your graphic design portfolio. It's amazing!",
+      time: "Thu, Apr, 2024",
+      read: true
+    },
+    {
+      id: "2",
+      sender: "Corina McCoy",
+      email: "corina.mccoy@example.com",
+      image: profileOne.src,
+      text: "Thank you! Are you interested in collaborating on a project?",
+      time: "8:24 PM",
+      read: true
+    }
+  ],
+
+  "Patricia Sanders": [
+    {
+      id: "1",
+      sender: "Patricia Sanders",
+      email: "patricia.sanders@example.com",
+      image: profileTwo.src,
+      text: "Hello! I'm interested in your web development services.",
+      time: "Wed, Apr, 2024",
+      read: true
+    },
+    {
+      id: "2",
+      sender: "user",
+      email: "user@example.com",
+      image: profile.src,
+      text: "Hi Patricia! I'd be happy to discuss your web development needs.",
+      time: "9:30 AM",
+      read: true
+    }
+  ],
+
+  "Chris Glasser": [
+    {
+      id: "1",
+      sender: "user",
+      email: "user@example.com",
+      image: profile.src,
+      text: "Hey! 👋 I saw your post about Marketing & Social Media Management services. I've expertise in it! Are you open to an exchange?",
+      time: "Thu, Apr, 2024",
+      read: true
+    },
+    {
+      id: "2",
+      sender: "Chris Glasser",
+      email: "chris.glasser@example.com",
+      image: profileThree.src,
+      text: "Would you be available for a quick call to discuss the details? 📞",
+      time: "8:24 PM",
+      read: true
+    }
+  ],
+
+  "Lori Ward": [
+    {
+      id: "1",
+      sender: "Lori Ward",
+      email: "lori.ward@example.com",
+      image: profileOne.src,
+      text: "I need help with content writing for my blog.",
+      time: "Mon, Apr, 2024",
+      read: true
+    },
+    {
+      id: "2",
+      sender: "user",
+      email: "user@example.com",
+      image: profile.src,
+      text: "I can definitely help with that! What's your blog about?",
+      time: "11:15 AM",
+      read: true
+    }
+  ],
+
+  "Joshua Jones": [
+    {
+      id: "1",
+      sender: "user",
+      email: "user@example.com",
+      image: profile.src,
+      text: "Hi Joshua! Your photography portfolio is impressive!",
+      time: "Tue, Apr, 2024",
+      read: true
+    },
+    {
+      id: "2",
+      sender: "Joshua Jones",
+      email: "joshua.jones@example.com",
+      image: profileThree.src,
+      text: "Thanks! Would you like to collaborate on a project?",
+      time: "3:45 PM",
+      read: true
+    }
+  ]
+};
+
+// Helper function to get messages by user
+export const getMessagesByUser = (userName: string): Message[] => {
+  return messagesByUser[userName] || [];
+};
+
+// Default empty messages array for initial state
+export const messages: Message[] = [];

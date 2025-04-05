@@ -3,32 +3,25 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import profileOne from "@/public/avatars/john.png";
 
-export default function RightSidebar() {
+interface RightSidebarProps {
+  selectedUser: {
+    name: string;
+    email: string;
+    image: string;
+  } | null;
+}
+
+export default function RightSidebar({ selectedUser }: RightSidebarProps) {
+  if (!selectedUser) return null;
+
   return (
     <div className="w-64 border-l border-gray-200 flex flex-col">
-      <div className="flex justify-between items-center p-3 border-b border-gray-200">
-        <span className="text-sm font-medium">Details</span>
-        <button className="text-gray-500">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fillRule="evenodd"
-              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </button>
-      </div>
       <div className="p-4 text-center">
         <Avatar className="mx-auto">
-          <Image src={profileOne} width={150} height={150} alt="Chris Glasser" className="rounded-full" />
+          <Image src={selectedUser.image} width={150} height={150} alt={selectedUser.name} className="rounded-full" />
         </Avatar>
-        <h3 className="font-medium mt-2">Chris Glasser</h3>
-        <p className="text-sm text-gray-500">chris_glasser@gmail.com</p>
+        <h3 className="font-medium mt-2">{selectedUser.name}</h3>
+        <p className="text-sm text-gray-500 mt-1">{selectedUser.email}</p>
         
         <div className="mt-4">
           <Button className="w-full bg-emerald-500 hover:bg-emerald-600 text-white">

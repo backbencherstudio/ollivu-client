@@ -13,9 +13,19 @@ interface ChatAreaProps {
   messages: Message[];
   typing: boolean;
   setTyping: (typing: boolean) => void;
+  selectedUser: string;
+  selectedUserImage: string;  // Add this
+  onOpenDetails: () => void;
 }
 
-export default function ChatArea({ messages, typing, setTyping }: ChatAreaProps) {
+export default function ChatArea({ 
+  messages, 
+  typing, 
+  setTyping, 
+  selectedUser,
+  selectedUserImage,  // Add this
+  onOpenDetails 
+}: ChatAreaProps) {
   const [messageInput, setMessageInput] = useState("");
 
   const handleSendMessage = () => {
@@ -83,7 +93,11 @@ export default function ChatArea({ messages, typing, setTyping }: ChatAreaProps)
       {/* Chat messages */}
       <div className="flex-1 overflow-y-auto p-4">
         {messages.map((message) => (
-          <MessageItem key={message.id} message={message} />
+          <MessageItem 
+            key={message.id} 
+            message={message} 
+            selectedUserImage={selectedUserImage} 
+          />
         ))}
         {typing && <TypingIndicator />}
       </div>

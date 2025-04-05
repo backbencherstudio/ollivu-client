@@ -10,7 +10,7 @@ interface LeftSidebarProps {
 
 export default function LeftSidebar({ connections, selectedUser, setSelectedUser }: LeftSidebarProps) {
   return (
-    <div className="w-64 border-r border-gray-200 flex flex-col">
+    <div className="w-64 border-r border-gray-200 flex flex-col -z-10">
       <div className="p-3 border-b border-gray-200">
         <div className="relative">
           <input
