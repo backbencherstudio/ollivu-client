@@ -14,6 +14,7 @@ import {
   ReceiptText,
   MessageCircleMore,
 } from "lucide-react";
+import { FaStar } from "react-icons/fa6";
 import logo from "@/public/client/home/logo.png";
 
 export default function Sidebar() {
@@ -38,6 +39,11 @@ export default function Sidebar() {
       icon: MessageCircleMore,
       label: "Monitor Messaging ",
       href: "/dashboard/monitor-messaging",
+    },
+    {
+      icon: FaStar,
+      label: "Manage Review",
+      href: "/dashboard/manage-review",
     },
   ];
 
