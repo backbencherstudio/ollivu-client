@@ -97,11 +97,14 @@ export default function MonitorMessaging() {
           </TabsList>
         </Tabs>
 
-        <div className="flex items-center justify-between">
-          <Input placeholder="Search by user name or id" className="w-1/3" />
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <Input 
+            placeholder="Search by user name or id" 
+            className="w-full sm:w-1/3"
+          />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="gap-1 text-sm">
+              <Button variant="outline" className="w-full sm:w-auto gap-1 text-sm">
                 {dateFilter} <ChevronDown className="w-4 h-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -119,13 +122,17 @@ export default function MonitorMessaging() {
           </DropdownMenu>
         </div>
 
-        <ConversationTable 
-          conversations={filteredConversations}
-          open={open}
-          setOpen={setOpen}
-          onStatusChange={handleStatusChange} onTakeAction={function (conversation: any): void {
-            throw new Error("Function not implemented.");
-          } }        />
+        <div className="max-w-[calc(100vw-3rem)]">
+          <ConversationTable 
+            conversations={filteredConversations}
+            open={open}
+            setOpen={setOpen}
+            onStatusChange={handleStatusChange}
+            onTakeAction={(conversation) => {
+              console.log("Taking action:", conversation);
+            }}
+          />
+        </div>
       </div>
     </div>
   );
