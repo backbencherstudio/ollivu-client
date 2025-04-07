@@ -11,8 +11,9 @@ const initialReviews: Review[] = [
   {
     id: 1,
     reviewer: {
-      name: 'Chris Glasser',
-      avatar: avaterOne.src,
+        name: 'Chris Glasser',
+        avatar: avaterOne.src,
+        email: ''
     },
     serviceType: 'Graphic Design',
     flaggedBy: {
@@ -26,8 +27,9 @@ const initialReviews: Review[] = [
   {
     id: 2,
     reviewer: {
-      name: 'Eleanor Pena',
-      avatar: avaterThree.src,
+        name: 'Eleanor Pena',
+        avatar: avaterThree.src,
+        email: ''
     },
     serviceType: 'Handyman Service',
     flaggedBy: {
@@ -41,8 +43,9 @@ const initialReviews: Review[] = [
   {
     id: 3,
     reviewer: {
-      name: 'Courtney Henry',
-      avatar: avaterTwo.src,
+        name: 'Courtney Henry',
+        avatar: avaterTwo.src,
+        email: ''
     },
     serviceType: 'Photography service',
     flaggedBy: {
@@ -56,8 +59,9 @@ const initialReviews: Review[] = [
   {
     id: 4,
     reviewer: {
-      name: 'Dianne Russell',
-      avatar: avaterThree.src,
+        name: 'Dianne Russell',
+        avatar: avaterThree.src,
+        email: ''
     },
     serviceType: 'SEO Service',
     flaggedBy: {
@@ -71,8 +75,9 @@ const initialReviews: Review[] = [
   {
     id: 5,
     reviewer: {
-      name: 'Albert Flores',
-      avatar: avaterTwo.src,
+        name: 'Albert Flores',
+        avatar: avaterTwo.src,
+        email: ''
     },
     serviceType: 'Web Development',
     flaggedBy: {

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { StatusDropdown } from './StatusDropdown';
 import { Review, ReviewStatus } from '../_types';
 import { ReviewDetailsModal } from './ReviewDetailsModal';
+import { ReviewActionModal } from './ReviewActionModal';
 
 interface ReviewRowProps {
   review: Review;
@@ -22,11 +23,12 @@ export function ReviewRow({
   onApprove, 
   onReject 
 }: ReviewRowProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [isActionModalOpen, setIsActionModalOpen] = useState(false);
 
   return (
     <>
-      <tr className="border-b cursor-pointer hover:bg-gray-50" onClick={() => setIsModalOpen(true)}>
+      <tr className="border-b">
         <td className="py-4">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-200">
@@ -44,7 +46,12 @@ export function ReviewRow({
             <span className="font-medium text-sm">{review.flaggedBy.name}</span>
           </div>
         </td>
-        <td className="py-4 text-sm max-w-xs">{review.reviewText}</td>
+        <td 
+          className="py-4 text-sm max-w-xs cursor-pointer hover:text-gray-600" 
+          onClick={() => setIsReviewModalOpen(true)}
+        >
+          {review.reviewText}
+        </td>
         <td className="py-4">
           <div className="flex items-center">
             <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
@@ -75,7 +82,12 @@ export function ReviewRow({
             </div>
           ) : (
             <div className="flex items-center space-x-2">
-              <Button variant="ghost" size="sm" className="text-blue-500 p-0">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-blue-500 p-0 ml-5"
+                onClick={() => setIsActionModalOpen(true)}
+              >
                 View details
               </Button>
               <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400" onClick={() => onDelete(review.id)}>
@@ -86,9 +98,17 @@ export function ReviewRow({
         </td>
       </tr>
 
+      {/* Modal for Review column click */}
       <ReviewDetailsModal 
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isReviewModalOpen}
+        onClose={() => setIsReviewModalOpen(false)}
+        review={review}
+      />
+
+      {/* Modal for Action column View Details click */}
+      <ReviewActionModal 
+        isOpen={isActionModalOpen}
+        onClose={() => setIsActionModalOpen(false)}
         review={review}
       />
     </>
