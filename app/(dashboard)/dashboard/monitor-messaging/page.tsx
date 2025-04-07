@@ -123,8 +123,9 @@ export default function MonitorMessaging() {
           conversations={filteredConversations}
           open={open}
           setOpen={setOpen}
-          onStatusChange={handleStatusChange}
-        />
+          onStatusChange={handleStatusChange} onTakeAction={function (conversation: any): void {
+            throw new Error("Function not implemented.");
+          } }        />
       </div>
     </div>
   );
