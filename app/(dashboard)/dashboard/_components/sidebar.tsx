@@ -1,22 +1,44 @@
-'use client'
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { usePathname } from 'next/navigation';
-import { LayoutDashboard, UserCircle, MessageSquare, Star, Settings, LogOut } from 'lucide-react';
-import logo from "@/public/client/home/logo.png"
+import React from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+import {
+  LayoutDashboard,
+  UserCircle,
+  MessageSquare,
+  Star,
+  Settings,
+  LogOut,
+  ReceiptText,
+  MessageCircleMore,
+} from "lucide-react";
+import logo from "@/public/client/home/logo.png";
 
 export default function Sidebar() {
   const pathname = usePathname();
 
   const menuItems = [
-    { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
-    { icon: UserCircle, label: 'User Profile', href: '/dashboard/user-profile' },
-    { icon: MessageSquare, label: 'Message', href: '/dashboard/message' },
-    { icon: Star, label: 'Review', href: '/dashboard/review' },
-    { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
-    { icon: Settings, label: 'admin-terms-policy', href: '/dashboard/admin-terms-policy' },
+    { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
+    {
+      icon: UserCircle,
+      label: "User Profile",
+      href: "/dashboard/user-profile",
+    },
+    { icon: MessageSquare, label: "Message", href: "/dashboard/message" },
+    { icon: Star, label: "Review", href: "/dashboard/review" },
+    { icon: Settings, label: "Settings", href: "/dashboard/settings" },
+    {
+      icon: ReceiptText,
+      label: "Admin Terms Policy",
+      href: "/dashboard/admin-terms-policy",
+    },
+    {
+      icon: MessageCircleMore,
+      label: "Monitor Messaging ",
+      href: "/dashboard/monitor-messaging",
+    },
   ];
 
   return (
@@ -37,8 +59,8 @@ export default function Sidebar() {
               href={item.href}
               className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition-colors ${
                 pathname === item.href
-                  ? 'bg-[#20B894] text-white'
-                  : 'text-[#777980] hover:bg-gray-100'
+                  ? "bg-[#20B894] text-white"
+                  : "text-[#777980] hover:bg-gray-100"
               }`}
             >
               <item.icon className="w-5 h-5" />
