@@ -59,6 +59,8 @@ const SettingsPage = () => {
             <option value="GMT">GMT</option>
             <option value="BST">BST</option>
             <option value="IST">IST</option>
+            <option value="IST">IST</option>
+            <option value="IST">IST</option>
           </select>
         </div>
       </div>
