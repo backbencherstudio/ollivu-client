@@ -220,9 +220,9 @@ export default function Navbar() {
               </div>
 
               <Link
-                href="https://ollivu-client.vercel.app//#how-it-works"
+                href="https://ollivu-client.vercel.app/#how-it-works"
                 className={`font-medium hover:text-teal-600 ${
-                  pathname === "https://ollivu-client.vercel.app//#how-it-works"
+                  pathname === "https://ollivu-client.vercel.app/#how-it-works"
                     ? "text-[#070707]"
                     : "text-[#777980]"
                 }`}
