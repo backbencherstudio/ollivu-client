@@ -15,7 +15,7 @@ import {
   MessageCircleMore,
 } from "lucide-react";
 import { FaStar } from "react-icons/fa6";
-import logo from "@/public/client/home/logo.png";
+import logo from "@/public/logo/logo.png";
 
 export default function Sidebar() {
   const pathname = usePathname();

@@ -3,9 +3,10 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import logo from "@/Public/client/home/logo.png";
+import logo from "@/public/logo/logo.png";
 import { ChevronDown, ChevronUp, Menu, MoveUpRight, X } from "lucide-react";
 import { usePathname } from "next/navigation";
+import CustomImage from "@/components/reusable/CustomImage"
 
 // Define service categories and their items
 const serviceCategories = [
@@ -150,7 +151,14 @@ export default function Navbar() {
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
             <Link href="/" className="text-2xl font-bold text-teal-600">
-              <Image src={logo} width={100} height={100} alt="Logo" />
+              {/* <Image src={logo} width={100} height={100} alt="Logo" /> */}
+              <CustomImage
+            src={logo.src}
+            alt="Company Logo"
+            width={120}
+            height={40}
+            layout="fixed"
+          />
             </Link>
           </div>
 
