@@ -6,8 +6,7 @@ import { useState } from 'react';
 export default function SignupPage() {
   const [form, setForm] = useState({
     firstName: '',
-    lastName: '',
-    email: '', // Add email to form state
+    email: '',
     password: '',
     confirmPassword: '',
     rememberMe: false,
@@ -43,30 +42,17 @@ export default function SignupPage() {
           </h1>
 
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-            {/* Name Fields */}
-            <div className="flex gap-4">
-              <div className="w-1/2">
-                <label className="text-sm text-black block mb-2">First Name<span className="text-red-500">*</span></label>
-                <input
-                  type="text"
-                  name="firstName"
-                  placeholder="Input your first name"
-                  className="w-full px-4 py-2 rounded-[8px] border border-[#20B894] bg-transparent text-black focus:outline-none"
-                  value={form.firstName}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="w-1/2">
-                <label className="text-sm text-black block mb-2">Last Name<span className="text-red-500">*</span></label>
-                <input
-                  type="text"
-                  name="lastName"
-                  placeholder="Input your last name"
-                  className="w-full px-4 py-2 rounded-[8px] border border-[#20B894] bg-transparent text-black focus:outline-none"
-                  value={form.lastName}
-                  onChange={handleChange}
-                />
-              </div>
+            {/* Name Field */}
+            <div>
+              <label className="text-sm text-black block mb-2">First Name<span className="text-red-500">*</span></label>
+              <input
+                type="text"
+                name="firstName"
+                placeholder="Input your first name"
+                className="w-full px-4 py-2 rounded-[8px] border border-[#20B894] bg-transparent text-black focus:outline-none"
+                value={form.firstName}
+                onChange={handleChange}
+              />
             </div>
 
             {/* Email Field */}
@@ -83,8 +69,8 @@ export default function SignupPage() {
             </div>
 
             {/* Password Fields */}
-            <div className="flex gap-4">
-              <div className="w-1/2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="">
                 <label className="text-sm text-black block mb-2">Password<span className="text-red-500">*</span></label>
                 <input
                   type="password"
@@ -94,7 +80,7 @@ export default function SignupPage() {
                   onChange={handleChange}
                 />
               </div>
-              <div className="w-1/2">
+              <div className="">
                 <label className="text-sm text-black block mb-2">Confirm Password<span className="text-red-500">*</span></label>
                 <input
                   type="password"
