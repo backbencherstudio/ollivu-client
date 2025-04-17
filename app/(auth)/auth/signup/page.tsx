@@ -1,11 +1,13 @@
 'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
 
 export default function SignupPage() {
   const [form, setForm] = useState({
     firstName: '',
     lastName: '',
+    email: '', // Add email to form state
     password: '',
     confirmPassword: '',
     rememberMe: false,
@@ -19,6 +21,11 @@ export default function SignupPage() {
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }));
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log('Form Data:', form);
   };
 
   return (
@@ -35,7 +42,7 @@ export default function SignupPage() {
             Create account
           </h1>
 
-          <form className="flex flex-col gap-4">
+          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             {/* Name Fields */}
             <div className="flex gap-4">
               <div className="w-1/2">
@@ -60,6 +67,19 @@ export default function SignupPage() {
                   onChange={handleChange}
                 />
               </div>
+            </div>
+
+            {/* Email Field */}
+            <div>
+              <label className="text-sm text-black block mb-2">Email Address<span className="text-red-500">*</span></label>
+              <input
+                type="email"
+                name="email"
+                placeholder="Input your email"
+                className="w-full px-4 py-2 rounded-[8px] border border-[#20B894] bg-transparent text-black focus:outline-none"
+                value={form.email}
+                onChange={handleChange}
+              />
             </div>
 
             {/* Password Fields */}
@@ -98,9 +118,11 @@ export default function SignupPage() {
                 />
                 Remember Me
               </label>
-              <button type="button" className="hover:underline">
+              <Link href='/auth/forgot-password'>
+              <button type="button" className="hover:underline cursor-pointer hover:text-[#20B894] ease-in duration-300">
                 Forgot Password
               </button>
+              </Link>
             </div>
 
             {/* Submit Button */}
