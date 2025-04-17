@@ -9,3 +9,10 @@ export interface AuthState {
   loading: boolean;
   error: string | null;
 }
+
+export const initialState: AuthState = {
+    user: null,
+    token: null,
+    loading: false,
+    error: null,
+  };

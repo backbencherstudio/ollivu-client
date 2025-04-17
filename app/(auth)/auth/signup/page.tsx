@@ -2,8 +2,14 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { useCreateUserMutation } from '@/src/redux/api/authApi';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 export default function SignupPage() {
+  const router = useRouter();
+  const [createUser, { isLoading }] = useCreateUserMutation();
+
   const [form, setForm] = useState({
     firstName: '',
     email: '',
@@ -22,9 +28,33 @@ export default function SignupPage() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('Form Data:', form);
+    
+    if (!form.agreeTerms || !form.confirmInfo) {
+      toast.error('Please accept the terms and conditions');
+      return;
+    }
+
+    if (form.password !== form.confirmPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
+
+    try {
+      const response = await createUser({
+        first_name: form.firstName,
+        email: form.email,
+        password: form.password,
+      }).unwrap();
+
+      if (response.success) {
+        toast.success('Account created successfully');
+        router.push('/auth/login');
+      }
+    } catch (error: any) {
+      toast.error(error?.data?.message || 'Something went wrong');
+    }
   };
 
   return (

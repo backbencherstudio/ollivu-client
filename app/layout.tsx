@@ -3,6 +3,7 @@ import { AppConfig } from "@/config/app.config";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Toaster } from "sonner";
+import { ReduxProvider } from '@/src/redux/provider';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -22,8 +23,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="inter_cbef4b12-module__km-56a__variable">
-      <body>{children}</body>
+    <html lang="en">
+      <body>
+        <ReduxProvider>
+          {children}
+        </ReduxProvider>
+      </body>
     </html>
   );
 }
