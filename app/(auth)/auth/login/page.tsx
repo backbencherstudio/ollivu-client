@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
 
 export default function LoginPage() {
@@ -56,9 +57,11 @@ export default function LoginPage() {
                 />
                 Remember Me
               </label>
+              <Link href='/auth/forgot-password'>
               <button type="button" className="hover:underline">
                 Forgot Password
               </button>
+              </Link>
             </div>
 
             {/* Login Button */}
@@ -92,7 +95,7 @@ export default function LoginPage() {
           {/* Sign Up Link */}
           <p className="mt-6 text-center text-sm text-gray-400">
             You're new in here?{' '}
-            <a href="/register" className="text-[#20B894] hover:underline">
+            <a href="/auth/signup" className="text-[#20B894] hover:underline">
               Create Account
             </a>
           </p>

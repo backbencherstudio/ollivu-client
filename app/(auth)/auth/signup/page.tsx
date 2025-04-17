@@ -1,11 +1,18 @@
 'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
+import { useCreateUserMutation } from '@/src/redux/api/authApi';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 export default function SignupPage() {
+  const router = useRouter();
+  const [createUser, { isLoading }] = useCreateUserMutation();
+
   const [form, setForm] = useState({
     firstName: '',
-    lastName: '',
+    email: '',
     password: '',
     confirmPassword: '',
     rememberMe: false,
@@ -19,6 +26,35 @@ export default function SignupPage() {
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    
+    if (!form.agreeTerms || !form.confirmInfo) {
+      toast.error('Please accept the terms and conditions');
+      return;
+    }
+
+    if (form.password !== form.confirmPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
+
+    try {
+      const response = await createUser({
+        first_name: form.firstName,
+        email: form.email,
+        password: form.password,
+      }).unwrap();
+
+      if (response.success) {
+        toast.success('Account created successfully');
+        router.push('/auth/login');
+      }
+    } catch (error: any) {
+      toast.error(error?.data?.message || 'Something went wrong');
+    }
   };
 
   return (
@@ -35,36 +71,36 @@ export default function SignupPage() {
             Create account
           </h1>
 
-          <form className="flex flex-col gap-4">
-            {/* Name Fields */}
-            <div className="flex gap-4">
-              <div className="w-1/2">
-                <label className="text-sm text-black block mb-2">First Name<span className="text-red-500">*</span></label>
-                <input
-                  type="text"
-                  name="firstName"
-                  placeholder="Input your first name"
-                  className="w-full px-4 py-2 rounded-[8px] border border-[#20B894] bg-transparent text-black focus:outline-none"
-                  value={form.firstName}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="w-1/2">
-                <label className="text-sm text-black block mb-2">Last Name<span className="text-red-500">*</span></label>
-                <input
-                  type="text"
-                  name="lastName"
-                  placeholder="Input your last name"
-                  className="w-full px-4 py-2 rounded-[8px] border border-[#20B894] bg-transparent text-black focus:outline-none"
-                  value={form.lastName}
-                  onChange={handleChange}
-                />
-              </div>
+          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+            {/* Name Field */}
+            <div>
+              <label className="text-sm text-black block mb-2">First Name<span className="text-red-500">*</span></label>
+              <input
+                type="text"
+                name="firstName"
+                placeholder="Input your first name"
+                className="w-full px-4 py-2 rounded-[8px] border border-[#20B894] bg-transparent text-black focus:outline-none"
+                value={form.firstName}
+                onChange={handleChange}
+              />
+            </div>
+
+            {/* Email Field */}
+            <div>
+              <label className="text-sm text-black block mb-2">Email Address<span className="text-red-500">*</span></label>
+              <input
+                type="email"
+                name="email"
+                placeholder="Input your email"
+                className="w-full px-4 py-2 rounded-[8px] border border-[#20B894] bg-transparent text-black focus:outline-none"
+                value={form.email}
+                onChange={handleChange}
+              />
             </div>
 
             {/* Password Fields */}
-            <div className="flex gap-4">
-              <div className="w-1/2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="">
                 <label className="text-sm text-black block mb-2">Password<span className="text-red-500">*</span></label>
                 <input
                   type="password"
@@ -74,7 +110,7 @@ export default function SignupPage() {
                   onChange={handleChange}
                 />
               </div>
-              <div className="w-1/2">
+              <div className="">
                 <label className="text-sm text-black block mb-2">Confirm Password<span className="text-red-500">*</span></label>
                 <input
                   type="password"
@@ -98,9 +134,11 @@ export default function SignupPage() {
                 />
                 Remember Me
               </label>
-              <button type="button" className="hover:underline">
+              <Link href='/auth/forgot-password'>
+              <button type="button" className="hover:underline cursor-pointer hover:text-[#20B894] ease-in duration-300">
                 Forgot Password
               </button>
+              </Link>
             </div>
 
             {/* Submit Button */}
