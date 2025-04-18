@@ -17,17 +17,11 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
-    if (!email || !password) {
-      toast.error('Please fill in all required fields');
-      return;
-    }
-
     try {
       const response = await loginUser({
         email,
         password
       }).unwrap();
-      console.log("response", response);
       
       if (response.success) {
         toast.success(response.message || 'Login successful!');
@@ -60,7 +54,7 @@ export default function LoginPage() {
             Login to your account
           </h1>
 
-          <form onClick={handleLogin} className="flex flex-col gap-4">
+          <form onSubmit={handleLogin} className="flex flex-col gap-4">
             {/* Email */}
             <div>
               <label className="text-sm text-black block mb-2">
