@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useState } from 'react';
-import { useCreateUserMutation } from '@/src/redux/api/authApi';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
+import Link from "next/link";
+import { useState } from "react";
+import { useCreateUserMutation } from "@/src/redux/features/auth/authApi";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function SignupPage() {
   const router = useRouter();
   const [createUser, { isLoading }] = useCreateUserMutation();
 
   const [form, setForm] = useState({
-    firstName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+    firstName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
     rememberMe: false,
     agreeTerms: false,
     confirmInfo: false,
@@ -24,20 +24,25 @@ export default function SignupPage() {
     const { name, type, checked, value } = e.target;
     setForm((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
-    if (!form.agreeTerms || !form.confirmInfo) {
-      toast.error('Please accept the terms and conditions');
+
+    if (!form.agreeTerms) {
+      toast.error("Please accept the Terms and Conditions");
+      return;
+    }
+
+    if (!form.confirmInfo) {
+      toast.error("Please confirm that your information is accurate");
       return;
     }
 
     if (form.password !== form.confirmPassword) {
-      toast.error('Passwords do not match');
+      toast.error("Passwords do not match");
       return;
     }
 
@@ -47,13 +52,14 @@ export default function SignupPage() {
         email: form.email,
         password: form.password,
       }).unwrap();
-
       if (response.success) {
-        toast.success('Account created successfully');
-        router.push('/auth/login');
+        toast.success(
+          "Your account has been created successfully! Please check your email to verify your account."
+        );
+        router.push("/auth/verify-otp");
       }
     } catch (error: any) {
-      toast.error(error?.data?.message || 'Something went wrong');
+      toast.error(error?.data?.message || "Something went wrong");
     }
   };
 
@@ -62,7 +68,11 @@ export default function SignupPage() {
       <div className="max-w-[1224px] w-full flex flex-col md:flex-row overflow-hidden shadow-lg">
         {/* Left Illustration */}
         <div className="hidden md:flex items-center justify-center w-1/2 p-6">
-          <img src="/signup.png" alt="Signup Illustration" className="w-full h-auto" />
+          <img
+            src="/signup.png"
+            alt="Signup Illustration"
+            className="w-full h-auto"
+          />
         </div>
 
         {/* Right Signup Form */}
@@ -74,7 +84,9 @@ export default function SignupPage() {
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             {/* Name Field */}
             <div>
-              <label className="text-sm text-black block mb-2">First Name<span className="text-red-500">*</span></label>
+              <label className="text-sm text-black block mb-2">
+                First Name<span className="text-red-500">*</span>
+              </label>
               <input
                 type="text"
                 name="firstName"
@@ -87,7 +99,9 @@ export default function SignupPage() {
 
             {/* Email Field */}
             <div>
-              <label className="text-sm text-black block mb-2">Email Address<span className="text-red-500">*</span></label>
+              <label className="text-sm text-black block mb-2">
+                Email Address<span className="text-red-500">*</span>
+              </label>
               <input
                 type="email"
                 name="email"
@@ -101,7 +115,9 @@ export default function SignupPage() {
             {/* Password Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="">
-                <label className="text-sm text-black block mb-2">Password<span className="text-red-500">*</span></label>
+                <label className="text-sm text-black block mb-2">
+                  Password<span className="text-red-500">*</span>
+                </label>
                 <input
                   type="password"
                   name="password"
@@ -111,7 +127,9 @@ export default function SignupPage() {
                 />
               </div>
               <div className="">
-                <label className="text-sm text-black block mb-2">Confirm Password<span className="text-red-500">*</span></label>
+                <label className="text-sm text-black block mb-2">
+                  Confirm Password<span className="text-red-500">*</span>
+                </label>
                 <input
                   type="password"
                   name="confirmPassword"
@@ -134,19 +152,25 @@ export default function SignupPage() {
                 />
                 Remember Me
               </label>
-              <Link href='/auth/forgot-password'>
-              <button type="button" className="hover:underline cursor-pointer hover:text-[#20B894] ease-in duration-300">
-                Forgot Password
-              </button>
+              <Link href="/auth/forgot-password">
+                <button
+                  type="button"
+                  className="hover:underline cursor-pointer hover:text-[#20B894] ease-in duration-300"
+                >
+                  Forgot Password
+                </button>
               </Link>
             </div>
 
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full primary_color hover:opacity-90 text-white py-2 rounded-full font-medium transition-all"
+              disabled={isLoading}
+              className={`w-full primary_color text-white py-2 rounded-full font-medium transition-all cursor-pointer ${
+                isLoading ? "opacity-70 cursor-not-allowed" : "hover:opacity-90"
+              }`}
             >
-              Create Account ↗
+              {isLoading ? "Creating Account..." : "Create Account ↗"}
             </button>
           </form>
 
@@ -161,7 +185,8 @@ export default function SignupPage() {
                 onChange={handleChange}
               />
               <span>
-                I have read and agree to the Terms and Conditions and Privacy Policy.
+                I have read and agree to the Terms and Conditions and Privacy
+                Policy.
               </span>
             </label>
             <label className="flex items-start gap-2">
@@ -173,7 +198,8 @@ export default function SignupPage() {
                 onChange={handleChange}
               />
               <span>
-                I confirm that all information entered is accurate, complete, and not misleading.
+                I confirm that all information entered is accurate, complete,
+                and not misleading.
               </span>
             </label>
           </div>
@@ -199,7 +225,7 @@ export default function SignupPage() {
 
           {/* Already have account */}
           <p className="mt-6 text-center text-sm text-gray-400">
-            Already have an account?{' '}
+            Already have an account?{" "}
             <a href="/login" className="text-[#20B894] hover:underline">
               Log in
             </a>

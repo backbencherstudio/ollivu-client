@@ -16,3 +16,30 @@ export const initialState: AuthState = {
     loading: false,
     error: null,
   };
+
+  export interface ICreateUserRequest {
+    first_name: string;
+    email: string;
+    password: string;
+  }
+  
+  export interface ICreateUserResponse {
+    success: boolean;
+    message: string;
+    data: {
+      user: {
+        first_name: string;
+        email: string;
+      };
+      token: string;
+    };
+  }
+  
+  export interface IVerifyOTPRequest {
+    otp: Number;
+  }
+  
+  export interface IVerifyOTPResponse {
+    success: boolean;
+    message: string;
+  }
