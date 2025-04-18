@@ -43,3 +43,16 @@ export const initialState: AuthState = {
     success: boolean;
     message: string;
   }
+
+  interface ILoginRequest {
+    email: string;
+    password: string;
+  }
+  
+  interface ILoginResponse {
+    success: boolean;
+    message: string;
+    data?: {
+      accessToken: string;
+    };
+  }
