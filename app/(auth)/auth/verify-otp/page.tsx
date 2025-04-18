@@ -69,6 +69,8 @@ export default function VerifyOTP() {
       const response = await verifyOTP({
         otp: Number(otp)
       }).unwrap();
+      console.log("res", response);
+      
       
       if (response.success) {
         toast.success(response.message || 'Verification successful!');

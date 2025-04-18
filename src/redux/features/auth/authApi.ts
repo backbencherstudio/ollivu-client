@@ -55,7 +55,7 @@ export const authApi = baseApi.injectEndpoints({
         url: "/auth/verifyOTP",
         method: "POST",
         body: data,
-        // credentials: "include",  // Added credentials
+        credentials: "include",  // Added credentials
       }),
       invalidatesTags: ["User"],
     }),
