@@ -45,15 +45,17 @@ export const authApi = baseApi.injectEndpoints({
         url: "/auth/create-user",
         method: "POST",
         body: userData,
+        // credentials: "include",  // Added credentials
       }),
       invalidatesTags: ["User"],
     }),
 
-    verifyOTP: builder.mutation<IVerifyOTPResponse, IVerifyOTPRequest>({
+    verifyOTP: builder.mutation({
       query: (data) => ({
         url: "/auth/verifyOTP",
         method: "POST",
         body: data,
+        // credentials: "include",  // Added credentials
       }),
       invalidatesTags: ["User"],
     }),
