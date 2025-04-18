@@ -1,19 +1,51 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useState } from 'react';
+import { useLoginUserMutation } from "@/src/redux/features/auth/authApi";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+
+  const router = useRouter();
+  const [loginUser, { isLoading }] = useLoginUserMutation();
+
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    
+    try {
+      const response = await loginUser({
+        email,
+        password
+      }).unwrap();
+      
+      if (response.success) {
+        toast.success(response.message || 'Login successful!');
+        router.push("/");
+      } else {
+        toast.error(response.message || 'Login failed');
+      }
+    } catch (error: any) {
+      console.error('Login error:', error);
+      const errorMessage = error?.data?.message || 'Login failed';
+      toast.error(errorMessage);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center  px-4">
       <div className="max-w-[1224px] w-full flex flex-col md:flex-row ounded-lg overflow-hidden shadow-lg">
         {/* Left Illustration */}
         <div className="hidden md:flex items-center justify-center w-1/2 p-6">
-          <img src="/Login.png" alt="Login Illustration" className="w-full h-auto" />
+          <img
+            src="/Login.png"
+            alt="Login Illustration"
+            className="w-full h-auto"
+          />
         </div>
 
         {/* Right Login Form */}
@@ -22,10 +54,12 @@ export default function LoginPage() {
             Login to your account
           </h1>
 
-          <form className="flex flex-col gap-4">
+          <form onSubmit={handleLogin} className="flex flex-col gap-4">
             {/* Email */}
             <div>
-              <label className="text-sm text-black block mb-2">Email address<span className="text-red-500">*</span></label>
+              <label className="text-sm text-black block mb-2">
+                Email address<span className="text-red-500">*</span>
+              </label>
               <input
                 type="text"
                 placeholder="Input your full name"
@@ -37,9 +71,12 @@ export default function LoginPage() {
 
             {/* Password */}
             <div>
-              <label className="text-sm text-black block mb-2">Password<span className="text-red-500">*</span></label>
+              <label className="text-sm text-black block mb-2">
+                Password<span className="text-red-500">*</span>
+              </label>
               <input
                 type="password"
+                placeholder="Input your password"
                 className="w-full px-4 py-2 rounded-[8px] border border-[#20B894] bg-transparent text-black focus:outline-none"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -57,10 +94,10 @@ export default function LoginPage() {
                 />
                 Remember Me
               </label>
-              <Link href='/auth/forgot-password'>
-              <button type="button" className="hover:underline">
-                Forgot Password
-              </button>
+              <Link href="/auth/forgot-password">
+                <button type="button" className="hover:underline">
+                  Forgot Password
+                </button>
               </Link>
             </div>
 
@@ -94,7 +131,7 @@ export default function LoginPage() {
 
           {/* Sign Up Link */}
           <p className="mt-6 text-center text-sm text-gray-400">
-            You're new in here?{' '}
+            You're new in here?{" "}
             <a href="/auth/signup" className="text-[#20B894] hover:underline">
               Create Account
             </a>

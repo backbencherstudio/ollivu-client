@@ -7,6 +7,18 @@ import logo from "@/public/logo/logo.png";
 import { ChevronDown, ChevronUp, Menu, MoveUpRight, X } from "lucide-react";
 import { usePathname } from "next/navigation";
 import CustomImage from "@/components/reusable/CustomImage"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { LogOut, User, Settings } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { verifiedUser } from "@/src/utils/token-varify";
 
 // Define service categories and their items
 const serviceCategories = [
@@ -105,7 +117,30 @@ export default function Navbar() {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isServicesOpen, setIsServicesOpen] = useState(false); // Add this state
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const router = useRouter();
   const pathname = usePathname();
+
+  // Add authentication check
+  useEffect(() => {
+    const checkAuth = () => {
+      const token = localStorage.getItem("accessToken");
+      setIsAuthenticated(!!token);
+    };
+    
+    checkAuth();
+    window.addEventListener("storage", checkAuth);
+    
+    return () => window.removeEventListener("storage", checkAuth);
+  }, []);
+
+  // Add logout handler
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    document.cookie = "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+    setIsAuthenticated(false);
+    router.push("/auth/login");
+  };
 
   // Remove isServicesOpen state and toggleServices function since we'll use hover
 
@@ -139,6 +174,10 @@ export default function Navbar() {
   const toggleServices = () => {
     setIsServicesOpen(!isServicesOpen);
   };
+
+  const user = verifiedUser()
+  console.log("user", user);
+  
 
   return (
     <nav
@@ -243,33 +282,69 @@ export default function Navbar() {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <div className="">
-              <Link
-                href="/auth/login"
-                className="group font-medium px-4 py-2 rounded-full border border-teal-600 transition-all duration-300 text-[#777870] flex items-center gap-2 hover:bg-teal-500 hover:border-teal-500"
-              >
-                <span className="group-hover:text-white transition-colors duration-300">
-                  Login
-                </span>
-                <MoveUpRight
-                  className="text-[#777870] group-hover:text-white transition-colors duration-300"
-                  size={20}
-                />
-              </Link>
-            </div>
-
-            <Link
-              href="/auth/signup"
-              className="group font-medium px-4 py-2 rounded-full border border-teal-600 transition-all duration-300 text-[#777870] flex items-center gap-2 hover:bg-teal-500 hover:border-teal-500"
-            >
-              <span className="group-hover:text-white transition-colors duration-300">
-                Sign Up
-              </span>
-              <MoveUpRight
-                className="text-[#777870] group-hover:text-white transition-colors duration-300"
-                size={20}
-              />
-            </Link>
+            {isAuthenticated ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger className="focus:outline-none">
+                  <Avatar className="h-8 w-8 hover:ring-2 hover:ring-teal-500 transition-all">
+                    <AvatarImage src="/default-avatar.png" />
+                    <AvatarFallback className="bg-teal-500 text-white">
+                      U
+                    </AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="cursor-pointer" onClick={() => router.push('/dashboard')}>
+                    <User className="mr-2 h-4 w-4" />
+                    Dashboard
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <User className="mr-2 h-4 w-4" />
+                    Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <Settings className="mr-2 h-4 w-4" />
+                    Settings
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    className="cursor-pointer text-red-600 focus:text-red-600"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <>
+                <Link
+                  href="/auth/login"
+                  className="group font-medium px-4 py-2 rounded-full border border-teal-600 transition-all duration-300 text-[#777870] flex items-center gap-2 hover:bg-teal-500 hover:border-teal-500"
+                >
+                  <span className="group-hover:text-white transition-colors duration-300">
+                    Login
+                  </span>
+                  <MoveUpRight
+                    className="text-[#777870] group-hover:text-white transition-colors duration-300"
+                    size={20}
+                  />
+                </Link>
+                <Link
+                  href="/auth/signup"
+                  className="group font-medium px-4 py-2 rounded-full border border-teal-600 transition-all duration-300 text-[#777870] flex items-center gap-2 hover:bg-teal-500 hover:border-teal-500"
+                >
+                  <span className="group-hover:text-white transition-colors duration-300">
+                    Sign Up
+                  </span>
+                  <MoveUpRight
+                    className="text-[#777870] group-hover:text-white transition-colors duration-300"
+                    size={20}
+                  />
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -368,19 +443,31 @@ export default function Navbar() {
               Terms & Policy
             </Link>
 
+            {/* Mobile Menu Auth Section */}
             <div className="flex items-center justify-center w-full gap-4 pt-4 pb-3 border-t border-gray-200">
-              <Link
-                href="/login"
-                className="block px-12 py-3  rounded-full text-base font-medium hover:text-teal-600 border border-[#D2B9A1] text-[#D2B9A1]"
-              >
-                Login
-              </Link>
-              <Link
-                href="/signup"
-                className="block px-12 py-3 rounded-full text-base font-medium bg-teal-500 text-white hover:bg-teal-600"
-              >
-                Sign Up
-              </Link>
+              {isAuthenticated ? (
+                <button
+                  onClick={handleLogout}
+                  className="block px-12 py-3 rounded-full text-base font-medium bg-red-500 text-white hover:bg-red-600"
+                >
+                  Logout
+                </button>
+              ) : (
+                <>
+                  <Link
+                    href="/auth/login"
+                    className="block px-12 py-3 rounded-full text-base font-medium hover:text-teal-600 border border-[#D2B9A1] text-[#D2B9A1]"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/auth/signup"
+                    className="block px-12 py-3 rounded-full text-base font-medium bg-teal-500 text-white hover:bg-teal-600"
+                  >
+                    Sign Up
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
