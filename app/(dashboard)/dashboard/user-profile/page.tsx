@@ -27,7 +27,8 @@ import Portfolio from "./_components/portfolio";
 
 // Update imports
 import Certificate from "./_components/certificate";
-import ExtraSkills from "./_components/extra-skills";
+import { verifiedUser } from "@/src/utils/token-varify";
+import { useGetAllUsersQuery } from "@/src/redux/features/users/userApi";
 
 export default function UserProfile() {
   const [profileImage, setProfileImage] = useState(profile);
@@ -37,6 +38,11 @@ export default function UserProfile() {
     "Coding",
     "Cooking",
   ]);
+
+  const user = verifiedUser()
+  console.log("userProfile", user);
+  
+  
 
   // Add this near your existing code
   const handleAddService = () => {
@@ -187,7 +193,7 @@ export default function UserProfile() {
 
       {/* Extra Skills and Certificate */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-        <ExtraSkills />
+        {/* <ExtraSkills /> */}
         <Certificate />
       </div>
 

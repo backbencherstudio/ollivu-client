@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import loginImg from '@/public/login.png'
+import Image from "next/image";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -43,8 +45,8 @@ export default function LoginPage() {
       <div className="max-w-[1224px] w-full flex flex-col md:flex-row ounded-lg overflow-hidden shadow-lg">
         {/* Left Illustration */}
         <div className="hidden md:flex items-center justify-center w-1/2 p-6">
-          <img
-            src="/Login.png"
+          <Image
+            src={loginImg}
             alt="Login Illustration"
             className="w-full h-auto"
           />

@@ -176,7 +176,7 @@ export default function Navbar() {
   };
 
   const user = verifiedUser()
-  console.log("user", user);
+  // console.log("user", user);
   
 
   return (

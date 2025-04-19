@@ -1,16 +1,15 @@
-// src/types/service.ts
-// Update Service interface to accept both string and StaticImageData
-import { StaticImageData } from "next/image";
-
 export interface Service {
-  id: number;
+  id: string;
   title: string;
-  category: string;
   instructor: {
+    id: string;
     name: string;
+    email: string;
     experience: string;
+    image?: string;
   };
   rating: number;
   reviewCount: number;
-  image: string | StaticImageData;
+  image: string;
+  category: string;
 }
