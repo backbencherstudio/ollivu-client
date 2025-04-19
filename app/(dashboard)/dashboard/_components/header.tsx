@@ -20,6 +20,7 @@ export default function Header({user}) {
   const [showNotifications, setShowNotifications] = useState(false);
   const profileRef = useRef(null);
   const notificationRef = useRef(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const notifications = [
     {
@@ -95,6 +96,14 @@ export default function Header({user}) {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+    // Add logout handler
+    const handleLogout = () => {
+      localStorage.removeItem("accessToken");
+      document.cookie = "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+      setIsAuthenticated(false);
+      router.push("/auth/login");
+    };
 
   return (
     <div className="bg-white shadow-sm py-[21px] px-6 sticky top-0 z-50">
@@ -187,25 +196,25 @@ export default function Header({user}) {
             {showProfile && (
               <div className="absolute top-12 right-0 bg-white shadow-md rounded-md p-4 w-48">
                 <div className="flex flex-col gap-4">
-                  <div className="flex items-center gap-3 cursor-pointer">
+                  {/* <div className="flex items-center gap-3 cursor-pointer">
                     <AiFillMessage className="w-6 h-6 p-1 bg-[#EDFCF6] text-[#20B894] rounded-full" />
                     <p className="text-base font-normal text-[#070707]">
                       Message
                     </p>
-                  </div>
-                  <div className="flex items-center gap-3 cursor-pointer">
+                  </div> */}
+                  {/* <div className="flex items-center gap-3 cursor-pointer">
                     <MdNotifications className="w-6 h-6 p-1 bg-[#EDFCF6] text-[#20B894] rounded-full" />
                     <Link href='/dashboard/notifications' className="text-base font-normal text-[#070707]">
                       Notification
                     </Link>
-                  </div>
-                  <div className="flex items-center gap-3 cursor-pointer">
+                  </div> */}
+                  {/* <div className="flex items-center gap-3 cursor-pointer">
                     <AiOutlineUser className="w-6 h-6 p-1 bg-[#EDFCF6] text-[#20B894] rounded-full" />
                     <p className="text-base font-normal text-[#070707]">
                       My Account
                     </p>
-                  </div>
-                  <div className="flex items-center gap-3 cursor-pointer">
+                  </div> */}
+                  <div onClick={handleLogout} className="flex items-center gap-3 cursor-pointer">
                     <AiOutlineLogout className="w-6 h-6 p-1 bg-[#EDFCF6] text-[#20B894] rounded-full" />
                     <p className="text-base font-normal text-[#070707]">
                       Log out
