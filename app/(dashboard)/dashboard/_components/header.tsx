@@ -8,9 +8,13 @@ import profile from "@/public/avatars/emily.png";
 import { AiFillMessage, AiOutlineLogout, AiOutlineUser } from "react-icons/ai";
 import { MdNotifications } from "react-icons/md";
 import Link from "next/link";
+import { verifiedUser } from "@/src/utils/token-varify";
 
-export default function Header() {
+export default function Header({user}) {
   const router = useRouter();
+  
+  console.log("header user", user);
+  
 
   const [showProfile, setShowProfile] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -175,8 +179,8 @@ export default function Header() {
                 <Image src={profile} alt="User" fill className="object-cover" />
               </div>
               <div>
-                <p className="text-sm font-medium text-[#070707]">Katie Sims</p>
-                <p className="text-xs text-gray-500">User</p>
+                <p className="text-sm font-medium text-[#070707]">{user.name} || name</p>
+                <p className="text-xs text-gray-500">{user.role}</p>
               </div>
             </div>
 

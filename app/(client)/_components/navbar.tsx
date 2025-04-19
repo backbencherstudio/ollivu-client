@@ -295,10 +295,20 @@ export default function Navbar() {
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="cursor-pointer" onClick={() => router.push('/dashboard')}>
+                  <DropdownMenuItem 
+                    className="cursor-pointer" 
+                    onClick={() => {
+                      if (user?.role === 'admin') {
+                        router.push('/dashboard/user-management');
+                      } else {
+                        router.push('/dashboard');
+                      }
+                    }}
+                  >
                     <User className="mr-2 h-4 w-4" />
                     Dashboard
                   </DropdownMenuItem>
+                  
                   <DropdownMenuItem className="cursor-pointer">
                     <User className="mr-2 h-4 w-4" />
                     Profile

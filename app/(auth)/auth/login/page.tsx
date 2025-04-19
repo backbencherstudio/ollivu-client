@@ -22,6 +22,8 @@ export default function LoginPage() {
         email,
         password
       }).unwrap();
+      console.log("res", response);
+      
       
       if (response.success) {
         toast.success(response.message || 'Login successful!');
@@ -104,7 +106,7 @@ export default function LoginPage() {
             {/* Login Button */}
             <button
               type="submit"
-              className="w-full primary_color hover:opacity-90 text-white py-2 rounded-full font-medium transition-all"
+              className="w-full primary_color hover:opacity-90 text-white py-2 rounded-full font-medium transition-all cursor-pointer"
             >
               Log in ↗
             </button>

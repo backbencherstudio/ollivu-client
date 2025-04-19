@@ -12,6 +12,7 @@ import { ConfirmedIcon } from "../../../../icons/ConfirmedIcon";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { StatCard } from "./components/StatCard";
 import { ConversationTable } from "./components/ConversationTable";
+import ProtectedRoute from "@/src/components/auth/ProtectedRoute";
 
 const conversations = [
   { id: "#0001", user1: "Kristin Watson", user2: "Jerome Bell", joinDate: "Jan 4, 2025", status: "Completed" },
@@ -79,6 +80,7 @@ export default function MonitorMessaging() {
   });
 
   return (
+    <ProtectedRoute allowedRoles={["admin"]}>
     <div className="p-6 space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {STAT_CARDS.map((stat, i) => (
@@ -135,5 +137,6 @@ export default function MonitorMessaging() {
         </div>
       </div>
     </div>
+    </ProtectedRoute>
   );
 }

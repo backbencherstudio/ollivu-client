@@ -65,30 +65,23 @@ export default function VerifyOTP() {
       return;
     }
 
-    console.log('Sending OTP:', {
-      rawOTP: otp,
-      numberOTP: Number(otp),
-      typeofOTP: typeof Number(otp)
-    });
-
     try {
       const response = await verifyOTP({
         otp: Number(otp)
       }).unwrap();
+      console.log("res", response);
       
-      console.log('Response:', response);
       
       if (response.success) {
         toast.success(response.message || 'Verification successful!');
         router.push('/auth/login');
       }
     } catch (error: any) {
-      console.log('Error:', error);
       const errorMessage = error?.data?.errorSources?.[0]?.message 
         || error?.data?.message 
         || 'Verification failed';
       toast.error(errorMessage);
-      setVerificationCode(['', '', '', '', '', '']);
+      setVerificationCode(['', '', '', '', '', '']);  
     }
   };
 
