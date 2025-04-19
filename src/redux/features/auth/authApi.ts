@@ -1,35 +1,15 @@
 import { baseApi } from "../../api/baseApi";
-import {
-  ICreateUserRequest,
-  ICreateUserResponse,
-  IVerifyOTPRequest,
-  IVerifyOTPResponse,
-} from "../../types/authInterface";
-
-interface ILoginRequest {
-  email: string;
-  password: string;
-}
-
-interface ILoginResponse {
-  success: boolean;
-  message: string;
-  data?: {
-    accessToken: string;
-    // user might not be in the response
-  };
-}
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    loginUser: builder.mutation<ILoginResponse, ILoginRequest>({
+    loginUser: builder.mutation({
       query: (credentials) => ({
         url: "/auth/login",
         method: "POST",
         body: credentials,
         credentials: "include",
       }),
-      transformResponse: (response: ILoginResponse) => {
+      transformResponse: (response) => {
         // Only store token if it exists
         if (response.data?.accessToken) {
           localStorage.setItem("accessToken", response.data.accessToken);
@@ -40,7 +20,7 @@ export const authApi = baseApi.injectEndpoints({
       invalidatesTags: ["User"],
     }),
 
-    createUser: builder.mutation<ICreateUserResponse, ICreateUserRequest>({
+    createUser: builder.mutation({
       query: (userData) => ({
         url: "/auth/create-user",
         method: "POST",
@@ -55,7 +35,7 @@ export const authApi = baseApi.injectEndpoints({
         url: "/auth/verifyOTP",
         method: "POST",
         body: data,
-        credentials: "include",  // Added credentials
+        credentials: "include", // Added credentials
       }),
       invalidatesTags: ["User"],
     }),
