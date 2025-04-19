@@ -13,14 +13,16 @@ import {
   LogOut,
   ReceiptText,
   MessageCircleMore,
+  User,
 } from "lucide-react";
 import { FaStar } from "react-icons/fa6";
 import logo from "@/public/logo/logo.png";
 
-export default function Sidebar() {
+export default function Sidebar({ user }) {
   const pathname = usePathname();
 
-  const menuItems = [
+  // User menu items
+  const userMenuItems = [
     { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
     {
       icon: UserCircle,
@@ -30,15 +32,24 @@ export default function Sidebar() {
     { icon: MessageSquare, label: "Message", href: "/dashboard/message" },
     { icon: Star, label: "Review", href: "/dashboard/review" },
     { icon: Settings, label: "Settings", href: "/dashboard/settings" },
+  ];
+
+  // Admin menu items
+  const adminMenuItems = [
+    {
+      icon: User,
+      label: "User Management",
+      href: "/dashboard/user-management",
+    },
     {
       icon: ReceiptText,
-      label: "Admin Terms Policy",
-      href: "/dashboard/admin-terms-policy",
+      label: "Terms of Service",
+      href: "/dashboard/terms-of-service",
     },
     {
       icon: MessageCircleMore,
-      label: "Monitor Messaging ",
-      href: "/dashboard/monitor-messaging",
+      label: "Monitor users",
+      href: "/dashboard/monitor-users",
     },
     {
       icon: FaStar,
@@ -46,6 +57,11 @@ export default function Sidebar() {
       href: "/dashboard/manage-review",
     },
   ];
+
+  // Combine menu items based on user role
+  const menuItems = user?.role === "admin" 
+    ? [...adminMenuItems] 
+    : userMenuItems;
 
   return (
     <div className="bg-white h-screen shadow-sm flex flex-col sticky top-0">

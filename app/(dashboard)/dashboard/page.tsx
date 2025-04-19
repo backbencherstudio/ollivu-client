@@ -12,6 +12,7 @@ import {
 } from 'recharts';
 import { BadgeCheck, CheckCircle, Lock } from 'lucide-react';
 import Image from 'next/image';
+import ProtectedRoute from '@/src/components/auth/ProtectedRoute';
 
 const exchangeData = [
   { month: 'Jan', count: 0 },
@@ -32,6 +33,7 @@ export default function UserDashboardHome() {
   const [filter, setFilter] = useState('Month');
 
   return (
+    // <ProtectedRoute allowedRoles={["user"]}>
     <div className="bg-white min-h-screen p-6 space-y-6">
       {/* Top Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -374,5 +376,6 @@ export default function UserDashboardHome() {
         </div>
       </div>
     </div>
+    // </ProtectedRoute>
   );
 }
