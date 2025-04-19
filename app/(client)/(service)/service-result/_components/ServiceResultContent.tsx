@@ -47,6 +47,8 @@ export default function ServiceResultContent() {
   const searchParams = useSearchParams();
   const { data: users, isLoading } = useGetAllUsersQuery({});
   const allUsers = users?.data || [];
+  console.log("allUsers", allUsers);
+  
   const [services, setServices] = useState<Service[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(
     searchParams.get("category")

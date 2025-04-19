@@ -298,11 +298,8 @@ export default function Navbar() {
                   <DropdownMenuItem 
                     className="cursor-pointer" 
                     onClick={() => {
-                      if (user?.role === 'admin') {
-                        router.push('/dashboard/user-management');
-                      } else {
-                        router.push('/dashboard');
-                      }
+                      const targetPath = user?.role === 'admin' ? '/dashboard/user-management' : '/dashboard';
+                      window.open(targetPath, '_blank');
                     }}
                   >
                     <User className="mr-2 h-4 w-4" />

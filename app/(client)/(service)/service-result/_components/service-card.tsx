@@ -5,19 +5,18 @@ import { Service } from "@/types/service.types";
 import { Star } from "lucide-react";
 import { useRouter } from "next/navigation";
 import serviceImg from '@/public/client/services/service-01.png'
+import avaterImg from '@/public/avatars/john.png'
+
 interface ServiceCardProps {
   service: Service;
 }
 
 // const DEFAULT_SERVICE_IMAGE = ;
-const DEFAULT_AVATAR_IMAGE = serviceImg
+const DEFAULT_SERVICE_IMAGE = serviceImg
+const DEFAULT_AVATAR_IMAGE = avaterImg
 
 export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
   const router = useRouter();
-
-  // Default images
-  const defaultServiceImage = '/default-service.jpg';
-  const defaultAvatarImage = '/default-avatar.png';
 
   const handleCardClick = () => {
     if (service.instructor?.id) {
@@ -61,7 +60,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
             <div className="flex items-center gap-2 mb-2">
               <div className="w-8 h-8 rounded-full bg-gray-200 relative overflow-hidden">
                 <Image
-                  src={service.instructor?.image || DEFAULT_AVATAR_IMAGE}
+                  src={service.instructor?.image || DEFAULT_SERVICE_IMAGE}
                   alt={service.instructor?.name || "Instructor"}
                   fill
                   className="object-cover"

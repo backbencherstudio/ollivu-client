@@ -2,7 +2,6 @@
 
 import { Suspense } from "react";
 import ServiceResultContent from "./_components/ServiceResultContent";
-import { useGetAllUsersQuery } from "@/src/redux/features/users/userApi";
 
 export default function ServicesPage() {
   
