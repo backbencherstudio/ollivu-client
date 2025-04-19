@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, MapPin, Star } from 'lucide-react';
 import { serviceCategories } from '@/data/services';
+import { useGetAllCategoriesQuery } from '@/src/redux/features/categories/categoriesApi';
 
 interface CategorySidebarProps {
   selectedCategory: string | null;
@@ -18,6 +19,11 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
   const [openCategories, setOpenCategories] = useState<string[]>([]);
   const [location, setLocation] = useState<string>('');
   const [selectedRating, setSelectedRating] = useState<number | null>(null);
+  const {data: getAllCategories, isLoading} = useGetAllCategoriesQuery(undefined)
+  const categories = getAllCategories?.data || [];
+  
+  console.log("getAllCategoriesssssss", categories);
+  
 
   const toggleCategory = (categoryTitle: string) => {
     setOpenCategories(prev => 
