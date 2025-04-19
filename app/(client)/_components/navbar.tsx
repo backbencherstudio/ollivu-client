@@ -32,7 +32,7 @@ export default function Navbar() {
 
   const {data: getAllCategories, isLoading} = useGetAllCategoriesQuery(undefined)
   const categories = getAllCategories?.data || [];
-  console.log("getAllCategories", getAllCategories);
+  // console.log("getAllCategories", getAllCategories);
   
 
   // Update the authentication check
