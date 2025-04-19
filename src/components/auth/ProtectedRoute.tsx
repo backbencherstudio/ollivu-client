@@ -20,7 +20,7 @@ const ProtectedRoute = ({ children, allowedRoles = [] }: ProtectedRouteProps) =>
     }
 
     if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
-      router.push("/dashboard"); // Redirect to dashboard if user doesn't have required role
+      router.push("/dashboard");
     }
   }, [router, allowedRoles]);
 

@@ -19,113 +19,29 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { LogOut, User, Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { verifiedUser } from "@/src/utils/token-varify";
-
-// Define service categories and their items
-const serviceCategories = [
-  {
-    title: "Education & Learning",
-    items: [
-      "Tutoring & Academic Support",
-      "Online Learning & Skill Development",
-      "Music Lessons",
-      "Art Lessons",
-      "Self-Defense Lessons",
-      "Public Speaking Coaching",
-      "Coding Lessons",
-      "Photography Classes",
-      "Car Maintenance Tutorials",
-      "Language Exchange",
-    ],
-  },
-  {
-    title: "Professional & Business Services",
-    items: [
-      "Graphic Design",
-      "Web Development",
-      "Marketing & Social Media Management",
-      "SEO & Content Writing",
-      "Photography & Video Editing",
-      "IT Support & Tech Help",
-      "Legal Advice",
-      "Accounting & Tax Help",
-      "Translation Services",
-      "Virtual Assistance",
-    ],
-  },
-  {
-    title: "Events & Entertainment",
-    items: [
-      "Event Planning",
-      "DJ & Live Music Services",
-      "Stand-up Comedy",
-      "Face Painting & Balloon Art",
-      "Caricature Drawing",
-      "Dance Lessons",
-      "Catering & Bartending",
-      "Modeling & Photography",
-      "Custom Crafts & Handmade Gifts",
-    ],
-  },
-  {
-    title: "Home Services & Maintenance",
-    items: [
-      "Handyman Services",
-      "Plumbing & Electrical Work",
-      "Gardening & Landscaping",
-      "House Cleaning",
-      "Home Decor & Interior Design",
-      "Furniture Assembly",
-    ],
-  },
-  {
-    title: "Personal & Care Services",
-    items: [
-      "Makeup & Hair Styling",
-      "Meal Prep & Cooking",
-      "Pet Sitting & Dog Walking",
-      "Babysitting & Childcare",
-      "Elderly Care Assistance",
-      "Nail & Eyebrow Services",
-      "Dog Grooming",
-    ],
-  },
-  {
-    title: "Wellness & Personal Growth",
-    items: [
-      "Fitness Training",
-      "Massage Therapy",
-      "Reiki & Energy Healing",
-      "Life Coaching",
-      "Tarot Readings & Astrology",
-      "Meditation & Mindfulness Coaching",
-    ],
-  },
-  {
-    title: "Automotive & Transportation",
-    items: [
-      "Car Repairs",
-      "Moving Help",
-      "Bike Repair & Maintenance",
-      "Ridesharing",
-      "Boat Repairs & Maintenance",
-    ],
-  },
-];
+import { useGetAllCategoriesQuery } from "@/src/redux/features/categories/categoriesApi";
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [isServicesOpen, setIsServicesOpen] = useState(false); // Add this state
+  const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
-  // Add authentication check
+  const {data: getAllCategories, isLoading} = useGetAllCategoriesQuery(undefined)
+  const categories = getAllCategories?.data || [];
+  // console.log("getAllCategories", getAllCategories);
+  
+
+  // Update the authentication check
   useEffect(() => {
     const checkAuth = () => {
-      const token = localStorage.getItem("accessToken");
-      setIsAuthenticated(!!token);
+      if (typeof window !== 'undefined') {
+        const token = localStorage.getItem("accessToken");
+        setIsAuthenticated(!!token);
+      }
     };
     
     checkAuth();
@@ -134,6 +50,9 @@ export default function Navbar() {
     return () => window.removeEventListener("storage", checkAuth);
   }, []);
 
+  // Update the user verification
+  // const user = typeof window !== 'undefined' ? verifiedUser() : null;
+
   // Add logout handler
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
@@ -141,9 +60,7 @@ export default function Navbar() {
     setIsAuthenticated(false);
     router.push("/auth/login");
   };
-
-  // Remove isServicesOpen state and toggleServices function since we'll use hover
-
+  
   // Add scroll event handler
   useEffect(() => {
     const controlNavbar = () => {
@@ -176,7 +93,7 @@ export default function Navbar() {
   };
 
   const user = verifiedUser()
-  console.log("user", user);
+  // console.log("user", user);
   
 
   return (
@@ -230,24 +147,24 @@ export default function Navbar() {
                 {/* Dropdown Menu - Shows on Hover */}
                 <div className="absolute top-full mt-5 -left-40 w-[calc(100vw-2rem)] md:w-[700px] lg:w-[1000px] bg-white shadow-lg rounded-md p-4 md:p-6 z-50 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-300">
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                    {serviceCategories.map((category) => (
-                      <div key={category.title} className="group/item">
-                        <h3 className="font-semibold text-sm mb-2 md:mb-3 text-gray-900 group-hover/item:text-teal-600">
-                          {category.title}
+                    {categories.map((category) => (
+                      <div key={category._id} className="group/item">
+                        <h3 className="font-medium text-lg mb-2 md:mb-3 text-[#070707] group-hover/item:text-teal-600">
+                          {category.category_name}
                         </h3>
                         <ul className="space-y-1 md:space-y-2">
-                          {category.items.map((item) => (
+                          {category.subCategories.map((item) => (
                             <li
-                              key={item}
+                              key={item._id}
                               className="text-xs md:text-sm text-gray-600 hover:text-teal-600 transition-colors"
                             >
                               <Link
                                 href={`/service-result?category=${encodeURIComponent(
-                                  category.title
-                                )}&service=${encodeURIComponent(item)}`}
+                                  category.category_name
+                                )}&service=${encodeURIComponent(item.subCategory)}`}
                                 className="block py-1"
                               >
-                                {item}
+                                {item.subCategory}
                               </Link>
                             </li>
                           ))}
@@ -255,6 +172,37 @@ export default function Navbar() {
                       </div>
                     ))}
                   </div>
+                
+                  {isServicesOpen && (
+                    <div className="pl-4 pr-2 py-2">
+                      {categories.map((category) => (
+                        <div key={category._id} className="group/item">
+                          <h3 className="font-semibold text-sm mb-2 md:mb-3 text-gray-900 group-hover/item:text-teal-600">
+                            {category.category_name}
+                          </h3>
+                          <ul className="space-y-2">
+                            {category.subCategories.map((item) => (
+                              <li key={item._id}>
+                                <Link
+                                  href={`/service-result?category=${encodeURIComponent(
+                                    category.category_name
+                                  )}&service=${encodeURIComponent(item.subCategory)}`}
+                                  className="text-sm text-gray-600 hover:text-teal-600 flex items-center group-hover/item:translate-x-1 transition-transform"
+                                  onClick={() => {
+                                    setIsMobileMenuOpen(false);
+                                    setIsServicesOpen(false);
+                                  }}
+                                >
+                                  {item.subCategory}
+                                  <MoveUpRight className="w-3 h-3 ml-1 opacity-0 group-hover/item:opacity-100" />
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -298,11 +246,8 @@ export default function Navbar() {
                   <DropdownMenuItem 
                     className="cursor-pointer" 
                     onClick={() => {
-                      if (user?.role === 'admin') {
-                        router.push('/dashboard/user-management');
-                      } else {
-                        router.push('/dashboard');
-                      }
+                      const targetPath = user?.role === 'admin' ? '/dashboard/user-management' : '/dashboard';
+                      window.open(targetPath, '_blank');
                     }}
                   >
                     <User className="mr-2 h-4 w-4" />
@@ -403,25 +348,28 @@ export default function Navbar() {
                 )}
               </button>
 
+              {/* Mobile Menu Services Section */}
               {isServicesOpen && (
                 <div className="pl-4 pr-2 py-2">
-                  {serviceCategories.map((category) => (
-                    <div key={category.title} className="group/item">
-                      <h3 className="font-semibold text-sm mb-2 md:mb-3 text-gray-900 group-hover/item:text-teal-600">
-                        {category.title}
+                  {categories.map((category) => (
+                    <div key={category._id} className="group/item">
+                      <h3 className="font-semibold text-sm mb-1 md:mb-3 text-gray-900 group-hover/item:text-teal-600">
+                        {category.category_name}
                       </h3>
-                      <ul className="space-y-2">
-                        {category.items.map((item) => (
-                          <li key={item}>
+                      <ul className="space-y-2 mb-4">
+                        {category.subCategories.map((item) => (
+                          <li key={item._id} >
                             <Link
-                              href={`/service-result?item=${encodeURIComponent(item)}`}
+                              href={`/service-result?category=${encodeURIComponent(
+                                category.category_name
+                              )}&service=${encodeURIComponent(item.subCategory)}`}
                               className="text-sm text-gray-600 hover:text-teal-600 flex items-center group-hover/item:translate-x-1 transition-transform"
                               onClick={() => {
                                 setIsMobileMenuOpen(false);
                                 setIsServicesOpen(false);
                               }}
                             >
-                              {item}
+                              {item.subCategory}
                               <MoveUpRight className="w-3 h-3 ml-1 opacity-0 group-hover/item:opacity-100" />
                             </Link>
                           </li>
