@@ -10,22 +10,26 @@ export const usersApi = baseApi.injectEndpoints({
       providesTags: ["User"],
     }),
 
-    // getFilteredUsers: builder.query({
-    //   query: (searchTerm: string) => ({
-    //     url: `/auth/allUsers?searchTerm=${searchTerm}`,
-    //     method: "GET",
-    //   }),
-    //   providesTags: ["User"],
-    // }),
-
-    getFilteredUsers: builder.query({
-      query: (params) => {
-        const query = new URLSearchParams(params).toString();
-        return `/auth/allUsers?${query}`;
-      },
+    getSingleUser: builder.query({
+      query: (id: string) => ({
+        url: `/auth/${id}`,
+        method: "GET",
+      })
     }),
 
+    updateUser: builder.mutation({
+      query: (data) => ({
+        url: "/auth",
+        method: "PATCH",
+        body: data, 
+      }),
+      invalidatesTags: ["User"],
+    }),
   }),
 });
 
-export const { useGetAllUsersQuery, useGetFilteredUsersQuery } = usersApi;
+export const {
+  useGetAllUsersQuery,
+  useGetSingleUserQuery,
+  useUpdateUserMutation,
+} = usersApi;

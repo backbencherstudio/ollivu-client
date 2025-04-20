@@ -9,11 +9,10 @@ import { AiFillMessage, AiOutlineLogout, AiOutlineUser } from "react-icons/ai";
 import { MdNotifications } from "react-icons/md";
 import Link from "next/link";
 import { verifiedUser } from "@/src/utils/token-varify";
+import { useGetSingleUserQuery } from "@/src/redux/features/users/userApi";
 
 export default function Header({user}) {
   const router = useRouter();
-  
-  console.log("header user", user);
   
 
   const [showProfile, setShowProfile] = useState(false);
@@ -21,6 +20,10 @@ export default function Header({user}) {
   const profileRef = useRef(null);
   const notificationRef = useRef(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const validUser = verifiedUser()
+  const {data: singleUser, isLoading} = useGetSingleUserQuery(validUser?.userId)
+  const singleUserData = singleUser?.data
 
   const notifications = [
     {
@@ -188,7 +191,7 @@ export default function Header({user}) {
                 <Image src={profile} alt="User" fill className="object-cover" />
               </div>
               <div>
-                <p className="text-sm font-medium text-[#070707]">{user.name} || name</p>
+                <p className="text-sm font-medium text-[#070707]">{singleUserData.first_name}</p>
                 <p className="text-xs text-gray-500">{user.role}</p>
               </div>
             </div>
