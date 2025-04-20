@@ -12,6 +12,16 @@ const ReviewModal = ({ isOpen, onClose, onSubmit }: ReviewModalProps) => {
   const [feedback, setFeedback] = useState('');
   const [hoveredStar, setHoveredStar] = useState(0);
 
+  const handleSubmit = () => {
+    if (rating === 0) {
+      alert('Please select a rating');
+      return;
+    }
+    onSubmit(rating, feedback);
+    setRating(0);
+    setFeedback('');
+  };
+
   // Add effect to control body scroll
   useEffect(() => {
     if (isOpen) {
@@ -80,7 +90,7 @@ const ReviewModal = ({ isOpen, onClose, onSubmit }: ReviewModalProps) => {
         </div>
 
         <button
-          onClick={() => onSubmit(rating, feedback)}
+          onClick={handleSubmit}
           className="w-full py-3 bg-[#20B894] text-white rounded-lg font-medium hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2"
         >
           Submit

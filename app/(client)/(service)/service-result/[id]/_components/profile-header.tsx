@@ -1,9 +1,10 @@
 import React from 'react';
 import Image from 'next/image';
 import { Star } from 'lucide-react';
+import profileImg from "@/public/avatars/john.png"
 
 interface ProfileHeaderProps {
-  instructor: {
+  formattedInstructor: {
     image: string;
     name: string;
     email: string;
@@ -12,41 +13,44 @@ interface ProfileHeaderProps {
     location: string;
     languages: string[];
     isVerified: boolean;
+    first_name: string;
   };
 }
 
-export default function ProfileHeader({ instructor }: ProfileHeaderProps) {
+export default function ProfileHeader({ formattedInstructor }: ProfileHeaderProps) {
+  console.log("formattedInstructor", formattedInstructor);
+  
   return (
     <div>
       <div className="flex flex-col gap-4 border p-6 rounded-xl">
         <div className="flex items-center gap-4">
           <div className="w-[140px] h-[140px] rounded-full relative overflow-hidden">
             <Image
-              src={instructor.image}
-              alt={instructor.name}
+              src={ profileImg}
+              alt={formattedInstructor.first_name}
               fill
               className="object-cover"
             />
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-semibold text-[#070707]">
-                {instructor.name}
+              <h1 className="text-3xl font-medium text-[#070707]">
+                {formattedInstructor.first_name}
               </h1>
-              {instructor.isVerified && (
-                <span className="bg-emerald-50 text-emerald-500 text-sm px-2 py-0.5 rounded-full flex items-center gap-1">
-                  Verified <span className="text-emerald-500">✓</span>
+              {formattedInstructor.isVerified && (
+                <span className="bg-emerald-50 text-[#20B894] text-sm font-medium px-2 py-0.5 rounded-full flex items-center gap-1">
+                  Verified <span className="text-[#20B894]">✓</span>
                 </span>
               )}
               <div className="flex items-center gap-1 text-sm">
                 <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                <span className="font-medium">{instructor.rating}</span>
-                <span className="text-gray-500">
-                  ({instructor.totalReview})
+                <span className="font-normal text-lg text-[#4A4C56] ">{formattedInstructor.rating}</span>
+                <span className="text-[#4A4C56] font-normal text-lg">
+                  ({formattedInstructor.totalReview})
                 </span>
               </div>
             </div>
-            <p className="text-gray-500 text-sm py-1">{instructor.email}</p>
+            <p className="text-[#777980] text-lg  py-1">{formattedInstructor.email}</p>
             <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
               <div className="flex items-center gap-1">
                 <svg
@@ -68,7 +72,9 @@ export default function ProfileHeader({ instructor }: ProfileHeaderProps) {
                     d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                   />
                 </svg>
-                {instructor.location}
+                <p className='font-normal text-[#4A4C56] text-lg'>
+                {formattedInstructor.location}
+                </p>
               </div>
               <div className="flex items-center gap-1">
                 <svg
@@ -84,7 +90,10 @@ export default function ProfileHeader({ instructor }: ProfileHeaderProps) {
                     d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"
                   />
                 </svg>
-                {instructor.languages.join(", ")}
+                <p className='font-normal text-[#4A4C56] text-lg'>
+                {formattedInstructor?.languages?.join(", ")}
+
+                </p>
               </div>
             </div>
           </div>

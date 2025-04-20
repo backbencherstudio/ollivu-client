@@ -73,7 +73,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
                 <h4 className="font-medium text-[#070707]">
                   {service.instructor?.name || "Instructor"}
                 </h4>
-                <p className="text-sm text-[#777980]">{service.instructor?.email}</p>
+                {/* <p className="text-sm text-[#777980]">{service.instructor?.email}</p> */}
               </div>
             </div>
 

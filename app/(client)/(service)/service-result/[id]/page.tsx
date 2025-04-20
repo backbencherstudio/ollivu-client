@@ -9,7 +9,16 @@ import ReviewList from "./_components/review-list";
 import ProfileHeader from "./_components/profile-header";
 import About from "./_components/about";
 import RatingOverview from "./_components/rating-overview";
-import ReviewModal from './_components/review-modal';
+import ReviewModal from "./_components/review-modal";
+import { useGetSingleUserQuery } from "@/src/redux/features/users/userApi";
+
+// Add this import at the top with other imports
+import BagIcon from "@/public/icons/bag-icon";
+import SuccessIcon from "@/public/icons/success-icon";
+import EnsuredIcon from "@/public/icons/ensured-icon";
+import VerifiedIcon from "@/public/icons/verified-icon";
+import { Pagination } from "@/components/reusable/pagination";
+import FlagIcon from "@/public/icons/flag-icon";
 
 const ServiceDetails = () => {
   const params = useParams();
@@ -18,21 +27,56 @@ const ServiceDetails = () => {
   const [activeTab, setActiveTab] = useState("all");
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
-  const handleReviewSubmit = (rating: number, feedback: string) => {
-    // Handle the review submission here
-    console.log('Rating:', rating, 'Feedback:', feedback);
-    setIsReviewModalOpen(false);
+  const { data: instructor, isLoading } = useGetSingleUserQuery(
+    params.id as string
+  );
+  const singleUser = instructor?.data;
+  const reviews = instructor?.reviews;
+  console.log("reviews", reviews);
+
+  // Add these states at the top with other state declarations
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 3; // Number of reviews per page
+
+  // Add this pagination logic before the return statement
+  const totalPages = Math.ceil((reviews?.length || 0) / itemsPerPage);
+  const indexOfLastReview = currentPage * itemsPerPage;
+  const indexOfFirstReview = indexOfLastReview - itemsPerPage;
+  const currentReviews = reviews?.slice(indexOfFirstReview, indexOfLastReview);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({
+      top: document.getElementById("reviews-section")?.offsetTop,
+      behavior: "smooth",
+    });
   };
 
-  const service = serviceCategories
-    .flatMap((category) => category.items)
-    .find((service) => service.id === Number(params.id));
-
-  if (!service) {
-    return <div>Service not found</div>;
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
 
-  const instructor = service.instructor;
+  if (!singleUser) {
+    return <div>User not found</div>;
+  }
+
+  const formattedInstructor = {
+    name: singleUser?.personalInfo?.display_name,
+    first_name: singleUser.personalInfo?.first_name,
+    last_name: singleUser.personalInfo?.last_name,
+    email: singleUser?.email,
+    image: singleUser?.portfolio || "/default-avatar.jpg",
+    rating: singleUser?.rating || 0,
+    skills: singleUser?.extra_skills || [],
+    experience: "5+ years",
+    totalReview: singleUser?.review || 0,
+    customerSatisfaction: 95,
+    isVerified: true,
+    portfolioImage: singleUser?.portfolio || "/default-portfolio.jpg",
+    about: singleUser?.about_me,
+    location: `${singleUser?.addressInfo?.city}, ${singleUser?.addressInfo?.country}`,
+    languages: ["English", "Bengali"], // Add default languages
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -45,55 +89,67 @@ const ServiceDetails = () => {
 
       <div className="w-full  flex  gap-6">
         <div className="w-[70%] flex justify-center gap-6">
-          <div className=" bg-white rounded-xl shadow-sm p-6">
-            {/* Profile Header */}
-            <ProfileHeader
-              instructor={{
-                ...instructor,
-                rating: Number(instructor.rating),
-              }}
-            />
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <ProfileHeader formattedInstructor={formattedInstructor} />
 
             {/* About Me Section */}
             <About
-              instructor={instructor}
-              isExpanded={undefined}
-              setIsExpanded={undefined}
+              instructor={formattedInstructor}
+              isExpanded={isExpanded}
+              setIsExpanded={setIsExpanded}
             />
 
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 my-8">
               {[
-                { label: "Total Review", value: instructor.totalReview },
-                { label: "Experience", value: instructor.experience },
+                {
+                  label: "Years of expertise",
+                  value: "3 years",
+                  icon: <BagIcon />,
+                },
                 {
                   label: "Customer Satisfaction",
-                  value: `${instructor.customerSatisfaction}%`,
+                  value: "100%",
+                  icon: <SuccessIcon />,
                 },
                 {
-                  label: "Verified",
-                  value: instructor.isVerified ? "Yes" : "No",
+                  label: "Quality Service Ensured",
+                  value: "Yes",
+                  icon: <EnsuredIcon />,
+                },
+                {
+                  label: "Verified Trainer",
+                  value: "Verified",
+                  icon: <VerifiedIcon />,
                 },
               ].map((stat, index) => (
-                <div key={index} className="bg-[#F9F9F9] p-4 rounded-lg border">
-                  <div className="text-[#777980] text-sm mb-1">
+                <div
+                  key={index}
+                  className="bg-white p-6 rounded-xl border flex flex-col items-center text-center gap-2"
+                >
+                  <div className="w-12 h-12 flex items-center justify-center">
+                    {stat.icon}
+                  </div>
+                  {/* <div className="text-[#4A4C56] font-medium text-lg">
+                    {stat.value}
+                  </div> */}
+                  <div className="text-[#4A4C56] text-base font-normal">
                     {stat.label}
                   </div>
-                  <div className="text-[#070707] font-medium">{stat.value}</div>
                 </div>
               ))}
             </div>
 
             {/* Skills Section */}
             <div className="mb-8">
-              <h2 className="text-xl font-semibold text-[#070707] mb-4">
+              <h2 className="text-2xl font-medium text-[#070707] mb-4">
                 Skills
               </h2>
               <div className="flex flex-wrap gap-2">
-                {instructor.skills.map((skill, index) => (
+                {formattedInstructor.skills.map((skill, index) => (
                   <span
                     key={index}
-                    className="bg-[#F9F9F9] border border-[#777980] text-[#777980] px-4 py-2 rounded-full text-sm"
+                    className="bg-[#F9F9F9] border border-[#777980] text-[#777980] px-4 py-2 rounded-full text-base"
                   >
                     {skill}
                   </span>
@@ -119,10 +175,8 @@ const ServiceDetails = () => {
             {/* added review section */}
             <div className="mb-8">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-[#070707]">
-                  Reviews
-                </h2>
-                <button 
+                <h2 className="text-2xl font-medium text-[#070707]">Reviews</h2>
+                <button
                   onClick={() => setIsReviewModalOpen(true)}
                   className="px-4 py-2 bg-[#20B894] text-white rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors"
                 >
@@ -131,22 +185,25 @@ const ServiceDetails = () => {
               </div>
 
               {/* Rating Overview */}
-              <RatingOverview />
+              <RatingOverview formattedInstructor={formattedInstructor} />
 
               {/* Review Tabs */}
               <div className="border-b mb-6">
+                <h2 className="text-2xl font-medium text-[#070707] my-5">
+                  Review Lists
+                </h2>
                 <div className="flex gap-6">
                   <button
-                    onClick={() => setActiveTab("all")}
+                    // onClick={() => setActiveTab("all")}
                     className={`pb-2 text-sm font-medium ${
                       activeTab === "all"
-                        ? "text-[#20B894] border-b-2 border-[#20B894]"
+                        ? "text-[#20B894] border-b-2 border-[#20B894] font-normal text-xl"
                         : "text-[#777980]"
                     }`}
                   >
                     All reviews
                   </button>
-                  <button
+                  {/* <button
                     onClick={() => setActiveTab("latest")}
                     className={`pb-2 text-sm font-medium ${
                       activeTab === "latest"
@@ -155,14 +212,37 @@ const ServiceDetails = () => {
                     }`}
                   >
                     Latest reviews
-                  </button>
+                  </button> */}
                 </div>
               </div>
 
               {/* Review List */}
-              <ReviewList instructor={instructor} activeTab={activeTab} />
-              <ReviewList instructor={instructor} activeTab={activeTab} />
-              <ReviewList instructor={instructor} activeTab={activeTab} />
+              <div id="reviews-section">
+                {reviews && reviews.length > 0 ? (
+                  <>
+                    <div>
+                      {currentReviews?.map((review) => (
+                        <ReviewList
+                          key={review._id}
+                          review={review}
+                          instructor={formattedInstructor}
+                        />
+                      ))}
+                    </div>
+                    {totalPages > 1 && (
+                      <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={handlePageChange}
+                      />
+                    )}
+                  </>
+                ) : (
+                  <div className="text-center text-gray-500 py-8">
+                    No reviews yet
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -179,13 +259,13 @@ const ServiceDetails = () => {
                   className="object-cover"
                 />
               </div>
-              <h3 className="font-medium text-[#070707]">{instructor.name}</h3>
+              <h3 className="font-medium text-[#070707]">{formattedInstructor.name}</h3>
               <p className="text-gray-500 text-sm">Offline</p>
               <p className="text-xs text-gray-500 mt-1">10:05 PM local time</p>
             </div>
 
             <div className="mt-6 space-y-3">
-              <button className="w-full py-2.5 bg-[#20B894] text-white rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2">
+              <button className="w-full py-2.5 bg-[#20B894] text-white rounded-lg text-base font-medium hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2 cursor-pointer">
                 Send Message Request
                 <svg
                   className="w-4 h-4"
@@ -197,13 +277,14 @@ const ServiceDetails = () => {
                   <path d="M5 12h14m-7-7l7 7-7 7" />
                 </svg>
               </button>
-              <button className="w-full py-2.5 text-red-500 border border-red-500 rounded-lg text-sm font-medium hover:bg-red-50 transition-colors">
+              <button className="w-full py-2.5 text-[#FE5050] border border-[#FE5050] rounded-lg text-base font-medium hover:bg-red-50 transition-colors flex items-center justify-center gap-2 cursor-pointer">
                 Report Profile
+                <FlagIcon className="w-4 h-4 stroke-current" />
               </button>
             </div>
 
             <div className="mt-4 text-center">
-              <p className="text-sm text-gray-500">
+              <p className="text-sm  text-gray-500">
                 Average response time: 5 hours
               </p>
             </div>
@@ -212,11 +293,11 @@ const ServiceDetails = () => {
       </div>
 
       {/* Review Modal */}
-      <ReviewModal
+      {/* <ReviewModal
         isOpen={isReviewModalOpen}
         onClose={() => setIsReviewModalOpen(false)}
         onSubmit={handleReviewSubmit}
-      />
+      /> */}
     </div>
   );
 };

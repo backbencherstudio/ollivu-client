@@ -2,7 +2,7 @@
 
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import profile from "@/public/avatars/emily.png";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -27,14 +27,29 @@ import Portfolio from "./_components/portfolio";
 
 // Update imports
 import Certificate from "./_components/certificate";
+import {
+  useGetSingleUserQuery,
+  useUpdateUserMutation,
+} from "@/src/redux/features/users/userApi";
 import { verifiedUser } from "@/src/utils/token-varify";
-import { useGetAllUsersQuery } from "@/src/redux/features/users/userApi";
+import { toast } from "sonner";
 
 export default function UserProfile() {
   const [profileImage, setProfileImage] = useState(profile);
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  // Update the initial formData state with empty values
+  const validUser = verifiedUser();
+  // console.log("user", validUser);
+
+  // Update the mutation hook
+  const [updateUser] = useUpdateUserMutation();
+  const { data: singleUser, isLoading } = useGetSingleUserQuery(
+    validUser?.userId
+  );
+  const singleUserData = singleUser?.data;
+  // console.log("singleUser", singleUserData);
+
+  // Add these after other state declarations
   const [formData, setFormData] = useState({
     personalInfo: {
       firstName: "",
@@ -50,57 +65,138 @@ export default function UserProfile() {
       streetAddress: "",
       aptSuite: "",
       city: "",
-      // state: "",
-      // zipCode: ""
+      stateProvinceCountryRegion: "",
+      zipCode: "",
     },
     aboutMe: "",
   });
+  // console.log("formData", formData);
 
+  // Add this handler function
   const handleInputChange = (section: string, field: string, value: string) => {
     setFormData((prev) => {
-      let newData;
       if (section === "aboutMe") {
-        newData = { ...prev, [section]: value };
-      } else {
-        newData = {
-          ...prev,
-          [section]: {
-            ...prev[section],
-            [field]: value,
-          },
-        };
+        return { ...prev, [section]: value };
       }
-      console.log("Updated Form Data:", newData);
-      return newData;
+      return {
+        ...prev,
+        [section]: {
+          ...prev[section],
+          [field]: value,
+        },
+      };
     });
   };
 
-  const handleEditSave = () => {
-    if (isEditing) {
-      const updatedFormData = {
-        ...formData,
+  // Update the handleEditSave function
+  // Add useEffect to set initial form data when singleUser is loaded
+  useEffect(() => {
+    if (singleUserData) {
+      setFormData({
         personalInfo: {
-          ...formData.personalInfo,
-          displayName:
-            formData.personalInfo.displayName ||
-            `${formData.personalInfo.firstName} ${formData.personalInfo.lastName}`,
-          dateOfBirth: formData.personalInfo.dateOfBirth || "1990-01-01",
+          firstName: singleUserData.personalInfo?.first_name || "",
+          lastName: singleUserData.personalInfo?.last_name || "",
+          displayName: singleUserData.personalInfo?.display_name || "",
+          phoneNumber: singleUserData.personalInfo?.phone_number || "",
+          email: singleUserData.email || "",
+          dateOfBirth: singleUserData.personalInfo?.dath_of_birth || "",
+          gender: singleUserData.personalInfo?.gender || "",
         },
         addressInfo: {
-          ...formData.addressInfo,
-          streetAddress:
-            formData.addressInfo.streetAddress || "123 Main Street",
-          aptSuite: formData.addressInfo.aptSuite || "Apt 4B",
-          city: formData.addressInfo.city || "New York",
-          // state: formData.addressInfo.state || "NY",
-          // zipCode: formData.addressInfo.zipCode || "10001"
+          country: singleUserData.addressInfo?.country || "",
+          streetAddress: singleUserData.addressInfo?.streetAddress || "",
+          aptSuite: singleUserData.addressInfo?.apt_suite || "",
+          city: singleUserData.addressInfo?.city || "",
+          stateProvinceCountryRegion:
+            singleUserData.addressInfo?.state_province_country_region || "",
+          zipCode: singleUserData.addressInfo?.zipCode || "",
         },
-        aboutMe:
-          formData.aboutMe ||
-          `Hi, I'm ${formData.personalInfo.firstName} ${formData.personalInfo.lastName}. I'm passionate about learning and sharing skills!`,
-      };
-      setFormData(updatedFormData);
-      console.log("All Form Data:", updatedFormData);
+        aboutMe: singleUserData.about_me || "",
+      });
+    }
+  }, [singleUserData]);
+
+  // Update handleEditSave function
+  const handleEditSave = async () => {
+    if (isEditing) {
+      try {
+        const formDataToSend = new FormData();
+
+        // Add personal info
+        formDataToSend.append("first_name", formData.personalInfo.firstName);
+        formDataToSend.append("email", formData.personalInfo.email);
+        formDataToSend.append("userId", validUser?.userId);
+
+        // Add nested personal info
+        formDataToSend.append(
+          "personalInfo[first_name]",
+          formData.personalInfo.firstName
+        );
+        formDataToSend.append(
+          "personalInfo[last_name]",
+          formData.personalInfo.lastName
+        );
+        formDataToSend.append(
+          "personalInfo[display_name]",
+          formData.personalInfo.displayName
+        );
+        formDataToSend.append(
+          "personalInfo[phone_number]",
+          formData.personalInfo.phoneNumber
+        );
+        formDataToSend.append(
+          "personalInfo[gender]",
+          formData.personalInfo.gender
+        );
+        formDataToSend.append(
+          "personalInfo[dath_of_birth]",
+          formData.personalInfo.dateOfBirth
+        );
+
+        // Add address info
+        formDataToSend.append(
+          "addressInfo[country]",
+          formData.addressInfo.country
+        );
+        formDataToSend.append(
+          "addressInfo[streetAddress]",
+          formData.addressInfo.streetAddress
+        );
+        formDataToSend.append(
+          "addressInfo[apt_suite]",
+          formData.addressInfo.aptSuite
+        );
+        formDataToSend.append("addressInfo[city]", formData.addressInfo.city);
+        formDataToSend.append(
+          "addressInfo[state_province_country_region]",
+          formData.addressInfo.stateProvinceCountryRegion
+        );
+        formDataToSend.append(
+          "addressInfo[zipCode]",
+          formData.addressInfo.zipCode
+        );
+
+        // Add about me
+        formDataToSend.append("about_me", formData.aboutMe);
+        // Add this after formDataToSend.append("about_me", formData.aboutMe);
+        // Log FormData contents
+        for (const pair of formDataToSend.entries()) {
+          console.log(pair[0], pair[1]);
+        }
+
+        // Or alternatively, convert to an object and log
+        const formDataObject = Object.fromEntries(formDataToSend.entries());
+        console.log("formDataObject:", formDataObject);
+
+        const response = await updateUser(formDataToSend).unwrap();
+        console.log("response", response);
+
+        if (response.success) {
+          toast.success("Profile updated successfully");
+        }
+      } catch (error: any) {
+        toast.error(error.message || "Failed to update profile");
+      }
     }
     setIsEditing(!isEditing);
   };
@@ -108,6 +204,8 @@ export default function UserProfile() {
   const handleAddService = () => {
     setShowServiceModal(true);
   };
+
+  const handleImageClick = () => {};
 
   return (
     <div className="space-y-4 md:space-y-6">
@@ -123,9 +221,14 @@ export default function UserProfile() {
             />
           </div>
           <div className="text-center sm:text-left">
-            <h2 className="text-lg font-medium">Katie Sims</h2>
+            <h2 className="text-lg font-medium">
+              {singleUserData?.first_name}
+            </h2>
             <div className="flex flex-col sm:flex-row gap-2 mt-2">
-              <button className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678] flex justify-center items-center gap-x-2">
+              <button
+                onClick={handleImageClick}
+                className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678] flex justify-center items-center gap-x-2"
+              >
                 Replace Photo
                 <BsArrowUpRight />
               </button>
@@ -199,6 +302,7 @@ export default function UserProfile() {
                 handleInputChange("personalInfo", "phoneNumber", e.target.value)
               }
               placeholder="+1234567890"
+              type="number"
               className="mt-1"
               disabled={!isEditing}
             />
@@ -257,6 +361,26 @@ export default function UserProfile() {
         <h2 className="text-lg font-medium mb-6">Address Information</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           <div>
+            <label className="text-sm text-gray-600">Country (optional)</label>
+            <Select
+              value={formData.addressInfo.country}
+              onValueChange={(value) =>
+                handleInputChange("addressInfo", "country", value)
+              }
+              disabled={!isEditing}
+            >
+              <SelectTrigger className="mt-1">
+                <SelectValue placeholder="United states" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="us">United States</SelectItem>
+                <SelectItem value="uk">United Kingdom</SelectItem>
+                <SelectItem value="ca">Canada</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
             <label className="text-sm text-gray-600">
               Street address (optional)
             </label>
@@ -269,49 +393,27 @@ export default function UserProfile() {
                   e.target.value
                 )
               }
-              className="mt-1"
-              disabled={!isEditing}
-            />
-          </div>
-          <div>
-            <label className="text-sm text-gray-600">Country (optional)</label>
-            <Select
-              value={formData.addressInfo.country}
-              onValueChange={(value) =>
-                handleInputChange("addressInfo", "country", value)
-              }
-              disabled={!isEditing}
-            >
-              <SelectTrigger className="mt-1">
-                <SelectValue placeholder="Select country" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="us">United States</SelectItem>
-                <SelectItem value="uk">United Kingdom</SelectItem>
-                <SelectItem value="ca">Canada</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <label className="text-sm text-gray-600">
-              Street address (optional)
-            </label>
-            <Input
               placeholder="e.g. 123 Main St."
               className="mt-1"
               disabled={!isEditing}
             />
           </div>
+
           <div>
             <label className="text-sm text-gray-600">
-              Apt, suite, (optional)
+              Apt, suite. (optional)
             </label>
             <Input
+              value={formData.addressInfo.aptSuite}
+              onChange={(e) =>
+                handleInputChange("addressInfo", "aptSuite", e.target.value)
+              }
               placeholder="e.g. Apt #123"
               className="mt-1"
               disabled={!isEditing}
             />
           </div>
+
           <div>
             <label className="text-sm text-gray-600">City</label>
             <Input
@@ -319,28 +421,43 @@ export default function UserProfile() {
               onChange={(e) =>
                 handleInputChange("addressInfo", "city", e.target.value)
               }
-              placeholder="e.g. San Antonio"
+              placeholder="e.g. America #123"
               className="mt-1"
               disabled={!isEditing}
             />
           </div>
 
-          <Select
-            value={formData.addressInfo.country}
-            onValueChange={(value) =>
-              handleInputChange("addressInfo", "country", value)
-            }
-            disabled={!isEditing}
-          >
-            <SelectTrigger className="mt-1">
-              <SelectValue placeholder="United States" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="us">United States</SelectItem>
-              <SelectItem value="uk">United Kingdom</SelectItem>
-              <SelectItem value="ca">Canada</SelectItem>
-            </SelectContent>
-          </Select>
+          <div>
+            <label className="text-sm text-gray-600">
+              State / Province / County / Region
+            </label>
+            <Input
+              value={formData.addressInfo.stateProvinceCountryRegion}
+              onChange={(e) =>
+                handleInputChange(
+                  "addressInfo",
+                  "stateProvinceCountryRegion",
+                  e.target.value
+                )
+              }
+              placeholder="e.g. State #123"
+              className="mt-1"
+              disabled={!isEditing}
+            />
+          </div>
+
+          <div>
+            <label className="text-sm text-gray-600">Zip code</label>
+            <Input
+              value={formData.addressInfo.zipCode}
+              onChange={(e) =>
+                handleInputChange("addressInfo", "zipCode", e.target.value)
+              }
+              placeholder="726 664 074"
+              className="mt-1"
+              disabled={!isEditing}
+            />
+          </div>
         </div>
       </Card>
 
