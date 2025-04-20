@@ -2,7 +2,7 @@
 
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import profile from "@/public/avatars/emily.png";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -27,23 +27,27 @@ import Portfolio from "./_components/portfolio";
 
 // Update imports
 import Certificate from "./_components/certificate";
-import { useGetSingleUserQuery, useUpdateUserMutation } from "@/src/redux/features/users/userApi";
+import {
+  useGetSingleUserQuery,
+  useUpdateUserMutation,
+} from "@/src/redux/features/users/userApi";
 import { verifiedUser } from "@/src/utils/token-varify";
+import { toast } from "sonner";
 
 export default function UserProfile() {
   const [profileImage, setProfileImage] = useState(profile);
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const validUser = verifiedUser()
-  console.log("user", validUser);
-  
+  const validUser = verifiedUser();
+  // console.log("user", validUser);
 
   // Update the mutation hook
   const [updateUser] = useUpdateUserMutation();
-  const {data: singleUser, isLoading} = useGetSingleUserQuery(validUser?.userId)
-  const singleUserData = singleUser?.data
-  console.log("singleUser", singleUserData);
-  
+  const { data: singleUser, isLoading } = useGetSingleUserQuery(
+    validUser?.userId
+  );
+  const singleUserData = singleUser?.data;
+  // console.log("singleUser", singleUserData);
 
   // Add these after other state declarations
   const [formData, setFormData] = useState({
@@ -66,8 +70,7 @@ export default function UserProfile() {
     },
     aboutMe: "",
   });
-  console.log("formData", formData);
-  
+  // console.log("formData", formData);
 
   // Add this handler function
   const handleInputChange = (section: string, field: string, value: string) => {
@@ -86,50 +89,113 @@ export default function UserProfile() {
   };
 
   // Update the handleEditSave function
+  // Add useEffect to set initial form data when singleUser is loaded
+  useEffect(() => {
+    if (singleUserData) {
+      setFormData({
+        personalInfo: {
+          firstName: singleUserData.personalInfo?.first_name || "",
+          lastName: singleUserData.personalInfo?.last_name || "",
+          displayName: singleUserData.personalInfo?.display_name || "",
+          phoneNumber: singleUserData.personalInfo?.phone_number || "",
+          email: singleUserData.email || "",
+          dateOfBirth: singleUserData.personalInfo?.dath_of_birth || "",
+          gender: singleUserData.personalInfo?.gender || "",
+        },
+        addressInfo: {
+          country: singleUserData.addressInfo?.country || "",
+          streetAddress: singleUserData.addressInfo?.streetAddress || "",
+          aptSuite: singleUserData.addressInfo?.apt_suite || "",
+          city: singleUserData.addressInfo?.city || "",
+          stateProvinceCountryRegion:
+            singleUserData.addressInfo?.state_province_country_region || "",
+          zipCode: singleUserData.addressInfo?.zipCode || "",
+        },
+        aboutMe: singleUserData.about_me || "",
+      });
+    }
+  }, [singleUserData]);
+
+  // Update handleEditSave function
   const handleEditSave = async () => {
     if (isEditing) {
       try {
-        const updatedFormData = {
-          userId: "", 
-          first_name: formData.personalInfo.firstName,
-          email: formData.personalInfo.email,
-          password: "", // Keep empty for update
-          profileImage: "", // Optional
-          role: "user",
-          isDeleted: false,
-          personalInfo: {
-            first_name: formData.personalInfo.firstName,
-            last_name: formData.personalInfo.lastName,
-            display_name: formData.personalInfo.displayName,
-            phone_number: formData.personalInfo.phoneNumber || null,
-            gender: formData.personalInfo.gender,
-            dath_of_birth: formData.personalInfo.dateOfBirth || null,
-          },
-          addressInfo: {
-            country: formData.addressInfo.country,
-            streetAddress: formData.addressInfo.streetAddress,
-            apt_suite: formData.addressInfo.aptSuite,
-            city: formData.addressInfo.city,
-            state_province_country_region: formData.addressInfo.stateProvinceCountryRegion,
-            zipCode: formData.addressInfo.zipCode,
-          },
-          about_me: formData.aboutMe,
-          my_service: [],
-          extra_skills: [],
-          portfolio: "",
-          cartificate: "",
-          rating: 0,
-          review: 0,
-        };
+        const formDataToSend = new FormData();
 
-        const response = await updateUser(updatedFormData).unwrap();
+        // Add personal info
+        formDataToSend.append("first_name", formData.personalInfo.firstName);
+        formDataToSend.append("email", formData.personalInfo.email);
+        formDataToSend.append("userId", validUser?.userId);
+
+        // Add nested personal info
+        formDataToSend.append(
+          "personalInfo[first_name]",
+          formData.personalInfo.firstName
+        );
+        formDataToSend.append(
+          "personalInfo[last_name]",
+          formData.personalInfo.lastName
+        );
+        formDataToSend.append(
+          "personalInfo[display_name]",
+          formData.personalInfo.displayName
+        );
+        formDataToSend.append(
+          "personalInfo[phone_number]",
+          formData.personalInfo.phoneNumber
+        );
+        formDataToSend.append(
+          "personalInfo[gender]",
+          formData.personalInfo.gender
+        );
+        formDataToSend.append(
+          "personalInfo[dath_of_birth]",
+          formData.personalInfo.dateOfBirth
+        );
+
+        // Add address info
+        formDataToSend.append(
+          "addressInfo[country]",
+          formData.addressInfo.country
+        );
+        formDataToSend.append(
+          "addressInfo[streetAddress]",
+          formData.addressInfo.streetAddress
+        );
+        formDataToSend.append(
+          "addressInfo[apt_suite]",
+          formData.addressInfo.aptSuite
+        );
+        formDataToSend.append("addressInfo[city]", formData.addressInfo.city);
+        formDataToSend.append(
+          "addressInfo[state_province_country_region]",
+          formData.addressInfo.stateProvinceCountryRegion
+        );
+        formDataToSend.append(
+          "addressInfo[zipCode]",
+          formData.addressInfo.zipCode
+        );
+
+        // Add about me
+        formDataToSend.append("about_me", formData.aboutMe);
+        // Add this after formDataToSend.append("about_me", formData.aboutMe);
+        // Log FormData contents
+        for (const pair of formDataToSend.entries()) {
+          console.log(pair[0], pair[1]);
+        }
+
+        // Or alternatively, convert to an object and log
+        const formDataObject = Object.fromEntries(formDataToSend.entries());
+        console.log("formDataObject:", formDataObject);
+
+        const response = await updateUser(formDataToSend).unwrap();
+        console.log("response", response);
+
         if (response.success) {
-          console.log("Profile updated successfully:", response);
-        } else {
-          throw new Error(response.message || "Update failed");
+          toast.success("Profile updated successfully");
         }
       } catch (error: any) {
-        console.error("Failed to update profile:", error.message);
+        toast.error(error.message || "Failed to update profile");
       }
     }
     setIsEditing(!isEditing);
@@ -138,6 +204,8 @@ export default function UserProfile() {
   const handleAddService = () => {
     setShowServiceModal(true);
   };
+
+  const handleImageClick = () => {};
 
   return (
     <div className="space-y-4 md:space-y-6">
@@ -153,9 +221,14 @@ export default function UserProfile() {
             />
           </div>
           <div className="text-center sm:text-left">
-            <h2 className="text-lg font-medium">{singleUserData?.first_name}</h2>
+            <h2 className="text-lg font-medium">
+              {singleUserData?.first_name}
+            </h2>
             <div className="flex flex-col sm:flex-row gap-2 mt-2">
-              <button className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678] flex justify-center items-center gap-x-2">
+              <button
+                onClick={handleImageClick}
+                className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678] flex justify-center items-center gap-x-2"
+              >
                 Replace Photo
                 <BsArrowUpRight />
               </button>
@@ -229,6 +302,7 @@ export default function UserProfile() {
                 handleInputChange("personalInfo", "phoneNumber", e.target.value)
               }
               placeholder="+1234567890"
+              type="number"
               className="mt-1"
               disabled={!isEditing}
             />

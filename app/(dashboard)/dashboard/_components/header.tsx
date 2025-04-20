@@ -191,7 +191,7 @@ export default function Header({user}) {
                 <Image src={profile} alt="User" fill className="object-cover" />
               </div>
               <div>
-                <p className="text-sm font-medium text-[#070707]">{singleUserData.first_name}</p>
+                <p className="text-sm font-medium text-[#070707]">{singleUserData?.first_name}</p>
                 <p className="text-xs text-gray-500">{user.role}</p>
               </div>
             </div>
