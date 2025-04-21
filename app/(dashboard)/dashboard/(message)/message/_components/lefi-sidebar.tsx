@@ -21,8 +21,6 @@ export default function LeftSidebar({ connections, selectedUser, setSelectedUser
   const [finalQuery, setFinalQuery] = useState({ userId: currentUser?.userId, isAccepted: true });
 
   const { data } = authApi.useGetAllExchangeDataQuery(finalQuery);
-  console.log(24, data?.data);
-
 
   const requestDataHandler = (tabType: 'connections' | 'requests') => {
     setActiveTab(tabType);
