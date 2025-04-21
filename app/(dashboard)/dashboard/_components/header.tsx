@@ -192,16 +192,20 @@ export default function Header({ user }) {
               className="flex items-center gap-3 cursor-pointer"
             >
               <div className="w-10 h-10 rounded-full relative overflow-hidden">
-                <Image
-                  src={
-                    singleUserData?.profileImage
-                      ? `${process.env.NEXT_PUBLIC_IMAGE_URL}${singleUserData.profileImage}`
-                      : profile
-                  }
-                  alt="Profile"
-                  fill
-                  className="object-cover"
-                />
+                {singleUserData?.profileImage ? (
+                  <Image
+                    src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${singleUserData.profileImage}`}
+                    alt="Profile"
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-[#20B894] flex items-center justify-center text-white text-xl font-semibold">
+                    {singleUserData?.first_name 
+                      ? singleUserData.first_name.slice(0, 2).toUpperCase()
+                      : "UN"}
+                  </div>
+                )}
               </div>
               <div>
                 <p className="text-sm font-medium text-[#070707]">
