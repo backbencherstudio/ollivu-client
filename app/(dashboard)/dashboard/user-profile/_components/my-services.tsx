@@ -15,6 +15,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useGetAllCategoriesQuery } from "@/src/redux/features/categories/categoriesApi";
 
 interface MyServiceProps {
   title?: string;
@@ -68,6 +69,11 @@ export default function MyService({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [serviceName, setServiceName] = useState("");
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+
+  const {data: getAllCategories, isLoading} = useGetAllCategoriesQuery(undefined)
+  const categories = getAllCategories?.data || [];
+  console.log("my service", categories);
+  
 
   const handleAddService = () => {
     setShowServiceModal(true);
@@ -132,6 +138,12 @@ export default function MyService({
           >
             {buttonText}
           </button>
+
+          <button 
+            className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678] flex items-center gap-2"
+          >
+            Save
+          </button>
         </div>
       </Card>
 
@@ -150,7 +162,7 @@ export default function MyService({
           <div className="py-4">
             <p className="text-sm mb-4">Choose services</p>
             <div className="space-y-2 max-h-[400px] overflow-y-auto">
-              {serviceCategories.map((category) => (
+              {categories.map((category) => (
                 <div key={category.name} className="border rounded-lg">
                   <button
                     onClick={() => toggleCategory(category.name)}
