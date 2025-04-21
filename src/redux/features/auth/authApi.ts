@@ -39,6 +39,17 @@ export const authApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["User"],
     }),
+
+    getAllExchangeData: builder.query({
+      query: (query) => ({
+        url: "/shared/exchange",
+        method: "GET",
+        params: query
+      }),
+      providesTags: ['User']
+    }),
+
+    
   }),
 });
 
@@ -46,4 +57,5 @@ export const {
   useCreateUserMutation,
   useVerifyOTPMutation,
   useLoginUserMutation,
+  useGetAllExchangeDataQuery
 } = authApi;

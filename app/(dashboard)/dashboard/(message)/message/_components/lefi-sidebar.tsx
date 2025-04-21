@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Connection } from "../_types";
 import ConnectionItem from "./connection-item";
 import Image from "next/image";
 import { connectionRequests } from "../_data/mock-data";
+import { verifiedUser } from "@/src/utils/token-varify";
+import { useGetAllExchangeDataQuery } from "@/src/redux/features/auth/authApi";
 
 interface LeftSidebarProps {
   connections: Connection[];
@@ -12,6 +14,32 @@ interface LeftSidebarProps {
 
 export default function LeftSidebar({ connections, selectedUser, setSelectedUser }: LeftSidebarProps) {
   const [activeTab, setActiveTab] = useState<'connections' | 'requests'>('connections');
+const currentUser = verifiedUser();
+const [query, setQuery] = useState<{ userId?: string; isAccepted?: string }>({});
+
+// only trigger API when query updates
+const [finalQuery, setFinalQuery] = useState(query);
+
+const { data } = useGetAllExchangeDataQuery(finalQuery);
+console.log(24, data?.data);
+
+
+const requestDataHandler = (tabType: 'connections' | 'requests') => {
+  setActiveTab(tabType);
+
+  const updatedQuery = {
+    userId: currentUser?.userId,
+    isAccepted: tabType === 'connections' ? 'true' : 'false',
+  };
+
+  setQuery(updatedQuery);
+};
+
+useEffect(() => {
+  if (query.userId) {
+    setFinalQuery(query);
+  }
+}, [query]);
 
   return (
     <div className=" border-r border-gray-200 flex flex-col -z-10">
@@ -42,7 +70,7 @@ export default function LeftSidebar({ connections, selectedUser, setSelectedUser
       {/* Tab buttons */}
       <div className="flex border-b border-gray-200">
         <button 
-          onClick={() => setActiveTab('connections')}
+        onClick={() => requestDataHandler('connections')}
           className={`flex-1 text-center py-2 text-sm font-medium cursor-pointer ${
             activeTab === 'connections' 
               ? 'text-gray-800 border-b-2 border-gray-800' 
@@ -52,7 +80,7 @@ export default function LeftSidebar({ connections, selectedUser, setSelectedUser
           All Connections
         </button>
         <button 
-          onClick={() => setActiveTab('requests')}
+          onClick={() => requestDataHandler('requests')}
           className={`flex-1 text-center py-2 text-sm font-medium cursor-pointer ${
             activeTab === 'requests' 
               ? 'text-gray-800 border-b-2 border-gray-800' 

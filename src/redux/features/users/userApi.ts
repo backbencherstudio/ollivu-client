@@ -26,6 +26,15 @@ export const usersApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["User"],
     }),
+    // Add new endpoint for updating services
+    updateUserServices: builder.mutation({
+      query: ({ userId, data }) => ({
+        url: `/auth/addServices/${userId}`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["User"],
+    }),
   }),
 });
 
@@ -33,4 +42,5 @@ export const {
   useGetAllUsersQuery,
   useGetSingleUserQuery,
   useUpdateUserMutation,
+  useUpdateUserServicesMutation,
 } = usersApi;
