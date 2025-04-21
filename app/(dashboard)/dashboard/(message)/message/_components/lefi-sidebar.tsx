@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Connection } from "../_types";
 import ConnectionItem from "./connection-item";
 import Image from "next/image";
 import { connectionRequests } from "../_data/mock-data";
+import { verifiedUser } from "@/src/utils/token-varify";
+import { authApi } from "@/src/redux/features/auth/authApi";
 
 interface LeftSidebarProps {
   connections: Connection[];
@@ -12,6 +14,35 @@ interface LeftSidebarProps {
 
 export default function LeftSidebar({ connections, selectedUser, setSelectedUser }: LeftSidebarProps) {
   const [activeTab, setActiveTab] = useState<'connections' | 'requests'>('connections');
+  const currentUser = verifiedUser();
+  const [query, setQuery] = useState<{ userId?: string; isAccepted?: string }>({});
+
+  // only trigger API when query updates
+  const [finalQuery, setFinalQuery] = useState({ userId: currentUser?.userId, isAccepted: true });
+
+  const { data } = authApi.useGetAllExchangeDataQuery(finalQuery);
+  console.log(24, data?.data);
+
+
+  const requestDataHandler = (tabType: 'connections' | 'requests') => {
+    setActiveTab(tabType);
+
+    const updatedQuery = {
+      userId: currentUser?.userId,
+      isAccepted: tabType === 'connections' ? 'true' : 'false',
+    };
+
+    setQuery(updatedQuery);
+  };
+
+  useEffect(() => {
+    if (query.userId) {
+      setFinalQuery(query);
+    }
+  }, [query]);
+
+
+
 
   return (
     <div className=" border-r border-gray-200 flex flex-col -z-10">
@@ -41,23 +72,21 @@ export default function LeftSidebar({ connections, selectedUser, setSelectedUser
 
       {/* Tab buttons */}
       <div className="flex border-b border-gray-200">
-        <button 
-          onClick={() => setActiveTab('connections')}
-          className={`flex-1 text-center py-2 text-sm font-medium cursor-pointer ${
-            activeTab === 'connections' 
-              ? 'text-gray-800 border-b-2 border-gray-800' 
+        <button
+          onClick={() => requestDataHandler('connections')}
+          className={`flex-1 text-center py-2 text-sm font-medium cursor-pointer ${activeTab === 'connections'
+              ? 'text-gray-800 border-b-2 border-gray-800'
               : 'text-gray-500'
-          }`}
+            }`}
         >
           All Connections
         </button>
-        <button 
-          onClick={() => setActiveTab('requests')}
-          className={`flex-1 text-center py-2 text-sm font-medium cursor-pointer ${
-            activeTab === 'requests' 
-              ? 'text-gray-800 border-b-2 border-gray-800' 
+        <button
+          onClick={() => requestDataHandler('requests')}
+          className={`flex-1 text-center py-2 text-sm font-medium cursor-pointer ${activeTab === 'requests'
+              ? 'text-gray-800 border-b-2 border-gray-800'
               : 'text-gray-500'
-          }`}
+            }`}
         >
           Request
         </button>
@@ -66,30 +95,39 @@ export default function LeftSidebar({ connections, selectedUser, setSelectedUser
       {/* Content area */}
       <div className="overflow-y-auto flex-1">
         {activeTab === 'connections' ? (
-          connections.map((connection) => (
-            <ConnectionItem 
-              key={connection.id} 
-              connection={connection} 
+          data?.data?.map((connection) => (
+            <ConnectionItem
+              key={connection.id}
+              connection={connection}
               isSelected={selectedUser === connection.name}
               onSelect={setSelectedUser}
             />
           ))
         ) : (
           <div className="flex flex-col">
-            {connectionRequests.map((request) => (
+            {data?.data?.map((request) => (
               <div key={request.id} className="p-4 border-b border-gray-100">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full relative overflow-hidden">
-                    <Image 
-                      src={request.image} 
-                      alt={request.name}
-                      width={40}
-                      height={40}
-                      className="object-cover"
-                    />
+                    {
+                      request?.senderUserId?.profileImage ?
+                        <Image
+                          src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${request?.senderUserId?.profileImage}`}
+                          alt="User Profile Image"
+                          height={400}
+                          width={400}
+                          className="object-cover"
+                        />
+                        :
+                        <div className="w-full h-full bg-[#20B894] flex items-center justify-center text-white text-xl font-semibold">
+                          {request?.senderUserId?.first_name
+                            ? request?.senderUserId.first_name.slice(0, 2).toUpperCase()
+                            : "UN"}
+                        </div>
+                    }
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-sm font-medium">{request.name}</h3>
+                    <h3 className="text-sm font-medium">{request?.senderUserId?.first_name}</h3>
                     <p className="text-xs text-emerald-500">{request.message}</p>
                     <span className="text-xs text-gray-500">{request.time}</span>
                   </div>
