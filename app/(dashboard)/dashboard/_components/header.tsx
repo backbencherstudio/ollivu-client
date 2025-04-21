@@ -11,9 +11,8 @@ import Link from "next/link";
 import { verifiedUser } from "@/src/utils/token-varify";
 import { useGetSingleUserQuery } from "@/src/redux/features/users/userApi";
 
-export default function Header({user}) {
+export default function Header({ user }) {
   const router = useRouter();
-  
 
   const [showProfile, setShowProfile] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -21,9 +20,11 @@ export default function Header({user}) {
   const notificationRef = useRef(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const validUser = verifiedUser()
-  const {data: singleUser, isLoading} = useGetSingleUserQuery(validUser?.userId)
-  const singleUserData = singleUser?.data
+  const validUser = verifiedUser();
+  const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
+  const singleUserData = singleUser?.data;
+  console.log("singleUserData", singleUserData);
+  
 
   const notifications = [
     {
@@ -100,13 +101,14 @@ export default function Header({user}) {
     };
   }, []);
 
-    // Add logout handler
-    const handleLogout = () => {
-      localStorage.removeItem("accessToken");
-      document.cookie = "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
-      setIsAuthenticated(false);
-      router.push("/auth/login");
-    };
+  // Add logout handler
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    document.cookie =
+      "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+    setIsAuthenticated(false);
+    router.push("/auth/login");
+  };
 
   return (
     <div className="bg-white shadow-sm py-[21px] px-6 sticky top-0 z-50">
@@ -135,9 +137,7 @@ export default function Header({user}) {
             {/* Notification Dropdown */}
             {showNotifications && (
               <div className="absolute top-12 right-0 bg-gray-50 shadow-lg rounded-md p-4 w-[500px]">
-                <h3 className="text-lg font-medium mb-2">
-                  Your Notifications
-                </h3>
+                <h3 className="text-lg font-medium mb-2">Your Notifications</h3>
                 <div className="flex flex-col gap-4">
                   {notifications.slice(0, 5).map((notification) => (
                     <div
@@ -161,8 +161,12 @@ export default function Header({user}) {
                         </div>
                       )}
                       <div className="flex flex-col ">
-                      <p className="text-base font-medium text-[#23262F]">{notification.name}</p>
-                      <p className="text-sm font-normal text-[#4A4C56]">{notification.text}</p>
+                        <p className="text-base font-medium text-[#23262F]">
+                          {notification.name}
+                        </p>
+                        <p className="text-sm font-normal text-[#4A4C56]">
+                          {notification.text}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -188,10 +192,21 @@ export default function Header({user}) {
               className="flex items-center gap-3 cursor-pointer"
             >
               <div className="w-10 h-10 rounded-full relative overflow-hidden">
-                <Image src={profile} alt="User" fill className="object-cover" />
+                <Image
+                  src={
+                    singleUserData?.profileImage
+                      ? `${process.env.NEXT_PUBLIC_IMAGE_URL}${singleUserData.profileImage}`
+                      : profile
+                  }
+                  alt="Profile"
+                  fill
+                  className="object-cover"
+                />
               </div>
               <div>
-                <p className="text-sm font-medium text-[#070707]">{singleUserData?.first_name}</p>
+                <p className="text-sm font-medium text-[#070707]">
+                  {singleUserData?.first_name}
+                </p>
                 <p className="text-xs text-gray-500">{user.role}</p>
               </div>
             </div>
@@ -217,7 +232,10 @@ export default function Header({user}) {
                       My Account
                     </p>
                   </div> */}
-                  <div onClick={handleLogout} className="flex items-center gap-3 cursor-pointer">
+                  <div
+                    onClick={handleLogout}
+                    className="flex items-center gap-3 cursor-pointer"
+                  >
                     <AiOutlineLogout className="w-6 h-6 p-1 bg-[#EDFCF6] text-[#20B894] rounded-full" />
                     <p className="text-base font-normal text-[#070707]">
                       Log out
