@@ -33,6 +33,7 @@ import {
 } from "@/src/redux/features/users/userApi";
 import { verifiedUser } from "@/src/utils/token-varify";
 import { toast } from "sonner";
+import { useRef } from "react"; // Add this import
 
 export default function UserProfile() {
   const [profileImage, setProfileImage] = useState(profile);
@@ -43,9 +44,7 @@ export default function UserProfile() {
 
   // Update the mutation hook
   const [updateUser] = useUpdateUserMutation();
-  const { data: singleUser, isLoading } = useGetSingleUserQuery(
-    validUser?.userId
-  );
+  const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
   const singleUserData = singleUser?.data;
   // console.log("singleUser", singleUserData);
 
@@ -122,6 +121,11 @@ export default function UserProfile() {
       try {
         const formDataToSend = new FormData();
 
+        // Add image if selected
+        if (selectedImage) {
+          formDataToSend.append("profileImage", selectedImage);
+        }
+
         // Add personal info
         formDataToSend.append("first_name", formData.personalInfo.firstName);
         formDataToSend.append("email", formData.personalInfo.email);
@@ -193,6 +197,10 @@ export default function UserProfile() {
 
         if (response.success) {
           toast.success("Profile updated successfully");
+          // Clean up preview URL
+          if (previewUrl) {
+            URL.revokeObjectURL(previewUrl);
+          }
         }
       } catch (error: any) {
         toast.error(error.message || "Failed to update profile");
@@ -205,7 +213,134 @@ export default function UserProfile() {
     setShowServiceModal(true);
   };
 
-  const handleImageClick = () => {};
+  // Add these new states
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Update handleImageClick
+  const handleImageClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  // Add this new handler
+  // Remove the profileImage state since we don't need it
+  // const [profileImage, setProfileImage] = useState(profile);
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedImage(file);
+      // Create preview URL
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+    }
+  };
+
+  // Update handleEditSave
+  // const handleEditSave = async () => {
+  //   if (isEditing) {
+  //     try {
+  //       const formDataToSend = new FormData();
+
+  //       // Add image if selected
+  //       if (selectedImage) {
+  //         formDataToSend.append("profileImage", selectedImage);
+  //       }
+
+  //       // Add personal info
+  //       formDataToSend.append("first_name", formData.personalInfo.firstName);
+  //       formDataToSend.append("email", formData.personalInfo.email);
+  //       formDataToSend.append("userId", validUser?.userId);
+
+  //       // Add nested personal info
+  //       formDataToSend.append(
+  //         "personalInfo[first_name]",
+  //         formData.personalInfo.firstName
+  //       );
+  //       formDataToSend.append(
+  //         "personalInfo[last_name]",
+  //         formData.personalInfo.lastName
+  //       );
+  //       formDataToSend.append(
+  //         "personalInfo[display_name]",
+  //         formData.personalInfo.displayName
+  //       );
+  //       formDataToSend.append(
+  //         "personalInfo[phone_number]",
+  //         formData.personalInfo.phoneNumber
+  //       );
+  //       formDataToSend.append(
+  //         "personalInfo[gender]",
+  //         formData.personalInfo.gender
+  //       );
+  //       formDataToSend.append(
+  //         "personalInfo[dath_of_birth]",
+  //         formData.personalInfo.dateOfBirth
+  //       );
+
+  //       // Add address info
+  //       formDataToSend.append(
+  //         "addressInfo[country]",
+  //         formData.addressInfo.country
+  //       );
+  //       formDataToSend.append(
+  //         "addressInfo[streetAddress]",
+  //         formData.addressInfo.streetAddress
+  //       );
+  //       formDataToSend.append(
+  //         "addressInfo[apt_suite]",
+  //         formData.addressInfo.aptSuite
+  //       );
+  //       formDataToSend.append("addressInfo[city]", formData.addressInfo.city);
+  //       formDataToSend.append(
+  //         "addressInfo[state_province_country_region]",
+  //         formData.addressInfo.stateProvinceCountryRegion
+  //       );
+  //       formDataToSend.append(
+  //         "addressInfo[zipCode]",
+  //         formData.addressInfo.zipCode
+  //       );
+
+  //       // Add about me
+  //       formDataToSend.append("about_me", formData.aboutMe);
+  //       // Add this after formDataToSend.append("about_me", formData.aboutMe);
+  //       // Log FormData contents
+  //       for (const pair of formDataToSend.entries()) {
+  //         console.log(pair[0], pair[1]);
+  //       }
+
+  //       // Or alternatively, convert to an object and log
+  //       const formDataObject = Object.fromEntries(formDataToSend.entries());
+  //       console.log("formDataObject:", formDataObject);
+
+  //       const response = await updateUser(formDataToSend).unwrap();
+  //       console.log("response", response);
+
+  //       if (response.success) {
+  //         toast.success("Profile updated successfully");
+  //       }
+  //     } catch (error: any) {
+  //       toast.error(error.message || "Failed to update profile");
+  //     }
+  //   }
+  //   setIsEditing(!isEditing);
+  // };
+
+  // Add cleanup effect
+  useEffect(() => {
+    return () => {
+      // Cleanup preview URL when component unmounts
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
+
+  // Remove the console.log
+  // console.log("pro", process.env.NEXT_PUBLIC_IMAGE_URL);
+
+  // Update the Image component
 
   return (
     <div className="space-y-4 md:space-y-6">
@@ -213,12 +348,24 @@ export default function UserProfile() {
       <Card className="p-4 md:p-6">
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden mx-auto sm:mx-0">
-            <Image
-              src={profileImage}
-              alt="Profile"
-              fill
-              className="object-cover"
-            />
+            {selectedImage || singleUserData?.profileImage ? (
+              <Image
+                src={
+                  selectedImage
+                    ? previewUrl
+                    : `${process.env.NEXT_PUBLIC_IMAGE_URL}${singleUserData.profileImage}`
+                }
+                alt="Profile"
+                fill
+                className="object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-[#20B894] flex items-center justify-center text-white text-xl font-semibold">
+                {singleUserData?.first_name
+                  ? singleUserData.first_name.slice(0, 2).toUpperCase()
+                  : "UN"}
+              </div>
+            )}
           </div>
           <div className="text-center sm:text-left">
             <h2 className="text-lg font-medium">
@@ -231,9 +378,6 @@ export default function UserProfile() {
               >
                 Replace Photo
                 <BsArrowUpRight />
-              </button>
-              <button className="px-3 py-1.5 text-sm text-red-500 border border-red-500 rounded-md hover:bg-red-50">
-                Remove
               </button>
             </div>
           </div>
