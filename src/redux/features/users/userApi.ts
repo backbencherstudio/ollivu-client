@@ -22,11 +22,11 @@ export const usersApi = baseApi.injectEndpoints({
       query: (data) => ({
         url: "/auth",
         method: "PATCH",
-        body: data, 
+        body: data,
       }),
       invalidatesTags: ["User"],
     }),
-    // Add new endpoint for updating services
+
     updateUserServices: builder.mutation({
       query: ({ userId, data }) => ({
         url: `/auth/addServices/${userId}`,
@@ -35,6 +35,36 @@ export const usersApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["User"],
     }),
+
+    deleteUserServices: builder.mutation({
+      query: ({ userId, data }) => ({
+        url: `/auth/deleteServices/${userId}`,
+        method: "DELETE",
+        body: data
+      }),
+      invalidatesTags: ["User"],
+    }),
+
+    uploadPortfolio: builder.mutation({
+      query: ({ userId, data }) => ({
+        url: `/auth/setPortfolioImage/${userId}`,
+        method: "PATCH",
+        body: data
+      }),
+      invalidatesTags: ["User"],
+    }),
+
+    uploadCertificate: builder.mutation({
+      query: ({ userId, data }) => ({
+        url: `/auth/setCertificate/${userId}`, // Changed from setCertificate to setCertificateImage
+        method: "PATCH",
+        body: data,
+        // Add proper headers for multipart form data
+        formData: true,
+      }),
+      invalidatesTags: ["User"],
+    }),
+
   }),
 });
 
@@ -43,4 +73,7 @@ export const {
   useGetSingleUserQuery,
   useUpdateUserMutation,
   useUpdateUserServicesMutation,
+  useDeleteUserServicesMutation,
+  useUploadPortfolioMutation,
+  useUploadCertificateMutation
 } = usersApi;

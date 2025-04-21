@@ -2,20 +2,61 @@
 
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+import { useUploadPortfolioMutation } from "@/src/redux/features/users/userApi";
+import { verifiedUser } from "@/src/utils/token-varify";
 import { X } from "lucide-react";
-import { useState } from "react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function Portfolio() {
   const [showPortfolioModal, setShowPortfolioModal] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [serviceName, setServiceName] = useState("");
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const currentUser = verifiedUser();
+  const [uploadPortfolio] = useUploadPortfolioMutation();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setSelectedFile(e.target.files[0]);
+      const file = e.target.files[0];
+      setSelectedFile(file);
+      // Create preview URL
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
     }
   };
+
+  const handleUpload = async () => {
+    if (!selectedFile || !currentUser?.userId) return;
+
+    try {
+      const formData = new FormData();
+      formData.append('portfolio', selectedFile);
+      formData.append('userId', currentUser.userId);
+
+      const response = await uploadPortfolio({ userId: currentUser.userId, data: formData }).unwrap();
+      console.log("res", response);
+      
+      
+      if (response.success) {
+        toast.success('Portfolio uploaded successfully');
+        setShowPortfolioModal(false);
+        setSelectedFile(null);
+        setPreviewUrl(null);
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to upload portfolio');
+    }
+  };
+
+  // Cleanup preview URL when component unmounts or modal closes
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   return (
     <>
@@ -27,13 +68,13 @@ export default function Portfolio() {
         <div className="flex gap-2">
           <button 
             onClick={() => setShowPortfolioModal(true)}
-            className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678]"
+            className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678] cursor-pointer"
           >
             Add file
           </button>
-          <button className="px-3 py-1.5 text-sm text-red-500 border border-red-500 rounded-md hover:bg-red-50">
+          {/* <button className="px-3 py-1.5 text-sm text-red-500 border border-red-500 rounded-md hover:bg-red-50">
             Remove
-          </button>
+          </button> */}
         </div>
       </Card>
 
@@ -50,14 +91,6 @@ export default function Portfolio() {
             </button>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <div>
-              <label className="text-base font-medium mb-1 block">Service name</label>
-              <Input 
-                placeholder="Web development" 
-                value={serviceName}
-                onChange={(e) => setServiceName(e.target.value)}
-              />
-            </div>
             <div>
               <label className="text-base font-medium mb-1 block">Media</label>
               <div className="mt-1 border rounded-lg p-4">
@@ -80,13 +113,34 @@ export default function Portfolio() {
                   </span>
                 </label>
                 <p className="text-xs text-gray-500 mt-2">Maximum file size: 50 MB</p>
+
+                {/* Preview Section */}
+                {previewUrl && (
+                  <div className="mt-4">
+                    <p className="text-sm font-medium mb-2">Preview:</p>
+                    <div className="relative w-full h-48 rounded-lg overflow-hidden">
+                      <Image
+                        src={previewUrl}
+                        alt="Preview"
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
             <div className="pt-4">
               <button 
-                className="px-4 py-2 bg-[#20B894] text-white rounded-md hover:bg-[#1a9678] w-24"
+                onClick={handleUpload}
+                disabled={!selectedFile}
+                className={`px-4 py-2 text-white rounded-md w-24 cursor-pointer ${
+                  selectedFile 
+                    ? 'bg-[#20B894] hover:bg-[#1a9678]' 
+                    : 'bg-gray-400 cursor-not-allowed'
+                }`}
               >
-                Add file
+                {selectedFile ? 'Upload' : 'Add file'}
               </button>
             </div>
           </div>

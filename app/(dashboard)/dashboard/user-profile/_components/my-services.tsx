@@ -22,79 +22,22 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useGetAllCategoriesQuery } from "@/src/redux/features/categories/categoriesApi";
 import Image from "next/image";
-import { useUpdateUserMutation } from "@/src/redux/features/users/userApi";
+import {
+  useDeleteUserServicesMutation,
+  useUpdateUserServicesMutation,
+} from "@/src/redux/features/users/userApi";
+import { verifiedUser } from "@/src/utils/token-varify";
+import { toast } from "sonner";
 
 interface MyServiceProps {
   title?: string;
   description?: string;
-  buttonText?: string;
+  singleUser?: any; // Add proper type later
 }
 
-// Add service categories data
-const serviceCategories = [
-  {
-    name: "Professional & Business Services",
-    subcategories: [
-      "Consulting",
-      "Marketing",
-      "Legal Services",
-      "Financial Services",
-    ],
-  },
-  {
-    name: "Automotive & Transportation",
-    subcategories: [
-      "Car Repairs",
-      "Moving Help",
-      "Bike Repair & Maintenance",
-      "Ridesharing",
-      "Boat Repairs & Maintenance",
-    ],
-  },
-  {
-    name: "Education & Learning",
-    subcategories: [
-      "Tutoring & Academic Support",
-      "Online Learning & Skill Development",
-      "Music Lessons",
-      "Art Lessons",
-      "Self-Defense Lessons",
-      "Public Speaking Coaching",
-    ],
-  },
-  {
-    name: "Events & Entertainment",
-    subcategories: [
-      "Event Planning",
-      "Photography",
-      "DJ Services",
-      "Live Music",
-    ],
-  },
-  {
-    name: "Home Services & Maintenance",
-    subcategories: ["Cleaning", "Repairs", "Gardening", "Interior Design"],
-  },
-  {
-    name: "Personal & Care Services",
-    subcategories: ["Beauty Services", "Personal Training", "Massage Therapy"],
-  },
-  {
-    name: "Wellness & Personal Growth",
-    subcategories: ["Life Coaching", "Meditation", "Nutrition Consulting"],
-  },
-];
+export default function MyService({ singleUser }: MyServiceProps) {
+  console.log("95", singleUser);
 
-// Add these imports
-import { useUpdateUserServicesMutation } from "@/src/redux/features/users/userApi";
-import { verifiedUser } from "@/src/utils/token-varify";
-import { toast } from "sonner";
-
-export default function MyService({
-  title = "My Service",
-  description = "Add the service you have expertise in for exchanging services in this platform.",
-  buttonText = "Add service",
-}: MyServiceProps) {
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [services, setServices] = useState<string[]>([]);
   const [newService, setNewService] = useState("");
@@ -113,10 +56,7 @@ export default function MyService({
 
   const { data: singleUserData } = useGetAllCategoriesQuery(validUser?.userId);
   console.log("single", singleUserData?.data);
-  
 
-  // const {data:updateUser} = useUpdateUserMutation(undefined)
-  // console.log("my service", updateUser);
 
   const handleAddService = () => {
     setShowServiceModal(true);
@@ -135,8 +75,28 @@ export default function MyService({
     setShowDeleteAlert(true);
   };
 
-  const handleConfirmDelete = () => {
-    setServices(services.filter((service) => service !== serviceToDelete));
+  // First, update the mutation hook
+  const [deleteUserService] = useDeleteUserServicesMutation();
+  
+  // Then update the handleConfirmDelete function
+  const handleConfirmDelete = async () => {
+    try {
+      const response = await deleteUserService({
+        userId: validUser?.userId,
+        data: {
+          service: serviceToDelete
+        }
+      }).unwrap();
+      console.log("delete res", response);
+      
+  
+      if (response.success) {
+        setServices(services.filter((service) => service !== serviceToDelete));
+        toast.success("Service deleted successfully");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Failed to delete service");
+    }
     setShowDeleteAlert(false);
   };
 
@@ -175,20 +135,26 @@ export default function MyService({
   };
 
   // Update the services state when singleUserData changes
-  useEffect(() => {
-    if (singleUserData?.my_service) {
-      setServices(singleUserData.my_service);
-    }
-  }, [singleUserData]);
+  // useEffect(() => {
+  //   if (singleUserData?.my_service) {
+  //     setServices(singleUserData.my_service);
+  //   }
+  // }, [singleUserData]);
 
-  // In the return statement, update the Save button
+  // Update useEffect to properly initialize services from singleUser
+  useEffect(() => {
+    if (singleUser?.my_service) {
+      setServices(singleUser.my_service);
+    }
+  }, [singleUser]);
+
   return (
     <>
       <Card className="p-6">
-        <h2 className="text-lg font-medium mb-4">{title}</h2>
+        <h2 className="text-lg font-medium mb-4">My Services</h2>
 
-        {/* Display existing services */}
-        <div className=" flex flex-wrap gap-2">
+        {/* Display services - single unified section */}
+        <div className="flex flex-wrap gap-2 mb-4">
           {services.map((service, index) => (
             <div
               key={index}
@@ -205,18 +171,17 @@ export default function MyService({
           ))}
         </div>
 
-        <p className="text-sm text-gray-500 mb-4">{description}</p>
         <div className="flex gap-2">
           <button
             onClick={handleAddService}
-            className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678] flex items-center gap-2"
+            className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678] flex items-center gap-2 cursor-pointer"
           >
-            {buttonText}
+            Add Services
           </button>
 
           <button
             onClick={handleSaveServices}
-            className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678] flex items-center gap-2"
+            className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678] flex items-center gap-2 cursor-pointer"
           >
             Save
           </button>
@@ -267,27 +232,36 @@ export default function MyService({
                       />
                     </svg>
                   </button>
+
                   {expandedCategory === category?.category_name && (
                     <div className="border-t">
-                      {category.subCategories.map((subcat) => (
-                        <button
-                          key={subcat._id}
-                          onClick={() => {
-                            if (!services.includes(subcat?.subCategory)) {
-                              setServices([...services, subcat?.subCategory]);
-                              setShowServiceModal(false);
-                            }
-                          }}
-                          className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
-                        >
-                          {/* <Image 
-                            src={`${process.env.NEXT_PUBLIC_IMAGE_URL}/${subcat?.categoryImage}`} 
-                            alt={subcat?.subCategory}
-                            className="w-8 h-8 rounded object-cover"
-                          /> */}
-                          {subcat?.subCategory}
-                        </button>
-                      ))}
+                      {category.subCategories.map((subcat) => {
+                        const isSelected = services.includes(
+                          subcat?.subCategory
+                        );
+                        return (
+                          <button
+                            key={subcat._id}
+                            onClick={() => {
+                              if (!isSelected) {
+                                setServices((prevServices) => [
+                                  ...prevServices,
+                                  subcat?.subCategory,
+                                ]);
+                                setShowServiceModal(false);
+                              }
+                            }}
+                            disabled={isSelected}
+                            className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 ${
+                              isSelected
+                                ? "opacity-50 cursor-not-allowed bg-gray-100"
+                                : ""
+                            }`}
+                          >
+                            {subcat?.subCategory}
+                          </button>
+                        );
+                      })}
                     </div>
                   )}
                 </div>
