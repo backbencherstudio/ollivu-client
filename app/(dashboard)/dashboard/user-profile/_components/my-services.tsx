@@ -174,14 +174,14 @@ export default function MyService({ singleUser }: MyServiceProps) {
         <div className="flex gap-2">
           <button
             onClick={handleAddService}
-            className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678] flex items-center gap-2"
+            className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678] flex items-center gap-2 cursor-pointer"
           >
             Add Services
           </button>
 
           <button
             onClick={handleSaveServices}
-            className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678] flex items-center gap-2"
+            className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678] flex items-center gap-2 cursor-pointer"
           >
             Save
           </button>

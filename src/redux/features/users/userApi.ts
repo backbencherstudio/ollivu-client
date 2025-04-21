@@ -44,6 +44,27 @@ export const usersApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["User"],
     }),
+
+    uploadPortfolio: builder.mutation({
+      query: ({ userId, data }) => ({
+        url: `/auth/setPortfolioImage/${userId}`,
+        method: "PATCH",
+        body: data
+      }),
+      invalidatesTags: ["User"],
+    }),
+
+    uploadCertificate: builder.mutation({
+      query: ({ userId, data }) => ({
+        url: `/auth/setCertificate/${userId}`, // Changed from setCertificate to setCertificateImage
+        method: "PATCH",
+        body: data,
+        // Add proper headers for multipart form data
+        formData: true,
+      }),
+      invalidatesTags: ["User"],
+    }),
+
   }),
 });
 
@@ -53,4 +74,6 @@ export const {
   useUpdateUserMutation,
   useUpdateUserServicesMutation,
   useDeleteUserServicesMutation,
+  useUploadPortfolioMutation,
+  useUploadCertificateMutation
 } = usersApi;
