@@ -1,19 +1,21 @@
 import { Avatar } from "@/components/ui/avatar";
 import { Connection } from "../_types";
 import Image from "next/image";
+import { UserAvatar } from "../../../_components/user-avater";
 
 interface ConnectionItemProps {
   connection: Connection;
   isSelected: boolean;
-  onSelect: (name: string) => void;
+  onSelect: (userData: any) => void;
 }
 
 export default function ConnectionItem({ connection, isSelected, onSelect }: ConnectionItemProps) {
   return (
     <div
-      className={`p-3 border-b border-gray-100 cursor-pointer hover:bg-gray-50 ${isSelected ? "bg-gray-50" : ""
-        }`}
-      onClick={() => onSelect(connection.name)}
+      className={`p-3 border-b border-gray-100 cursor-pointer hover:bg-gray-50 ${
+        isSelected ? "bg-gray-50" : ""
+      }`}
+      onClick={() => onSelect(connection.reciverUserId)}
     >
       <div className="flex items-start">
         <div className="relative">
@@ -22,20 +24,22 @@ export default function ConnectionItem({ connection, isSelected, onSelect }: Con
             {/* <img src={connection?.reciverUserId?.profileImage} alt={connection.name} className="rounded-full" /> */}
 
             {
-              connection?.reciverUserId?.profileImage ?
-                <Image
-                  src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${connection?.reciverUserId?.profileImage}`}
-                  alt="User Profile Image"
-                  height={400}
-                  width={400}
-                  className="object-cover"
-                />
-                :
-                <div className="w-full h-full bg-[#20B894] flex items-center justify-center text-white text-xl font-semibold">
-                  {connection?.reciverUserId?.first_name
-                    ? connection?.reciverUserId.first_name.slice(0, 2).toUpperCase()
-                    : "UN"}
-                </div>
+              connection?.reciverUserId?.profileImage  &&
+              <UserAvatar user={connection?.reciverUserId} size={40} />
+              // ?
+              //   <Image
+              //     src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${connection?.reciverUserId?.profileImage}`}
+              //     alt="User Profile Image"
+              //     height={400}
+              //     width={400}
+              //     className="object-cover"
+              //   />
+              //   :
+              //   <div className="w-full h-full bg-[#20B894] flex items-center justify-center text-white text-xl font-semibold">
+              //     {connection?.reciverUserId?.first_name
+              //       ? connection?.reciverUserId.first_name.slice(0, 2).toUpperCase()
+              //       : "UN"}
+              //   </div>
             }
 
 

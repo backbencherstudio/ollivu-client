@@ -4,33 +4,29 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send } from "lucide-react";
 import Image from "next/image";
-import { Message } from "../_types";
+import { ChatAreaProps, Message } from "../_types";
 import MessageItem from "./message-item";
 import TypingIndicator from "./typing-indicator";
 
-interface ChatAreaProps {
-  messages: Message[];
-  typing: boolean;
-  setTyping: (typing: boolean) => void;
-  selectedUser: string;
-  selectedUserImage: string;
-  onOpenDetails: () => void;  // This prop will be used
-  setMessages: (messages: Message[]) => void;
-  onBack: () => void;
-}
 
-export default function ChatArea({ 
-  messages, 
-  typing, 
-  setTyping, 
+export default function ChatArea({
+  messages,
+  typing,
+  setTyping,
   selectedUser,
-  selectedUserImage,
   onOpenDetails,
   setMessages,
-  onBack  // Add this
+  onBack,
 }: ChatAreaProps) {
   const [messageInput, setMessageInput] = useState("");
-  const messagesEndRef = useRef<HTMLDivElement>(null);  // Add this
+  const messagesEndRef = useRef<HTMLDivElement>(null); 
+
+  console.log("selected user", selectedUser);
+  
+
+  const selectedUserImage = selectedUser.profileImage
+    ? `${process.env.NEXT_PUBLIC_IMAGE_URL}${selectedUser?.profileImage}`
+    : null;
 
   // Add scroll to bottom effect
   const scrollToBottom = () => {
@@ -65,7 +61,7 @@ export default function ChatArea({
       image: "user-image.jpg",
       text: messageInput,
       time: new Date().toLocaleTimeString(),
-      read: true
+      read: true,
     };
 
     setMessages([...messages, newMessage]);
@@ -92,21 +88,30 @@ export default function ChatArea({
               />
             </svg>
           </button>
-          <div 
-            className="flex items-center cursor-pointer lg:cursor-default" 
+          <div
+            className="flex items-center cursor-pointer lg:cursor-default"
             onClick={() => onOpenDetails()}
           >
             <Avatar className="h-8 w-8">
-              <Image 
-                src={selectedUserImage} 
-                alt={selectedUser} 
-                className="rounded-full"
-                width={32}
-                height={32}
-              />
+              {selectedUser.profileImage ? (
+                <Image
+                  src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${selectedUser?.profileImage}`}
+                  alt={selectedUser.first_name}
+                  className="rounded-full object-cover"
+                  width={32}
+                  height={32}
+                />
+              ) : (
+                <div className="w-full h-full bg-[#20B894] flex items-center justify-center text-white text-xl font-semibold">
+                  {selectedUser.first_name.slice(0, 2).toUpperCase()}
+                </div>
+              )}
             </Avatar>
             <div className="ml-3">
-              <div className="font-medium text-sm">{selectedUser}</div>
+              <div className="font-medium text-sm">
+                {selectedUser.first_name}
+              </div>
+              <div className="text-xs text-gray-500">{selectedUser.email}</div>
             </div>
           </div>
         </div>
@@ -143,10 +148,10 @@ export default function ChatArea({
       {/* Chat messages */}
       <div className="flex-1 p-4 overflow-y-auto">
         {messages.map((message) => (
-          <MessageItem 
-            key={message.id} 
-            message={message} 
-            selectedUserImage={selectedUserImage} 
+          <MessageItem
+            key={message.id}
+            message={message}
+            selectedUserImage={selectedUserImage}
           />
         ))}
         {typing && <TypingIndicator />}
