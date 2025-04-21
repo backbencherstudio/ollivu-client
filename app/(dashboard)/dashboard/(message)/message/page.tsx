@@ -60,6 +60,7 @@ export default function MessagePage() {
         {selectedUser ? (
           // Remove the standalone back button from page.tsx
           <div className="relative w-full h-full flex flex-col">
+
             <ChatArea 
               messages={currentMessages} 
               typing={typing} 
@@ -70,6 +71,7 @@ export default function MessagePage() {
               setMessages={setCurrentMessages}
               onBack={() => setSelectedUser(null)}  // Add this prop
             />
+            
           </div>
         ) : (
           <div className="hidden md:flex items-center justify-center h-full">
