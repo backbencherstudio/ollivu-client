@@ -22,7 +22,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useGetAllCategoriesQuery } from "@/src/redux/features/categories/categoriesApi";
 import Image from "next/image";
-import { useUpdateUserMutation, useUpdateUserServicesMutation } from "@/src/redux/features/users/userApi";
+import {
+  useDeleteUserServicesMutation,
+  useUpdateUserServicesMutation,
+} from "@/src/redux/features/users/userApi";
 import { verifiedUser } from "@/src/utils/token-varify";
 import { toast } from "sonner";
 
@@ -54,8 +57,6 @@ export default function MyService({ singleUser }: MyServiceProps) {
   const { data: singleUserData } = useGetAllCategoriesQuery(validUser?.userId);
   console.log("single", singleUserData?.data);
 
-  // const {data:updateUser} = useUpdateUserMutation(undefined)
-  // console.log("my service", updateUser);
 
   const handleAddService = () => {
     setShowServiceModal(true);
@@ -74,8 +75,28 @@ export default function MyService({ singleUser }: MyServiceProps) {
     setShowDeleteAlert(true);
   };
 
-  const handleConfirmDelete = () => {
-    setServices(services.filter((service) => service !== serviceToDelete));
+  // First, update the mutation hook
+  const [deleteUserService] = useDeleteUserServicesMutation();
+  
+  // Then update the handleConfirmDelete function
+  const handleConfirmDelete = async () => {
+    try {
+      const response = await deleteUserService({
+        userId: validUser?.userId,
+        data: {
+          service: serviceToDelete
+        }
+      }).unwrap();
+      console.log("delete res", response);
+      
+  
+      if (response.success) {
+        setServices(services.filter((service) => service !== serviceToDelete));
+        toast.success("Service deleted successfully");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Failed to delete service");
+    }
     setShowDeleteAlert(false);
   };
 
@@ -131,7 +152,7 @@ export default function MyService({ singleUser }: MyServiceProps) {
     <>
       <Card className="p-6">
         <h2 className="text-lg font-medium mb-4">My Services</h2>
-        
+
         {/* Display services - single unified section */}
         <div className="flex flex-wrap gap-2 mb-4">
           {services.map((service, index) => (
@@ -211,23 +232,30 @@ export default function MyService({ singleUser }: MyServiceProps) {
                       />
                     </svg>
                   </button>
-                  
+
                   {expandedCategory === category?.category_name && (
                     <div className="border-t">
                       {category.subCategories.map((subcat) => {
-                        const isSelected = services.includes(subcat?.subCategory);
+                        const isSelected = services.includes(
+                          subcat?.subCategory
+                        );
                         return (
                           <button
                             key={subcat._id}
                             onClick={() => {
                               if (!isSelected) {
-                                setServices(prevServices => [...prevServices, subcat?.subCategory]);
+                                setServices((prevServices) => [
+                                  ...prevServices,
+                                  subcat?.subCategory,
+                                ]);
                                 setShowServiceModal(false);
                               }
                             }}
                             disabled={isSelected}
                             className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 ${
-                              isSelected ? 'opacity-50 cursor-not-allowed bg-gray-100' : ''
+                              isSelected
+                                ? "opacity-50 cursor-not-allowed bg-gray-100"
+                                : ""
                             }`}
                           >
                             {subcat?.subCategory}
