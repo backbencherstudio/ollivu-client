@@ -2,6 +2,9 @@ import { baseApi } from "../../api/baseApi";
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+
+
+
     loginUser: builder.mutation({
       query: (credentials) => ({
         url: "/auth/login",
@@ -10,7 +13,6 @@ export const authApi = baseApi.injectEndpoints({
         credentials: "include",
       }),
       transformResponse: (response) => {
-        // Only store token if it exists
         if (response.data?.accessToken) {
           localStorage.setItem("accessToken", response.data.accessToken);
           document.cookie = `accessToken=${response.data.accessToken}; path=/; secure; samesite=strict`;
@@ -25,7 +27,6 @@ export const authApi = baseApi.injectEndpoints({
         url: "/auth/create-user",
         method: "POST",
         body: userData,
-        // credentials: "include",  // Added credentials
       }),
       invalidatesTags: ["User"],
     }),
@@ -35,21 +36,27 @@ export const authApi = baseApi.injectEndpoints({
         url: "/auth/verifyOTP",
         method: "POST",
         body: data,
-        credentials: "include", // Added credentials
+        credentials: "include", 
       }),
       invalidatesTags: ["User"],
     }),
 
     getAllExchangeData: builder.query({
-      query: (query) => ({
-        url: "/shared/exchange",
-        method: "GET",
-        params: query
-      }),
-      providesTags: ['User']
+      query: (query) => {
+        console.log(46, query);
+        
+        return {
+          url: `/shared/exchange`,
+          method: "GET",
+          params: query,
+        }
+      },
+      providesTags:['User']
     }),
 
-    
+
+
+
   }),
 });
 
