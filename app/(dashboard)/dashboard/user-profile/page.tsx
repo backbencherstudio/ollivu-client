@@ -55,7 +55,7 @@ export default function UserProfile() {
       lastName: "",
       displayName: "",
       phoneNumber: "",
-      email: "",
+      // email: "",
       dateOfBirth: "",
       gender: "",
     },
@@ -97,7 +97,7 @@ export default function UserProfile() {
           lastName: singleUserData.personalInfo?.last_name || "",
           displayName: singleUserData.personalInfo?.display_name || "",
           phoneNumber: singleUserData.personalInfo?.phone_number || "",
-          email: singleUserData.email || "",
+          // email: singleUserData.email || "",
           dateOfBirth: singleUserData.personalInfo?.dath_of_birth || "",
           gender: singleUserData.personalInfo?.gender || "",
         },
@@ -128,7 +128,7 @@ export default function UserProfile() {
 
         // Add personal info
         formDataToSend.append("first_name", formData.personalInfo.firstName);
-        formDataToSend.append("email", formData.personalInfo.email);
+        // formDataToSend.append("email", formData.personalInfo.email);
         formDataToSend.append("userId", validUser?.userId);
 
         // Add nested personal info
@@ -364,7 +364,7 @@ export default function UserProfile() {
             />
           </div>
 
-          <div>
+          {/* <div>
             <label className="text-sm text-gray-600">Email address</label>
             <Input
               value={formData.personalInfo.email}
@@ -375,7 +375,7 @@ export default function UserProfile() {
               className="mt-1"
               disabled={!isEditing}
             />
-          </div>
+          </div> */}
 
           <div>
             <label className="text-sm text-gray-600">Date of birth</label>

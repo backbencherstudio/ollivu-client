@@ -1,9 +1,14 @@
-'use client';
+"use client";
 
 import { Card } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { X as CloseIcon, X } from "lucide-react";
 import {
   AlertDialog,
@@ -16,6 +21,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useGetAllCategoriesQuery } from "@/src/redux/features/categories/categoriesApi";
+import Image from "next/image";
+import { useUpdateUserMutation } from "@/src/redux/features/users/userApi";
 
 interface MyServiceProps {
   title?: string;
@@ -27,38 +34,66 @@ interface MyServiceProps {
 const serviceCategories = [
   {
     name: "Professional & Business Services",
-    subcategories: ["Consulting", "Marketing", "Legal Services", "Financial Services"]
+    subcategories: [
+      "Consulting",
+      "Marketing",
+      "Legal Services",
+      "Financial Services",
+    ],
   },
   {
     name: "Automotive & Transportation",
-    subcategories: ["Car Repairs", "Moving Help", "Bike Repair & Maintenance", "Ridesharing", "Boat Repairs & Maintenance"]
+    subcategories: [
+      "Car Repairs",
+      "Moving Help",
+      "Bike Repair & Maintenance",
+      "Ridesharing",
+      "Boat Repairs & Maintenance",
+    ],
   },
   {
     name: "Education & Learning",
-    subcategories: ["Tutoring & Academic Support", "Online Learning & Skill Development", "Music Lessons", "Art Lessons", "Self-Defense Lessons", "Public Speaking Coaching"]
+    subcategories: [
+      "Tutoring & Academic Support",
+      "Online Learning & Skill Development",
+      "Music Lessons",
+      "Art Lessons",
+      "Self-Defense Lessons",
+      "Public Speaking Coaching",
+    ],
   },
   {
     name: "Events & Entertainment",
-    subcategories: ["Event Planning", "Photography", "DJ Services", "Live Music"]
+    subcategories: [
+      "Event Planning",
+      "Photography",
+      "DJ Services",
+      "Live Music",
+    ],
   },
   {
     name: "Home Services & Maintenance",
-    subcategories: ["Cleaning", "Repairs", "Gardening", "Interior Design"]
+    subcategories: ["Cleaning", "Repairs", "Gardening", "Interior Design"],
   },
   {
     name: "Personal & Care Services",
-    subcategories: ["Beauty Services", "Personal Training", "Massage Therapy"]
+    subcategories: ["Beauty Services", "Personal Training", "Massage Therapy"],
   },
   {
     name: "Wellness & Personal Growth",
-    subcategories: ["Life Coaching", "Meditation", "Nutrition Consulting"]
-  }
+    subcategories: ["Life Coaching", "Meditation", "Nutrition Consulting"],
+  },
 ];
 
-export default function MyService({ 
-  title = "My Service", 
+// Add these imports
+import { useUpdateUserServicesMutation } from "@/src/redux/features/users/userApi";
+import { verifiedUser } from "@/src/utils/token-varify";
+import { toast } from "sonner";
+
+export default function MyService({
+  title = "My Service",
   description = "Add the service you have expertise in for exchanging services in this platform.",
-  buttonText = "Add service"
+  buttonText = "Add service",
 }: MyServiceProps) {
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [services, setServices] = useState<string[]>([]);
@@ -70,10 +105,18 @@ export default function MyService({
   const [serviceName, setServiceName] = useState("");
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
-  const {data: getAllCategories, isLoading} = useGetAllCategoriesQuery(undefined)
+  const { data: getAllCategories, isLoading } =
+    useGetAllCategoriesQuery(undefined);
   const categories = getAllCategories?.data || [];
-  console.log("my service", categories);
+
+  const validUser = verifiedUser();
+
+  const { data: singleUserData } = useGetAllCategoriesQuery(validUser?.userId);
+  console.log("single", singleUserData?.data);
   
+
+  // const {data:updateUser} = useUpdateUserMutation(undefined)
+  // console.log("my service", updateUser);
 
   const handleAddService = () => {
     setShowServiceModal(true);
@@ -93,7 +136,7 @@ export default function MyService({
   };
 
   const handleConfirmDelete = () => {
-    setServices(services.filter(service => service !== serviceToDelete));
+    setServices(services.filter((service) => service !== serviceToDelete));
     setShowDeleteAlert(false);
   };
 
@@ -104,19 +147,51 @@ export default function MyService({
   };
 
   const toggleCategory = (categoryName: string) => {
-    setExpandedCategory(expandedCategory === categoryName ? null : categoryName);
+    setExpandedCategory(
+      expandedCategory === categoryName ? null : categoryName
+    );
   };
 
+  // Add these new hooks
+  const [updateUserServices] = useUpdateUserServicesMutation();
+
+  // Add this new function
+  const handleSaveServices = async () => {
+    try {
+      const response = await updateUserServices({
+        userId: validUser?.userId,
+        data: {
+          my_service: services,
+        },
+      }).unwrap();
+      console.log("res", response);
+
+      if (response.success) {
+        toast.success("Services updated successfully");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update services");
+    }
+  };
+
+  // Update the services state when singleUserData changes
+  useEffect(() => {
+    if (singleUserData?.my_service) {
+      setServices(singleUserData.my_service);
+    }
+  }, [singleUserData]);
+
+  // In the return statement, update the Save button
   return (
     <>
       <Card className="p-6">
         <h2 className="text-lg font-medium mb-4">{title}</h2>
-        
+
         {/* Display existing services */}
         <div className=" flex flex-wrap gap-2">
           {services.map((service, index) => (
-            <div 
-              key={index} 
+            <div
+              key={index}
               className="flex items-center gap-2 px-3 py-1.5 bg-[#F5F5F5] rounded-full border border-gray-200"
             >
               <span>{service}</span>
@@ -132,14 +207,15 @@ export default function MyService({
 
         <p className="text-sm text-gray-500 mb-4">{description}</p>
         <div className="flex gap-2">
-          <button 
+          <button
             onClick={handleAddService}
             className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678] flex items-center gap-2"
           >
             {buttonText}
           </button>
 
-          <button 
+          <button
+            onClick={handleSaveServices}
             className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678] flex items-center gap-2"
           >
             Save
@@ -151,8 +227,10 @@ export default function MyService({
       <Dialog open={showServiceModal} onOpenChange={setShowServiceModal}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle className="text-xl font-semibold">Add My Service</DialogTitle>
-            <button 
+            <DialogTitle className="text-xl font-semibold">
+              Add My Service
+            </DialogTitle>
+            <button
               onClick={() => setShowServiceModal(false)}
               className="absolute right-4 top-4 text-gray-400 hover:text-gray-500"
             >
@@ -163,51 +241,57 @@ export default function MyService({
             <p className="text-sm mb-4">Choose services</p>
             <div className="space-y-2 max-h-[400px] overflow-y-auto">
               {categories.map((category) => (
-                <div key={category.name} className="border rounded-lg">
+                <div key={category._id} className="border rounded-lg">
                   <button
-                    onClick={() => toggleCategory(category.name)}
+                    onClick={() => toggleCategory(category?.category_name)}
                     className="w-full px-4 py-3 text-left flex justify-between items-center hover:bg-gray-50"
                   >
-                    <span>{category.name}</span>
+                    <span className="text-lg font-medium">
+                      {category?.category_name}
+                    </span>
                     <svg
                       className={`w-4 h-4 transition-transform ${
-                        expandedCategory === category.name ? 'rotate-180' : ''
+                        expandedCategory === category?.category_name
+                          ? "rotate-180"
+                          : ""
                       }`}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
                     </svg>
                   </button>
-                  {expandedCategory === category.name && (
+                  {expandedCategory === category?.category_name && (
                     <div className="border-t">
-                      {category.subcategories.map((subcat) => (
+                      {category.subCategories.map((subcat) => (
                         <button
-                          key={subcat}
+                          key={subcat._id}
                           onClick={() => {
-                            if (!services.includes(subcat)) {
-                              setServices([...services, subcat]);
+                            if (!services.includes(subcat?.subCategory)) {
+                              setServices([...services, subcat?.subCategory]);
                               setShowServiceModal(false);
                             }
                           }}
                           className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
                         >
-                          {subcat}
+                          {/* <Image 
+                            src={`${process.env.NEXT_PUBLIC_IMAGE_URL}/${subcat?.categoryImage}`} 
+                            alt={subcat?.subCategory}
+                            className="w-8 h-8 rounded object-cover"
+                          /> */}
+                          {subcat?.subCategory}
                         </button>
                       ))}
                     </div>
                   )}
                 </div>
               ))}
-            </div>
-            <div className="flex items-center justify-center mt-4">
-              {/* <button className="text-[#20B894] flex items-center gap-2">
-                <span>Add more</span>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-              </button> */}
             </div>
             <div className="mt-4">
               <button
@@ -227,7 +311,8 @@ export default function MyService({
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete the service "{serviceToDelete}". This action cannot be undone.
+              This will permanently delete the service "{serviceToDelete}". This
+              action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -241,7 +326,6 @@ export default function MyService({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
     </>
   );
 }
