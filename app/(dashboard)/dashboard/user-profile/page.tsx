@@ -46,7 +46,7 @@ export default function UserProfile() {
   const [updateUser] = useUpdateUserMutation();
   const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
   const singleUserData = singleUser?.data;
-  // console.log("singleUser", singleUserData);
+  console.log("singleUser", singleUserData);
 
   // Add these after other state declarations
   const [formData, setFormData] = useState({
@@ -533,7 +533,7 @@ export default function UserProfile() {
 
       {/* My Service and Portfolio */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-        <MyService />
+        <MyService singleUser={singleUser?.data}/>
         <Portfolio />
       </div>
 
