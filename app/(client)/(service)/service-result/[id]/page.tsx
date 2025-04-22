@@ -32,7 +32,7 @@ const ServiceDetails = () => {
   );
   const singleUser = instructor?.data;
   const reviews = instructor?.reviews;
-  console.log("singleUser", singleUser);
+  // console.log("singleUser", singleUser);
 
   // Add these states at the top with other state declarations
   const [currentPage, setCurrentPage] = useState(1);

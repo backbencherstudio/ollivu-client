@@ -36,7 +36,7 @@ interface MyServiceProps {
 }
 
 export default function MyService({ singleUser }: MyServiceProps) {
-  console.log("95", singleUser);
+  // console.log("95", singleUser);
 
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [services, setServices] = useState<string[]>([]);
@@ -55,7 +55,7 @@ export default function MyService({ singleUser }: MyServiceProps) {
   const validUser = verifiedUser();
 
   const { data: singleUserData } = useGetAllCategoriesQuery(validUser?.userId);
-  console.log("single", singleUserData?.data);
+  // console.log("single", singleUserData?.data);
 
 
   const handleAddService = () => {
@@ -87,7 +87,7 @@ export default function MyService({ singleUser }: MyServiceProps) {
           service: serviceToDelete
         }
       }).unwrap();
-      console.log("delete res", response);
+      // console.log("delete res", response);
       
   
       if (response.success) {

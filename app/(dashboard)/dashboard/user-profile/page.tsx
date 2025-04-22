@@ -185,15 +185,15 @@ export default function UserProfile() {
         // Add this after formDataToSend.append("about_me", formData.aboutMe);
         // Log FormData contents
         for (const pair of formDataToSend.entries()) {
-          console.log(pair[0], pair[1]);
+          // console.log(pair[0], pair[1]);
         }
 
         // Or alternatively, convert to an object and log
         const formDataObject = Object.fromEntries(formDataToSend.entries());
-        console.log("formDataObject:", formDataObject);
+        // console.log("formDataObject:", formDataObject);
 
         const response = await updateUser(formDataToSend).unwrap();
-        console.log("response", response);
+        // console.log("response", response);
 
         if (response.success) {
           toast.success("Profile updated successfully");
