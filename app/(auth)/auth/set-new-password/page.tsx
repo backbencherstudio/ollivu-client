@@ -69,12 +69,12 @@ export default function SetNewPassword() {
     }
 
     // Log the data when all validations pass
-    console.log('Form Data:', {
-      token,
-      password: formData.password,
-      confirmPassword: formData.confirmPassword,
-      passwordConditions: conditions
-    });
+    // console.log('Form Data:', {
+    //   token,
+    //   password: formData.password,
+    //   confirmPassword: formData.confirmPassword,
+    //   passwordConditions: conditions
+    // });
 
     setIsLoading(true);
 

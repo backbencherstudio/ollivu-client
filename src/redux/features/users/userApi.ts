@@ -40,7 +40,7 @@ export const usersApi = baseApi.injectEndpoints({
       query: ({ userId, data }) => ({
         url: `/auth/deleteServices/${userId}`,
         method: "DELETE",
-        body: data
+        body: data,
       }),
       invalidatesTags: ["User"],
     }),
@@ -49,21 +49,38 @@ export const usersApi = baseApi.injectEndpoints({
       query: ({ userId, data }) => ({
         url: `/auth/setPortfolioImage/${userId}`,
         method: "PATCH",
-        body: data
+        body: data,
       }),
       invalidatesTags: ["User"],
     }),
 
+    deletePortfolio: builder.mutation({
+      query: ({ userId }) => ({
+        url: `/auth/deletePortfolioImage/${userId}`,
+        method: "DELETE",
+        // body: data
+      }),
+      invalidatesTags: ["User"],
+    }),
+
+
     uploadCertificate: builder.mutation({
       query: ({ userId, data }) => ({
-        url: `/auth/setCertificate/${userId}`, // Changed from setCertificate to setCertificateImage
+        url: `/auth/setCertificate/${userId}`, 
         method: "PATCH",
         body: data,
-        // Add proper headers for multipart form data
         formData: true,
       }),
       invalidatesTags: ["User"],
     }),
+
+    deleteCertificate: builder.mutation({
+      query: ({ userId}) => ({
+        url: `/auth/deleteCertificate/${userId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["User"],
+    })
 
   }),
 });
@@ -75,5 +92,7 @@ export const {
   useUpdateUserServicesMutation,
   useDeleteUserServicesMutation,
   useUploadPortfolioMutation,
-  useUploadCertificateMutation
+  useDeletePortfolioMutation,
+  useUploadCertificateMutation,
+  useDeleteCertificateMutation
 } = usersApi;
