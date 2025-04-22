@@ -6,7 +6,6 @@ export const MessageList = ({ onChatSelect, userData, currentUser, role }) => {
   const [selectedRole, setSelectedRole] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  console.log(userData, "current", currentUser);
 
   const filteredUsers = userData
     ?.filter((user) =>
@@ -102,7 +101,13 @@ export const MessageList = ({ onChatSelect, userData, currentUser, role }) => {
                 ) : (
                   <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
                     <span className="text-gray-500">
-                      {user?.name?.slice(0, 2).toUpperCase()}
+                      {user?.email === currentUser
+                        ? user?.reciverUserId?.first_name
+                            .slice(0, 2)
+                            .toUpperCase()
+                        : user?.senderUserId?.first_name
+                            .slice(0, 2)
+                            .toUpperCase() || "Unknown User"}{" "}
                     </span>
                   </div>
                 )}

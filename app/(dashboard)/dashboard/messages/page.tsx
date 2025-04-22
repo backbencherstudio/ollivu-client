@@ -6,7 +6,7 @@ import { MessageList } from "./_components/MessageList";
 import { MessageInput } from "./_components/MessageInput";
 import { verifiedUser } from "@/src/utils/token-varify";
 import { authApi } from "@/src/redux/features/auth/authApi";
-const socket = io("https://backend.rentpadhomes.com");
+const socket = io("https://localhost:5000");
 
 const Messages = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -59,9 +59,7 @@ const Messages = () => {
   // Fetch message history when component mounts or recipient changes
   useEffect(() => {
     if (recipient) {
-      fetch(
-        `https://backend.rentpadhomes.com/chats?email=${currentUser?.email}`
-      )
+      fetch(`https://localhost:5000/chats?email=${currentUser?.email}`)
         .then((response) => response.json())
         .then((data) => {
           setMessages(data);
@@ -166,7 +164,7 @@ const Messages = () => {
       try {
         // Get unread messages count directly from the server
         const response = await fetch(
-          `https://backend.rentpadhomes.com/messages/unread/${currentUser?.email}`
+          `https://localhost:5000/messages/unread/${currentUser?.email}`
         );
         const unreadCounts = await response.json();
 
@@ -207,11 +205,15 @@ const Messages = () => {
     if (message && currentChat) {
       const messageData = {
         content: message, // Changed from 'message' to 'content'
-        recipient: currentChat.email,
+        recipient:
+          currentChat?.email === currentUser?.email
+            ? currentChat?.reciverUserId?.email
+            : currentChat?.senderUserId?.email,
         sender: currentUser?.email,
         timestamp: new Date().toISOString(),
         read: false,
       };
+      console.log(messageData);
 
       socket.emit("message", messageData);
       setMessage("");
@@ -219,11 +221,11 @@ const Messages = () => {
   };
   const handleChatSelect = async (user) => {
     setCurrentChat(user);
-
+    console.log(user);
     try {
       // Mark messages as read in the backend
       const response = await fetch(
-        "https://backend.rentpadhomes.com/messages/mark-read",
+        "https://localhost:5000/messages/mark-read",
         {
           method: "POST",
           headers: {
@@ -323,12 +325,21 @@ const Messages = () => {
                 <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
                   <span className="text-gray-500">
                     {currentChat?.name?.slice(0, 2).toUpperCase()}
+                    {currentChat?.email === currentUser.email
+                      ? currentChat?.reciverUserId?.first_name
+                          .slice(0, 2)
+                          .toUpperCase()
+                      : currentChat?.senderUserId?.first_name
+                          .slice(0, 2)
+                          .toUpperCase() || "Unknown User"}
                   </span>
                 </div>
               )}
               <div>
                 <h3 className="font-semibold">
-                  {currentChat?.name || "Select a chat"}
+                  {currentChat?.email === currentUser.email
+                    ? currentChat?.reciverUserId?.first_name
+                    : currentChat?.senderUserId?.first_name || "Select a chat"}
                 </h3>
                 <span
                   className={`text-sm ${
