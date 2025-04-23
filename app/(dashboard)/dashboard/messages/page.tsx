@@ -62,7 +62,9 @@ const Messages = () => {
   // Fetch message history when component mounts or recipient changes
   useEffect(() => {
     if (recipient && currentUser?.email) {
-      fetch(`http://localhost:5000/chats?email=${currentUser?.email}`)
+      fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/chats?email=${currentUser?.email}`
+      )
         .then((response) => response.json())
         .then((data) => {
           setMessages(data);
@@ -165,7 +167,7 @@ const Messages = () => {
       try {
         // Get unread messages count directly from the server
         const response = await fetch(
-          `http://localhost:5000/messages/unread/${currentUser?.email}`
+          `${process.env.NEXT_PUBLIC_API_URL}/messages/unread/${currentUser?.email}`
         );
         const unreadCounts = await response.json();
         // console.log("Initial unread counts:", unreadCounts); // Debug log
@@ -209,16 +211,19 @@ const Messages = () => {
     setCurrentChat(user);
     try {
       // Mark messages as read in the backend
-      const response = await fetch("http://localhost:5000/messages/mark-read", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          sender: user.email,
-          recipient: currentUser?.email,
-        }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/messages/mark-read`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            sender: user.email,
+            recipient: currentUser?.email,
+          }),
+        }
+      );
 
       if (response.ok) {
         // Update local messages state
