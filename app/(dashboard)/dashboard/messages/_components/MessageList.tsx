@@ -6,7 +6,7 @@ export const MessageList = ({ onChatSelect, userData, currentUser, role }) => {
   const [selectedRole, setSelectedRole] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  console.log("userData", userData);
   const filteredUsers = userData
     ?.filter((user) =>
       (user?.email || "")

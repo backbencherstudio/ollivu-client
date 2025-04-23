@@ -17,11 +17,22 @@ const Messages = () => {
   const [user, setUser] = useState(null); // Updated to null initially
   const currentUser = verifiedUser();
   const [recipient, setRecipient] = useState(currentUser?.email);
-  const userData = [];
   const [finalQuery, setFinalQuery] = useState({
     userId: currentUser?.userId,
     isAccepted: true,
   });
+
+  const getOtherUserEmail = (chat) => {
+    return chat?.email === currentUser?.email
+      ? chat?.reciverUserId?.email
+      : chat?.senderUserId?.email;
+  };
+
+  const getOtherUserName = (chat) => {
+    return chat?.email === currentUser?.email
+      ? chat?.reciverUserId?.first_name
+      : chat?.senderUserId?.first_name;
+  };
 
   const { data: userList } = authApi.useGetAllExchangeDataQuery(finalQuery);
   const [unreadMessages, setUnreadMessages] = useState(() => {
@@ -80,26 +91,24 @@ const Messages = () => {
     socket.emit("join", currentUser?.email);
 
     socket.on("connect", () => {
-      // console.log("Connected to socket server");
       socket.emit("user_online", currentUser?.email);
     });
 
-    // Listen for online users updates
     socket.on("online_users", (users) => {
       setOnlineUsers(users);
     });
 
-    socket.on("user_connected", (userId) => {
+    socket.on("user_connected", (email) => {
       setOnlineUsers((prev) => ({
         ...prev,
-        [userId]: true,
+        [email]: true,
       }));
     });
 
-    socket.on("user_disconnected", (userId) => {
+    socket.on("user_disconnected", (email) => {
       setOnlineUsers((prev) => ({
         ...prev,
-        [userId]: false,
+        [email]: false,
       }));
     });
 
@@ -156,7 +165,7 @@ const Messages = () => {
       try {
         // Get unread messages count directly from the server
         const response = await fetch(
-          `https://localhost:5000/messages/unread/${currentUser?.email}`
+          `http://localhost:5000/messages/unread/${currentUser?.email}`
         );
         const unreadCounts = await response.json();
         // console.log("Initial unread counts:", unreadCounts); // Debug log
@@ -181,22 +190,17 @@ const Messages = () => {
       socket.off("message history");
       socket.off("user list");
     };
-  }, []);
+  }, [currentUser?.email]);
   const sendMessage = (e) => {
     e.preventDefault();
     if (message && currentChat) {
       const messageData = {
-        content: message, // Changed from 'message' to 'content'
-        recipient:
-          currentChat?.email === currentUser?.email
-            ? currentChat?.reciverUserId?.email
-            : currentChat?.senderUserId?.email,
+        content: message,
+        recipient: getOtherUserEmail(currentChat),
         sender: currentUser?.email,
         timestamp: new Date().toISOString(),
         read: false,
       };
-      console.log(messageData);
-
       socket.emit("message", messageData);
       setMessage("");
     }
@@ -314,18 +318,18 @@ const Messages = () => {
               )}
               <div>
                 <h3 className="font-semibold">
-                  {currentChat?.email === currentUser.email
-                    ? currentChat?.reciverUserId?.first_name
-                    : currentChat?.senderUserId?.first_name || "Select a chat"}
+                  {getOtherUserName(currentChat) || "Select a chat"}
                 </h3>
                 <span
                   className={`text-sm ${
-                    onlineUsers[currentChat?.email]
+                    onlineUsers[getOtherUserEmail(currentChat)]
                       ? "text-green-500"
                       : "text-gray-500"
                   }`}
                 >
-                  {onlineUsers[currentChat?.email] ? "Online" : "Offline"}
+                  {onlineUsers[getOtherUserEmail(currentChat)]
+                    ? "Online"
+                    : "Offline"}
                 </span>
               </div>
             </div>
@@ -430,16 +434,18 @@ const Messages = () => {
             )}
             <div>
               <h3 className="font-semibold">
-                {currentChat?.name || "Select a chat"}
+                {getOtherUserName(currentChat) || "Select a chat"}
               </h3>
               <span
                 className={`text-sm ${
-                  onlineUsers[currentChat?.email]
+                  onlineUsers[getOtherUserEmail(currentChat)]
                     ? "text-green-500"
                     : "text-gray-500"
                 }`}
               >
-                {onlineUsers[currentChat?.email] ? "Online" : "Offline"}
+                {onlineUsers[getOtherUserEmail(currentChat)]
+                  ? "Online"
+                  : "Offline"}
               </span>
             </div>
           </div>
