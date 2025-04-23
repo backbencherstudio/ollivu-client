@@ -17,11 +17,22 @@ const Messages = () => {
   const [user, setUser] = useState(null); // Updated to null initially
   const currentUser = verifiedUser();
   const [recipient, setRecipient] = useState(currentUser?.email);
-  const userData = [];
   const [finalQuery, setFinalQuery] = useState({
     userId: currentUser?.userId,
     isAccepted: true,
   });
+
+  const getOtherUserEmail = (chat) => {
+    return chat?.email === currentUser?.email
+      ? chat?.reciverUserId?.email
+      : chat?.senderUserId?.email;
+  };
+
+  const getOtherUserName = (chat) => {
+    return chat?.email === currentUser?.email
+      ? chat?.reciverUserId?.first_name
+      : chat?.senderUserId?.first_name;
+  };
 
   const { data: userList } = authApi.useGetAllExchangeDataQuery(finalQuery);
   const [unreadMessages, setUnreadMessages] = useState(() => {
@@ -156,7 +167,7 @@ const Messages = () => {
       try {
         // Get unread messages count directly from the server
         const response = await fetch(
-          `https://localhost:5000/messages/unread/${currentUser?.email}`
+          `http://localhost:5000/messages/unread/${currentUser?.email}`
         );
         const unreadCounts = await response.json();
         // console.log("Initial unread counts:", unreadCounts); // Debug log
@@ -314,18 +325,18 @@ const Messages = () => {
               )}
               <div>
                 <h3 className="font-semibold">
-                  {currentChat?.email === currentUser.email
-                    ? currentChat?.reciverUserId?.first_name
-                    : currentChat?.senderUserId?.first_name || "Select a chat"}
+                  {getOtherUserName(currentChat) || "Select a chat"}
                 </h3>
                 <span
                   className={`text-sm ${
-                    onlineUsers[currentChat?.email]
+                    onlineUsers[getOtherUserEmail(currentChat)]
                       ? "text-green-500"
                       : "text-gray-500"
                   }`}
                 >
-                  {onlineUsers[currentChat?.email] ? "Online" : "Offline"}
+                  {onlineUsers[getOtherUserEmail(currentChat)]
+                    ? "Online"
+                    : "Offline"}
                 </span>
               </div>
             </div>
@@ -430,16 +441,18 @@ const Messages = () => {
             )}
             <div>
               <h3 className="font-semibold">
-                {currentChat?.name || "Select a chat"}
+                {getOtherUserName(currentChat) || "Select a chat"}
               </h3>
               <span
                 className={`text-sm ${
-                  onlineUsers[currentChat?.email]
+                  onlineUsers[getOtherUserEmail(currentChat)]
                     ? "text-green-500"
                     : "text-gray-500"
                 }`}
               >
-                {onlineUsers[currentChat?.email] ? "Online" : "Offline"}
+                {onlineUsers[getOtherUserEmail(currentChat)]
+                  ? "Online"
+                  : "Offline"}
               </span>
             </div>
           </div>
