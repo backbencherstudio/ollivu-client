@@ -5,72 +5,51 @@ import { Star, Flag, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useGetSingleReviewQuery } from "@/src/redux/features/shared/reviewApi";
 import { verifiedUser } from "@/src/utils/token-varify";
-import ReportModal from './_components/report-modal';
-
+import ReportModal from "./_components/report-modal";
+import { toast } from "sonner";
+import { useCreateReviewReportMutation } from "@/src/redux/features/shared/reportApi";
 
 export default function AdminReviewsPage() {
   const [sort, setSort] = useState("recent");
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [selectedReview, setSelectedReview] = useState<any>(null);
-  
-  // Add handleReportSubmit function
-  const handleReportSubmit = async (description: string, file: File | null) => {
-    try {
-      // Add your report submission logic here
-      console.log('Reporting:', { review: selectedReview, description, file });
-      setIsReportModalOpen(false);
-      setSelectedReview(null);
-    } catch (error) {
-      console.error('Error submitting report:', error);
-    }
-  };
+  const [createReviewReport] = useCreateReviewReportMutation();
+
   const currentUser = verifiedUser();
   console.log("cr", currentUser);
 
-  const { data: getSingleReview } = useGetSingleReviewQuery(
+  const { data: getSingleReview, refetch } = useGetSingleReviewQuery(
     currentUser?.userId
   );
   const singleUserAllReview = getSingleReview?.data;
   console.log("getSingleReview", getSingleReview?.data);
 
-  const reviews = [
-    {
-      id: 1,
-      name: "Emily R.",
-      avatar: "/avatars/emily.png",
-      rating: 2.0,
-      text: "This service is trash and the owner should be in jail. I think they intentionally ruined my project out of pure malice...",
-      reported: true,
-      date: "2 days ago",
-    },
-    {
-      id: 2,
-      name: "John D.",
-      avatar: "/avatars/john.png",
-      rating: 4.7,
-      text: "I exchanged my content writing services for a fully functional website, and the results were great!",
-      reported: false,
-      date: "2 days ago",
-    },
-    {
-      id: 3,
-      name: "Sophia M.",
-      avatar: "/avatars/sophia.png",
-      rating: 4.7,
-      text: "I needed a few home repairs but didn’t want to spend cash, so I offered pet sitting in exchange...",
-      reported: false,
-      date: "2 days ago",
-    },
-    {
-      id: 4,
-      name: "Michael S.",
-      avatar: "/avatars/michael.png",
-      rating: 4.7,
-      text: "As a photographer, I struggle with marketing my work. I connected with a social media expert...",
-      reported: false,
-      date: "5 days ago",
-    },
-  ];
+  const handleReportSubmit = async (description: string, file: File | null) => {
+    try {
+      const formData = new FormData();
+      formData.append("reporterId", currentUser.userId);
+      formData.append("reportDetails", description);
+      formData.append("reviewId", selectedReview._id);
+      if (file) {
+        formData.append("document", file);
+      }
+
+      const response = await createReviewReport(formData).unwrap();
+      
+      if (response?.success) {
+        toast.success("Report submitted successfully");
+        setIsReportModalOpen(false);
+        setSelectedReview(null);
+        // Refetch reviews to update the UI
+        refetch();
+      } else {
+        toast.error("Failed to submit report");
+      }
+    } catch (error) {
+      console.error("Error submitting report:", error);
+      toast.error("Failed to submit report");
+    }
+  };
 
   return (
     <div className="bg-white text-[#1D1F2C] min-h-screen p-6 md:p-10 space-y-6">
@@ -128,14 +107,16 @@ export default function AdminReviewsPage() {
             />
             <div className="flex-1">
               <div className="flex justify-between items-center">
-                <h4 className="font-medium">{review?.reviewerId?.first_name}</h4>
+                <h4 className="font-medium">
+                  {review?.reviewerId?.first_name}
+                </h4>
                 <span className="text-xs text-gray-400">
-                  {new Date(review?.createdAt).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
+                  {new Date(review?.createdAt).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
                   })}
                 </span>
               </div>
@@ -144,11 +125,11 @@ export default function AdminReviewsPage() {
                 <StarRating rating={review.rating} />
                 <span className="text-gray-500">({review.rating})</span>
                 {review.reported ? (
-                  <span className="text-red-500 font-medium flex items-center gap-1 cursor-pointer">
+                  <span className="text-red-500 font-medium flex items-center gap-1">
                     <Flag size={14} /> Reported
                   </span>
                 ) : (
-                  <button 
+                  <button
                     onClick={() => {
                       setSelectedReview(review);
                       setIsReportModalOpen(true);
@@ -158,20 +139,21 @@ export default function AdminReviewsPage() {
                     <Flag size={14} /> Report
                   </button>
                 )}
-                {/* Add this at the bottom of the component, before the closing div */}
-                <ReportModal
-                  isOpen={isReportModalOpen}
-                  onClose={() => {
-                    setIsReportModalOpen(false);
-                    setSelectedReview(null);
-                  }}
-                  onSubmit={handleReportSubmit}
-                />
               </div>
             </div>
           </div>
         ))}
       </div>
+
+      {/* Move ReportModal outside of the mapping */}
+      <ReportModal
+        isOpen={isReportModalOpen}
+        onClose={() => {
+          setIsReportModalOpen(false);
+          setSelectedReview(null);
+        }}
+        onSubmit={handleReportSubmit}
+      />
 
       {/* Pagination */}
       <div className="flex items-center justify-center gap-2 pt-6">
