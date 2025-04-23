@@ -8,7 +8,6 @@ import { ChatAreaProps, Message } from "../_types";
 import MessageItem from "./message-item";
 import TypingIndicator from "./typing-indicator";
 
-
 export default function ChatArea({
   messages,
   typing,
@@ -19,12 +18,11 @@ export default function ChatArea({
   onBack,
 }: ChatAreaProps) {
   const [messageInput, setMessageInput] = useState("");
-  const messagesEndRef = useRef<HTMLDivElement>(null); 
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   console.log("selected user", selectedUser);
-  
 
-  const selectedUserImage = selectedUser.profileImage
+  const selectedUserImage = selectedUser?.profileImage
     ? `${process.env.NEXT_PUBLIC_IMAGE_URL}${selectedUser?.profileImage}`
     : null;
 
@@ -93,25 +91,27 @@ export default function ChatArea({
             onClick={() => onOpenDetails()}
           >
             <Avatar className="h-8 w-8">
-              {selectedUser.profileImage ? (
-                <Image
-                  src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${selectedUser?.profileImage}`}
-                  alt={selectedUser.first_name}
-                  className="rounded-full object-cover"
-                  width={32}
-                  height={32}
-                />
+              {selectedUser?.profileImage ? (
+                <div>
+                  {/* <Image
+                    src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${selectedUser?.profileImage}`}
+                    alt={selectedUser?.first_name}
+                    className="rounded-full object-cover"
+                    width={32}
+                    height={32}
+                  /> */}
+                </div>
               ) : (
                 <div className="w-full h-full bg-[#20B894] flex items-center justify-center text-white text-xl font-semibold">
-                  {selectedUser.first_name.slice(0, 2).toUpperCase()}
+                  {selectedUser?.first_name.slice(0, 2).toUpperCase()}
                 </div>
               )}
             </Avatar>
             <div className="ml-3">
               <div className="font-medium text-sm">
-                {selectedUser.first_name}
+                {selectedUser?.first_name}
               </div>
-              <div className="text-xs text-gray-500">{selectedUser.email}</div>
+              <div className="text-xs text-gray-500">{selectedUser?.email}</div>
             </div>
           </div>
         </div>
