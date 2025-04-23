@@ -2,7 +2,6 @@
 'use client';
 
 import React, { useEffect, useState } from "react";
-import { Connection } from "../_types";
 import Image from "next/image";
 import { verifiedUser } from "@/src/utils/token-varify";
 import { authApi } from "@/src/redux/features/auth/authApi";
