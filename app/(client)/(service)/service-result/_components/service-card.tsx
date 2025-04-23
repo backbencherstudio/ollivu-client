@@ -16,6 +16,8 @@ const DEFAULT_SERVICE_IMAGE = serviceImg
 const DEFAULT_AVATAR_IMAGE = avaterImg
 
 export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
+  console.log("service", service);
+  
   const router = useRouter();
 
   const handleCardClick = () => {

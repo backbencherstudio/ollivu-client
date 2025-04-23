@@ -3,10 +3,11 @@ import Image from "next/image";
 import React, { useState } from "react";
 import { Flag, Star } from "lucide-react";
 import FlagIcon from "@/public/icons/flag-icon";
+import { useGetSingleReviewQuery } from "@/src/redux/features/shared/reviewApi";
 
 interface ReviewListProps {
   instructor: {
-    image: string;
+    profileImage: string;
     name: string;
   };
   review: {
@@ -19,6 +20,7 @@ interface ReviewListProps {
       _id: string;
       first_name: string;
       email: string;
+      profileImage?: string; 
       personalInfo: {
         display_name: string;
         first_name: string;
@@ -35,10 +37,40 @@ interface ReviewListProps {
   };
 }
 
-const ReviewList = ({ review, instructor }: ReviewListProps) => {
-  const [likes, setLikes] = useState(review.like);
-  const [dislikes, setDislikes] = useState(review.disLike);
+const ReviewList = ({ review }: ReviewListProps) => {
+  console.log("review list insidee", review);
+  
+  const [likes, setLikes] = useState(review.like || 0);
+  const [dislikes, setDislikes] = useState(review.disLike || 0);
   const [userAction, setUserAction] = useState<"like" | "dislike" | null>(null);
+
+  
+
+  const handleLike = () => {
+    if (userAction === "like") {
+      setLikes(prev => prev - 1);
+      setUserAction(null);
+    } else {
+      if (userAction === "dislike") {
+        setDislikes(prev => prev - 1);
+      }
+      setLikes(prev => prev + 1);
+      setUserAction("like");
+    }
+  };
+
+  const handleDislike = () => {
+    if (userAction === "dislike") {
+      setDislikes(prev => prev - 1);
+      setUserAction(null);
+    } else {
+      if (userAction === "like") {
+        setLikes(prev => prev - 1);
+      }
+      setDislikes(prev => prev + 1);
+      setUserAction("dislike");
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -58,9 +90,13 @@ const ReviewList = ({ review, instructor }: ReviewListProps) => {
             ))}
           </div>
           <span className="text-base text-[#1D1F2C]">({review.rating})</span>
-          <button className="text-[#1D1F2C] hover:text-gray-600 ml-10 cursor-pointer flex items-center gap-2">
+          <button 
+            className={`text-[#1D1F2C] hover:text-gray-600 ml-10 cursor-pointer flex items-center gap-2 ${
+              review.report ? 'text-red-500' : ''
+            }`}
+          >
             <FlagIcon />
-            Report
+            {review.report ? 'Reported' : 'Report'}
           </button>
         </div>
 
@@ -78,34 +114,25 @@ const ReviewList = ({ review, instructor }: ReviewListProps) => {
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-full bg-gray-200 relative overflow-hidden">
             <Image
-              src="/default-avatar.jpg"
-              alt={review.reviewerId.personalInfo.display_name}
+              src={review?.reviewerId?.profileImage 
+                ? `${process.env.NEXT_PUBLIC_IMAGE_URL}${review.reviewerId.profileImage}`
+                : "/default-avatar.jpg"}
+              alt={review.reviewerId?.personalInfo?.display_name || "User"}
               fill
               className="object-cover"
             />
           </div>
           <div className="flex flex-col">
             <span className="text-lg font-semibold text-[#1D1F2C]">
-              {review.reviewerId.personalInfo.display_name}
+              {review.reviewerId?.first_name || "Anonymous"}
             </span>
           </div>
         </div>
 
-        {/* Like/Dislike Section */}
+        {/* Like/Dislike Section remains the same */}
         <div className="flex items-center gap-4 mt-4">
           <button
-            onClick={() => {
-              if (userAction === "like") {
-                setLikes((prev) => prev - 1);
-                setUserAction(null);
-              } else {
-                if (userAction === "dislike") {
-                  setDislikes((prev) => prev - 1);
-                }
-                setLikes((prev) => prev + 1);
-                setUserAction("like");
-              }
-            }}
+            onClick={handleLike}
             className={`flex items-center gap-1.5 ${
               userAction === "like" ? "text-[#20B894]" : "text-[#777980]"
             } hover:text-[#20B894] transition-colors`}
@@ -126,18 +153,7 @@ const ReviewList = ({ review, instructor }: ReviewListProps) => {
             </svg>
           </button>
           <button
-            onClick={() => {
-              if (userAction === "dislike") {
-                setDislikes((prev) => prev - 1);
-                setUserAction(null);
-              } else {
-                if (userAction === "like") {
-                  setLikes((prev) => prev - 1);
-                }
-                setDislikes((prev) => prev + 1);
-                setUserAction("dislike");
-              }
-            }}
+            onClick={handleDislike}
             className={`flex items-center gap-1.5 ${
               userAction === "dislike" ? "text-red-500" : "text-[#777980]"
             } hover:text-red-500 transition-colors`}

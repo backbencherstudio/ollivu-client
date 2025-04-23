@@ -46,6 +46,8 @@ export default function ServiceResultContent() {
   const searchParams = useSearchParams();
   const { data: users, isLoading } = useGetAllUsersQuery({});
   const allUsers = users?.data || [];
+  console.log("all user", allUsers);
+  
 
   const [services, setServices] = useState<Service[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(
@@ -69,12 +71,14 @@ export default function ServiceResultContent() {
           )
         );
 
-        const imageUrl =
-          user.portfolio &&
-          (user.portfolio.startsWith("http") ||
-            user.portfolio.startsWith("/"))
-            ? user.portfolio
-            : DEFAULT_SERVICE_IMAGE;
+        // Ensure proper URL construction for images
+        const portfolioUrl = user.portfolio
+          ? `${process.env.NEXT_PUBLIC_IMAGE_URL}/${user.portfolio.replace(/^\//, '')}`
+          : DEFAULT_SERVICE_IMAGE.src;
+
+        const profileImageUrl = user.profileImage
+          ? `${process.env.NEXT_PUBLIC_IMAGE_URL}/${user.profileImage.replace(/^\//, '')}`
+          : DEFAULT_AVATAR_IMAGE.src;
 
         return {
           id: `${user._id}-${service}`,
@@ -84,11 +88,11 @@ export default function ServiceResultContent() {
             name: user.first_name,
             email: user.email,
             experience: "2+ years",
-            image: DEFAULT_AVATAR_IMAGE,
+            image: profileImageUrl,
           },
-          rating: user.rating || 4.5,
+          rating: user.rating || 0,
           reviewCount: user.review || 0,
-          image: imageUrl,
+          image: portfolioUrl,
           category: matchingCategory?.title || "Other",
         };
       })
