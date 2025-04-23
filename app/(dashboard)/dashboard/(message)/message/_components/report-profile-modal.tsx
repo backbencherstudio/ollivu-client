@@ -89,7 +89,7 @@ export default function ReportProfileModal({
             className="flex-1 bg-red-500 hover:bg-red-600 text-white disabled:bg-gray-300 disabled:cursor-not-allowed"
             onClick={() => {
               // Handle report submission
-              console.log('Reporting for:', selectedOption, otherReason);
+              // console.log('Reporting for:', selectedOption, otherReason);
               onClose();
             }}
             disabled={!isReportEnabled}

@@ -9,31 +9,24 @@ interface DecodedToken {
 }
 
 export const verifiedUser = () => {
-  if (typeof window === 'undefined') {
-    return null;
-  }
-  
-  const token = localStorage.getItem('accessToken');
-  if (!token) {
+  if (typeof window === "undefined") {
+    // Return null during SSR to avoid hydration issues
     return null;
   }
 
-  try {
-    const accessToken = localStorage.getItem("accessToken");
-    let userData: DecodedToken | null = null;
+  const accessToken = localStorage.getItem("accessToken");
+  let userData: DecodedToken | null = null;
 
-    if (accessToken) {
-      userData = jwtDecode<DecodedToken>(accessToken);
-      // Check if token is expired
-      if (userData.exp * 1000 < Date.now()) {
-        localStorage.removeItem("accessToken");
-        return null;
-      }
+  if (accessToken) {
+    userData = jwtDecode<DecodedToken>(accessToken);
+    // Check if token is expired
+    if (userData.exp * 1000 < Date.now()) {
+      localStorage.removeItem("accessToken");
+      return null;
     }
-    return userData;
-  } catch (error) {
-    return null;
   }
+
+  return userData;
 };
 
 export const isAdmin = () => {

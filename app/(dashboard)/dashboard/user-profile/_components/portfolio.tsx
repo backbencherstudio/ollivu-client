@@ -2,18 +2,74 @@
 
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+import { useDeletePortfolioMutation, useUploadPortfolioMutation } from "@/src/redux/features/users/userApi";
+import { verifiedUser } from "@/src/utils/token-varify";
 import { X } from "lucide-react";
-import { useState } from "react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { useGetSingleUserQuery } from "@/src/redux/features/users/userApi";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 export default function Portfolio() {
   const [showPortfolioModal, setShowPortfolioModal] = useState(false);
+  const [showDeleteAlert, setShowDeleteAlert] = useState(false);  // Add this line
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [serviceName, setServiceName] = useState("");
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const currentUser = verifiedUser();
+  const { data: userData } = useGetSingleUserQuery(currentUser?.userId);
+  const [uploadPortfolio] = useUploadPortfolioMutation();
+
+  const [deletePortfolio] = useDeletePortfolioMutation()
+  console.log("deletePortfolio", deletePortfolio);
+  
+
+  const portfolioImage = userData?.data?.portfolio 
+    ? `${process.env.NEXT_PUBLIC_IMAGE_URL}${userData?.data?.portfolio}`
+    : null;
+
+  const handleUpload = async () => {
+    if (!selectedFile || !currentUser?.userId) return;
+
+    try {
+      const formData = new FormData();
+      formData.append('portfolio', selectedFile);
+      formData.append('userId', currentUser.userId);
+
+      const response = await uploadPortfolio({ userId: currentUser.userId, data: formData }).unwrap();
+      
+      if (response.success) {
+        toast.success('Portfolio uploaded successfully');
+        setShowPortfolioModal(false);
+        setSelectedFile(null);
+        setPreviewUrl(null);
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to upload portfolio');
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setSelectedFile(e.target.files[0]);
+      const file = e.target.files[0];
+      setSelectedFile(file);
+      // Create preview URL
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+    }
+  };
+
+  const handleDeletePhoto = async () => {
+    if (!currentUser?.userId) return;
+
+    try {
+      const response = await deletePortfolio({ userId: currentUser.userId }).unwrap();
+      if (response.success) {
+        toast.success('Portfolio deleted successfully');
+        setShowDeleteAlert(false);
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to delete portfolio');
     }
   };
 
@@ -21,18 +77,36 @@ export default function Portfolio() {
     <>
       <Card className="p-6">
         <h2 className="text-lg font-medium mb-4">Portfolio</h2>
-        <p className="text-sm text-gray-500 mb-4">
-          Upload necessary documents or photos to showcase your portfolio/services.
-        </p>
+        
+        {!portfolioImage ? (
+          <p className="text-sm text-gray-500 mb-4">
+            Upload necessary documents or photos to showcase your portfolio/services.
+          </p>
+        ) : (
+          <div className="mb-4">
+            <div className="relative w-40 h-40 rounded-lg overflow-hidden">
+              <Image
+                src={portfolioImage}
+                alt="Portfolio"
+                fill
+                className="object-cover"
+              />
+              <button
+                onClick={() => setShowDeleteAlert(true)}
+                className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="flex gap-2">
           <button 
             onClick={() => setShowPortfolioModal(true)}
-            className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678]"
+            className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678] cursor-pointer"
           >
-            Add file
-          </button>
-          <button className="px-3 py-1.5 text-sm text-red-500 border border-red-500 rounded-md hover:bg-red-50">
-            Remove
+            {portfolioImage ? 'Change Image' : 'Add file'}
           </button>
         </div>
       </Card>
@@ -50,14 +124,6 @@ export default function Portfolio() {
             </button>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <div>
-              <label className="text-base font-medium mb-1 block">Service name</label>
-              <Input 
-                placeholder="Web development" 
-                value={serviceName}
-                onChange={(e) => setServiceName(e.target.value)}
-              />
-            </div>
             <div>
               <label className="text-base font-medium mb-1 block">Media</label>
               <div className="mt-1 border rounded-lg p-4">
@@ -80,18 +146,60 @@ export default function Portfolio() {
                   </span>
                 </label>
                 <p className="text-xs text-gray-500 mt-2">Maximum file size: 50 MB</p>
+
+                {/* Preview Section */}
+                {previewUrl && (
+                  <div className="mt-4">
+                    <p className="text-sm font-medium mb-2">Preview:</p>
+                    <div className="relative w-full h-48 rounded-lg overflow-hidden">
+                      <Image
+                        src={previewUrl}
+                        alt="Preview"
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
             <div className="pt-4">
               <button 
-                className="px-4 py-2 bg-[#20B894] text-white rounded-md hover:bg-[#1a9678] w-24"
+                onClick={handleUpload}
+                disabled={!selectedFile}
+                className={`px-4 py-2 text-white rounded-md w-24 cursor-pointer ${
+                  selectedFile 
+                    ? 'bg-[#20B894] hover:bg-[#1a9678]' 
+                    : 'bg-gray-400 cursor-not-allowed'
+                }`}
               >
-                Add file
+                {selectedFile ? 'Upload' : 'Add file'}
               </button>
             </div>
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your portfolio image.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeletePhoto}
+              className="bg-red-500 hover:bg-red-600"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

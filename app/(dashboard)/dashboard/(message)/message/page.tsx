@@ -1,40 +1,59 @@
 'use client';
 
-import React, { useState } from 'react';
-import LeftSidebar from './_components/lefi-sidebar';
-import MessageArea from './_components/message-area';
-import { authApi } from "@/src/redux/features/auth/authApi";
-import { verifiedUser } from "@/src/utils/token-varify";
+import { useState } from "react";
+import LeftSidebar from "./_components/lefi-sidebar";
+import { connections, messages, getMessagesByUser } from "./_data/mock-data";
+import ChatArea from "./_components/chat-area";
+import RightSidebar from "./_components/right-sidebar";
+import { SelectedUserData } from "./_types";
+import ConfirmServiceModal from "./_components/confirm-service-modal";
+import ReportProfileModal from "./_components/report-profile-modal";
+import { useGetAllExchangeDataQuery } from "@/src/redux/features/auth/authApi";
 
 export default function MessagePage() {
-  const [selectedUser, setSelectedUser] = useState(null);
-  const currentUser = verifiedUser();
-  
-  const { data } = authApi.useGetAllExchangeDataQuery({
-    userId: currentUser?.userId,
-    isAccepted: true
-  }, {
-    skip: !currentUser?.userId,
-  });
+  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [typing, setTyping] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isDetailsPanelOpen, setIsDetailsPanelOpen] = useState(false);
 
-  const handleUserSelect = (userId: string) => {
-    const user = data?.data?.find(
-      (conn) => conn.reciverUserId._id === userId
-    )?.reciverUserId;
-    setSelectedUser(user);
+  const handleUserSelect = (userData: any) => {
+    console.log("Selected User Data:", userData); // For debugging
+    setSelectedUser({
+      _id: userData?._id,
+      first_name: userData?.first_name,
+      email: userData?.email,
+      profileImage: userData?.profileImage,
+    });
   };
 
   return (
-    <div className="flex h-[calc(100vh-64px)] bg-gray-50">
-      <div className="w-[350px] bg-white shadow-sm">
+    <div className="relative flex h-full bg-white">
+      <div
+        className={`w-full md:w-80 h-full bg-white overflow-y-auto ${
+          selectedUser ? "hidden md:block" : "block"
+        }`}
+      >
         <LeftSidebar
-          connections={data?.data || []}
           selectedUser={selectedUser?._id}
           setSelectedUser={handleUserSelect}
         />
       </div>
-      <div className="flex-1 bg-white ml-5 shadow-sm">
-        <MessageArea selectedUser={selectedUser} />
+
+      <div className="flex-1">
+        <ChatArea
+          messages={messages}
+          typing={typing}
+          setTyping={setTyping}
+          selectedUser={selectedUser}
+          onOpenDetails={() => setIsDetailsPanelOpen(true)}
+          setMessages={setMessages}
+          onBack={() => setSelectedUser(null)}
+        />
+      </div>
+      <div className="hidden md:flex flex-1 items-center justify-center">
+        <p className="text-gray-500">
+          Select a conversation to start messaging
+        </p>
       </div>
     </div>
   );

@@ -13,7 +13,7 @@ export default function ForgotPassword() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('Email submitted:', email);
+    // console.log('Email submitted:', email);
     // router.push(`/auth/send-email?email=${encodeURIComponent(email)}`);
     router.push(`/auth/send-email?email=${encodeURIComponent(email)}`)
   };

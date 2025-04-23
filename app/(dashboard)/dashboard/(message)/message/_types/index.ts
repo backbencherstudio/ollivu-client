@@ -37,3 +37,19 @@ export interface ConnectionRequest {
   time: string,
   message: string
 }
+
+
+export interface ChatAreaProps {
+  messages: Message[];
+  typing: boolean;
+  setTyping: (typing: boolean) => void;
+  selectedUser: {
+    _id: string;
+    first_name: string;
+    email: string;
+    profileImage?: string;
+  };
+  onOpenDetails: () => void;
+  setMessages: (messages: Message[]) => void;
+  onBack: () => void;
+}
