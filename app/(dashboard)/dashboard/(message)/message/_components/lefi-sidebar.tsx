@@ -52,8 +52,7 @@ export default function LeftSidebar({
     }
   }, [query]);
 
-// console.log("process.env.NEXT_PUBLIC_IMAGE_URL", process.env.NEXT_PUBLIC_IMAGE_URL);
-
+  // console.log("process.env.NEXT_PUBLIC_IMAGE_URL", process.env.NEXT_PUBLIC_IMAGE_URL);
 
   return (
     <div className="border-r border-gray-200 flex flex-col -z-10">
@@ -122,18 +121,22 @@ export default function LeftSidebar({
               <div className="flex items-center gap-3">
                 {connection?.reciverUserId?.profileImage ? (
                   <div className="relative w-10 h-10 rounded-full overflow-hidden">
-                    <Image
-                      src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${connection.reciverUserId.profileImage}`}
-                      alt={connection.reciverUserId.first_name || "User Profile"}
+                    {/* <Image
+                      src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${connection.reciverUserId?.profileImage}`}
+                      alt={
+                        connection.reciverUserId.first_name || "User Profile"
+                      }
                       width={40}
                       height={40}
                       className="object-cover"
-                    />
+                    /> */}
                   </div>
                 ) : (
                   <div className="w-10 h-10 rounded-full bg-[#20B894] flex items-center justify-center text-white">
                     <span className="text-lg font-semibold">
-                      {connection.reciverUserId.first_name?.slice(0, 2).toUpperCase()}
+                      {connection.reciverUserId.first_name
+                        ?.slice(0, 2)
+                        .toUpperCase()}
                     </span>
                   </div>
                 )}

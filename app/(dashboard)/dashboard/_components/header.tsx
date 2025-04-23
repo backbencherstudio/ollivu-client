@@ -24,7 +24,6 @@ export default function Header({ user }) {
   const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
   const singleUserData = singleUser?.data;
   // console.log("singleUserData", singleUserData);
-  
 
   const notifications = [
     {
@@ -193,15 +192,17 @@ export default function Header({ user }) {
             >
               <div className="w-10 h-10 rounded-full relative overflow-hidden">
                 {singleUserData?.profileImage ? (
-                  <Image
+                  <div>
+                    {/* <Image
                     src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${singleUserData.profileImage}`}
                     alt="Profile"
                     fill
                     className="object-cover"
-                  />
+                  /> */}
+                  </div>
                 ) : (
                   <div className="w-full h-full bg-[#20B894] flex items-center justify-center text-white text-xl font-semibold">
-                    {singleUserData?.first_name 
+                    {singleUserData?.first_name
                       ? singleUserData.first_name.slice(0, 2).toUpperCase()
                       : "UN"}
                   </div>
