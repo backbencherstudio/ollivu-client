@@ -2,9 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { Flag, Star } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { serviceCategories } from "@/data/services";
 import ReviewList from "./_components/review-list";
 import ProfileHeader from "./_components/profile-header";
 import About from "./_components/about";
@@ -19,6 +17,12 @@ import EnsuredIcon from "@/public/icons/ensured-icon";
 import VerifiedIcon from "@/public/icons/verified-icon";
 import { Pagination } from "@/components/reusable/pagination";
 import FlagIcon from "@/public/icons/flag-icon";
+import {
+  useCreateReviewMutation,
+  useGetSingleReviewQuery,
+} from "@/src/redux/features/shared/reviewApi";
+import { verifiedUser } from "@/src/utils/token-varify";
+import { toast } from "sonner";
 
 const ServiceDetails = () => {
   const params = useParams();
@@ -27,11 +31,24 @@ const ServiceDetails = () => {
   const [activeTab, setActiveTab] = useState("all");
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
+  const currentUser = verifiedUser();
+  // console.log("current user", currentUser);
+
+  const [createReview] = useCreateReviewMutation();
+
   const { data: instructor, isLoading } = useGetSingleUserQuery(
     params.id as string
   );
   const singleUser = instructor?.data;
+  console.log("single", singleUser);
+
+  const { data: getSingleReview, isLoading: reviewLoading } =
+    useGetSingleReviewQuery(singleUser?._id);
+  // console.log("42", getSingleReview);
+
   const reviews = instructor?.reviews;
+  // console.log("rev", reviews);
+
   // console.log("singleUser", singleUser);
 
   // Add these states at the top with other state declarations
@@ -61,11 +78,12 @@ const ServiceDetails = () => {
   }
 
   const formattedInstructor = {
+    id: singleUser._id,
     name: singleUser?.personalInfo?.display_name,
     first_name: singleUser.personalInfo?.first_name,
     last_name: singleUser.personalInfo?.last_name,
     email: singleUser?.email,
-    image: singleUser?.portfolio || "/default-avatar.jpg",
+    profileImage: singleUser?.profileImage || "/default-avatar.jpg",
     rating: singleUser?.rating || 0,
     skills: singleUser?.extra_skills || [],
     experience: "5+ years",
@@ -76,6 +94,27 @@ const ServiceDetails = () => {
     about: singleUser?.about_me,
     location: `${singleUser?.addressInfo?.city}, ${singleUser?.addressInfo?.country}`,
     languages: ["English", "Bengali"], // Add default languages
+  };
+
+  const handleReviewSubmit = async (rating: number, review: string) => {
+    // Handle the review submission here
+    const reviewCreate = {
+      reviewerId: currentUser?.userId,
+      reciverId: singleUser._id,
+      rating: rating,
+      review: review,
+    };
+    // console.log(reviewCreate);
+    try {
+      const response = await createReview(reviewCreate).unwrap();
+      console.log("res", response);
+      toast.success("Review submitted successfully");
+    } catch (err) {
+      console.log(err);
+      toast.error("Something went wrong");
+    }
+
+    // Call your API to submit the review
   };
 
   return (
@@ -141,7 +180,7 @@ const ServiceDetails = () => {
             </div>
 
             {/* Skills Section */}
-            <div className="mb-8">
+            {/* <div className="mb-8">
               <h2 className="text-2xl font-medium text-[#070707] mb-4">
                 Skills
               </h2>
@@ -155,7 +194,7 @@ const ServiceDetails = () => {
                   </span>
                 ))}
               </div>
-            </div>
+            </div> */}
 
             {/* Portfolio Section */}
             <div className="mb-8">
@@ -164,7 +203,7 @@ const ServiceDetails = () => {
               </h2>
               <div className="relative h-[410px] rounded-xl overflow-hidden">
                 <Image
-                  src={instructor.portfolioImage}
+                  src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${formattedInstructor?.portfolioImage}`}
                   alt="Portfolio"
                   fill
                   className="object-cover"
@@ -176,12 +215,19 @@ const ServiceDetails = () => {
             <div className="mb-8">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-medium text-[#070707]">Reviews</h2>
+
                 <button
                   onClick={() => setIsReviewModalOpen(true)}
-                  className="px-4 py-2 bg-[#20B894] text-white rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors"
+                  className="flex items-center gap-2 text-emerald-500 hover:text-emerald-600 cursor-pointer"
                 >
                   Write Review
                 </button>
+
+                <ReviewModal
+                  isOpen={isReviewModalOpen}
+                  onClose={() => setIsReviewModalOpen(false)}
+                  onSubmit={handleReviewSubmit}
+                />
               </div>
 
               {/* Rating Overview */}
@@ -218,13 +264,15 @@ const ServiceDetails = () => {
 
               {/* Review List */}
               <div id="reviews-section">
-                {reviews && reviews.length > 0 ? (
+                {getSingleReview &&
+                getSingleReview.data &&
+                getSingleReview.data.length > 0 ? (
                   <>
                     <div>
-                      {currentReviews?.map((review) => (
+                      {getSingleReview.data.map((singleReview: any) => (
                         <ReviewList
-                          key={review._id}
-                          review={review}
+                          key={singleReview._id}
+                          review={singleReview}
                           instructor={formattedInstructor}
                         />
                       ))}
@@ -253,13 +301,15 @@ const ServiceDetails = () => {
             <div className="flex flex-col items-center text-center">
               <div className="w-20 h-20 rounded-full relative overflow-hidden mb-3">
                 <Image
-                  src={instructor.image}
-                  alt={instructor.name}
+                  src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${formattedInstructor?.profileImage}`}
+                  alt={instructor.first_name}
                   fill
                   className="object-cover"
                 />
               </div>
-              <h3 className="font-medium text-[#070707]">{formattedInstructor.name}</h3>
+              <h3 className="font-medium text-[#070707]">
+                {formattedInstructor.first_name}
+              </h3>
               <p className="text-gray-500 text-sm">Offline</p>
               <p className="text-xs text-gray-500 mt-1">10:05 PM local time</p>
             </div>

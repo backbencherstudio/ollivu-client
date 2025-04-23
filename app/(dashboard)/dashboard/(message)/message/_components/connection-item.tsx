@@ -1,6 +1,5 @@
 import { Avatar } from "@/components/ui/avatar";
 import { Connection } from "../_types";
-import Image from "next/image";
 import { UserAvatar } from "../../../_components/user-avater";
 
 interface ConnectionItemProps {

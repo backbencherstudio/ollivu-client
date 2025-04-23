@@ -56,10 +56,9 @@ export default function ChatArea({
       id: Date.now().toString(),
       sender: "user",
       email: "user@example.com",
-      image: "user-image.jpg",
       text: messageInput,
       time: new Date().toLocaleTimeString(),
-      read: true,
+      read: true
     };
 
     setMessages([...messages, newMessage]);
