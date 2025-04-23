@@ -1,6 +1,7 @@
 import { baseApi } from "../../api/baseApi";
 
 export const authApi = baseApi.injectEndpoints({
+  // Add this endpoint to your existing authApi
   endpoints: (builder) => ({
 
 
@@ -56,7 +57,12 @@ export const authApi = baseApi.injectEndpoints({
 
 
 
-
+    getMessages: builder.query({
+      query: ({ senderId, receiverId }) => ({
+        url: `/messages?senderId=${senderId}&receiverId=${receiverId}`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 

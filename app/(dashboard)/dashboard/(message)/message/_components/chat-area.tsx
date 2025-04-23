@@ -7,6 +7,7 @@ import Image from "next/image";
 import { Message } from "../_types";
 import MessageItem from "./message-item";
 import TypingIndicator from "./typing-indicator";
+import { io } from "socket.io-client";
 
 interface ChatAreaProps {
   messages: Message[];
@@ -19,12 +20,18 @@ interface ChatAreaProps {
   onBack: () => void;
 }
 
+const socket = io('http://192.168.5.6:5000', {
+  withCredentials: true,
+  transports: ['websocket']
+});
+
 export default function ChatArea({ 
   messages, 
   typing, 
   setTyping, 
   selectedUser,
   selectedUserImage,
+  currentUserId,
   onOpenDetails,
   setMessages,
   onBack  // Add this
