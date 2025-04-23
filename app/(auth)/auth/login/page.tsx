@@ -24,7 +24,7 @@ export default function LoginPage() {
         email,
         password
       }).unwrap();
-      console.log("res", response);
+      // console.log("res", response);
       
       
       if (response.success) {

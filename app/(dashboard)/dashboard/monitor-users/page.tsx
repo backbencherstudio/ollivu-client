@@ -131,7 +131,7 @@ export default function MonitorMessaging() {
             setOpen={setOpen}
             onStatusChange={handleStatusChange}
             onTakeAction={(conversation) => {
-              console.log("Taking action:", conversation);
+              // console.log("Taking action:", conversation);
             }}
           />
         </div>

@@ -43,7 +43,7 @@ export const authApi = baseApi.injectEndpoints({
 
     getAllExchangeData: builder.query({
       query: (query) => {
-        console.log(46, query);
+        // console.log(46, query);
         
         return {
           url: `/shared/exchange`,
