@@ -1,77 +1,65 @@
-import React, { useState, useEffect } from 'react';
-import { Star, X } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { Star, X } from "lucide-react";
 
 interface ReviewModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (rating: number, feedback: string) => void;
+  onSubmit: (rating: number, review: string) => void;
 }
 
 const ReviewModal = ({ isOpen, onClose, onSubmit }: ReviewModalProps) => {
   const [rating, setRating] = useState(0);
-  const [feedback, setFeedback] = useState('');
+  const [review, setReview] = useState("");
   const [hoveredStar, setHoveredStar] = useState(0);
 
   const handleSubmit = () => {
     if (rating === 0) {
-      alert('Please select a rating');
+      alert("Please select a rating");
       return;
     }
-    onSubmit(rating, feedback);
+    onSubmit(rating, review);
     setRating(0);
-    setFeedback('');
+    setReview("");
+    onClose();
   };
-
-  // Add effect to control body scroll
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-
-    // Cleanup function
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isOpen]);
 
   if (!isOpen) return null;
 
   return (
-    <div 
-      className="fixed inset-0 bg-black/70 bg-opacity-50 flex items-center justify-center z-50"
-      onClick={onClose}
-    >
+    <div className="fixed inset-0 bg-black/60 bg-opacity-50 flex items-center justify-center z-50">
       <div 
-        className="bg-white rounded-xl p-6 w-[500px] relative"
+        className="bg-white rounded-2xl p-6 w-[400px] max-w-[95%] relative mx-4"
         onClick={(e) => e.stopPropagation()}
       >
-        <button 
+        <button
           onClick={onClose}
-          className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
+          className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
         >
           <X className="w-5 h-5" />
         </button>
 
-        <h2 className="text-xl font-semibold text-[#070707] mb-4">Write Review</h2>
-        
+        <h2 className="text-xl font-medium text-gray-900 mb-4 cursor-pointer">
+          Write Review
+        </h2>
+
         <div className="mb-6">
-          <p className="text-[#070707] mb-3">How satisfied are you with the service?</p>
-          <div className="flex gap-2">
+          <p className="text-gray-700 text-sm mb-3">
+            How satisfied are you with the service?
+          </p>
+          <div className="flex gap-1">
             {[1, 2, 3, 4, 5].map((star) => (
               <button
                 key={star}
                 onMouseEnter={() => setHoveredStar(star)}
                 onMouseLeave={() => setHoveredStar(0)}
                 onClick={() => setRating(star)}
-                className="focus:outline-none"
+                className="focus:outline-none transition-colors"
               >
                 <Star
-                  className={`w-8 h-8 ${
+                  className={`w-7 h-7 ${
                     star <= (hoveredStar || rating)
-                      ? 'fill-amber-400 text-amber-400'
-                      : 'fill-gray-200 text-gray-200'
+                      ? "fill-amber-400 text-amber-400"
+                      : "fill-gray-200 text-gray-200"
                   }`}
                 />
               </button>
@@ -80,22 +68,24 @@ const ReviewModal = ({ isOpen, onClose, onSubmit }: ReviewModalProps) => {
         </div>
 
         <div className="mb-6">
-          <p className="text-[#070707] mb-3">Write your feedback (optional)</p>
+          <p className="text-gray-700 text-sm mb-2">
+            Write your feedback (optional)
+          </p>
           <textarea
-            value={feedback}
-            onChange={(e) => setFeedback(e.target.value)}
-            placeholder="Type your feedback here"
-            className="w-full h-32 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#20B894] resize-none"
+            value={review}
+            onChange={(e) => setReview(e.target.value)}
+            placeholder="Type your Review here"
+            className="w-full h-[120px] p-3 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-emerald-500 resize-none"
           />
         </div>
 
         <button
           onClick={handleSubmit}
-          className="w-full py-3 bg-[#20B894] text-white rounded-lg font-medium hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2"
+          className="w-full py-3 bg-emerald-500 text-white rounded-lg font-medium hover:bg-emerald-600 transition-colors flex items-center justify-center"
         >
           Submit
           <svg
-            className="w-4 h-4"
+            className="w-4 h-4 ml-2"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"

@@ -2,9 +2,6 @@ import { baseApi } from "../../api/baseApi";
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-
-
-
     loginUser: builder.mutation({
       query: (credentials) => ({
         url: "/auth/login",
@@ -36,7 +33,7 @@ export const authApi = baseApi.injectEndpoints({
         url: "/auth/verifyOTP",
         method: "POST",
         body: data,
-        credentials: "include", 
+        credentials: "include",
       }),
       invalidatesTags: ["User"],
     }),
@@ -44,19 +41,15 @@ export const authApi = baseApi.injectEndpoints({
     getAllExchangeData: builder.query({
       query: (query) => {
         // console.log(46, query);
-        
+
         return {
           url: `/shared/exchange`,
           method: "GET",
           params: query,
-        }
+        };
       },
-      providesTags:['User']
+      providesTags: ["User"],
     }),
-
-
-
-
   }),
 });
 
@@ -64,5 +57,5 @@ export const {
   useCreateUserMutation,
   useVerifyOTPMutation,
   useLoginUserMutation,
-  useGetAllExchangeDataQuery
+  useGetAllExchangeDataQuery,
 } = authApi;

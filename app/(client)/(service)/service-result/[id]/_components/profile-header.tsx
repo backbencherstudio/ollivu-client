@@ -5,7 +5,7 @@ import profileImg from "@/public/avatars/john.png"
 
 interface ProfileHeaderProps {
   formattedInstructor: {
-    image: string;
+    profileImage: string;
     name: string;
     email: string;
     rating: number;
@@ -18,15 +18,16 @@ interface ProfileHeaderProps {
 }
 
 export default function ProfileHeader({ formattedInstructor }: ProfileHeaderProps) {
-  console.log("formattedInstructor", formattedInstructor);
+  // console.log("formattedInstructor", formattedInstructor);
   
   return (
     <div>
       <div className="flex flex-col gap-4 border p-6 rounded-xl">
         <div className="flex items-center gap-4">
           <div className="w-[140px] h-[140px] rounded-full relative overflow-hidden">
+            
             <Image
-              src={ profileImg}
+              src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${formattedInstructor?.profileImage}`}
               alt={formattedInstructor.first_name}
               fill
               className="object-cover"
