@@ -286,7 +286,7 @@ export default function UserProfile() {
             <div className="flex flex-col sm:flex-row gap-2 mt-2">
               <button
                 onClick={handleImageClick}
-                className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678] flex justify-center items-center gap-x-2"
+                className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678] flex justify-center items-center gap-x-2 cursor-pointer"
               >
                 Replace Photo
                 <BsArrowUpRight />

@@ -180,7 +180,7 @@ const ServiceDetails = () => {
             </div>
 
             {/* Skills Section */}
-            <div className="mb-8">
+            {/* <div className="mb-8">
               <h2 className="text-2xl font-medium text-[#070707] mb-4">
                 Skills
               </h2>
@@ -194,7 +194,7 @@ const ServiceDetails = () => {
                   </span>
                 ))}
               </div>
-            </div>
+            </div> */}
 
             {/* Portfolio Section */}
             <div className="mb-8">
