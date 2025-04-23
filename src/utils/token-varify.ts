@@ -9,6 +9,11 @@ interface DecodedToken {
 }
 
 export const verifiedUser = () => {
+  if (typeof window === "undefined") {
+    // Return null during SSR to avoid hydration issues
+    return null;
+  }
+
   const accessToken = localStorage.getItem("accessToken");
   let userData: DecodedToken | null = null;
 
@@ -20,6 +25,7 @@ export const verifiedUser = () => {
       return null;
     }
   }
+
   return userData;
 };
 

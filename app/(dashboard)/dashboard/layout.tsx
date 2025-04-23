@@ -17,7 +17,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!user) {
-      router.push('/auth/login');
+      router.push("/auth/login");
       return;
     }
   }, [user, router]);
@@ -35,10 +35,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     checkIsMobile();
 
     // Add event listener
-    window.addEventListener('resize', checkIsMobile);
+    window.addEventListener("resize", checkIsMobile);
 
     // Cleanup
-    return () => window.removeEventListener('resize', checkIsMobile);
+    return () => window.removeEventListener("resize", checkIsMobile);
   }, []);
 
   return (
@@ -60,7 +60,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           className={`
             fixed md:static inset-y-0 left-0 z-40 w-64
             transform transition-transform duration-300 ease-in-out
-            ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+            ${
+              isSidebarOpen
+                ? "translate-x-0"
+                : "-translate-x-full md:translate-x-0"
+            }
             bg-white shadow-sm md:shadow-none
           `}
         >
@@ -83,15 +87,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             onClick={() => setIsSidebarOpen(false)}
           />
         )}
-        
+
         {/* Main Content */}
         <div className="flex-1 md:ml-0">
           <div className="sticky top-0 z-30">
             <Header user={user} />
           </div>
-          <main className="p-4 md:p-6">
-            {children}
-          </main>
+          <main className="p-4 md:p-6">{children}</main>
         </div>
       </div>
     </ProtectedRoute>

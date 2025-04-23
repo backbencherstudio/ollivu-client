@@ -6,7 +6,8 @@ import { MessageList } from "./_components/MessageList";
 import { MessageInput } from "./_components/MessageInput";
 import { verifiedUser } from "@/src/utils/token-varify";
 import { authApi } from "@/src/redux/features/auth/authApi";
-const socket = io("https://localhost:5000");
+import { MessageContent } from "./_components/MessageContent";
+const socket = io("http://localhost:5000");
 
 const Messages = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -39,16 +40,7 @@ const Messages = () => {
     return {};
   });
 
-  const messagesEndRef = useRef(null);
   const [onlineUsers, setOnlineUsers] = useState({});
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
 
   useEffect(() => {
     // Fetch user data on the client side
@@ -58,8 +50,8 @@ const Messages = () => {
 
   // Fetch message history when component mounts or recipient changes
   useEffect(() => {
-    if (recipient) {
-      fetch(`https://localhost:5000/chats?email=${currentUser?.email}`)
+    if (recipient && currentUser?.email) {
+      fetch(`http://localhost:5000/chats?email=${currentUser?.email}`)
         .then((response) => response.json())
         .then((data) => {
           setMessages(data);
@@ -82,7 +74,7 @@ const Messages = () => {
         })
         .catch((error) => console.error("Error fetching messages:", error));
     }
-  }, [recipient, currentUser]);
+  }, []);
 
   useEffect(() => {
     socket.emit("join", currentUser?.email);
@@ -167,9 +159,7 @@ const Messages = () => {
           `https://localhost:5000/messages/unread/${currentUser?.email}`
         );
         const unreadCounts = await response.json();
-
         // console.log("Initial unread counts:", unreadCounts); // Debug log
-
         // Update unread messages state and localStorage
         setUnreadMessages(unreadCounts);
         localStorage.setItem("unreadMessages", JSON.stringify(unreadCounts));
@@ -191,15 +181,7 @@ const Messages = () => {
       socket.off("message history");
       socket.off("user list");
     };
-  }, [currentUser]);
-  useEffect(() => {
-    if (recipient) {
-      const foundUser = userData?.data?.find((u) => u.email === recipient);
-      if (foundUser) {
-        setUser(foundUser);
-      }
-    }
-  }, [recipient, userData?.data]);
+  }, []);
   const sendMessage = (e) => {
     e.preventDefault();
     if (message && currentChat) {
@@ -221,22 +203,18 @@ const Messages = () => {
   };
   const handleChatSelect = async (user) => {
     setCurrentChat(user);
-    console.log(user);
     try {
       // Mark messages as read in the backend
-      const response = await fetch(
-        "https://localhost:5000/messages/mark-read",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            sender: user.email,
-            recipient: currentUser?.email,
-          }),
-        }
-      );
+      const response = await fetch("http://localhost:5000/messages/mark-read", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          sender: user.email,
+          recipient: currentUser?.email,
+        }),
+      });
 
       if (response.ok) {
         // Update local messages state
@@ -279,7 +257,6 @@ const Messages = () => {
       socket.off("message_deleted");
     };
   }, []);
-
   return (
     <div className="">
       {/* Header */}
@@ -355,73 +332,13 @@ const Messages = () => {
           </div>
           {currentChat ? (
             <>
-              <div
-                className="flex-grow h-[540px] overflow-y-auto p-4 mb-10"
-                style={{ display: "flex", flexDirection: "column-reverse" }}
-              >
-                <div ref={messagesEndRef} />
-                {messages
-                  .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-                  .map((msg, index) => (
-                    <div key={index}>
-                      {((msg.sender === currentUser?.email &&
-                        msg.recipient === currentChat?.email) ||
-                        (msg.recipient === currentUser?.email &&
-                          msg.sender === currentChat?.email)) && (
-                        <div
-                          key={msg._id || index}
-                          className={`mb-4 ${
-                            msg.sender === currentUser?.email
-                              ? "text-right"
-                              : "text-left"
-                          }`}
-                        >
-                          <div className="relative group inline-block">
-                            {msg.sender === currentUser?.email && (
-                              <button
-                                onClick={() => deleteMessage(msg._id)}
-                                className="absolute -left-8 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-in-out"
-                                title="Delete message"
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  className="h-5 w-5 text-red-500 hover:text-red-700"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                  />
-                                </svg>
-                              </button>
-                            )}
-                            <div
-                              className={`p-3 rounded-lg ${
-                                msg.sender === currentUser?.email
-                                  ? "bg-blue-500 text-white"
-                                  : "bg-gray-100"
-                              }`}
-                            >
-                              {msg.content}
-                            </div>
-                            <div className="text-xs text-gray-500 mt-1">
-                              {/* {new Date(msg.timestamp).toLocaleTimeString()} */}
-                              {moment(msg?.timestamp).format(
-                                "DD MMMM YYYY, h:mm A"
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-              </div>
-              <MessageInput
+              <MessageContent
+                messages={messages}
+                currentUser={currentUser}
                 currentChat={currentChat}
+                deleteMessage={deleteMessage}
+              />
+              <MessageInput
                 message={message}
                 setMessage={setMessage}
                 sendMessage={sendMessage}
@@ -491,6 +408,7 @@ const Messages = () => {
               unreadCount: unreadMessages[user.email] || 0,
             }))}
             currentUser={currentUser?.email}
+            role={currentUser?.role}
           />
         </div>
       </div>
@@ -499,7 +417,7 @@ const Messages = () => {
           <div className="flex items-center gap-3">
             {currentChat?.profileImage ? (
               <img
-                src={`${url}${currentChat?.profileImage}`}
+                src={`${currentChat?.profileImage}`}
                 alt={currentChat?.name?.slice(0, 2).toUpperCase()}
                 className="w-10 h-10 rounded-full"
               />
@@ -528,70 +446,13 @@ const Messages = () => {
         </div>
         {currentChat ? (
           <>
-            <div
-              className="flex-grow h-[540px] overflow-y-auto p-4 mb-10 pb-10"
-              style={{ display: "flex", flexDirection: "column-reverse" }}
-            >
-              <div ref={messagesEndRef} />
-              {messages
-                .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-                .map((msg, index) => (
-                  <div key={index}>
-                    {((msg.sender === currentUser?.email &&
-                      msg.recipient === currentChat?.email) ||
-                      (msg.recipient === currentUser?.email &&
-                        msg.sender === currentChat?.email)) && (
-                      <div
-                        key={msg._id || index}
-                        className={`mb-4 ${
-                          msg.sender === currentUser?.email
-                            ? "text-right"
-                            : "text-left"
-                        }`}
-                      >
-                        <div className="relative group inline-block">
-                          {msg.sender === currentUser?.email && (
-                            <button
-                              onClick={() => deleteMessage(msg._id)}
-                              className="absolute -left-8 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-in-out"
-                              title="Delete message"
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-5 w-5 text-red-500 hover:text-red-700"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                />
-                              </svg>
-                            </button>
-                          )}
-                          <div
-                            className={`p-3 rounded-lg ${
-                              msg.sender === currentUser?.email
-                                ? "bg-blue-500 text-white"
-                                : "bg-gray-100"
-                            }`}
-                          >
-                            {msg.content}
-                          </div>
-                          <div className="text-xs text-gray-500 mt-1">
-                            {new Date(msg.timestamp).toLocaleTimeString()}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ))}
-            </div>
-            <MessageInput
+            <MessageContent
+              messages={messages}
+              currentUser={currentUser}
               currentChat={currentChat}
+              deleteMessage={deleteMessage}
+            />
+            <MessageInput
               message={message}
               setMessage={setMessage}
               sendMessage={sendMessage}
