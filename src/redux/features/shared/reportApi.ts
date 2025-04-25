@@ -9,7 +9,7 @@ export const reportApi = baseApi.injectEndpoints({
         body: data,
         formData: true,
       }),
-      invalidatesTags: ["Report"],
+      invalidatesTags: ["Report", "User"],
     }),
 
     getAllReport: builder.query({
@@ -19,7 +19,7 @@ export const reportApi = baseApi.injectEndpoints({
           method: "GET",
         };
       },
-      providesTags: ["Report"],
+      providesTags: ["Report", "User"],
     }),
 
   }),

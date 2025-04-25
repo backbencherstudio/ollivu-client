@@ -4,6 +4,10 @@ import React, { useState } from "react";
 import { Flag, Star } from "lucide-react";
 import FlagIcon from "@/public/icons/flag-icon";
 import { useGetSingleReviewQuery } from "@/src/redux/features/shared/reviewApi";
+import { useCreateReviewReportMutation } from "@/src/redux/features/shared/reportApi";
+import { verifiedUser } from "@/src/utils/token-varify";
+import ReportModal from "@/app/(dashboard)/dashboard/review/_components/report-modal";
+import { toast } from "sonner";
 
 interface ReviewListProps {
   instructor: {
@@ -43,8 +47,9 @@ const ReviewList = ({ review }: ReviewListProps) => {
   const [likes, setLikes] = useState(review.like || 0);
   const [dislikes, setDislikes] = useState(review.disLike || 0);
   const [userAction, setUserAction] = useState<"like" | "dislike" | null>(null);
-
-  
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [createReviewReport] = useCreateReviewReportMutation();
+  const currentUser = verifiedUser();
 
   const handleLike = () => {
     if (userAction === "like") {
@@ -72,6 +77,29 @@ const ReviewList = ({ review }: ReviewListProps) => {
     }
   };
 
+  const handleReportSubmit = async (description: string, file: File | null) => {
+    try {
+      const formData = new FormData();
+      formData.append("reporterId", currentUser.userId);
+      formData.append("reportDetails", description);
+      formData.append("reviewId", review._id);
+      if (file) {
+        formData.append("document", file);
+      }
+
+      const response = await createReviewReport(formData).unwrap();
+      if (response?.success) {
+        toast.success("Report submitted successfully");
+        setIsReportModalOpen(false);
+      } else {
+        toast.error("Failed to submit report");
+      }
+    } catch (error) {
+      console.error("Error submitting report:", error);
+      toast.error("Failed to submit report");
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="border-b pb-6 my-8">
@@ -90,16 +118,35 @@ const ReviewList = ({ review }: ReviewListProps) => {
             ))}
           </div>
           <span className="text-base text-[#1D1F2C]">({review.rating})</span>
-          <button 
+          {/* <button 
             className={`text-[#1D1F2C] hover:text-gray-600 ml-10 cursor-pointer flex items-center gap-2 ${
               review.report ? 'text-red-500' : ''
             }`}
           >
             <FlagIcon />
             {review.report ? 'Reported' : 'Report'}
-          </button>
+          </button> */}
+          {/* Update the Report button */}
+        <button 
+          onClick={() => setIsReportModalOpen(true)}
+          className={`text-[#1D1F2C] hover:text-gray-600 ml-10 cursor-pointer flex items-center gap-2 ${
+            review?.report ? 'text-red-500' : ''
+          }`}
+        >
+          <FlagIcon />
+          {review?.report ? 'Reported' : 'Report'}
+        </button>
+
+        {/* Add ReportModal */}
+        <ReportModal
+          isOpen={isReportModalOpen}
+          onClose={() => setIsReportModalOpen(false)}
+          onSubmit={handleReportSubmit}
+        />
+
         </div>
 
+        
         {/* Review Text */}
         <div className="mb-5">
           <p className="text-[#4A4C56] text-lg font-normal mb-1">

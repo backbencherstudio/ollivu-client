@@ -12,6 +12,7 @@ import { StatCard } from "./_components/stat-card";
 import { RatingBreakdown } from "./_components/rating-breakdown";
 import { StarRating } from "./_components/star-rating";
 import { Pagination } from "@/components/reusable/pagination";
+import FlagIcon from "@/public/icons/flag-icon";
 
 export default function AdminReviewsPage() {
   const [sort, setSort] = useState("recent");
@@ -136,21 +137,15 @@ export default function AdminReviewsPage() {
               <div className="flex items-center gap-2 mt-2 text-sm">
                 <StarRating rating={review?.rating} />
                 <span className="text-gray-500">({review?.rating})</span>
-                {review?.reported ? (
-                  <span className="text-red-500 font-medium flex items-center gap-1">
-                    <Flag size={14} /> Reported
-                  </span>
-                ) : (
-                  <button
-                    onClick={() => {
-                      setSelectedReview(review);
-                      setIsReportModalOpen(true);
-                    }}
-                    className="text-gray-400 hover:text-black flex items-center gap-1 cursor-pointer"
-                  >
-                    <Flag size={14} /> Report
-                  </button>
-                )}
+                <button 
+          onClick={() => setIsReportModalOpen(true)}
+          className={`text-[#1D1F2C] hover:text-gray-600 ml-10 cursor-pointer flex items-center gap-2 ${
+            review?.report ? 'text-red-500' : ''
+          }`}
+        >
+          <FlagIcon />
+          {review?.report ? 'Reported' : 'Report'}
+        </button>
               </div>
             </div>
           </div>

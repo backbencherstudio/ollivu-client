@@ -36,30 +36,23 @@ const ServiceDetails = () => {
 
   const [createReview] = useCreateReviewMutation();
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 3;
+
   const { data: instructor, isLoading } = useGetSingleUserQuery(
     params.id as string
   );
   const singleUser = instructor?.data;
-  console.log("single", singleUser);
 
   const { data: getSingleReview, isLoading: reviewLoading } =
     useGetSingleReviewQuery(singleUser?._id);
-  // console.log("42", getSingleReview);
 
-  const reviews = instructor?.reviews;
-  // console.log("rev", reviews);
-
-  // console.log("singleUser", singleUser);
-
-  // Add these states at the top with other state declarations
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3; // Number of reviews per page
-
-  // Add this pagination logic before the return statement
-  const totalPages = Math.ceil((reviews?.length || 0) / itemsPerPage);
+  // Pagination logic
+  const reviews = getSingleReview?.data || [];
+  const totalPages = Math.ceil(reviews.length / itemsPerPage);
   const indexOfLastReview = currentPage * itemsPerPage;
   const indexOfFirstReview = indexOfLastReview - itemsPerPage;
-  const currentReviews = reviews?.slice(indexOfFirstReview, indexOfLastReview);
+  const currentReviews = reviews.slice(indexOfFirstReview, indexOfLastReview);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -249,27 +242,16 @@ const ServiceDetails = () => {
                   >
                     All reviews
                   </button>
-                  {/* <button
-                    onClick={() => setActiveTab("latest")}
-                    className={`pb-2 text-sm font-medium ${
-                      activeTab === "latest"
-                        ? "text-[#20B894] border-b-2 border-[#20B894]"
-                        : "text-[#777980]"
-                    }`}
-                  >
-                    Latest reviews
-                  </button> */}
+            
                 </div>
               </div>
 
               {/* Review List */}
               <div id="reviews-section">
-                {getSingleReview &&
-                getSingleReview.data &&
-                getSingleReview.data.length > 0 ? (
+                {reviews.length > 0 ? (
                   <>
                     <div>
-                      {getSingleReview.data.map((singleReview: any) => (
+                      {currentReviews?.map((singleReview: any) => (
                         <ReviewList
                           key={singleReview._id}
                           review={singleReview}
@@ -343,11 +325,11 @@ const ServiceDetails = () => {
       </div>
 
       {/* Review Modal */}
-      {/* <ReviewModal
+      <ReviewModal
         isOpen={isReviewModalOpen}
         onClose={() => setIsReviewModalOpen(false)}
         onSubmit={handleReviewSubmit}
-      /> */}
+      />
     </div>
   );
 };
