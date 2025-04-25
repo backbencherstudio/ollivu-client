@@ -32,7 +32,19 @@ export const reportApi = baseApi.injectEndpoints({
       providesTags: ["Report", "User"],
     }),
 
+    getAllReportedProfile: builder.query({
+      query: () => {
+        return {
+          url: `/auth/reportedProfile`,
+          method: "GET",
+        };
+      },
+    }),
   }),
 });
 
-export const { useCreateReviewReportMutation, useCreateProfileReportMutation } = reportApi;
+export const {
+  useCreateReviewReportMutation,
+  useCreateProfileReportMutation,
+  useGetAllReportedProfileQuery,
+} = reportApi;
