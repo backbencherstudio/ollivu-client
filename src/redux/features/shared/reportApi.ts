@@ -9,7 +9,17 @@ export const reportApi = baseApi.injectEndpoints({
         body: data,
         formData: true,
       }),
-      invalidatesTags: ["Report"],
+      invalidatesTags: ["Report", "User"],
+    }),
+
+    createProfileReport: builder.mutation({
+      query: (data) => ({
+        url: "/auth/sendProfileReport",
+        method: "POST",
+        body: data,
+        formData: true,
+      }),
+      invalidatesTags: ["Report", "User"],
     }),
 
     getAllReport: builder.query({
@@ -19,10 +29,22 @@ export const reportApi = baseApi.injectEndpoints({
           method: "GET",
         };
       },
-      providesTags: ["Report"],
+      providesTags: ["Report", "User"],
     }),
 
+    getAllReportedProfile: builder.query({
+      query: () => {
+        return {
+          url: `/auth/reportedProfile`,
+          method: "GET",
+        };
+      },
+    }),
   }),
 });
 
-export const { useCreateReviewReportMutation } = reportApi;
+export const {
+  useCreateReviewReportMutation,
+  useCreateProfileReportMutation,
+  useGetAllReportedProfileQuery,
+} = reportApi;

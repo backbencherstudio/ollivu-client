@@ -29,7 +29,7 @@ export default function Sidebar({ user }) {
       label: "User Profile",
       href: "/dashboard/user-profile",
     },
-    { icon: MessageSquare, label: "Message", href: "/dashboard/message" },
+    { icon: MessageSquare, label: "Message", href: "/dashboard/messages" },
     { icon: Star, label: "Review", href: "/dashboard/review" },
     { icon: Settings, label: "Settings", href: "/dashboard/settings" },
   ];
