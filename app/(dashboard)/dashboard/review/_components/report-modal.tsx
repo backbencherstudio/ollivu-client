@@ -67,7 +67,7 @@ export default function ReportModal({ isOpen, onClose, onSubmit }: ReportModalPr
       <div className="bg-white rounded-2xl p-6 w-[400px] max-w-[95%] relative mx-4">
         <button
           onClick={onClose}
-          className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+          className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 cursor-pointer"
         >
           <X className="w-5 h-5" />
         </button>
