@@ -42,7 +42,7 @@ interface ReviewListProps {
 }
 
 const ReviewList = ({ review }: ReviewListProps) => {
-  console.log("review list insidee", review);
+  // console.log("review list insidee", review);
   
   const [likes, setLikes] = useState(review.like || 0);
   const [dislikes, setDislikes] = useState(review.disLike || 0);

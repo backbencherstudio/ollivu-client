@@ -23,6 +23,10 @@ import {
 } from "@/src/redux/features/shared/reviewApi";
 import { verifiedUser } from "@/src/utils/token-varify";
 import { toast } from "sonner";
+import ReportProfileModal from './_components/report-profile-modal';
+import { useCreateProfileReportMutation } from "@/src/redux/features/shared/reportApi";
+
+
 
 const ServiceDetails = () => {
   const params = useParams();
@@ -30,6 +34,7 @@ const ServiceDetails = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [isReportProfileModalOpen, setIsReportProfileModalOpen] = useState(false);
 
   const currentUser = verifiedUser();
   // console.log("current user", currentUser);
@@ -44,8 +49,10 @@ const ServiceDetails = () => {
   );
   const singleUser = instructor?.data;
 
-  const { data: getSingleReview, isLoading: reviewLoading } =
+  const { data: getSingleReview } =
     useGetSingleReviewQuery(singleUser?._id);
+
+    const [createProfileReport] = useCreateProfileReportMutation()
 
   // Pagination logic
   const reviews = getSingleReview?.data || [];
@@ -108,6 +115,28 @@ const ServiceDetails = () => {
     }
 
     // Call your API to submit the review
+  };
+  const handleProfileReport = async (reason: string, file: File | null) => {
+    try {
+      const formData = new FormData();
+      formData.append("reporterId", currentUser?.userId);
+      formData.append("reportedId", singleUser?._id);
+      formData.append("reportType", reason); // This will be the description if "Other" was selected
+      if (file) {
+        formData.append("supportingFile", file);
+      }
+
+      const response = await createProfileReport(formData).unwrap();
+      // console.log("response", response);
+      
+      if (response?.success) {
+        toast.success("Report submitted successfully");
+        setIsReportProfileModalOpen(false);
+      }
+    } catch (error) {
+      console.error("Error submitting report:", error);
+      toast.error("Failed to submit report");
+    }
   };
 
   return (
@@ -309,10 +338,20 @@ const ServiceDetails = () => {
                   <path d="M5 12h14m-7-7l7 7-7 7" />
                 </svg>
               </button>
-              <button className="w-full py-2.5 text-[#FE5050] border border-[#FE5050] rounded-lg text-base font-medium hover:bg-red-50 transition-colors flex items-center justify-center gap-2 cursor-pointer">
+              <button 
+                onClick={() => setIsReportProfileModalOpen(true)}
+                className="w-full py-2.5 text-[#FE5050] border border-[#FE5050] rounded-lg text-base font-medium hover:bg-red-50 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+              >
                 Report Profile
                 <FlagIcon className="w-4 h-4 stroke-current" />
               </button>
+              
+              {/* Add the modal component */}
+              <ReportProfileModal
+                isOpen={isReportProfileModalOpen}
+                onClose={() => setIsReportProfileModalOpen(false)}
+                onSubmit={handleProfileReport}
+              />
             </div>
 
             <div className="mt-4 text-center">

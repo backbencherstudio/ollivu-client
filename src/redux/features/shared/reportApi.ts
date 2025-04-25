@@ -12,6 +12,16 @@ export const reportApi = baseApi.injectEndpoints({
       invalidatesTags: ["Report", "User"],
     }),
 
+    createProfileReport: builder.mutation({
+      query: (data) => ({
+        url: "/auth/sendProfileReport",
+        method: "POST",
+        body: data,
+        formData: true,
+      }),
+      invalidatesTags: ["Report", "User"],
+    }),
+
     getAllReport: builder.query({
       query: () => {
         return {
@@ -25,4 +35,4 @@ export const reportApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useCreateReviewReportMutation } = reportApi;
+export const { useCreateReviewReportMutation, useCreateProfileReportMutation } = reportApi;
