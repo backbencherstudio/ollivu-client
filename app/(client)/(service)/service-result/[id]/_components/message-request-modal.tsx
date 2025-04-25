@@ -39,7 +39,7 @@ const MessageRequestModal = ({
       <div className="bg-white rounded-xl p-6 w-[480px] relative">
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
+          className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 cursor-pointer"
         >
           <X size={20} />
         </button>
