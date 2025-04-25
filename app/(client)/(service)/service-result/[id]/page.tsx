@@ -23,6 +23,10 @@ import {
 } from "@/src/redux/features/shared/reviewApi";
 import { verifiedUser } from "@/src/utils/token-varify";
 import { toast } from "sonner";
+import ReportProfileModal from "./_components/report-profile-modal";
+import { useCreateProfileReportMutation } from "@/src/redux/features/shared/reportApi";
+import { useCreateExchangeMutation } from "@/src/redux/features/shared/exchangeApi";
+import MessageRequestModal from "./_components/message-request-modal";
 
 const ServiceDetails = () => {
   const params = useParams();
@@ -30,36 +34,34 @@ const ServiceDetails = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [isReportProfileModalOpen, setIsReportProfileModalOpen] =
+    useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
 
   const currentUser = verifiedUser();
-  // console.log("current user", currentUser);
-
-  const [createReview] = useCreateReviewMutation();
+  const itemsPerPage = 3;
 
   const { data: instructor, isLoading } = useGetSingleUserQuery(
     params.id as string
   );
   const singleUser = instructor?.data;
-  console.log("single", singleUser);
+  console.log("singleUser", singleUser);
+  
 
-  const { data: getSingleReview, isLoading: reviewLoading } =
-    useGetSingleReviewQuery(singleUser?._id);
-  // console.log("42", getSingleReview);
+  const { data: getSingleReview } = useGetSingleReviewQuery(singleUser?._id);
+  const [createProfileReport] = useCreateProfileReportMutation();
 
-  const reviews = instructor?.reviews;
-  // console.log("rev", reviews);
+  const [createReview] = useCreateReviewMutation();
 
-  // console.log("singleUser", singleUser);
+  const [createExchange] = useCreateExchangeMutation();
 
-  // Add these states at the top with other state declarations
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3; // Number of reviews per page
-
-  // Add this pagination logic before the return statement
-  const totalPages = Math.ceil((reviews?.length || 0) / itemsPerPage);
+  // Pagination logic
+  const reviews = getSingleReview?.data || [];
+  const totalPages = Math.ceil(reviews.length / itemsPerPage);
   const indexOfLastReview = currentPage * itemsPerPage;
   const indexOfFirstReview = indexOfLastReview - itemsPerPage;
-  const currentReviews = reviews?.slice(indexOfFirstReview, indexOfLastReview);
+  const currentReviews = reviews.slice(indexOfFirstReview, indexOfLastReview);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -115,6 +117,51 @@ const ServiceDetails = () => {
     }
 
     // Call your API to submit the review
+  };
+  const handleProfileReport = async (reason: string, file: File | null) => {
+    try {
+      const formData = new FormData();
+      formData.append("reporterId", currentUser?.userId);
+      formData.append("reportedId", singleUser?._id);
+      formData.append("reportType", reason); // This will be the description if "Other" was selected
+      if (file) {
+        formData.append("supportingFile", file);
+      }
+
+      const response = await createProfileReport(formData).unwrap();
+      // console.log("response", response);
+
+      if (response?.success) {
+        toast.success("Report submitted successfully");
+        setIsReportProfileModalOpen(false);
+      }
+    } catch (error) {
+      console.error("Error submitting report:", error);
+      toast.error("Failed to submit report");
+    }
+  };
+
+  const handleMessageRequest = async (senderService: string, myService: string) => {
+    try {
+      const exchangeData = {
+        senderUserId: currentUser?.userId,
+        reciverUserId: singleUser?._id,
+        email: currentUser?.email,
+        senderService: singleUser?.my_service,
+        my_service: [myService]
+      };
+
+      const response = await createExchange(exchangeData).unwrap();
+      console.log("send response", response);
+      
+      if (response?.success) {
+        toast.success("Message request sent successfully");
+        setIsMessageModalOpen(false);
+      }
+    } catch (error) {
+      console.error("Error sending message request:", error);
+      toast.error("Failed to send message request");
+    }
   };
 
   return (
@@ -249,27 +296,15 @@ const ServiceDetails = () => {
                   >
                     All reviews
                   </button>
-                  {/* <button
-                    onClick={() => setActiveTab("latest")}
-                    className={`pb-2 text-sm font-medium ${
-                      activeTab === "latest"
-                        ? "text-[#20B894] border-b-2 border-[#20B894]"
-                        : "text-[#777980]"
-                    }`}
-                  >
-                    Latest reviews
-                  </button> */}
                 </div>
               </div>
 
               {/* Review List */}
               <div id="reviews-section">
-                {getSingleReview &&
-                getSingleReview.data &&
-                getSingleReview.data.length > 0 ? (
+                {reviews.length > 0 ? (
                   <>
                     <div>
-                      {getSingleReview.data.map((singleReview: any) => (
+                      {currentReviews?.map((singleReview: any) => (
                         <ReviewList
                           key={singleReview._id}
                           review={singleReview}
@@ -315,7 +350,10 @@ const ServiceDetails = () => {
             </div>
 
             <div className="mt-6 space-y-3">
-              <button className="w-full py-2.5 bg-[#20B894] text-white rounded-lg text-base font-medium hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2 cursor-pointer">
+              <button
+                onClick={() => setIsMessageModalOpen(true)}
+                className="w-full py-2.5 bg-[#20B894] text-white rounded-lg text-base font-medium hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+              >
                 Send Message Request
                 <svg
                   className="w-4 h-4"
@@ -327,10 +365,28 @@ const ServiceDetails = () => {
                   <path d="M5 12h14m-7-7l7 7-7 7" />
                 </svg>
               </button>
-              <button className="w-full py-2.5 text-[#FE5050] border border-[#FE5050] rounded-lg text-base font-medium hover:bg-red-50 transition-colors flex items-center justify-center gap-2 cursor-pointer">
+              <button
+                onClick={() => setIsReportProfileModalOpen(true)}
+                className="w-full py-2.5 text-[#FE5050] border border-[#FE5050] rounded-lg text-base font-medium hover:bg-red-50 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+              >
                 Report Profile
                 <FlagIcon className="w-4 h-4 stroke-current" />
               </button>
+
+              {/* Add the modal component */}
+              <ReportProfileModal
+                isOpen={isReportProfileModalOpen}
+                onClose={() => setIsReportProfileModalOpen(false)}
+                onSubmit={handleProfileReport}
+              />
+
+              <MessageRequestModal
+                isOpen={isMessageModalOpen}
+                onClose={() => setIsMessageModalOpen(false)}
+                onSubmit={handleMessageRequest}
+                instructor={formattedInstructor}
+                singleUser={singleUser}
+              />
             </div>
 
             <div className="mt-4 text-center">
@@ -343,11 +399,11 @@ const ServiceDetails = () => {
       </div>
 
       {/* Review Modal */}
-      {/* <ReviewModal
+      <ReviewModal
         isOpen={isReviewModalOpen}
         onClose={() => setIsReviewModalOpen(false)}
         onSubmit={handleReviewSubmit}
-      /> */}
+      />
     </div>
   );
 };

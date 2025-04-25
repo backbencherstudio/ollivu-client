@@ -19,7 +19,7 @@ export const reviewApi = baseApi.injectEndpoints({
           method: "GET",
         };
       },
-      providesTags: ["Review"],
+      providesTags: ["Review", "User"],
     }),
   }),
 });
