@@ -9,7 +9,7 @@ import { useState } from "react";
 
 export default function UserManagement() {
   const { data: users, isLoading, error } = useGetAllUsersQuery({});
-  console.log("users: ", users?.data);
+  // console.log("users: ", users?.data);
 
   const [selectedUser, setSelectedUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -117,7 +117,7 @@ export default function UserManagement() {
             <div className="bg-white rounded-2xl p-8 w-[420px] relative shadow-xl">
               <button
                 onClick={closeModal}
-                className="absolute right-6 top-6 text-gray-400 hover:text-gray-600 transition-colors"
+                className="absolute right-6 top-6 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
               >
                 <X size={20} />
               </button>
@@ -181,16 +181,11 @@ export default function UserManagement() {
                 <div className="flex gap-3">
                   <button
                     onClick={closeModal}
-                    className="w-full py-2.5 border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="w-full py-2.5 border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
                   >
                     Close
                   </button>
-                  <button
-                    onClick={() => {/* Add message/contact action */}}
-                    className="w-full py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
-                  >
-                    Message
-                  </button>
+                  
                 </div>
               </div>
             </div>
