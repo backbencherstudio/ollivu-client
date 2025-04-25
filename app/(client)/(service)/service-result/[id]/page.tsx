@@ -8,9 +8,10 @@ import ProfileHeader from "./_components/profile-header";
 import About from "./_components/about";
 import RatingOverview from "./_components/rating-overview";
 import ReviewModal from "./_components/review-modal";
-import { useGetSingleUserQuery } from "@/src/redux/features/users/userApi";
-
-// Add this import at the top with other imports
+import {
+  useGetCurrentUserQuery,
+  useGetSingleUserQuery,
+} from "@/src/redux/features/users/userApi";
 import BagIcon from "@/public/icons/bag-icon";
 import SuccessIcon from "@/public/icons/success-icon";
 import EnsuredIcon from "@/public/icons/ensured-icon";
@@ -32,7 +33,6 @@ const ServiceDetails = () => {
   const params = useParams();
   const router = useRouter();
   const [isExpanded, setIsExpanded] = useState(false);
-  const [activeTab, setActiveTab] = useState("all");
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [isReportProfileModalOpen, setIsReportProfileModalOpen] =
     useState(false);
@@ -40,14 +40,17 @@ const ServiceDetails = () => {
   const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
 
   const currentUser = verifiedUser();
+
   const itemsPerPage = 3;
 
   const { data: instructor, isLoading } = useGetSingleUserQuery(
     params.id as string
   );
+
+  const { data: currentUserData } = useGetCurrentUserQuery(currentUser?.userId);
+  const currentUsreInfo = currentUserData?.data;
+
   const singleUser = instructor?.data;
-  console.log("singleUser", singleUser);
-  
 
   const { data: getSingleReview } = useGetSingleReviewQuery(singleUser?._id);
   const [createProfileReport] = useCreateProfileReportMutation();
@@ -141,19 +144,21 @@ const ServiceDetails = () => {
     }
   };
 
-  const handleMessageRequest = async (senderService: string, myService: string) => {
+  const handleMessageRequest = async (selectedService: string) => {
     try {
-      const exchangeData = {
+      const exchangeData = [{
         senderUserId: currentUser?.userId,
         reciverUserId: singleUser?._id,
         email: currentUser?.email,
-        senderService: singleUser?.my_service,
-        my_service: [myService]
-      };
+        senderService: selectedService,
+        my_service: currentUsreInfo?.my_service,
+      }];
+      // console.log("exchange Data", exchangeData);
+      
 
       const response = await createExchange(exchangeData).unwrap();
-      console.log("send response", response);
-      
+      // console.log("send exchange response", response);
+
       if (response?.success) {
         toast.success("Message request sent successfully");
         setIsMessageModalOpen(false);
@@ -288,11 +293,8 @@ const ServiceDetails = () => {
                 <div className="flex gap-6">
                   <button
                     // onClick={() => setActiveTab("all")}
-                    className={`pb-2 text-sm font-medium ${
-                      activeTab === "all"
-                        ? "text-[#20B894] border-b-2 border-[#20B894] font-normal text-xl"
-                        : "text-[#777980]"
-                    }`}
+                    className={`pb-2 text-sm"text-[#20B894] border-b-2 border-[#20B894] font-normal text-xl"
+                        `}
                   >
                     All reviews
                   </button>

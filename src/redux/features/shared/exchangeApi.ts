@@ -4,12 +4,11 @@ export const exchangeApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     createExchange: builder.mutation({
       query: (data) => ({
-        url: "/exchange",
+        url: "/shared/exchange",
         method: "POST",
         body: data,
         formData: true,
       }),
-      invalidatesTags: ["User"],
     }),
   }),
 });

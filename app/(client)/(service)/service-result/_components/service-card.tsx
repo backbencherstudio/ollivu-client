@@ -16,7 +16,7 @@ const DEFAULT_SERVICE_IMAGE = serviceImg
 const DEFAULT_AVATAR_IMAGE = avaterImg
 
 export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
-  console.log("service", service);
+  // console.log("service", service);
   
   const router = useRouter();
 
@@ -27,7 +27,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
   };
 
   return (
-    <Card className="w-full bg-white rounded-xl overflow-hidden shadow hover:shadow-md transition-all flex flex-col h-full p-0 cursor-pointer">
+    <Card className="w-full bg-white rounded-xl overflow-hidden shadow hover:shadow-md transition-all flex flex-col h-full p-0 ">
       <div className="relative w-full h-44">
         <Image
           src={service.image || DEFAULT_SERVICE_IMAGE}
@@ -58,7 +58,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
           </div>
 
           {/* Instructor Info */}
-          <div onClick={handleCardClick} className="bg-[#F9F9F9] p-3 rounded-lg">
+          <div className="bg-[#F9F9F9] p-3 rounded-lg">
             <div className="flex items-center gap-2 mb-2">
               <div className="w-8 h-8 rounded-full bg-gray-200 relative overflow-hidden">
                 <Image
@@ -96,8 +96,8 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
           </div>
 
           {/* Connect Button */}
-          <button className="w-full py-2.5 bg-[#20B894] text-white rounded-lg font-medium text-md hover:bg-emerald-700 transition-colors flex items-center justify-center gap-1.5 mt-3">
-            Connect Request
+          <button onClick={handleCardClick}  className="w-full py-2.5 bg-[#20B894] text-white rounded-lg font-medium text-md hover:bg-emerald-700 transition-colors flex items-center justify-center gap-1.5 mt-3 cursor-pointer">
+            Details
             <svg
               className="w-3.5 h-3.5"
               viewBox="0 0 24 24"
