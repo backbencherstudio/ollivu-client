@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState } from "react";
 import LeftSidebar from "./_components/lefi-sidebar";
