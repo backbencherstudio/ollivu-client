@@ -6,8 +6,8 @@ import { TakeActionModal } from "./TakeActionModal";
 
 interface Conversation {
   id: string;
-  user1: string;
-  user2: string;
+  senderService: string;
+  receverServer: string;
   status: string;
   joinDate: string;
 }
@@ -43,18 +43,18 @@ export function ConversationTable({
           <table className="w-full min-w-[800px] text-sm">
             <thead>
               <tr className="text-left text-gray-500 border-b bg-gray-50">
-                <th className="py-3 px-4 font-medium">User Id</th>
-                <th className="px-4 font-medium">User 1</th>
-                <th className="px-4 font-medium">User 2</th>
+                <th className="py-3 px-4 font-medium">#</th>
+                <th className="px-4 font-medium">Sender Service</th>
+                <th className="px-4 font-medium">Receiver Service</th>
                 <th className="px-4 font-medium">Status</th>
                 <th className="px-4 font-medium">Join Date</th>
                 <th className="px-4 font-medium">Action</th>
               </tr>
             </thead>
             <tbody>
-              {conversations.map((conv) => (
+              {conversations.map((conv, index) => (
                 <tr key={conv.id} className="border-b hover:bg-gray-50">
-                  <td className="py-4 px-4">{conv.id}</td>
+                  <td className="py-4 px-4">{index + 1}</td>
                   <td className="px-4">{conv.user1}</td>
                   <td className="px-4">{conv.user2}</td>
                   <td className="px-4">
