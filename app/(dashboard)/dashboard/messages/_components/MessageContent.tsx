@@ -35,7 +35,7 @@ export const MessageContent = ({
   };
   return (
     <div
-      className="flex-grow h-[540px] overflow-y-auto p-4 mb-10"
+      className="flex-grow h-[540px] overflow-y-auto p-4 mb-36"
       style={{ display: "flex", flexDirection: "column-reverse" }}
     >
       <div ref={messagesEndRef} />
@@ -76,10 +76,10 @@ export const MessageContent = ({
                   </button>
                 )}
                 <div
-                  className={`p-3 rounded-lg ${
+                  className={`px-3 py-2 border rounded-xl  ${
                     msg.sender === currentUser?.email
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-100"
+                      ? "bg-gray-100 text-black rounded-br-none"
+                      : "rounded-bl-none"
                   }`}
                 >
                   {console.log(msg)}
