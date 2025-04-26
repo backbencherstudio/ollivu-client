@@ -50,17 +50,6 @@ export const MessageList = ({ onChatSelect, userData, currentUser, role }) => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="flex-1 p-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
-          {role === "admin" && (
-            <select
-              value={selectedRole}
-              onChange={(e) => setSelectedRole(e.target.value)}
-              className="p-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            >
-              <option value="all">All</option>
-              <option value="tenant">Tenant</option>
-              <option value="owner">Owner</option>
-            </select>
-          )}
         </div>
       </div>
 

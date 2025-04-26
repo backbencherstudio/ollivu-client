@@ -268,16 +268,8 @@ const Messages = () => {
   }, []);
   return (
     <div className="">
-      {/* Header */}
-      <div className="mb-6">
-        <h2 className="font-manrope text-2xl font-bold mb-1">Messages</h2>
-        <p className="text-[#64748B] text-sm">
-          <span className="opacity-60">Messages / </span> Inbox
-        </p>
-      </div>
-
       {/* Main Content */}
-      <div className="bg-white rounded-lg h-[660px] hidden md:grid md:grid-cols-3 shadow-sm">
+      <div className="bg-white rounded-lg h-[85vh] hidden md:grid md:grid-cols-3 shadow-sm">
         {/* Left Sidebar */}
         <div className="col-span-1 border-r border-gray-100">
           {/* Search and Add Button */}
