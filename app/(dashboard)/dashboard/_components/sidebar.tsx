@@ -62,6 +62,11 @@ export default function Sidebar({ user }) {
       label: "Manage Review",
       href: "/dashboard/manage-review",
     },
+    {
+      icon: FaStar,
+      label: "Add Category",
+      href: "/dashboard/add-category",
+    },
   ];
 
   // Combine menu items based on user role
