@@ -278,7 +278,7 @@ const Messages = () => {
   return (
     <div className="">
       {/* Main Content */}
-      <div className="bg-white rounded-lg h-[85vh] hidden md:grid md:grid-cols-4 shadow-sm">
+      <div className="bg-white rounded-lg  hidden lg:grid lg:grid-cols-3 xl:grid-cols-4 shadow-sm">
         {/* Left Sidebar */}
         <div className="col-span-1 border-r border-gray-100">
           {/* Search and Add Button */}
@@ -360,10 +360,10 @@ const Messages = () => {
             </div>
           )}
         </div>
-        <div className="col-span-1 p-5">
+        <div className="hidden xl:block col-span-1 p-5">
           <div>
             <h3 className="text-gray-500">Details</h3>
-            <div className="bg-gray-100 p-6 rounded-lg mt-5 text-center flex items-center gap-3 justify-center flex-col">
+            <div className="bg-gray-100 lg:p-6 rounded-lg mt-5 text-center flex items-center gap-3 justify-center flex-col overflow-hidden p-2">
               <div className="w-20 h-20 rounded-full bg-[#20b894] flex items-center justify-center">
                 <span className="text-white text-2xl font-semibold">
                   {currentChat?.email === currentUser.email
@@ -384,11 +384,11 @@ const Messages = () => {
                   {getOtherUserEmail(currentChat)}
                 </p>
               </div>
-              <div className="mt-6">
-                <button className="bg-[#20b894] text-white px-4 py-2 rounded-full w-full">
+              <div className="mt-6 overflow-hidden">
+                <button className="bg-[#20b894] text-white px-4 py-2 rounded-full w-full text-nowrap overflow-hidden">
                   Confirm Exchange Service
                 </button>
-                <button className="border border-[#b19c87] text-[#b19c87] px-4 py-2 rounded-full mt-2 w-full">
+                <button className="border border-[#b19c87] text-[#b19c87] px-4 py-2 rounded-full mt-2 w-full text-nowrap overflow-hidden">
                   Give Review
                 </button>
               </div>
@@ -396,7 +396,7 @@ const Messages = () => {
           </div>
         </div>
       </div>
-      <div className="md:hidden mt-4">
+      <div className="lg:hidden mt-4">
         <button
           onClick={() => setIsSidebarOpen(true)}
           className="p-2 bg-black rounded-lg"
@@ -419,7 +419,7 @@ const Messages = () => {
 
       {/* Mobile Sidebar */}
       <div
-        className={`md:hidden fixed inset-y-0 left-0 w-3/4 bg-white z-50 transform transition-transform duration-300 ease-in-out ${
+        className={`lg:hidden fixed inset-y-0 left-0 w-3/4 bg-white z-50 transform transition-transform duration-300 ease-in-out ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -457,7 +457,7 @@ const Messages = () => {
           />
         </div>
       </div>
-      <div className="md:hidden mt-4 bg-white rounded-lg  h-[660px] p-4 relative">
+      <div className="lg:hidden mt-4 bg-white rounded-lg  h-[660px] p-4 relative">
         <div className="p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             {currentChat?.profileImage ? (
