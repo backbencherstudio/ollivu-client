@@ -63,7 +63,7 @@ const Messages = () => {
   useEffect(() => {
     if (recipient && currentUser?.email) {
       fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/chats?email=${currentUser?.email}`
+        `${process.env.NEXT_PUBLIC_API_URL}/chats?email=${currentUser?.email}&recipient=${recipient}`
       )
         .then((response) => response.json())
         .then((data) => {
@@ -210,6 +210,15 @@ const Messages = () => {
   const handleChatSelect = async (user) => {
     setCurrentChat(user);
     try {
+      // Fetch messages for the selected chat
+      const messagesResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/chats?email=${
+          currentUser?.email
+        }&recipient=${getOtherUserEmail(user)}`
+      );
+      const messagesData = await messagesResponse.json();
+      setMessages(messagesData);
+
       // Mark messages as read in the backend
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/messages/mark-read`,
@@ -238,7 +247,7 @@ const Messages = () => {
         // Clear unread count for this user
         setUnreadMessages((prev) => {
           const newUnreadMessages = { ...prev };
-          delete newUnreadMessages[user.email]; // Remove the unread count for this user
+          delete newUnreadMessages[user.email];
           localStorage.setItem(
             "unreadMessages",
             JSON.stringify(newUnreadMessages)
@@ -247,7 +256,7 @@ const Messages = () => {
         });
       }
     } catch (error) {
-      console.error("Error marking messages as read:", error);
+      console.error("Error handling chat selection:", error);
     }
   };
 
