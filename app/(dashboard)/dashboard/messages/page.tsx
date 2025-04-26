@@ -309,7 +309,7 @@ const Messages = () => {
                           .toUpperCase()
                       : currentChat?.senderUserId?.first_name
                           .slice(0, 2)
-                          .toUpperCase() || "Unknown User"}
+                          .toUpperCase() || "UN"}
                   </span>
                 </div>
               )}
@@ -363,7 +363,7 @@ const Messages = () => {
                         .toUpperCase()
                     : currentChat?.senderUserId?.first_name
                         .slice(0, 2)
-                        .toUpperCase() || "Unknown User"}
+                        .toUpperCase() || "UN"}
                 </span>
               </div>
               <div>
@@ -467,7 +467,7 @@ const Messages = () => {
                         .toUpperCase()
                     : currentChat?.senderUserId?.first_name
                         .slice(0, 2)
-                        .toUpperCase() || "Unknown User"}
+                        .toUpperCase() || "UN"}
                 </span>
               </div>
             )}

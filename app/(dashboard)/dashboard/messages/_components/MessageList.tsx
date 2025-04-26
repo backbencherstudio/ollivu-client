@@ -108,7 +108,7 @@ export const MessageList = ({
                                 .toUpperCase()
                             : user?.senderUserId?.first_name
                                 .slice(0, 2)
-                                .toUpperCase() || "Unknown User"}{" "}
+                                .toUpperCase() || "UN"}{" "}
                         </span>
                       </div>
                     )}
@@ -129,8 +129,7 @@ export const MessageList = ({
                       >
                         {user?.email === currentUser
                           ? user?.reciverUserId?.first_name
-                          : user?.senderUserId?.first_name ||
-                            "Unknown User"}{" "}
+                          : user?.senderUserId?.first_name || "UN"}{" "}
                         <span className="text-[#1677ff] text-xs font-thin">{`(${
                           user?.email === currentUser
                             ? user?.reciverUserId.role
