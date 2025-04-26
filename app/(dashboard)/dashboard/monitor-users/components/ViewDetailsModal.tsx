@@ -93,11 +93,11 @@ export function ViewDetailsModal({ isOpen, onClose, conversation }: ViewDetailsM
               <h3 className="text-sm text-gray-500 mb-1">Completed Service</h3>
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-sm">User 1</span>
+                  <span className="text-sm">Sendedr Service</span>
                   <span className="text-sm font-medium">{conversation.user1}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm">User 2</span>
+                  <span className="text-sm">Receiver Service</span>
                   <span className="text-sm font-medium">{conversation.user2}</span>
                 </div>
                 <div className="flex justify-between">

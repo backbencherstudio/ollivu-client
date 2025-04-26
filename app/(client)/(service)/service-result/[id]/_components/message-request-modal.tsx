@@ -20,7 +20,7 @@ const MessageRequestModal = ({
   const [selectedService, setSelectedService] = useState("");
   const [error, setError] = useState("");
 
-  const skilles = singleUser?.my_service
+  const skilles = singleUser?.my_service || [];
 
   const handleSubmit = () => {
     if (!selectedService) {
@@ -39,7 +39,7 @@ const MessageRequestModal = ({
       <div className="bg-white rounded-xl p-6 w-[480px] relative">
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
+          className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 cursor-pointer"
         >
           <X size={20} />
         </button>
@@ -70,9 +70,9 @@ const MessageRequestModal = ({
         )}
 
         <div className="space-y-2 mb-6">
-          {skilles.map((skill) => (
+          {skilles.map((skill: string) => (
             <button
-              key={skill._id}
+              key={skill}
               onClick={() => setSelectedService(skill)}
               className={`w-full p-3 text-left rounded-lg border ${
                 selectedService === skill

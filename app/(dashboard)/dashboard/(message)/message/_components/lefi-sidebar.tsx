@@ -21,9 +21,10 @@ export default function LeftSidebar({
     "connections"
   );
   const currentUser = verifiedUser();
-  const [query, setQuery] = useState<{ userId?: string; isAccepted?: string }>(
-    {}
-  );
+  const [query, setQuery] = useState<{ userId: string; isAccepted: boolean }>({
+    userId: currentUser?.userId || "",
+    isAccepted: true,
+  });
   // console.log("selectedUser", selectedUser);
 
   // only trigger API when query updates
@@ -37,13 +38,10 @@ export default function LeftSidebar({
 
   const requestDataHandler = (tabType: "connections" | "requests") => {
     setActiveTab(tabType);
-
-    const updatedQuery = {
-      userId: currentUser?.userId,
-      isAccepted: tabType === "connections" ? "true" : "false",
-    };
-
-    setQuery(updatedQuery);
+    setQuery({
+      userId: currentUser?.userId || "",
+      isAccepted: tabType === "connections",
+    });
   };
 
   useEffect(() => {
