@@ -18,6 +18,10 @@ export const MessageList = ({
     isAccepted: true,
   });
   const { data } = authApi.useGetAllExchangeDataQuery(finalQuery);
+  const { data: requestList } = authApi.useGetAllExchangeDataQuery({
+    userId: userId,
+    isAccepted: false,
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   console.log("userData", userData);
@@ -197,7 +201,7 @@ export const MessageList = ({
         </TabsContent>
         <TabsContent value="requests">
           <div className="flex flex-col">
-            {data?.data?.map((request) => (
+            {requestList?.data?.map((request) => (
               <div key={request.id} className="p-4 border-b border-gray-100">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full relative overflow-hidden">
