@@ -20,7 +20,7 @@ export const MessageInput = ({ sendMessage, message, setMessage }) => {
 
   return (
     <div>
-      <div className="md:p-4 py-4 border-t border-gray-100 absolute bg-white bottom-0 w-[90%] md:w-full">
+      <div className="md:p-1 pb-0 py-4 border-gray-100 absolute bg-white bottom-0 w-[90%] md:w-full">
         <form
           onSubmit={handleSubmit}
           className="flex gap-2 items-center relative"

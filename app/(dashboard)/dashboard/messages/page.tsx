@@ -269,7 +269,7 @@ const Messages = () => {
   return (
     <div className="">
       {/* Main Content */}
-      <div className="bg-white rounded-lg h-[85vh] hidden md:grid md:grid-cols-3 shadow-sm">
+      <div className="bg-white rounded-lg h-[85vh] hidden md:grid md:grid-cols-4 shadow-sm">
         {/* Left Sidebar */}
         <div className="col-span-1 border-r border-gray-100">
           {/* Search and Add Button */}
@@ -285,7 +285,7 @@ const Messages = () => {
                 unreadCount: unreadMessages[user.email] || 0,
               }))}
               currentUser={currentUser?.email}
-              role={currentUser?.role}
+              userId={currentUser?.userId}
             />
           </div>
         </div>
@@ -351,6 +351,41 @@ const Messages = () => {
             </div>
           )}
         </div>
+        <div className="col-span-1 p-5">
+          <div>
+            <h3 className="text-gray-500">Details</h3>
+            <div className="bg-gray-100 p-6 rounded-lg mt-5 text-center flex items-center gap-3 justify-center flex-col">
+              <div className="w-20 h-20 rounded-full bg-[#20b894] flex items-center justify-center">
+                <span className="text-white text-2xl font-semibold">
+                  {currentChat?.email === currentUser.email
+                    ? currentChat?.reciverUserId?.first_name
+                        .slice(0, 2)
+                        .toUpperCase()
+                    : currentChat?.senderUserId?.first_name
+                        .slice(0, 2)
+                        .toUpperCase() || "Unknown User"}
+                </span>
+              </div>
+              <div>
+                <h3 className="font-semibold text-[18px]">
+                  {getOtherUserName(currentChat)}
+                </h3>
+                <p className="text-gray-500">
+                  {" "}
+                  {getOtherUserEmail(currentChat)}
+                </p>
+              </div>
+              <div className="mt-6">
+                <button className="bg-[#20b894] text-white px-4 py-2 rounded-full w-full">
+                  Confirm Exchange Service
+                </button>
+                <button className="border border-[#b19c87] text-[#b19c87] px-4 py-2 rounded-full mt-2 w-full">
+                  Give Review
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <div className="md:hidden mt-4">
         <button
@@ -409,7 +444,7 @@ const Messages = () => {
               unreadCount: unreadMessages[user.email] || 0,
             }))}
             currentUser={currentUser?.email}
-            role={currentUser?.role}
+            userId={currentUser?.userId}
           />
         </div>
       </div>
@@ -419,13 +454,20 @@ const Messages = () => {
             {currentChat?.profileImage ? (
               <img
                 src={`${currentChat?.profileImage}`}
-                alt={currentChat?.name?.slice(0, 2).toUpperCase()}
+                alt="UN"
                 className="w-10 h-10 rounded-full"
               />
             ) : (
               <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
                 <span className="text-gray-500">
                   {currentChat?.name?.slice(0, 2).toUpperCase()}
+                  {currentChat?.email === currentUser.email
+                    ? currentChat?.reciverUserId?.first_name
+                        .slice(0, 2)
+                        .toUpperCase()
+                    : currentChat?.senderUserId?.first_name
+                        .slice(0, 2)
+                        .toUpperCase() || "Unknown User"}
                 </span>
               </div>
             )}
