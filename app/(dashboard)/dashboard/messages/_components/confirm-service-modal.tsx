@@ -13,23 +13,20 @@ import {
 interface ConfirmServiceModalProps {
   isOpen: boolean;
   onClose: () => void;
-  userName: string;
-  userEmail: string;
-  userImage: string;
   myServices: string[];
+  senderService: string;
   acceptedService: string;
 }
 
 export default function ConfirmServiceModal({
   isOpen,
   onClose,
-  userName = "",
-  userEmail = "",
-  userImage = "",
   myServices = [],
+  senderService = "",
   acceptedService = "",
 }: ConfirmServiceModalProps) {
   if (!isOpen) return null;
+  console.log("senderService", senderService);
 
   // Handle click outside modal
   const handleBackdropClick = (e: React.MouseEvent) => {
@@ -58,7 +55,7 @@ export default function ConfirmServiceModal({
           Let's confirm your Exchange Service Request!
         </h2>
         {/* User Info with null checks */}
-        <div className="flex items-center gap-3 mb-8">
+        {/* <div className="flex items-center gap-3 mb-8">
           {userImage ? (
             <Image
               src={userImage}
@@ -78,7 +75,7 @@ export default function ConfirmServiceModal({
             <h3 className="font-medium">{userName || "User"}</h3>
             <p className="text-sm text-gray-500">{userEmail || "No email"}</p>
           </div>
-        </div>
+        </div> */}
         {/* Services Exchange Section */}
         <div className="space-y-6">
           {/* My Service */}
@@ -122,7 +119,7 @@ export default function ConfirmServiceModal({
               Accepted service:
             </label>
             <div className="p-3 bg-gray-50 rounded-lg">
-              <span className="text-gray-900">{acceptedService}</span>
+              <span className="text-gray-900">{senderService}</span>
             </div>
           </div>
         </div>

@@ -39,6 +39,8 @@ const Messages = () => {
   const { data: userList } = authApi.useGetAllExchangeDataQuery(finalQuery);
   const users = userList?.data;
 
+  console.log("currentChat", currentChat);
+
   const [unreadMessages, setUnreadMessages] = useState(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("unreadMessages");
@@ -58,15 +60,7 @@ const Messages = () => {
   const [onlineUsers, setOnlineUsers] = useState({});
 
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-
-  // Add state for services
-  const [myServices] = useState([
-    "Web Development",
-    "Graphic Design",
-    "Digital Marketing",
-    "Content Writing",
-  ]);
-
+  
   useEffect(() => {
     // Fetch user data on the client side
     const userData = verifiedUser();
@@ -402,7 +396,6 @@ const Messages = () => {
                 <button
                   className="bg-[#20b894] text-white px-4 py-2 rounded-full w-full cursor-pointer"
                   onClick={() => {
-                    // Check if current user is the sender in the current exchange only
                     const currentExchange = users?.find(
                       (user) =>
                         user.reciverUserId?.email ===
@@ -411,13 +404,12 @@ const Messages = () => {
                           getOtherUserEmail(currentChat)
                     );
 
-                    // Only show modal if current user is not the sender
-                    // if (
-                    //   currentExchange?.senderUserId?._id === currentUser?.userId
-                    // ) {
-                    //   toast.error("You cannot exchange service with yourself!");
-                    //   return;
-                    // }
+                    if (
+                      currentExchange?.senderUserId?._id === currentUser?.userId
+                    ) {
+                      toast.error("You cannot exchange service with yourself!");
+                      return;
+                    }
                     setIsConfirmModalOpen(true);
                   }}
                 >
@@ -553,18 +545,15 @@ const Messages = () => {
           </div>
         )}
       </div>
-      {currentChat &&
-        currentUser?.userId !== currentChat?.senderUserId?._id && (
-          <ConfirmServiceModal
-            isOpen={isConfirmModalOpen}
-            onClose={() => setIsConfirmModalOpen(false)}
-            userName={getOtherUserName(currentChat) || "User"}
-            userEmail={getOtherUserEmail(currentChat) || ""}
-            userImage={currentChat?.profileImage || ""}
-            myServices={myServices}
-            acceptedService={currentChat?.service || "No service selected"}
-          />
-        )}
+      {currentChat && (
+        <ConfirmServiceModal
+          isOpen={isConfirmModalOpen}
+          onClose={() => setIsConfirmModalOpen(false)}
+          myServices={currentChat?.my_service || []}
+          senderService={currentChat?.senderService || "No service selected"}
+          acceptedService={currentChat?.service || "No service selected"}
+        />
+      )}
     </div>
   );
 };
