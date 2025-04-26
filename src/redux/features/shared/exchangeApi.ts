@@ -1,7 +1,9 @@
 import { baseApi } from "../../api/baseApi";
 
 export const exchangeApi = baseApi.injectEndpoints({
+
   endpoints: (builder) => ({
+
     createExchange: builder.mutation({
       query: (data) => ({
         url: "/shared/exchange",
@@ -10,7 +12,24 @@ export const exchangeApi = baseApi.injectEndpoints({
         formData: true,
       }),
     }),
+
+    exchangeChatRequest: builder.mutation({
+      query: (data) => ({
+        url: `/shared/exchange/${data?.exchangeId}`,
+        method: "PATCH",
+        body: data
+      }),
+      invalidatesTags:["User"]
+    }),
+
+
   }),
+
+
+
+
+
+
 });
 
-export const { useCreateExchangeMutation } = exchangeApi;
+export const { useCreateExchangeMutation, useExchangeChatRequestMutation } = exchangeApi;
