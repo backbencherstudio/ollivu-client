@@ -7,21 +7,15 @@ const nextConfig = {
         protocol: 'http',
         hostname: '192.168.4.42',
         port: '5000',
-        pathname: '/uploads/**',
+        pathname: '/uploads/',
       },
       {
         protocol: 'http',
         hostname: '192.168.5.6',
         port: '5000',
-        pathname: '/uploads/**',
+        pathname: '/uploads/',
       },
     ],
-    minimumCacheTTL: 60,
-    dangerouslyAllowSVG: true,
-    contentDispositionType: 'attachment',
-    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    loader: 'custom',
-    loaderFile: './image-loader.js'
   },
 }
 

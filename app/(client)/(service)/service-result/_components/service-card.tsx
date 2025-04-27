@@ -1,21 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { Service } from "@/types/service.types";
 import { Star } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { CustomImage } from "@/components/common/CustomImage";
 
 interface ServiceCardProps {
   service: Service;
 }
 
-// const DEFAULT_SERVICE_IMAGE = ;
-// const DEFAULT_SERVICE_IMAGE = serviceImg
-// const DEFAULT_AVATAR_IMAGE = avaterImg
-
 export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
-  console.log("service", service);
+  const [serviceImageError, setServiceImageError] = useState(false);
+  const [instructorImageError, setInstructorImageError] = useState(false);
   
   const router = useRouter();
 
@@ -26,21 +22,16 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
   };
 
   return (
-    <Card className="w-full bg-white rounded-xl overflow-hidden shadow hover:shadow-md transition-all flex flex-col h-full p-0 ">
-      
+    <Card className="w-full bg-white rounded-xl overflow-hidden shadow hover:shadow-md transition-all flex flex-col h-full p-0">
       <div className="relative w-full h-44 bg-gray-200 flex items-center justify-center">
-        {service.image ? (
-          <CustomImage
+        {service.image && !serviceImageError ? (
+          <Image
             src={service.image}
             alt={service.title}
-            // fill
+            fill
             className="object-cover"
             priority
-            width={300}
-            height={200}
-            // onError={(e: any) => {
-            //   e.currentTarget.src = DEFAULT_SERVICE_IMAGE;
-            // }}
+            onError={() => setServiceImageError(true)}
           />
         ) : (
           <span className="text-4xl font-medium text-gray-600">
@@ -69,17 +60,14 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
           {/* Instructor Info */}
           <div className="bg-[#F9F9F9] p-3 rounded-lg">
             <div className="flex items-center gap-2 mb-2">
-              {/* Instructor Image Section */}
               <div className="w-8 h-8 rounded-full bg-gray-200 relative overflow-hidden flex items-center justify-center">
-                {service.instructor?.image ? (
+                {service.instructor?.image && !instructorImageError ? (
                   <Image
                     src={service.instructor.image}
                     alt={service.instructor?.name || "Instructor"}
                     fill
                     className="object-cover"
-                    // onError={(e: any) => {
-                    //   e.currentTarget.src = DEFAULT_AVATAR_IMAGE;
-                    // }}
+                    onError={() => setInstructorImageError(true)}
                   />
                 ) : (
                   <span className="text-sm font-medium text-gray-600">
@@ -87,6 +75,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
                   </span>
                 )}
               </div>
+              {/* Rest of the instructor info */}
               <div>
                 <h4 className="font-medium text-[#070707]">
                   {service.instructor?.name || "Instructor"}
@@ -112,7 +101,10 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
           </div>
 
           {/* Connect Button */}
-          <button onClick={handleCardClick}  className="w-full py-2.5 bg-[#20B894] text-white rounded-lg font-medium text-md hover:bg-emerald-700 transition-colors flex items-center justify-center gap-1.5 mt-3 cursor-pointer">
+          <button 
+            onClick={handleCardClick}  
+            className="w-full py-2.5 bg-[#20B894] text-white rounded-lg font-medium text-md hover:bg-emerald-700 transition-colors flex items-center justify-center gap-1.5 mt-3 cursor-pointer"
+          >
             Details
             <svg
               className="w-3.5 h-3.5"
