@@ -4,19 +4,18 @@ import { Card } from "@/components/ui/card";
 import { Service } from "@/types/service.types";
 import { Star } from "lucide-react";
 import { useRouter } from "next/navigation";
-import serviceImg from '@/public/client/services/service-01.png'
-import avaterImg from '@/public/avatars/john.png'
+import { CustomImage } from "@/components/common/CustomImage";
 
 interface ServiceCardProps {
   service: Service;
 }
 
 // const DEFAULT_SERVICE_IMAGE = ;
-const DEFAULT_SERVICE_IMAGE = serviceImg
-const DEFAULT_AVATAR_IMAGE = avaterImg
+// const DEFAULT_SERVICE_IMAGE = serviceImg
+// const DEFAULT_AVATAR_IMAGE = avaterImg
 
 export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
-  // console.log("service", service);
+  console.log("service", service);
   
   const router = useRouter();
 
@@ -28,17 +27,26 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
 
   return (
     <Card className="w-full bg-white rounded-xl overflow-hidden shadow hover:shadow-md transition-all flex flex-col h-full p-0 ">
-      <div className="relative w-full h-44">
-        <Image
-          src={service.image || DEFAULT_SERVICE_IMAGE}
-          alt={service.title}
-          fill
-          className="object-cover"
-          priority
-          onError={(e: any) => {
-            e.currentTarget.src = DEFAULT_SERVICE_IMAGE;
-          }}
-        />
+      
+      <div className="relative w-full h-44 bg-gray-200 flex items-center justify-center">
+        {service.image ? (
+          <CustomImage
+            src={service.image}
+            alt={service.title}
+            // fill
+            className="object-cover"
+            priority
+            width={300}
+            height={200}
+            // onError={(e: any) => {
+            //   e.currentTarget.src = DEFAULT_SERVICE_IMAGE;
+            // }}
+          />
+        ) : (
+          <span className="text-4xl font-medium text-gray-600">
+            {service.title?.charAt(0).toUpperCase() || 'S'}
+          </span>
+        )}
       </div>
 
       {/* Content Section */}
@@ -49,6 +57,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
             <h3 className="text-lg font-medium text-[#070707] line-clamp-1">
               {service.title}
             </h3>
+            
             <div className="flex items-center gap-1">
               <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
               <span className="text-gray-700 font-medium">
@@ -60,22 +69,29 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
           {/* Instructor Info */}
           <div className="bg-[#F9F9F9] p-3 rounded-lg">
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 rounded-full bg-gray-200 relative overflow-hidden">
-                <Image
-                  src={service.instructor?.image || DEFAULT_SERVICE_IMAGE}
-                  alt={service.instructor?.name || "Instructor"}
-                  fill
-                  className="object-cover"
-                  onError={(e: any) => {
-                    e.currentTarget.src = DEFAULT_AVATAR_IMAGE;
-                  }}
-                />
+              {/* Instructor Image Section */}
+              <div className="w-8 h-8 rounded-full bg-gray-200 relative overflow-hidden flex items-center justify-center">
+                {service.instructor?.image ? (
+                  <Image
+                    src={service.instructor.image}
+                    alt={service.instructor?.name || "Instructor"}
+                    fill
+                    className="object-cover"
+                    // onError={(e: any) => {
+                    //   e.currentTarget.src = DEFAULT_AVATAR_IMAGE;
+                    // }}
+                  />
+                ) : (
+                  <span className="text-sm font-medium text-gray-600">
+                    {service.instructor?.name?.charAt(0).toUpperCase() || 'I'}
+                  </span>
+                )}
               </div>
               <div>
                 <h4 className="font-medium text-[#070707]">
                   {service.instructor?.name || "Instructor"}
                 </h4>
-                {/* <p className="text-sm text-[#777980]">{service.instructor?.email}</p> */}
+                <p className="text-sm text-[#777980]">{service.instructor?.email}</p>
               </div>
             </div>
 

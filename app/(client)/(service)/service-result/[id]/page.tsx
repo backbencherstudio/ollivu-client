@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
+// import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import ReviewList from "./_components/review-list";
 import ProfileHeader from "./_components/profile-header";
@@ -28,6 +28,7 @@ import ReportProfileModal from "./_components/report-profile-modal";
 import { useCreateProfileReportMutation } from "@/src/redux/features/shared/reportApi";
 import MessageRequestModal from "./_components/message-request-modal";
 import { useCreateExchangeMutation } from "@/src/redux/features/admin/exchangeApi";
+import { CustomImage } from "@/components/common/CustomImage";
 
 const ServiceDetails = () => {
   const params = useParams();
@@ -254,10 +255,12 @@ const ServiceDetails = () => {
                 Portfolio
               </h2>
               <div className="relative h-[410px] rounded-xl overflow-hidden">
-                <Image
+                <CustomImage
                   src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${formattedInstructor?.portfolioImage}`}
                   alt="Portfolio"
-                  fill
+                  // fill
+                  width={300}
+                  height={200}
                   className="object-cover"
                 />
               </div>
@@ -337,10 +340,12 @@ const ServiceDetails = () => {
           <div className="bg-white rounded-xl shadow-sm p-6">
             <div className="flex flex-col items-center text-center">
               <div className="w-20 h-20 rounded-full relative overflow-hidden mb-3">
-                <Image
+                <CustomImage
                   src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${formattedInstructor?.profileImage}`}
                   alt={instructor.first_name}
-                  fill
+                  // fill
+                  width={300}
+                  height={200}
                   className="object-cover"
                 />
               </div>

@@ -22,7 +22,7 @@ export const reportApi = baseApi.injectEndpoints({
       invalidatesTags: ["Report", "User"],
     }),
 
-    getAllReport: builder.query({
+    getAllReviewReport: builder.query({
       query: () => {
         return {
           url: `/shared/report`,
@@ -30,6 +30,16 @@ export const reportApi = baseApi.injectEndpoints({
         };
       },
       providesTags: ["Report", "User"],
+    }),
+
+    getAllProfileReport: builder.query({
+      query: () => {
+        return {
+          url: `/auth/getProfileReport`,
+          method: "GET",
+        };
+      },
+      // providesTags: ["Report", "User"],
     }),
 
     getAllReportedProfile: builder.query({
@@ -46,6 +56,7 @@ export const reportApi = baseApi.injectEndpoints({
 export const {
   useCreateReviewReportMutation,
   useCreateProfileReportMutation,
-  useGetAllReportQuery,
+  useGetAllReviewReportQuery,
+  useGetAllProfileReportQuery,
   useGetAllReportedProfileQuery,
 } = reportApi;
