@@ -217,7 +217,7 @@ export default function Header({ user }) {
             </div>
 
             {showProfile && (
-              <div className="absolute top-12 right-0 bg-white shadow-md rounded-md p-4 w-48">
+              <div className="absolute top-12 right-0 bg-white shadow-md rounded-md p-4">
                 <div className="flex flex-col gap-4">
                   {/* <div className="flex items-center gap-3 cursor-pointer">
                     <AiFillMessage className="w-6 h-6 p-1 bg-[#EDFCF6] text-[#20B894] rounded-full" />
@@ -231,12 +231,12 @@ export default function Header({ user }) {
                       Notification
                     </Link>
                   </div> */}
-                  {/* <div className="flex items-center gap-3 cursor-pointer">
+                  <div className="flex items-center gap-3 cursor-pointer">
                     <AiOutlineUser className="w-6 h-6 p-1 bg-[#EDFCF6] text-[#20B894] rounded-full" />
                     <p className="text-base font-normal text-[#070707]">
-                      My Account
+                      {validUser?.email}
                     </p>
-                  </div> */}
+                  </div>
                   <div
                     onClick={handleLogout}
                     className="flex items-center gap-3 cursor-pointer"

@@ -17,12 +17,16 @@ interface RightSidebarProps {
 }
 
 export default function RightSidebar({ 
+
   selectedUser, 
   onOpenServiceModal,
   onOpenReportModal,
   onClose
+
 }: RightSidebarProps) {
   if (!selectedUser) return null;
+
+  
 
   return (
     <div className="w-full md:w-64 border-l border-gray-200 flex flex-col bg-white h-full -mt-24 md:-mt-0 relative">
