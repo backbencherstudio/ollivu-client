@@ -47,7 +47,6 @@ export default function ServiceResultContent() {
   const { data: users, isLoading } = useGetAllUsersQuery({});
   const allUsers = users?.data || [];
   console.log("all user", allUsers);
-  
 
   const [services, setServices] = useState<Service[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(
@@ -73,11 +72,17 @@ export default function ServiceResultContent() {
 
         // Ensure proper URL construction for images
         const portfolioUrl = user.portfolio
-          ? `${process.env.NEXT_PUBLIC_IMAGE_URL}/${user.portfolio.replace(/^\//, '')}`
+          ? `${process.env.NEXT_PUBLIC_IMAGE_URL}/${user.portfolio.replace(
+              /^\//,
+              ""
+            )}`
           : DEFAULT_SERVICE_IMAGE.src;
 
         const profileImageUrl = user.profileImage
-          ? `${process.env.NEXT_PUBLIC_IMAGE_URL}/${user.profileImage.replace(/^\//, '')}`
+          ? `${process.env.NEXT_PUBLIC_IMAGE_URL}/${user.profileImage.replace(
+              /^\//,
+              ""
+            )}`
           : DEFAULT_AVATAR_IMAGE.src;
 
         return {
@@ -155,7 +160,11 @@ export default function ServiceResultContent() {
           className={`
             lg:w-1/4 fixed lg:relative inset-0 mt-16 lg:mt-0 z-30 lg:z-auto 
             transform transition-transform duration-300 ease-in-out 
-            ${isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"} 
+            ${
+              isSidebarOpen
+                ? "translate-x-0"
+                : "-translate-x-full lg:translate-x-0"
+            } 
             bg-white lg:bg-transparent p-4 lg:p-0 overflow-y-auto lg:block
           `}
         >

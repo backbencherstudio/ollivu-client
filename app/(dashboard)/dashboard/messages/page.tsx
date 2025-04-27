@@ -39,7 +39,7 @@ const Messages = () => {
   const { data: userList } = authApi.useGetAllExchangeDataQuery(finalQuery);
   const users = userList?.data;
 
-  console.log("currentChat", currentChat);
+  // console.log("currentChat", currentChat);
 
   const [unreadMessages, setUnreadMessages] = useState(() => {
     if (typeof window !== "undefined") {
