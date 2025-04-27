@@ -1,33 +1,26 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { ChevronDown } from 'lucide-react';
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
-} from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
-import { ReviewTable } from './ReviewTable';
-import { useReviews } from '../_hooks/useReviews';
+import React from "react";
+import { ReviewTable } from "./ReviewTable";
+import { useReviews } from "../_hooks/useReviews";
+import { useGetAllReportQuery } from "@/src/redux/features/shared/reportApi";
 
 export function ManageReview() {
-  const { 
-    reviews, 
-    updateReviewStatus, 
-    deleteReview, 
-    approveReview, 
+  const {
+    reviews,
+    updateReviewStatus,
+    deleteReview,
+    approveReview,
     rejectReview,
-    sortBy,
-    setSortBy
   } = useReviews();
 
-  const sortOptions = ['Most Recent', 'Oldest', 'Highest Rating', 'Lowest Rating'];
+  const { data: getAllReport } = useGetAllReportQuery({});
+
+  console.log("getAllReport", getAllReport?.data);
 
   return (
     <div className="w-full p-6 bg-white rounded-lg">
-      <div className="flex justify-between items-center mb-6">
+      {/* <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Manage Review</h1>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -47,7 +40,7 @@ export function ManageReview() {
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
-      </div>
+      </div> */}
 
       <ReviewTable
         reviews={reviews}

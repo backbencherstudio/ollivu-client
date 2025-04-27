@@ -46,5 +46,6 @@ export const reportApi = baseApi.injectEndpoints({
 export const {
   useCreateReviewReportMutation,
   useCreateProfileReportMutation,
+  useGetAllReportQuery,
   useGetAllReportedProfileQuery,
 } = reportApi;

@@ -5,7 +5,12 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Bell, MessageCircle } from "lucide-react";
 import profile from "@/public/avatars/emily.png";
-import { AiFillMessage, AiOutlineLogout, AiOutlineUser } from "react-icons/ai";
+import {
+  AiFillMessage,
+  AiOutlineLogout,
+  AiOutlineUser,
+  AiOutlineHome,
+} from "react-icons/ai";
 import { MdNotifications } from "react-icons/md";
 import Link from "next/link";
 import { verifiedUser } from "@/src/utils/token-varify";
@@ -30,7 +35,7 @@ export default function Header({ user }) {
       id: 1,
       name: "Jerry ",
       type: "message",
-      text: "I'd love to swap my Graphic Design for your Marketing help! Let’s chat specifics. When are you free to have a...",
+      text: "I'd love to swap my Graphic Design for your Marketing help! Let's chat specifics. When are you free to have a...",
       image: profile,
     },
     {
@@ -114,7 +119,7 @@ export default function Header({ user }) {
       <div className="flex items-center justify-end">
         <div className="flex items-center gap-6">
           {/* Message Icon */}
-          <button className="relative">
+          <button className="relative cursor-pointer">
             <MessageCircle className="w-6 h-6 text-gray-600" />
             <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#20B894] text-white text-xs rounded-full flex items-center justify-center">
               {2}
@@ -194,11 +199,11 @@ export default function Header({ user }) {
                 {singleUserData?.profileImage ? (
                   <div>
                     <Image
-                    src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${singleUserData.profileImage}`}
-                    alt="Profile"
-                    fill
-                    className="object-cover"
-                  />
+                      src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${singleUserData.profileImage}`}
+                      alt="Profile"
+                      fill
+                      className="object-cover"
+                    />
                   </div>
                 ) : (
                   <div className="w-full h-full bg-[#20B894] flex items-center justify-center text-white text-xl font-semibold">
@@ -217,26 +222,30 @@ export default function Header({ user }) {
             </div>
 
             {showProfile && (
-              <div className="absolute top-12 right-0 bg-white shadow-md rounded-md p-4 w-48">
+              <div className="absolute top-12 right-0 bg-white shadow-md rounded-md p-4 w-64">
                 <div className="flex flex-col gap-4">
-                  {/* <div className="flex items-center gap-3 cursor-pointer">
-                    <AiFillMessage className="w-6 h-6 p-1 bg-[#EDFCF6] text-[#20B894] rounded-full" />
-                    <p className="text-base font-normal text-[#070707]">
-                      Message
+                  {/* User Info Section */}
+                  <div className="border-b pb-3">
+                    <p className="text-base font-medium text-[#070707]">
+                      {singleUserData?.first_name} {singleUserData?.last_name}
                     </p>
-                  </div> */}
-                  {/* <div className="flex items-center gap-3 cursor-pointer">
-                    <MdNotifications className="w-6 h-6 p-1 bg-[#EDFCF6] text-[#20B894] rounded-full" />
-                    <Link href='/dashboard/notifications' className="text-base font-normal text-[#070707]">
-                      Notification
+                    <p className="text-sm text-gray-500">
+                      {singleUserData?.email}
+                    </p>
+                  </div>
+
+                  {/* Back to Home Button */}
+                  <div className="flex items-center gap-3 cursor-pointer">
+                    <AiOutlineHome className="w-6 h-6 p-1 bg-[#EDFCF6] text-[#20B894] rounded-full" />
+                    <Link
+                      href="/"
+                      className="text-base font-normal text-[#070707]"
+                    >
+                      Back to Home
                     </Link>
-                  </div> */}
-                  {/* <div className="flex items-center gap-3 cursor-pointer">
-                    <AiOutlineUser className="w-6 h-6 p-1 bg-[#EDFCF6] text-[#20B894] rounded-full" />
-                    <p className="text-base font-normal text-[#070707]">
-                      My Account
-                    </p>
-                  </div> */}
+                  </div>
+
+                  {/* Logout Button */}
                   <div
                     onClick={handleLogout}
                     className="flex items-center gap-3 cursor-pointer"
