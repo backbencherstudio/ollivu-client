@@ -1,23 +1,27 @@
 import { connectionRequests } from './../_data/mock-data';
 export interface Connection {
   id: string;
-  name: string;
-  email: string;  // Add this
-  lastMessage: string;
-  time: string;
-  online: boolean;
-  pending?: boolean;
-  image: string;
+  senderUserId: {
+    _id: string;
+    first_name: string;
+    profileImage?: string;
+  };
+  lastMessage?: {
+    content: string;
+    createdAt: string;
+  };
+  message?: string;
+  time?: string;
 }
 
 export interface Message {
   id: string;
   sender: string;
-  email: string;  // Add this
-  image: string;
-  text: string;
-  time: string;
-  read: boolean;
+  receiver?: string;
+  content: string;
+  room?: string;
+  createdAt: string;
+  isRead: boolean;
 }
 
 export interface SelectedUserData {

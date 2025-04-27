@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import { Star, Flag, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useGetSingleReviewQuery } from "@/src/redux/features/shared/reviewApi";
 import { verifiedUser } from "@/src/utils/token-varify";
@@ -110,14 +109,20 @@ export default function AdminReviewsPage() {
       {/* Reviews */}
       <div className="space-y-6">
         {paginatedReviews.map((review) => (
-          <div key={review.id} className="flex items-start gap-4">
-            <Image
-              src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${review?.reviewerId?.profileImage}`}
-              alt={review?.first_name}
-              width={48}
-              height={48}
-              className="rounded-full"
-            />
+          <div key={review._id} className="flex items-start gap-4">
+            {review?.reviewerId?.profileImage ? (
+              <Image
+                src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${review?.reviewerId?.profileImage}`}
+                alt={review?.reviewerId?.first_name || "User"}
+                width={48}
+                height={48}
+                className="rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-12 h-12 rounded-full bg-[#20B894] text-white flex items-center justify-center text-lg font-semibold">
+                {review?.reviewerId?.first_name?.charAt(0)?.toUpperCase() || "U"}
+              </div>
+            )}
             <div className="flex-1">
               <div className="flex justify-between items-center">
                 <h4 className="font-medium">

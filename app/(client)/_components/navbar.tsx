@@ -20,6 +20,7 @@ import { LogOut, User, Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { verifiedUser } from "@/src/utils/token-varify";
 import { useGetAllCategoriesQuery } from "@/src/redux/features/categories/categoriesApi";
+import { useGetSingleUserQuery } from "@/src/redux/features/users/userApi";
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -33,6 +34,10 @@ export default function Navbar() {
   const {data: getAllCategories, isLoading} = useGetAllCategoriesQuery(undefined)
   const categories = getAllCategories?.data || [];
   // console.log("getAllCategories", getAllCategories);
+
+  const validUser = verifiedUser();
+  const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
+  const singleUserData = singleUser?.data;
   
 
   // Update the authentication check
@@ -233,12 +238,30 @@ export default function Navbar() {
             {isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger className="focus:outline-none">
-                  <Avatar className="h-8 w-8 hover:ring-2 hover:ring-teal-500 transition-all">
+                  {/* <Avatar className="h-8 w-8 hover:ring-2 hover:ring-teal-500 transition-all">
                     <AvatarImage src="/default-avatar.png" />
                     <AvatarFallback className="bg-teal-500 text-white">
                       U
                     </AvatarFallback>
-                  </Avatar>
+                  </Avatar> */}
+                  <div className="w-10 h-10 rounded-full relative overflow-hidden">
+                {singleUserData?.profileImage ? (
+                  <div>
+                    <Image
+                    src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${singleUserData.profileImage}`}
+                    alt="Profile"
+                    fill
+                    className="object-cover"
+                  />
+                  </div>
+                ) : (
+                  <div className="w-full h-full bg-[#20B894] flex items-center justify-center text-white text-xl font-semibold">
+                    {singleUserData?.first_name
+                      ? singleUserData.first_name.slice(0, 2).toUpperCase()
+                      : "UN"}
+                  </div>
+                )}
+              </div>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>

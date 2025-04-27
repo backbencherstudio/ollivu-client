@@ -7,6 +7,8 @@ import { MessageInput } from "./_components/MessageInput";
 import { verifiedUser } from "@/src/utils/token-varify";
 import { authApi } from "@/src/redux/features/auth/authApi";
 import { MessageContent } from "./_components/MessageContent";
+import ConfirmServiceModal from "./_components/confirm-service-modal";
+import { toast } from "sonner";
 const socket = io("http://localhost:5000");
 
 const Messages = () => {
@@ -35,6 +37,10 @@ const Messages = () => {
   };
 
   const { data: userList } = authApi.useGetAllExchangeDataQuery(finalQuery);
+  const users = userList?.data;
+
+  console.log("currentChat", currentChat);
+
   const [unreadMessages, setUnreadMessages] = useState(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("unreadMessages");
@@ -53,6 +59,8 @@ const Messages = () => {
 
   const [onlineUsers, setOnlineUsers] = useState({});
 
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  
   useEffect(() => {
     // Fetch user data on the client side
     const userData = verifiedUser();
@@ -385,7 +393,26 @@ const Messages = () => {
                 </p>
               </div>
               <div className="mt-6">
-                <button className="bg-[#20b894] text-white px-4 py-2 rounded-full w-full">
+                <button
+                  className="bg-[#20b894] text-white px-4 py-2 rounded-full w-full cursor-pointer"
+                  onClick={() => {
+                    const currentExchange = users?.find(
+                      (user) =>
+                        user.reciverUserId?.email ===
+                          getOtherUserEmail(currentChat) ||
+                        user.senderUserId?.email ===
+                          getOtherUserEmail(currentChat)
+                    );
+
+                    if (
+                      currentExchange?.senderUserId?._id === currentUser?.userId
+                    ) {
+                      toast.error("You cannot exchange service with yourself!");
+                      return;
+                    }
+                    setIsConfirmModalOpen(true);
+                  }}
+                >
                   Confirm Exchange Service
                 </button>
                 <button className="border border-[#b19c87] text-[#b19c87] px-4 py-2 rounded-full mt-2 w-full">
@@ -518,6 +545,15 @@ const Messages = () => {
           </div>
         )}
       </div>
+      {currentChat && (
+        <ConfirmServiceModal
+          isOpen={isConfirmModalOpen}
+          onClose={() => setIsConfirmModalOpen(false)}
+          myServices={currentChat?.my_service || []}
+          senderService={currentChat?.senderService || "No service selected"}
+          acceptedService={currentChat?.service || "No service selected"}
+        />
+      )}
     </div>
   );
 };
