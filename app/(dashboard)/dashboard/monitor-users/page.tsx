@@ -13,48 +13,49 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { StatCard } from "./components/StatCard";
 import { ConversationTable } from "./components/ConversationTable";
 import ProtectedRoute from "@/src/components/auth/ProtectedRoute";
-import { useGetAllExchangeDataQuery } from "@/src/redux/features/auth/authApi";
+import { useGetAllExchangeQuery } from "@/src/redux/features/admin/exchangeApi";
+import { useGetProfileReportQuery } from "@/src/redux/features/admin/profileReportApi";
 
-const conversations = [
-  { id: "#0001", user1: "Kristin Watson", user2: "Jerome Bell", joinDate: "Jan 4, 2025", status: "Completed" },
-  { id: "#0002", user1: "Eleanor Pena", user2: "Wade Warren", joinDate: "April 4, 2025", status: "Reported: pending" },
-  { id: "#0003", user1: "Courtney Henry", user2: "Jane Cooper", joinDate: "Mar 4, 2025", status: "Completed" },
-  { id: "#0004", user1: "Dianne Russell", user2: "Ronald Richards", joinDate: "Feb 4, 2025", status: "Reported" },
-  { id: "#0005", user1: "Albert Flores", user2: "Floyd Miles", joinDate: "Mar 4, 2025", status: "Completed" },
-];
+// const conversations = [
+//   { id: "#0001", user1: "Kristin Watson", user2: "Jerome Bell", joinDate: "Jan 4, 2025", status: "Completed" },
+//   { id: "#0002", user1: "Eleanor Pena", user2: "Wade Warren", joinDate: "April 4, 2025", status: "Reported: pending" },
+//   { id: "#0003", user1: "Courtney Henry", user2: "Jane Cooper", joinDate: "Mar 4, 2025", status: "Completed" },
+//   { id: "#0004", user1: "Dianne Russell", user2: "Ronald Richards", joinDate: "Feb 4, 2025", status: "Reported" },
+//   { id: "#0005", user1: "Albert Flores", user2: "Floyd Miles", joinDate: "Mar 4, 2025", status: "Completed" },
+// ];
 
-const statusColor = {
-  Completed: "text-green-600 bg-green-100",
-  "Reported: pending": "text-yellow-600 bg-yellow-100",
-  Reported: "text-red-600 bg-red-100",
-};
+// const statusColor = {
+//   Completed: "text-green-600 bg-green-100",
+//   "Reported: pending": "text-yellow-600 bg-yellow-100",
+//   Reported: "text-red-600 bg-red-100",
+// };
 
-const STAT_CARDS = [
-  { 
-    title: "Total Conversation", 
-    value: 60, 
-    subtitle: "Active chats",
-    icon: MessageIcon,
-  },
-  { 
-    title: "Pending Connection", 
-    value: 10, 
-    subtitle: "Awaiting Approval",
-    icon: PendingIcon,
-  },
-  { 
-    title: "Reported Conversations", 
-    value: 4, 
-    subtitle: "Flagged for review",
-    icon: ReportConversationIcon,  
-  },
-  { 
-    title: "Confirmed Swaps", 
-    value: 20, 
-    subtitle: "Successful exchanges",
-    icon: ConfirmedIcon,
-  },
-];
+// const STAT_CARDS = [
+//   { 
+//     title: "Total Conversation", 
+//     value: 60, 
+//     subtitle: "Active chats",
+//     icon: MessageIcon,
+//   },
+//   { 
+//     title: "Pending Connection", 
+//     value: 10, 
+//     subtitle: "Awaiting Approval",
+//     icon: PendingIcon,
+//   },
+//   { 
+//     title: "Reported Conversations", 
+//     value: 4, 
+//     subtitle: "Flagged for review",
+//     icon: ReportConversationIcon,  
+//   },
+//   { 
+//     title: "Confirmed Swaps", 
+//     value: 20, 
+//     subtitle: "Successful exchanges",
+//     icon: ConfirmedIcon,
+//   },
+// ];
 
 // Define TypeScript interface for the exchange data
 interface ExchangeUser {
@@ -90,31 +91,46 @@ export default function MonitorMessaging() {
   const [dateFilter, setDateFilter] = useState("Last 30 days");
   const [open, setOpen] = useState<{ [key: string]: boolean }>({});
 
-  const { data: getAllExchange } = useGetAllExchangeDataQuery({});
-  console.log("data", getAllExchange?.data);
-  
-  
+  const { data: getAllExchange } = useGetAllExchangeQuery({});
+  const { data: getProfileReport } = useGetProfileReportQuery({});
+
   // Transform exchange data to match conversation format
   const transformedConversations = getAllExchange?.data?.map((exchange: Exchange) => ({
     id: exchange._id,
-    user1: exchange.senderUserId.first_name,
-    user2: exchange.reciverUserId.first_name,
+    user1: exchange.senderUserId?.first_name || 'Unknown',
+    user2: exchange.reciverUserId?.first_name || 'Unknown',
     joinDate: new Date(exchange.createdAt).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
     }),
     status: exchange.reciverUserAccepted && exchange.senderUserAccepted ? "Completed" : "Pending",
-    senderService: exchange.senderService,
-    receiverServices: exchange.my_service,
-    senderEmail: exchange.senderUserId.email,
-    receiverEmail: exchange.reciverUserId.email,
-    senderDetails: exchange.senderUserId,
-    receiverDetails: exchange.reciverUserId
+    senderService: exchange.senderService || 'No service',
+    receiverServices: exchange.my_service || [],
+    senderEmail: exchange.senderUserId?.email || '',
+    receiverEmail: exchange.reciverUserId?.email || '',
+    senderDetails: exchange.senderUserId || {},
+    receiverDetails: exchange.reciverUserId || {}
+  })) || [];
+
+  const reportedProfile = getProfileReport?.data?.map((report) => ({
+    id: report._id || '',
+    user: report.reportedId?.first_name || 'Unknown',
+    email: report.reportedId?.email || '',
+    reason: report.reportType || '',
+    description: report.description || '',
+    createdAt: new Date(report.createdAt).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    }),
+    reporterId: report.reporterId || {},
+    reportedId: report.reportedId || {},
+    supportingFile: report.supportingFile || '',
+    reportType: report.reportType || ''
   })) || [];
 
   const handleStatusChange = (convId: string, status: string) => {
-    // Implementation for status change if needed
     setOpen({ ...open, [convId]: false });
   };
 
@@ -147,6 +163,10 @@ export default function MonitorMessaging() {
     },
   ];
 
+  const displayData = filter === "Completed Exchange" 
+    ? filteredConversations
+    : reportedProfile;
+
   return (
     <ProtectedRoute allowedRoles={["admin"]}>
       <div className="p-6 space-y-6">
@@ -157,7 +177,9 @@ export default function MonitorMessaging() {
         </div>
 
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold">Conversation Tracking</h2>
+          <h2 className="text-lg font-semibold">
+            {filter === "Completed Exchange" ? "Exchange Tracking" : "Reported Profiles"}
+          </h2>
 
           <Tabs defaultValue="Completed Exchange" onValueChange={setFilter}>
             <TabsList>
@@ -193,7 +215,8 @@ export default function MonitorMessaging() {
 
           <div className="max-w-[calc(100vw-3rem)]">
             <ConversationTable 
-              conversations={filteredConversations}
+              conversations={displayData}
+              isReportedView={filter === "Reported Profile"}
               open={open}
               setOpen={setOpen}
               onStatusChange={handleStatusChange}

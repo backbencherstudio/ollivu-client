@@ -14,6 +14,7 @@ import {
   ReceiptText,
   MessageCircleMore,
   User,
+  SquareKanban,
 } from "lucide-react";
 import { FaStar } from "react-icons/fa6";
 import logo from "@/public/logo/logo.png";
@@ -37,9 +38,14 @@ export default function Sidebar({ user }) {
   // Admin menu items
   const adminMenuItems = [
     {
-      icon: User,
+      icon: SquareKanban,
       label: "User Management",
       href: "/dashboard/user-management",
+    },
+    {
+      icon: User,
+      label: "Admin Profile",
+      href: "/dashboard/admin-profile",
     },
     {
       icon: ReceiptText,
@@ -55,6 +61,11 @@ export default function Sidebar({ user }) {
       icon: FaStar,
       label: "Manage Review",
       href: "/dashboard/manage-review",
+    },
+    {
+      icon: FaStar,
+      label: "Add Category",
+      href: "/dashboard/add-category",
     },
   ];
 

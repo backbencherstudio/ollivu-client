@@ -26,8 +26,8 @@ import { verifiedUser } from "@/src/utils/token-varify";
 import { toast } from "sonner";
 import ReportProfileModal from "./_components/report-profile-modal";
 import { useCreateProfileReportMutation } from "@/src/redux/features/shared/reportApi";
-import { useCreateExchangeMutation } from "@/src/redux/features/shared/exchangeApi";
 import MessageRequestModal from "./_components/message-request-modal";
+import { useCreateExchangeMutation } from "@/src/redux/features/admin/exchangeApi";
 
 const ServiceDetails = () => {
   const params = useParams();
