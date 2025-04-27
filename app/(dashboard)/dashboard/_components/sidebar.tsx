@@ -60,7 +60,7 @@ export default function Sidebar({ user }) {
     },
     {
       icon: FaStar,
-      label: "Manage Review",
+      label: "Manage Report",
       href: "/dashboard/manage-review",
     },
     {

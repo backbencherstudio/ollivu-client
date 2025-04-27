@@ -6,7 +6,7 @@ import Image from "next/image";
 import logo from "@/public/logo/logo.png";
 import { ChevronDown, ChevronUp, Menu, MoveUpRight, X } from "lucide-react";
 import { usePathname } from "next/navigation";
-import CustomImage from "@/components/reusable/CustomImage"
+import CustomImage from "@/components/reusable/CustomImage";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,8 +14,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOut, User, Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { verifiedUser } from "@/src/utils/token-varify";
@@ -31,27 +31,27 @@ export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const {data: getAllCategories, isLoading} = useGetAllCategoriesQuery(undefined)
+  const { data: getAllCategories, isLoading } =
+    useGetAllCategoriesQuery(undefined);
   const categories = getAllCategories?.data || [];
   // console.log("getAllCategories", getAllCategories);
 
   const validUser = verifiedUser();
   const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
   const singleUserData = singleUser?.data;
-  
 
   // Update the authentication check
   useEffect(() => {
     const checkAuth = () => {
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         const token = localStorage.getItem("accessToken");
         setIsAuthenticated(!!token);
       }
     };
-    
+
     checkAuth();
     window.addEventListener("storage", checkAuth);
-    
+
     return () => window.removeEventListener("storage", checkAuth);
   }, []);
 
@@ -61,11 +61,12 @@ export default function Navbar() {
   // Add logout handler
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
-    document.cookie = "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+    document.cookie =
+      "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
     setIsAuthenticated(false);
     router.push("/auth/login");
   };
-  
+
   // Add scroll event handler
   useEffect(() => {
     const controlNavbar = () => {
@@ -97,9 +98,8 @@ export default function Navbar() {
     setIsServicesOpen(!isServicesOpen);
   };
 
-  const user = verifiedUser()
+  const user = verifiedUser();
   // console.log("user", user);
-  
 
   return (
     <nav
@@ -114,12 +114,12 @@ export default function Navbar() {
             <Link href="/" className="text-2xl font-bold text-teal-600">
               {/* <Image src={logo} width={100} height={100} alt="Logo" /> */}
               <CustomImage
-            src={logo.src}
-            alt="Company Logo"
-            width={120}
-            height={40}
-            layout="fixed"
-          />
+                src={logo.src}
+                alt="Company Logo"
+                width={120}
+                height={40}
+                layout="fixed"
+              />
             </Link>
           </div>
 
@@ -166,7 +166,9 @@ export default function Navbar() {
                               <Link
                                 href={`/service-result?category=${encodeURIComponent(
                                   category.category_name
-                                )}&service=${encodeURIComponent(item.subCategory)}`}
+                                )}&service=${encodeURIComponent(
+                                  item.subCategory
+                                )}`}
                                 className="block py-1"
                               >
                                 {item.subCategory}
@@ -177,7 +179,7 @@ export default function Navbar() {
                       </div>
                     ))}
                   </div>
-                
+
                   {isServicesOpen && (
                     <div className="pl-4 pr-2 py-2">
                       {categories.map((category) => (
@@ -191,7 +193,9 @@ export default function Navbar() {
                                 <Link
                                   href={`/service-result?category=${encodeURIComponent(
                                     category.category_name
-                                  )}&service=${encodeURIComponent(item.subCategory)}`}
+                                  )}&service=${encodeURIComponent(
+                                    item.subCategory
+                                  )}`}
                                   className="text-sm text-gray-600 hover:text-teal-600 flex items-center group-hover/item:translate-x-1 transition-transform"
                                   onClick={() => {
                                     setIsMobileMenuOpen(false);
@@ -225,7 +229,9 @@ export default function Navbar() {
               <Link
                 href="/terms-and-conditions"
                 className={`font-medium hover:text-teal-600 ${
-                  pathname === "/terms-and-conditions" ? "text-[#070707]" : "text-[#777980]"
+                  pathname === "/terms-and-conditions"
+                    ? "text-[#070707]"
+                    : "text-[#777980]"
                 }`}
               >
                 Terms & Policy
@@ -237,7 +243,7 @@ export default function Navbar() {
           <div className="hidden md:flex items-center space-x-4">
             {isAuthenticated ? (
               <DropdownMenu>
-                <DropdownMenuTrigger className="focus:outline-none">
+                <DropdownMenuTrigger className="focus:outline-none cursor-pointer">
                   {/* <Avatar className="h-8 w-8 hover:ring-2 hover:ring-teal-500 transition-all">
                     <AvatarImage src="/default-avatar.png" />
                     <AvatarFallback className="bg-teal-500 text-white">
@@ -245,38 +251,50 @@ export default function Navbar() {
                     </AvatarFallback>
                   </Avatar> */}
                   <div className="w-10 h-10 rounded-full relative overflow-hidden">
-                {singleUserData?.profileImage ? (
-                  <div>
-                    <Image
-                    src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${singleUserData.profileImage}`}
-                    alt="Profile"
-                    fill
-                    className="object-cover"
-                  />
+                    {singleUserData?.profileImage ? (
+                      <div>
+                        <Image
+                          src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${singleUserData.profileImage}`}
+                          alt="Profile"
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-full h-full bg-[#20B894] flex items-center justify-center text-white text-xl font-semibold">
+                        {singleUserData?.first_name
+                          ? singleUserData.first_name.slice(0, 2).toUpperCase()
+                          : "UN"}
+                      </div>
+                    )}
                   </div>
-                ) : (
-                  <div className="w-full h-full bg-[#20B894] flex items-center justify-center text-white text-xl font-semibold">
-                    {singleUserData?.first_name
-                      ? singleUserData.first_name.slice(0, 2).toUpperCase()
-                      : "UN"}
-                  </div>
-                )}
-              </div>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col space-y-1">
+                      <p className="font-medium">
+                        {singleUserData?.first_name} {singleUserData?.last_name}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        {singleUserData?.email}
+                      </p>
+                    </div>
+                  </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem 
-                    className="cursor-pointer" 
+                  <DropdownMenuItem
+                    className="cursor-pointer"
                     onClick={() => {
-                      const targetPath = user?.role === 'admin' ? '/dashboard/user-management' : '/dashboard';
-                      window.open(targetPath, '_blank');
+                      const targetPath =
+                        user?.role === "admin"
+                          ? "/dashboard/user-management"
+                          : "/dashboard";
+                      router.push(targetPath);
                     }}
                   >
                     <User className="mr-2 h-4 w-4" />
                     Dashboard
                   </DropdownMenuItem>
-                  
+
                   <DropdownMenuItem className="cursor-pointer">
                     <User className="mr-2 h-4 w-4" />
                     Profile
@@ -286,7 +304,7 @@ export default function Navbar() {
                     Settings
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     className="cursor-pointer text-red-600 focus:text-red-600"
                     onClick={handleLogout}
                   >
@@ -381,11 +399,13 @@ export default function Navbar() {
                       </h3>
                       <ul className="space-y-2 mb-4">
                         {category.subCategories.map((item) => (
-                          <li key={item._id} >
+                          <li key={item._id}>
                             <Link
                               href={`/service-result?category=${encodeURIComponent(
                                 category.category_name
-                              )}&service=${encodeURIComponent(item.subCategory)}`}
+                              )}&service=${encodeURIComponent(
+                                item.subCategory
+                              )}`}
                               className="text-sm text-gray-600 hover:text-teal-600 flex items-center group-hover/item:translate-x-1 transition-transform"
                               onClick={() => {
                                 setIsMobileMenuOpen(false);

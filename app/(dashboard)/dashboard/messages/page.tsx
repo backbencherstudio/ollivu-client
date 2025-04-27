@@ -9,6 +9,7 @@ import { authApi } from "@/src/redux/features/auth/authApi";
 import { MessageContent } from "./_components/MessageContent";
 import ConfirmServiceModal from "./_components/confirm-service-modal";
 import { toast } from "sonner";
+import { useAcceptExchangeMutation } from "@/src/redux/features/shared/exchangeApi";
 const socket = io("http://localhost:5000");
 
 const Messages = () => {
@@ -25,10 +26,14 @@ const Messages = () => {
   });
 
   const getOtherUserEmail = (chat) => {
+
     return chat?.email === currentUser?.email
       ? chat?.reciverUserId?.email
       : chat?.senderUserId?.email;
+
+
   };
+
 
   const getOtherUserName = (chat) => {
     return chat?.email === currentUser?.email
@@ -37,9 +42,10 @@ const Messages = () => {
   };
 
   const { data: userList } = authApi.useGetAllExchangeDataQuery(finalQuery);
+  const [acceptExchange] = useAcceptExchangeMutation()
   const users = userList?.data;
 
-  console.log("currentChat", currentChat);
+  // console.log("currentChat", currentChat);
 
   const [unreadMessages, setUnreadMessages] = useState(() => {
     if (typeof window !== "undefined") {
@@ -60,7 +66,7 @@ const Messages = () => {
   const [onlineUsers, setOnlineUsers] = useState({});
 
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  
+
   useEffect(() => {
     // Fetch user data on the client side
     const userData = verifiedUser();
@@ -83,7 +89,7 @@ const Messages = () => {
             if (
               !lastMessagesMap[otherUser] ||
               new Date(msg.timestamp) >
-                new Date(lastMessagesMap[otherUser].timestamp)
+              new Date(lastMessagesMap[otherUser].timestamp)
             ) {
               lastMessagesMap[otherUser] = {
                 content: msg.content,
@@ -220,8 +226,7 @@ const Messages = () => {
     try {
       // Fetch messages for the selected chat
       const messagesResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/chats?email=${
-          currentUser?.email
+        `${process.env.NEXT_PUBLIC_API_URL}/chats?email=${currentUser?.email
         }&recipient=${getOtherUserEmail(user)}`
       );
       const messagesData = await messagesResponse.json();
@@ -283,6 +288,19 @@ const Messages = () => {
       socket.off("message_deleted");
     };
   }, []);
+
+
+
+  const modalHandler = async (currentChat) => {
+    if(currentChat?.senderUserId?.email === currentUser?.email){      
+      const result = await acceptExchange({ userId : currentUser?.userId, exchangeId : currentChat?._id })
+      return console.log(result)  // show confirmation alart 
+    }
+    setIsConfirmModalOpen(true)
+  }
+
+
+
   return (
     <div className="">
       {/* Main Content */}
@@ -322,11 +340,11 @@ const Messages = () => {
                     {currentChat?.name?.slice(0, 2).toUpperCase()}
                     {currentChat?.email === currentUser.email
                       ? currentChat?.reciverUserId?.first_name
-                          .slice(0, 2)
-                          .toUpperCase()
+                        .slice(0, 2)
+                        .toUpperCase()
                       : currentChat?.senderUserId?.first_name
-                          .slice(0, 2)
-                          .toUpperCase() || "UN"}
+                        .slice(0, 2)
+                        .toUpperCase() || "UN"}
                   </span>
                 </div>
               )}
@@ -335,11 +353,10 @@ const Messages = () => {
                   {getOtherUserName(currentChat) || "Select a chat"}
                 </h3>
                 <span
-                  className={`text-sm ${
-                    onlineUsers[getOtherUserEmail(currentChat)]
+                  className={`text-sm ${onlineUsers[getOtherUserEmail(currentChat)]
                       ? "text-green-500"
                       : "text-gray-500"
-                  }`}
+                    }`}
                 >
                   {onlineUsers[getOtherUserEmail(currentChat)]
                     ? "Online"
@@ -376,11 +393,11 @@ const Messages = () => {
                 <span className="text-white text-2xl font-semibold">
                   {currentChat?.email === currentUser.email
                     ? currentChat?.reciverUserId?.first_name
-                        .slice(0, 2)
-                        .toUpperCase()
+                      .slice(0, 2)
+                      .toUpperCase()
                     : currentChat?.senderUserId?.first_name
-                        .slice(0, 2)
-                        .toUpperCase() || "UN"}
+                      .slice(0, 2)
+                      .toUpperCase() || "UN"}
                 </span>
               </div>
               <div>
@@ -393,7 +410,8 @@ const Messages = () => {
                 </p>
               </div>
               <div className="mt-6">
-                <button
+
+                {/* <button
                   className="bg-[#20b894] text-white px-4 py-2 rounded-full w-full cursor-pointer"
                   onClick={() => {
                     const currentExchange = users?.find(
@@ -414,7 +432,15 @@ const Messages = () => {
                   }}
                 >
                   Confirm Exchange Service
+                </button> */}
+
+                <button
+                  className="bg-[#20b894] text-white px-4 py-2 rounded-full w-full cursor-pointer"
+                  onClick={()=>modalHandler(currentChat)}
+                >
+                  Confirm Exchange Service
                 </button>
+
                 <button className="border border-[#b19c87] text-[#b19c87] px-4 py-2 rounded-full mt-2 w-full">
                   Give Review
                 </button>
@@ -446,9 +472,8 @@ const Messages = () => {
 
       {/* Mobile Sidebar */}
       <div
-        className={`md:hidden fixed inset-y-0 left-0 w-3/4 bg-white z-50 transform transition-transform duration-300 ease-in-out ${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`md:hidden fixed inset-y-0 left-0 w-3/4 bg-white z-50 transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
         {/* Search Header */}
         <div className="flex justify-between items-center m-4 mt-8">
@@ -499,11 +524,11 @@ const Messages = () => {
                   {currentChat?.name?.slice(0, 2).toUpperCase()}
                   {currentChat?.email === currentUser.email
                     ? currentChat?.reciverUserId?.first_name
-                        .slice(0, 2)
-                        .toUpperCase()
+                      .slice(0, 2)
+                      .toUpperCase()
                     : currentChat?.senderUserId?.first_name
-                        .slice(0, 2)
-                        .toUpperCase() || "UN"}
+                      .slice(0, 2)
+                      .toUpperCase() || "UN"}
                 </span>
               </div>
             )}
@@ -512,11 +537,10 @@ const Messages = () => {
                 {getOtherUserName(currentChat) || "Select a chat"}
               </h3>
               <span
-                className={`text-sm ${
-                  onlineUsers[getOtherUserEmail(currentChat)]
+                className={`text-sm ${onlineUsers[getOtherUserEmail(currentChat)]
                     ? "text-green-500"
                     : "text-gray-500"
-                }`}
+                  }`}
               >
                 {onlineUsers[getOtherUserEmail(currentChat)]
                   ? "Online"
@@ -549,6 +573,7 @@ const Messages = () => {
         <ConfirmServiceModal
           isOpen={isConfirmModalOpen}
           onClose={() => setIsConfirmModalOpen(false)}
+          id={currentChat?._id}
           myServices={currentChat?.my_service || []}
           senderService={currentChat?.senderService || "No service selected"}
           acceptedService={currentChat?.service || "No service selected"}

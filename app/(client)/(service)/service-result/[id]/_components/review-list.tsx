@@ -24,7 +24,7 @@ interface ReviewListProps {
       _id: string;
       first_name: string;
       email: string;
-      profileImage?: string; 
+      profileImage?: string;
       personalInfo: {
         display_name: string;
         first_name: string;
@@ -42,37 +42,39 @@ interface ReviewListProps {
 }
 
 const ReviewList = ({ review }: ReviewListProps) => {
-  // console.log("review list insidee", review);
-  
+  console.log("review list insidee", review);
+
   const [likes, setLikes] = useState(review.like || 0);
   const [dislikes, setDislikes] = useState(review.disLike || 0);
   const [userAction, setUserAction] = useState<"like" | "dislike" | null>(null);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [createReviewReport] = useCreateReviewReportMutation();
   const currentUser = verifiedUser();
+  console.log("current user", currentUser?.userId);
+  
 
   const handleLike = () => {
     if (userAction === "like") {
-      setLikes(prev => prev - 1);
+      setLikes((prev) => prev - 1);
       setUserAction(null);
     } else {
       if (userAction === "dislike") {
-        setDislikes(prev => prev - 1);
+        setDislikes((prev) => prev - 1);
       }
-      setLikes(prev => prev + 1);
+      setLikes((prev) => prev + 1);
       setUserAction("like");
     }
   };
 
   const handleDislike = () => {
     if (userAction === "dislike") {
-      setDislikes(prev => prev - 1);
+      setDislikes((prev) => prev - 1);
       setUserAction(null);
     } else {
       if (userAction === "like") {
-        setLikes(prev => prev - 1);
+        setLikes((prev) => prev - 1);
       }
-      setDislikes(prev => prev + 1);
+      setDislikes((prev) => prev + 1);
       setUserAction("dislike");
     }
   };
@@ -126,27 +128,27 @@ const ReviewList = ({ review }: ReviewListProps) => {
             <FlagIcon />
             {review.report ? 'Reported' : 'Report'}
           </button> */}
-          {/* Update the Report button */}
-        <button 
-          onClick={() => setIsReportModalOpen(true)}
-          className={`text-[#1D1F2C] hover:text-gray-600 ml-10 cursor-pointer flex items-center gap-2 ${
-            review?.report ? 'text-red-500' : ''
-          }`}
-        >
-          <FlagIcon />
-          {review?.report ? 'Reported' : 'Report'}
-        </button>
-
-        {/* Add ReportModal */}
-        <ReportModal
-          isOpen={isReportModalOpen}
-          onClose={() => setIsReportModalOpen(false)}
-          onSubmit={handleReportSubmit}
-        />
-
+          {/* Report Button Section */}
+          {currentUser?.userId === review.reciverId ? (
+            // If current user is the receiver, only show "Reported" text
+            <div className="text-gray-500 ml-10 flex items-center gap-2">
+              <FlagIcon />
+              <span>Reported</span>
+            </div>
+          ) : (
+            // If not the receiver, show the normal Report button with functionality
+            <button
+              onClick={() => setIsReportModalOpen(true)}
+              className={`text-[#1D1F2C] hover:text-gray-600 ml-10 cursor-pointer flex items-center gap-2 ${
+                review?.report ? "text-red-500" : ""
+              }`}
+            >
+              <FlagIcon />
+              {review?.report ? "Reported" : "Report"}
+            </button>
+          )}
         </div>
 
-        
         {/* Review Text */}
         <div className="mb-5">
           <p className="text-[#4A4C56] text-lg font-normal mb-1">
@@ -159,15 +161,29 @@ const ReviewList = ({ review }: ReviewListProps) => {
 
         {/* Reviewer Info */}
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-gray-200 relative overflow-hidden">
-            <Image
-              src={review?.reviewerId?.profileImage 
-                ? `${process.env.NEXT_PUBLIC_IMAGE_URL}${review.reviewerId.profileImage}`
-                : "/default-avatar.jpg"}
-              alt={review.reviewerId?.personalInfo?.display_name || "User"}
-              fill
-              className="object-cover"
-            />
+          <div className="w-8 h-8 rounded-full bg-gray-200 relative overflow-hidden flex items-center justify-center">
+            {review?.reviewerId?.profileImage ? (
+              <Image
+                src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${review.reviewerId.profileImage}`}
+                alt={review.reviewerId?.personalInfo?.display_name || "User"}
+                fill
+                className="object-cover"
+                onError={(e: any) => {
+                  const parent = e.currentTarget.parentElement;
+                  if (parent) {
+                    parent.innerHTML = `
+                      <span class="text-lg font-medium text-gray-500">
+                        ${review.reviewerId?.first_name?.charAt(0)?.toUpperCase() || 'U'}
+                      </span>
+                    `;
+                  }
+                }}
+              />
+            ) : (
+              <span className="text-lg font-medium text-gray-500">
+                {review.reviewerId?.first_name?.charAt(0)?.toUpperCase() || 'U'}
+              </span>
+            )}
           </div>
           <div className="flex flex-col">
             <span className="text-lg font-semibold text-[#1D1F2C]">
@@ -222,6 +238,15 @@ const ReviewList = ({ review }: ReviewListProps) => {
           </button>
         </div>
       </div>
+
+      {/* Report Modal - only render if user is not the receiver */}
+      {currentUser?.userId !== review.reciverId && (
+        <ReportModal
+          isOpen={isReportModalOpen}
+          onClose={() => setIsReportModalOpen(false)}
+          onSubmit={handleReportSubmit}
+        />
+      )}
     </div>
   );
 };

@@ -46,7 +46,7 @@ export default function UserProfile() {
   const [updateUser] = useUpdateUserMutation();
   const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
   const singleUserData = singleUser?.data;
-  console.log("singleUser", singleUserData);
+  // console.log("singleUser", singleUserData);
 
   // Add these after other state declarations
   const [formData, setFormData] = useState({
@@ -266,7 +266,7 @@ export default function UserProfile() {
               />
             ) : (
               <div className="w-full h-full bg-[#20B894] flex items-center justify-center text-white text-xl font-semibold">
-                {singleUserData?.first_name 
+                {singleUserData?.first_name
                   ? singleUserData.first_name.slice(0, 2).toUpperCase()
                   : "UN"}
               </div>
@@ -284,13 +284,15 @@ export default function UserProfile() {
               {singleUserData?.first_name}
             </h2>
             <div className="flex flex-col sm:flex-row gap-2 mt-2">
-              <button
-                onClick={handleImageClick}
-                className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678] flex justify-center items-center gap-x-2 cursor-pointer"
-              >
-                Replace Photo
-                <BsArrowUpRight />
-              </button>
+              {isEditing && (
+                <button
+                  onClick={handleImageClick}
+                  className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678] flex justify-center items-center gap-x-2 cursor-pointer"
+                >
+                  Replace Photo
+                  <BsArrowUpRight />
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -533,7 +535,7 @@ export default function UserProfile() {
 
       {/* My Service and Portfolio */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-        <MyService singleUser={singleUser?.data}/>
+        <MyService singleUser={singleUser?.data} />
         <Portfolio />
       </div>
 

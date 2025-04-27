@@ -13,8 +13,6 @@ import avaterImg from "@/public/avatars/emily.png";
 import { ChevronDown, X } from "lucide-react";
 
 const ITEMS_PER_PAGE = 6;
-const DEFAULT_SERVICE_IMAGE = serviceImg;
-const DEFAULT_AVATAR_IMAGE = avaterImg;
 
 interface CategoryItem {
   id: number;
@@ -47,7 +45,6 @@ export default function ServiceResultContent() {
   const { data: users, isLoading } = useGetAllUsersQuery({});
   const allUsers = users?.data || [];
   console.log("all user", allUsers);
-  
 
   const [services, setServices] = useState<Service[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(
@@ -60,38 +57,38 @@ export default function ServiceResultContent() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const allServices = React.useMemo(() => {
-    if (typeof window === "undefined" || !allUsers.length) return [];
+    if (typeof window === "undefined" || !allUsers?.length) return [];
 
     return allUsers.flatMap((user: any) =>
-      (user.my_service || []).map((service: string) => {
-        const matchingCategory = serviceCategories.find((cat: Category) =>
-          cat.items.some(
+      (user?.my_service || []).map((service: string) => {
+        const matchingCategory = serviceCategories?.find((cat: Category) =>
+          cat?.items?.some(
             (item: CategoryItem) =>
-              item.title.toLowerCase() === String(service).toLowerCase()
+              item?.title?.toLowerCase() === String(service)?.toLowerCase()
           )
         );
 
-        // Ensure proper URL construction for images
-        const portfolioUrl = user.portfolio
-          ? `${process.env.NEXT_PUBLIC_IMAGE_URL}/${user.portfolio.replace(/^\//, '')}`
-          : DEFAULT_SERVICE_IMAGE.src;
+        // Clean and format image URLs
+        const portfolioUrl = user?.portfolio
+          ? `${process.env.NEXT_PUBLIC_IMAGE_URL}${user?.portfolio}`
+          : null;
 
-        const profileImageUrl = user.profileImage
-          ? `${process.env.NEXT_PUBLIC_IMAGE_URL}/${user.profileImage.replace(/^\//, '')}`
-          : DEFAULT_AVATAR_IMAGE.src;
+        const profileImageUrl = user?.profileImage
+          ? `${process.env.NEXT_PUBLIC_IMAGE_URL}${user?.profileImage}`
+          : null;
 
         return {
-          id: `${user._id}-${service}`,
+          id: `${user?._id}-${service}`,
           title: service,
           instructor: {
-            id: user._id,
-            name: user.first_name,
-            email: user.email,
+            id: user?._id,
+            name: user?.first_name,
+            email: user?.email,
             experience: "2+ years",
             image: profileImageUrl,
           },
-          rating: user.rating || 0,
-          reviewCount: user.review || 0,
+          rating: user?.rating || 0,
+          reviewCount: user?.review || 0,
           image: portfolioUrl,
           category: matchingCategory?.title || "Other",
         };
@@ -155,7 +152,11 @@ export default function ServiceResultContent() {
           className={`
             lg:w-1/4 fixed lg:relative inset-0 mt-16 lg:mt-0 z-30 lg:z-auto 
             transform transition-transform duration-300 ease-in-out 
-            ${isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"} 
+            ${
+              isSidebarOpen
+                ? "translate-x-0"
+                : "-translate-x-full lg:translate-x-0"
+            } 
             bg-white lg:bg-transparent p-4 lg:p-0 overflow-y-auto lg:block
           `}
         >
