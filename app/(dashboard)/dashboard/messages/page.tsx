@@ -573,6 +573,7 @@ const Messages = () => {
         <ConfirmServiceModal
           isOpen={isConfirmModalOpen}
           onClose={() => setIsConfirmModalOpen(false)}
+          id={currentChat?._id}
           myServices={currentChat?.my_service || []}
           senderService={currentChat?.senderService || "No service selected"}
           acceptedService={currentChat?.service || "No service selected"}

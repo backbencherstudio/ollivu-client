@@ -9,8 +9,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useState } from "react";
 
 interface ConfirmServiceModalProps {
+  id: string;
   isOpen: boolean;
   onClose: () => void;
   myServices: string[];
@@ -21,27 +23,43 @@ interface ConfirmServiceModalProps {
 export default function ConfirmServiceModal({
   isOpen,
   onClose,
+  id,
   myServices = [],
   senderService = "",
   acceptedService = "",
 }: ConfirmServiceModalProps) {
+  const [selectedService, setSelectedService] = useState<string>("");
+
   if (!isOpen) return null;
-  
-  console.log("senderService", senderService);
 
-  // Handle click outside modal
+  // Add handleBackdropClick function
   const handleBackdropClick = (e: React.MouseEvent) => {
-
     if (e.target === e.currentTarget) {
       onClose();
     }
+  };
 
+  const handleConfirmService = () => {
+    if (!selectedService) {
+      console.log("Please select your service first");
+      return;
+    }
+
+    console.log("Confirmation Details:", {
+      id: id,
+      mySelectedService: selectedService,
+      senderRequestedService: senderService,
+      acceptedService: acceptedService,
+      allAvailableServices: myServices
+    });
+
+    onClose();
   };
 
   return (
-    <div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-      onClick={handleBackdropClick} // Add click handler to backdrop
+    <div 
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" 
+      onClick={handleBackdropClick}
     >
       <div className="bg-white rounded-2xl w-[400px] p-6 relative">
         {" "}
@@ -86,7 +104,7 @@ export default function ConfirmServiceModal({
             <label className="text-sm text-gray-500 mb-2 block">
               My service:
             </label>
-            <Select>
+            <Select onValueChange={setSelectedService} value={selectedService}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select your service" />
               </SelectTrigger>
@@ -126,13 +144,11 @@ export default function ConfirmServiceModal({
             </div>
           </div>
         </div>
-        {/* Confirm Button */}
+        {/* Updated Confirm Button */}
         <Button
           className="w-full mt-8 bg-[#20B894] hover:bg-[#1ca883] text-white"
-          onClick={() => {
-            // Handle confirmation logic here
-            onClose();
-          }}
+          onClick={handleConfirmService}
+          disabled={!selectedService}
         >
           Confirm Service
         </Button>
