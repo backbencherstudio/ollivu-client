@@ -243,7 +243,7 @@ export default function Header({ user }) {
                     >
                       Back to Home
                     </Link>
-                  </div> */}
+                  </div> 
                   <div className="flex items-center gap-3 cursor-pointer">
                     <AiOutlineUser className="w-6 h-6 p-1 bg-[#EDFCF6] text-[#20B894] rounded-full" />
                     <p className="text-base font-normal text-[#070707]">
