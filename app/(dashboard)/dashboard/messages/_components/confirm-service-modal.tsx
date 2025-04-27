@@ -10,6 +10,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useState } from "react";
+import { useAcceptExchangeMutation } from "@/src/redux/features/shared/exchangeApi";
+import { verifiedUser } from "@/src/utils/token-varify";
 
 interface ConfirmServiceModalProps {
   id: string;
@@ -29,6 +31,8 @@ export default function ConfirmServiceModal({
   acceptedService = "",
 }: ConfirmServiceModalProps) {
   const [selectedService, setSelectedService] = useState<string>("");
+  const [acceptExchange] = useAcceptExchangeMutation();
+  const currentUser = verifiedUser();
 
   if (!isOpen) return null;
 
@@ -39,11 +43,12 @@ export default function ConfirmServiceModal({
     }
   };
 
-  const handleConfirmService = () => {
+  const handleConfirmService = async () => {
     if (!selectedService) {
       console.log("Please select your service first");
       return;
     }
+
 
     console.log("Confirmation Details:", {
       id: id,
@@ -53,12 +58,19 @@ export default function ConfirmServiceModal({
       allAvailableServices: myServices
     });
 
-    onClose();
+    const result = await acceptExchange({ userId: currentUser?.userId, exchangeId: id , reciverService: selectedService})
+
+    console.log(63, result);   //========= need to show success message
+    
+
+    if (result?.data?.success) {
+      onClose();
+    }
   };
 
   return (
-    <div 
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" 
+    <div
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
       onClick={handleBackdropClick}
     >
       <div className="bg-white rounded-2xl w-[400px] p-6 relative">
