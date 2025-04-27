@@ -19,8 +19,18 @@ export const exchangeApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["User"],
     }),
+
+    acceptExchange: builder.mutation({
+      query: (data) => ({
+        url: `/shared/acceptExchange/${data?.exchangeId}`,
+        method: "PATCH",
+        body: data
+      }),
+      invalidatesTags:["User"]
+    }),
+
+
   }),
 });
 
-export const { useCreateExchangeMutation, useExchangeChatRequestMutation } =
-  exchangeApi;
+export const { useCreateExchangeMutation, useExchangeChatRequestMutation, useAcceptExchangeMutation } = exchangeApi;

@@ -26,13 +26,16 @@ export default function ConfirmServiceModal({
   acceptedService = "",
 }: ConfirmServiceModalProps) {
   if (!isOpen) return null;
+  
   console.log("senderService", senderService);
 
   // Handle click outside modal
   const handleBackdropClick = (e: React.MouseEvent) => {
+
     if (e.target === e.currentTarget) {
       onClose();
     }
+
   };
 
   return (
