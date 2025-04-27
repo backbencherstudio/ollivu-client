@@ -6,8 +6,8 @@ import { connections, messages, getMessagesByUser } from "./_data/mock-data";
 import ChatArea from "./_components/chat-area";
 import RightSidebar from "./_components/right-sidebar";
 import { Message } from "./_types";
-import ConfirmServiceModal from "./_components/confirm-service-modal";
-import ReportProfileModal from "./_components/report-profile-modal";
+import ConfirmServiceModal from "./_components/_confirm-service-modal";
+import ReportProfileModal from "./_components/_report-profile-modal";
 import { useGetAllExchangeDataQuery } from "@/src/redux/features/auth/authApi";
 
 export default function MessagePage() {
