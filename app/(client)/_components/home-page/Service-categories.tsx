@@ -53,7 +53,7 @@ export default function ServiceExchangeFlow() {
     setModalStep("users");
     setSelectedUsers([]); // Reset selected users when changing category
   };
-  console.log("allUsers", allUsers);
+  console.log("currentUserInfo", currentUserInfo);
 
   const handleUserToggle = (userId: string) => {
     setSelectedUsers((prev) =>
@@ -74,7 +74,7 @@ export default function ServiceExchangeFlow() {
         reciverUserId: userId,
         email: currentUser?.email,
         senderService: selectedSkill,
-        my_service: [selectedService.subCategory]
+        my_service: currentUserInfo?.my_service
       }));
 
       const response = await createExchange(exchangeRequests).unwrap();
@@ -137,15 +137,15 @@ export default function ServiceExchangeFlow() {
                     <button
                       onClick={handleSendRequest}
                       disabled={selectedUsers.length === 0}
-                      className={`bg-[#20B894] text-white px-6 py-2 rounded-full ${
-                        selectedUsers.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#1a9677]'
+                      className={`bg-[#20B894] text-white px-6 py-2 rounded-full cursor-pointer ${
+                        selectedUsers.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#1a9677] ease-in-out duration-300'
                       }`}
                     >
                       Send Request
                     </button>
                     <button
                       onClick={() => setModalStep("none")}
-                      className="border border-red-500 text-red-500 px-6 py-2 rounded-full hover:bg-red-50"
+                      className="border border-red-500 text-red-500 px-6 py-2 rounded-full hover:bg-red-50 cursor-pointer ease-in-out duration-300"
                     >
                       Cancel
                     </button>

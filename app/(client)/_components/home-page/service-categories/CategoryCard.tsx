@@ -29,7 +29,7 @@ export default function CategoryCard({ category, onExchangeClick }: CategoryCard
       <div className="flex justify-center items-center">
         <button
           onClick={() => onExchangeClick(category)}
-          className="flex items-center justify-center gap-2 text-sm border border-[#20B894] text-[#20B894] px-4 py-2 rounded-full hover:bg-[#20B894]/10 transition"
+          className="flex items-center justify-center gap-2 text-sm border border-[#20B894] text-[#20B894] px-4 py-2 rounded-full hover:bg-[#20B894]/10 transition cursor-pointer"
         >
           Exchange Service <ArrowUpRight className="w-4 h-4" />
         </button>
