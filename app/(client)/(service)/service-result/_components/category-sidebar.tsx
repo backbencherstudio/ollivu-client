@@ -27,6 +27,7 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
   const { data: getAllCategories } = useGetAllCategoriesQuery(undefined);
   const categories = getAllCategories?.data || [];
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const toggleCategory = (categoryTitle: string) => {
     setOpenCategories((prev) =>
@@ -114,72 +115,86 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
 
   // Update the debounced filter function
   const debouncedFilter = useCallback(
-  debounce((params: { location?: string; rating?: number | null; searchTerm?: string; service?: string }) => {
-    const urlParams = new URLSearchParams();
-    if (params.searchTerm) urlParams.append('searchTerm', params.searchTerm);
-    if (params.service) urlParams.append('my_service', params.service);
-    if (params.location) urlParams.append('country', params.location);
-    if (params.rating) urlParams.append('rating', params.rating.toString());
-    
-    router.push(`/service-result?${urlParams.toString()}`);
-  }, 500),
-  []
-);
+    debounce(
+      (params: {
+        location?: string;
+        rating?: number | null;
+        searchTerm?: string;
+        service?: string;
+      }) => {
+        const urlParams = new URLSearchParams();
+        if (params.searchTerm)
+          urlParams.append("searchTerm", params.searchTerm);
+        if (params.service) urlParams.append("my_service", params.service);
+        if (params.location) urlParams.append("country", params.location);
+        if (params.rating) urlParams.append("rating", params.rating.toString());
 
-// Update search handler
-const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const value = e.target.value;
-  setSearchTerm(value);
-  debouncedFilter({
-    searchTerm: value,
-    service: selectedItem || selectedCategory || "",
-    location,
-    rating: selectedRating
-  });
-};
+        router.push(`/service-result?${urlParams.toString()}`);
+      },
+      500
+    ),
+    []
+  );
 
-// Update location handler
-const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const value = e.target.value;
-  setLocation(value);
-  debouncedFilter({
-    searchTerm,
-    service: selectedItem || selectedCategory || "",
-    location: value,
-    rating: selectedRating
-  });
-};
+  // Update search handler
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    debouncedFilter({
+      searchTerm: value,
+      service: selectedItem || selectedCategory || "",
+      location,
+      rating: selectedRating,
+    });
+  };
 
-// Update rating handler
-const handleRatingSelect = (rating: number) => {
-  const newRating = selectedRating === rating ? null : rating;
-  setSelectedRating(newRating);
-  debouncedFilter({
-    searchTerm,
-    service: selectedItem || selectedCategory || "",
-    location,
-    rating: newRating
-  });
-};
+  // Update location handler
+  const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setLocation(value);
+    debouncedFilter({
+      searchTerm,
+      service: selectedItem || selectedCategory || "",
+      location: value,
+      rating: selectedRating,
+    });
+  };
 
-// Update API query
-const { data: filteredUsers } = useGetAllUsersByServiceQuery(
-  {
-    service: selectedItem || selectedCategory || "",
-    country: location,
-    rating: selectedRating,
-    searchTerm
-  },
-  { 
-    skip: !selectedCategory && !selectedItem && !location && !selectedRating && !searchTerm
-  }
-);
+  // Update rating handler
+  const handleRatingSelect = (rating: number) => {
+    const newRating = selectedRating === rating ? null : rating;
+    setSelectedRating(newRating);
+    debouncedFilter({
+      searchTerm,
+      service: selectedItem || selectedCategory || "",
+      location,
+      rating: newRating,
+    });
+  };
 
-useEffect(() => {
-  if (filteredUsers?.data) {
-    onServiceFilter(filteredUsers.data);
-  }
-}, [filteredUsers, onServiceFilter]);
+  // Update API query
+  const { data: filteredUsers } = useGetAllUsersByServiceQuery(
+    {
+      service: selectedItem || selectedCategory || "",
+      country: location,
+      rating: selectedRating,
+      searchTerm,
+    },
+    {
+      skip:
+        !selectedCategory &&
+        !selectedItem &&
+        !location &&
+        !selectedRating &&
+        !searchTerm,
+    }
+  );
+
+  useEffect(() => {
+    if (filteredUsers?.data) {
+      onServiceFilter(filteredUsers.data);
+    }
+  }, [filteredUsers, onServiceFilter]);
 
   // Update reset handlers
   const handleLocationReset = () => {
@@ -191,6 +206,21 @@ useEffect(() => {
     setSelectedRating(null);
     debouncedFilter(location, null);
   };
+
+  // Add this useEffect to handle route changes
+  useEffect(() => {
+    // Check if URL has no query parameters
+    if (!searchParams.toString()) {
+      // Reset all filters and states
+      onCategorySelect(null);
+      onItemSelect(null);
+      setOpenCategories([]);
+      setSearchTerm("");
+      setLocation("");
+      setSelectedRating(null);
+      onServiceFilter([]); // Reset service filter if needed
+    }
+  }, [searchParams, onCategorySelect, onItemSelect, onServiceFilter]);
 
   return (
     <div className="p-4 bg-gray-50 border border-[#D2B9A1] rounded-lg w-full sm:w-[300px]">
@@ -225,32 +255,29 @@ useEffect(() => {
                     );
 
                     if (matchedService) {
-                      // Update both category and item for proper filtering
-                      const category = categories.find((cat) =>
+                      // Clear search and set the service filter
+                      setSearchTerm("");
+
+                      // Find if it's a subcategory
+                      const parentCategory = categories.find((cat) =>
                         cat.subCategories?.some(
-                          (sub: any) =>
-                            sub.subCategory.toLowerCase() ===
-                            matchedService.toLowerCase()
+                          (sub: any) => sub.subCategory === matchedService
                         )
                       );
 
-                      if (category) {
-                        const subCategory = category.subCategories.find(
-                          (sub: any) =>
-                            sub.subCategory.toLowerCase() ===
-                            matchedService.toLowerCase()
-                        );
-
-                        if (subCategory) {
-                          onCategorySelect(category.category_name);
-                          onItemSelect(matchedService);
-                        } else {
-                          onCategorySelect(matchedService);
-                          onItemSelect(null);
-                        }
+                      if (parentCategory) {
+                        // It's a subcategory
+                        onCategorySelect(parentCategory.category_name);
+                        onItemSelect(matchedService);
+                        setOpenCategories([parentCategory.category_name]);
+                      } else {
+                        // It's a main category
+                        onCategorySelect(matchedService);
+                        onItemSelect(null);
+                        setOpenCategories([matchedService]);
                       }
 
-                      setSearchTerm(matchedService);
+                      // Update URL and trigger filter
                       router.push(
                         `/service-result?my_service=${encodeURIComponent(
                           matchedService
