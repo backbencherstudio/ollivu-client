@@ -166,14 +166,17 @@ export default function ServiceExchangeFlow() {
         </div>
       )}
 
-      <div className="text-center">
-        <button
-          onClick={() => setShowAll(!showAll)}
-          className="bg-[#20B894] text-white text-sm font-medium px-6 py-3 rounded-full flex items-center gap-2 mx-auto hover:opacity-90 transition"
-        >
-          {showAll ? "View Less" : "View All"}
-        </button>
-      </div>
+      {/* Only show the View All button if there are more than 8 categories */}
+      {allCategories.length > 8 && (
+        <div className="text-center">
+          <button
+            onClick={() => setShowAll(!showAll)}
+            className="bg-[#20B894] text-white text-sm font-medium px-6 py-3 rounded-full flex items-center gap-2 mx-auto hover:opacity-90 transition"
+          >
+            {showAll ? "View Less" : "View All"}
+          </button>
+        </div>
+      )}
     </>
   );
 }
