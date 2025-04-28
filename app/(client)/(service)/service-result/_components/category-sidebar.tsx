@@ -3,8 +3,8 @@ import { ChevronDown, ChevronUp, MapPin, Star } from "lucide-react";
 import { useGetAllCategoriesQuery } from "@/src/redux/features/categories/categoriesApi";
 import { useGetAllUsersByServiceQuery } from "@/src/redux/features/users/userApi";
 import { useSearchUsersQuery } from "@/src/redux/features/users/userApi";
-import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { debounce } from "lodash";
 
 interface CategorySidebarProps {
   selectedCategory: string | null;
@@ -78,31 +78,31 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
   //   All Services
   // </div>
 
-  const { data: filteredUsers } = useGetAllUsersByServiceQuery(
-    selectedItem || selectedCategory || "",
-    { skip: !selectedCategory && !selectedItem }
-  );
+  // const { data: filteredUsers } = useGetAllUsersByServiceQuery(
+  //   selectedItem || selectedCategory || "",
+  //   { skip: !selectedCategory && !selectedItem }
+  // );
 
-  useEffect(() => {
-    if (filteredUsers?.data) {
-      onServiceFilter(filteredUsers.data);
-    }
-  }, [filteredUsers, onServiceFilter]);
+  // useEffect(() => {
+  //   if (filteredUsers?.data) {
+  //     onServiceFilter(filteredUsers.data);
+  //   }
+  // }, [filteredUsers, onServiceFilter]);
 
   const isOpen = (categoryTitle: string) =>
     openCategories.includes(categoryTitle);
 
-  const handleRatingSelect = (rating: number) => {
-    setSelectedRating(selectedRating === rating ? null : rating);
-  };
+  // const handleRatingSelect = (rating: number) => {
+  //   setSelectedRating(selectedRating === rating ? null : rating);
+  // };
 
-  const handleLocationReset = () => {
-    setLocation("");
-  };
+  // const handleLocationReset = () => {
+  //   setLocation("");
+  // };
 
-  const handleRatingReset = () => {
-    setSelectedRating(null);
-  };
+  // const handleRatingReset = () => {
+  //   setSelectedRating(null);
+  // };
 
   const [searchTerm, setSearchTerm] = useState("");
   const { data: searchResults, isLoading: isSearching } = useSearchUsersQuery(
@@ -112,24 +112,85 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
     }
   );
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchTerm(value);
+  // Update the debounced filter function
+  const debouncedFilter = useCallback(
+  debounce((params: { location?: string; rating?: number | null; searchTerm?: string; service?: string }) => {
+    const urlParams = new URLSearchParams();
+    if (params.searchTerm) urlParams.append('searchTerm', params.searchTerm);
+    if (params.service) urlParams.append('my_service', params.service);
+    if (params.location) urlParams.append('country', params.location);
+    if (params.rating) urlParams.append('rating', params.rating.toString());
+    
+    router.push(`/service-result?${urlParams.toString()}`);
+  }, 500),
+  []
+);
+
+// Update search handler
+const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const value = e.target.value;
+  setSearchTerm(value);
+  debouncedFilter({
+    searchTerm: value,
+    service: selectedItem || selectedCategory || "",
+    location,
+    rating: selectedRating
+  });
+};
+
+// Update location handler
+const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const value = e.target.value;
+  setLocation(value);
+  debouncedFilter({
+    searchTerm,
+    service: selectedItem || selectedCategory || "",
+    location: value,
+    rating: selectedRating
+  });
+};
+
+// Update rating handler
+const handleRatingSelect = (rating: number) => {
+  const newRating = selectedRating === rating ? null : rating;
+  setSelectedRating(newRating);
+  debouncedFilter({
+    searchTerm,
+    service: selectedItem || selectedCategory || "",
+    location,
+    rating: newRating
+  });
+};
+
+// Update API query
+const { data: filteredUsers } = useGetAllUsersByServiceQuery(
+  {
+    service: selectedItem || selectedCategory || "",
+    country: location,
+    rating: selectedRating,
+    searchTerm
+  },
+  { 
+    skip: !selectedCategory && !selectedItem && !location && !selectedRating && !searchTerm
+  }
+);
+
+useEffect(() => {
+  if (filteredUsers?.data) {
+    onServiceFilter(filteredUsers.data);
+  }
+}, [filteredUsers, onServiceFilter]);
+
+  // Update reset handlers
+  const handleLocationReset = () => {
+    setLocation("");
+    debouncedFilter("", selectedRating);
   };
 
-  const searchParams = useSearchParams();
-
-  // Add effect to handle URL changes
-  useEffect(() => {
-    const myService = searchParams.get("my_service");
-    if (!myService) {
-      onCategorySelect(null);
-      onItemSelect(null);
-      onServiceFilter([]);
-      setOpenCategories([]);
-      setSearchTerm("");
-    }
-  }, [searchParams, onCategorySelect, onItemSelect, onServiceFilter]);
+  const handleRatingReset = () => {
+    setSelectedRating(null);
+    debouncedFilter(location, null);
+  };
 
   return (
     <div className="p-4 bg-gray-50 border border-[#D2B9A1] rounded-lg w-full sm:w-[300px]">
@@ -307,11 +368,12 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
         </div>
         <div className="relative">
           <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+
           <input
             type="text"
             placeholder="Enter post code/location"
             value={location}
-            onChange={(e) => setLocation(e.target.value)}
+            onChange={handleLocationChange}
             className="w-full pl-10 p-2 border border-[#D2B9A1] rounded-full text-sm"
           />
         </div>

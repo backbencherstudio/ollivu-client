@@ -11,10 +11,18 @@ export const usersApi = baseApi.injectEndpoints({
     }),
 
     getAllUsersByService: builder.query({
-      query: (service) => ({
-        url: `/auth/allUsers?my_service=${service}`,
-        method: 'GET',
-      }),
+      query: ({ service, country, rating, searchTerm }) => {
+        const params = new URLSearchParams();
+        if (searchTerm) params.append('searchTerm', searchTerm);
+        if (service) params.append('my_service', service);
+        if (country) params.append('country', country);
+        if (rating) params.append('rating', rating.toString());
+        
+        return {
+          url: `/auth/allUsers?${params.toString()}`,
+          method: 'GET',
+        };
+      },
       providesTags: ['User'],
     }),
 
