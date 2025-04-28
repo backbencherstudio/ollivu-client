@@ -26,10 +26,10 @@ export function ReviewTable({
       <table className="w-full">
         <thead>
           <tr className="text-left text-sm text-gray-500 border-b">
-            <th className="pb-4 font-medium">Reviewer</th>
-            <th className="pb-4 font-medium">Flagged By</th>
+            <th className="pb-4 font-medium">Reporter</th>
+            <th className="pb-4 font-medium">Reported</th>
             <th className="pb-4 font-medium">Review</th>
-            <th className="pb-4 font-medium">Rating</th>
+            {/* <th className="pb-4 font-medium">Rating</th> */}
             <th className="pb-4 font-medium">Status</th>
             <th className="pb-4 font-medium">Action</th>
           </tr>

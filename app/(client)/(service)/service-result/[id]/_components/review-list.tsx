@@ -155,7 +155,13 @@ const ReviewList = ({ review }: ReviewListProps) => {
             {review.review}
           </p>
           <span className="text-base text-[#A5A5AB]">
-            {new Date(review.createdAt).toLocaleString()}
+            {new Date(review.createdAt).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            })}
           </span>
         </div>
 

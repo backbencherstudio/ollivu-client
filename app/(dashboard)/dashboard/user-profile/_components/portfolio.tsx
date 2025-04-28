@@ -90,6 +90,14 @@ export default function Portfolio() {
                 alt="Portfolio"
                 fill
                 className="object-cover"
+                onError={(e: any) => {
+                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.parentElement.innerHTML = `
+                    <div class="w-full h-full bg-[#20B894] flex items-center justify-center text-white text-lg font-medium">
+                      Portfolio
+                    </div>
+                  `;
+                }}
               />
               <button
                 onClick={() => setShowDeleteAlert(true)}
@@ -113,7 +121,7 @@ export default function Portfolio() {
 
       {/* Portfolio Modal */}
       <Dialog open={showPortfolioModal} onOpenChange={setShowPortfolioModal}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="md:max-w-[825px]">
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold">Add Portfolio</DialogTitle>
             <button 

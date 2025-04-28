@@ -15,7 +15,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOut, User, Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { verifiedUser } from "@/src/utils/token-varify";
@@ -39,6 +38,8 @@ export default function Navbar() {
   const validUser = verifiedUser();
   const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
   const singleUserData = singleUser?.data;
+  // console.log("singleUserData", singleUserData);
+  
 
   // Update the authentication check
   useEffect(() => {
@@ -254,7 +255,7 @@ export default function Navbar() {
                     {singleUserData?.profileImage ? (
                       <div>
                         <Image
-                          src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${singleUserData.profileImage}`}
+                          src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${singleUserData?.profileImage}`}
                           alt="Profile"
                           fill
                           className="object-cover"
