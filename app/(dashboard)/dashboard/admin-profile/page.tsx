@@ -1,63 +1,66 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import Image from "next/image";
+import React, { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
-import { UserAvatar } from "../_components/user-avater";
-import { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
-import { Pencil } from "lucide-react";
-import { CategoriesModal } from "./_components/categories-modal";
+import { BsArrowUpRight } from "react-icons/bs";
+import { LuPencilLine } from "react-icons/lu";
 import {
   useGetSingleUserQuery,
   useUpdateUserMutation,
 } from "@/src/redux/features/users/userApi";
 import { verifiedUser } from "@/src/utils/token-varify";
 import { toast } from "sonner";
-import Image from "next/image";
 
 export default function AdminProfile() {
-  const [isEditing, setIsEditing] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [isCategoriesModalOpen, setIsCategoriesModalOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isClient, setIsClient] = useState(false);
 
   const validUser = verifiedUser();
   const [updateUser] = useUpdateUserMutation();
   const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
   const singleUserData = singleUser?.data;
 
+  // Modified formData structure
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phoneNumber: "",
+    firstName: "", // Moved outside personalInfo
+    personalInfo: {
+      lastName: "",
+      phoneNumber: "",
+    },
   });
-  console.log("formData", formData);
-  
 
-  // Initialize form data when user data is loaded
+  // Modified useEffect
   useEffect(() => {
     if (singleUserData) {
       setFormData({
-        firstName: singleUserData.first_name || "",
-        lastName: singleUserData.last_name || "",
-        email: singleUserData.email || "",
-        phoneNumber: singleUserData.phone_number || "",
+        firstName: singleUserData.first_name || "", // Direct access
+        personalInfo: {
+          lastName: singleUserData.personalInfo?.last_name || "",
+          phoneNumber: singleUserData.personalInfo?.phone_number || "",
+        },
       });
     }
   }, [singleUserData]);
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  // Modified handleInputChange
+  const handleInputChange = (section: string, field: string, value: string) => {
+    if (section === "firstName") {
+      setFormData((prev) => ({
+        ...prev,
+        firstName: value,
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [section]: {
+          ...prev[section],
+          [field]: value,
+        },
+      }));
+    }
   };
 
   const handleImageClick = () => {
@@ -71,39 +74,54 @@ export default function AdminProfile() {
     }
   };
 
-  const handleSave = async () => {
-    try {
-      const formDataToSend = new FormData();
+  const handleEditSave = async () => {
+    if (isEditing) {
+      try {
+        const formDataToSend = new FormData();
 
-      // Add image if selected
-      if (selectedImage) {
-        formDataToSend.append("profileImage", selectedImage);
+        if (selectedImage) {
+          formDataToSend.append("profileImage", selectedImage);
+        }
+
+        formDataToSend.append("userId", validUser?.userId);
+
+        // Add firstName directly
+        formDataToSend.append("first_name", formData.firstName);
+
+        // Add other personal info
+        formDataToSend.append(
+          "personalInfo[last_name]",
+          formData.personalInfo.lastName
+        );
+        formDataToSend.append(
+          "personalInfo[phone_number]",
+          formData.personalInfo.phoneNumber
+        );
+
+        // Log formData for debugging
+        for (const pair of formDataToSend.entries()) {
+          console.log(pair[0], pair[1]);
+        }
+
+        const response = await updateUser(formDataToSend).unwrap();
+
+        if (response.success) {
+          toast.success("Profile updated successfully");
+        }
+      } catch (error: any) {
+        console.error("Update Error:", error);
+        toast.error(error?.data?.message || "Failed to update profile");
       }
-
-      // Add user data with correct field names
-      formDataToSend.append("first_name", formData.firstName);
-      formDataToSend.append("last_name", formData.lastName);
-      formDataToSend.append("email", formData.email);
-      formDataToSend.append("phone_number", formData.phoneNumber);
-      formDataToSend.append("userId", validUser?.userId);
-
-      const response = await updateUser(formDataToSend).unwrap();
-      console.log("response", response);
-
-      if (response.success) {
-        toast.success("Profile updated successfully");
-        setIsEditing(false);
-      }
-    } catch (error: any) {
-      toast.error(error?.data?.message || "Failed to update profile");
     }
+    setIsEditing(!isEditing);
   };
 
   return (
-    <div className="p-6">
-      <div className="bg-white rounded-xl p-6 mb-6">
-        <div className="flex items-start gap-4">
-          <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden">
+    <div className="p-6 space-y-6">
+      {/* Profile Image Card */}
+      <Card className="p-4 md:p-6">
+        <div className="flex flex-col sm:flex-row items-center gap-4">
+          <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden mx-auto sm:mx-0">
             {selectedImage || singleUserData?.profileImage ? (
               <div className="relative w-full h-full">
                 <Image
@@ -114,7 +132,7 @@ export default function AdminProfile() {
                   }
                   alt="Profile"
                   fill
-                  className="object-cover rounded-full"
+                  className="object-cover"
                   onError={(e: any) => {
                     e.currentTarget.style.display = "none";
                     e.currentTarget.parentElement.innerHTML = `
@@ -134,93 +152,97 @@ export default function AdminProfile() {
                 {singleUserData?.first_name?.slice(0, 2)?.toUpperCase() || "UN"}
               </div>
             )}
+            <input
+              type="file"
+              ref={fileInputRef}
+              className="hidden"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
           </div>
-          <div>
+          <div className="text-center sm:text-left">
             <h2 className="text-lg font-medium">
-              {singleUserData?.first_name} {singleUserData?.last_name}
+              {singleUserData?.first_name}
             </h2>
-            {isEditing && (
-              <div className="flex gap-2 mt-2">
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  className="hidden"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                />
-                <Button
-                  variant="outline"
-                  className="bg-[#20B894] text-white hover:bg-[#1ca883] cursor-pointer"
+            <div className="flex flex-col sm:flex-row gap-2 mt-2">
+              {isEditing && (
+                <button
                   onClick={handleImageClick}
+                  className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678] flex justify-center items-center gap-x-2 cursor-pointer"
                 >
                   Replace Photo
-                </Button>
-              </div>
-            )}
+                  <BsArrowUpRight />
+                </button>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      </Card>
 
-      <div className="bg-white rounded-xl p-6 mb-6">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-medium">Personal Information</h2>
-          <Button
-            variant="ghost"
-            className="text-[#20B894] hover:text-[#1ca883] p-2 h-auto"
-            onClick={() => (isEditing ? handleSave() : setIsEditing(true))}
+      {/* Edit Button Card */}
+      <Card className="p-4 md:p-6">
+        <div className="flex justify-end">
+          <button
+            onClick={handleEditSave}
+            className={`text-sm border p-3 rounded-full flex items-center gap-x-2 cursor-pointer ${
+              isEditing ? "bg-[#20B894] text-white" : "text-[#20B894]"
+            }`}
           >
-            <Pencil className="h-4 w-4" /> {isEditing ? "Save" : "Edit"}
-          </Button>
+            <LuPencilLine />
+            {isEditing ? "Save" : "Edit"}
+          </button>
         </div>
+      </Card>
 
-        <div className="space-y-4">
+      {/* Personal Information */}
+      <Card className="p-4 md:p-6">
+        <h2 className="text-lg font-medium mb-6">Personal Information</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           <div>
-            <label className="block text-sm mb-2">First name</label>
+            <label className="text-sm text-gray-600">First name</label>
             <Input
-              name="firstName"
               value={formData.firstName}
-              onChange={handleInputChange}
-              className="bg-white"
+              onChange={(e) =>
+                handleInputChange("firstName", "", e.target.value)
+              }
+              className="mt-1"
               disabled={!isEditing}
             />
           </div>
           <div>
-            <label className="block text-sm mb-2">Last name</label>
+            <label className="text-sm text-gray-600">Last name</label>
             <Input
-              name="lastName"
-              value={formData.lastName}
-              onChange={handleInputChange}
-              className="bg-white"
+              value={formData.personalInfo.lastName}
+              onChange={(e) =>
+                handleInputChange("personalInfo", "lastName", e.target.value)
+              }
+              className="mt-1"
               disabled={!isEditing}
             />
           </div>
           <div>
-            <label className="block text-sm mb-2">Email address</label>
+            <label className="text-sm text-gray-600">Email address</label>
             <Input
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              className="bg-white"
-              disabled={!isEditing}
+              value={singleUserData?.email || ""}
+              className="mt-1"
+              disabled={true}
             />
           </div>
           <div>
-            <label className="block text-sm mb-2">Phone number</label>
+            <label className="text-sm text-gray-600">Phone number</label>
             <Input
-              name="phoneNumber"
-              value={formData.phoneNumber}
-              onChange={handleInputChange}
-              className="bg-white"
+              value={formData.personalInfo.phoneNumber}
+              onChange={(e) =>
+                handleInputChange("personalInfo", "phoneNumber", e.target.value)
+              }
+              placeholder="+1234567890"
+              type="text"
+              className="mt-1"
               disabled={!isEditing}
             />
           </div>
         </div>
-      </div>
-
-      <CategoriesModal
-        isOpen={isCategoriesModalOpen}
-        onClose={() => setIsCategoriesModalOpen(false)}
-      />
+      </Card>
     </div>
   );
 }
