@@ -4,31 +4,55 @@ import { useState } from "react";
 import Link from "next/link";
 import CustomImage from "@/components/reusable/CustomImage";
 import forgotPassImage from "@/public/login.png";
-import { MoveUpRight } from "lucide-react";
+import { MoveUpRight, Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useResetPasswordMutation } from "@/src/redux/features/auth/authApi";
 import { toast } from "sonner";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const router = useRouter();
   const [resetPassword, { isLoading }] = useResetPasswordMutation();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log("email reset", email);
+  const validatePassword = () => {
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters long");
+      return false;
+    }
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return false;
+    }
+    return true;
+  };
 
-    resetPassword({ email })
-      .unwrap()
-      .then((response) => {
-        if (response.success) {
-          toast.success("Reset password link has been sent to your email");
-          router.push(`/auth/email-check?email=${encodeURIComponent(email)}`);
-        }
-      })
-      .catch((error) => {
-        toast.error(error?.data?.message || "Something went wrong");
-      });
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!validatePassword()) {
+      return;
+    }
+
+    try {
+      const response = await resetPassword({
+        email,
+        password,
+      }).unwrap();
+
+      if (response.success) {
+        toast.success("Password reset successful! Please verify OTP");
+        router.push(
+          `/auth/reset-password-otp-verify?email=${encodeURIComponent(email)}`
+        );
+      }
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to reset password");
+    }
   };
 
   return (
@@ -55,7 +79,7 @@ export default function ForgotPassword() {
           </div>
 
           <h1 className="text-[32px] font-medium leading-[126%] tracking-[-0.96px] heading_color mb-6">
-            Forgot password?
+            Reset password
           </h1>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-6">
@@ -73,12 +97,71 @@ export default function ForgotPassword() {
               />
             </div>
 
+            <div>
+              <label className="text-sm text-black block mb-2">
+                New Password<span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter new password"
+                  className="w-full px-4 py-2 rounded-[8px] border border-[#20B894] bg-transparent text-black focus:outline-none"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="text-sm text-black block mb-2">
+                Confirm Password<span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="Confirm your password"
+                  className="w-full px-4 py-2 rounded-[8px] border border-[#20B894] bg-transparent text-black focus:outline-none"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff size={20} />
+                  ) : (
+                    <Eye size={20} />
+                  )}
+                </button>
+              </div>
+            </div>
+
             <button
               type="submit"
-              className="w-full primary_color hover:opacity-90 text-white py-2 rounded-full font-medium transition-all flex items-center justify-center gap-2 cursor-pointer"
+              disabled={isLoading}
+              className={`w-full primary_color hover:opacity-90 text-white py-2 rounded-full font-medium transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                isLoading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             >
-              Send email
-              <MoveUpRight className="w-4 h-4" />
+              {isLoading ? (
+                <p>"Processing..."</p>
+              ) : (
+                <>
+                  Send OTP
+                  <MoveUpRight className="w-4 h-4" />
+                </>
+              )}
             </button>
           </form>
         </div>

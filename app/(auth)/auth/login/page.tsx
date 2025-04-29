@@ -99,7 +99,7 @@ export default function LoginPage() {
                 Remember Me
               </label>
               <Link href="/auth/forgot-password">
-                <button type="button" className="hover:underline">
+                <button type="button" className="hover:underline cursor-pointer">
                   Forgot Password
                 </button>
               </Link>

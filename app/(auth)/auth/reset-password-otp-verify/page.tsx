@@ -6,10 +6,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import CustomImage from "@/components/reusable/CustomImage";
 import verifyEmailImage from "@/public/login.png";
 import { MoveUpRight } from "lucide-react";
-import { useVerifyOTPMutation } from "@/src/redux/features/auth/authApi";
+import { useVerifyOTPForResetPasswordMutation } from "@/src/redux/features/auth/authApi";
 import { toast } from "sonner";
 
-export default function EmailCheck() {
+export default function ResetPasswordOTPVerify() {
   const [verificationCode, setVerificationCode] = useState([
     "",
     "",
@@ -20,8 +20,8 @@ export default function EmailCheck() {
   ]);
   const searchParams = useSearchParams();
   const email = searchParams.get("email") || "";
-  const [verifyOTP, { isLoading }] = useVerifyOTPMutation();
   const router = useRouter();
+  const [verifyOTP, { isLoading }] = useVerifyOTPForResetPasswordMutation();
 
   const handleCodeChange = (index: number, value: string) => {
     if (value.length > 1) {
@@ -83,11 +83,10 @@ export default function EmailCheck() {
         email,
         otp: Number(otp),
       }).unwrap();
-      console.log("res", response);
 
       if (response.success) {
-        toast.success(response.message || "Verification successful!");
-        router.push("/auth/set-new-password");
+        toast.success("OTP verification successful!");
+        router.push("/auth/login");
       }
     } catch (error: any) {
       const errorMessage =
@@ -115,7 +114,7 @@ export default function EmailCheck() {
         <div className="w-full md:w-1/2 p-8">
           <div className="mb-8">
             <Link
-              href="/auth/signup"
+              href="/auth/forgot-password"
               className="text-sm text-gray-600 hover:text-gray-800 flex items-center gap-2"
             >
               ← Back
@@ -123,11 +122,11 @@ export default function EmailCheck() {
           </div>
 
           <h1 className="text-[32px] font-medium leading-[126%] tracking-[-0.96px] heading_color mb-6">
-            Check your email
+            Verify OTP
           </h1>
 
           <p className="text-sm text-gray-600 mb-8">
-            We sent a verification link to {email}
+            We sent a verification code to {email}
           </p>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-6">
@@ -153,15 +152,22 @@ export default function EmailCheck() {
 
             <button
               type="submit"
-              className="w-full primary_color text-white py-2 rounded-full font-medium transition-all flex items-center justify-center gap-2 hover:opacity-90"
+              disabled={isLoading}
+              className="w-full primary_color hover:opacity-90 text-white py-2 rounded-full font-medium transition-all flex items-center justify-center gap-2"
             >
-              Verify email
-              <MoveUpRight className="w-4 h-4" />
+              {isLoading ? (
+                "Verifying..."
+              ) : (
+                <>
+                  Verify OTP
+                  <MoveUpRight className="w-4 h-4" />
+                </>
+              )}
             </button>
           </form>
 
           <p className="text-sm text-center mt-4 text-gray-500">
-            Didn't receive the email?{" "}
+            Didn't receive the code?{" "}
             <button className="text-[#20B894] hover:underline">
               Click to resend
             </button>
