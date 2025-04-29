@@ -1,5 +1,6 @@
-import { X, Star } from 'lucide-react';
-import { Review } from '../_types';
+import { X, Star } from "lucide-react";
+import { Review } from "../_types";
+import Image from "next/image";
 
 interface ReviewDetailsModalProps {
   isOpen: boolean;
@@ -7,69 +8,98 @@ interface ReviewDetailsModalProps {
   review: Review | null;
 }
 
-export function ReviewDetailsModal({ isOpen, onClose, review }: ReviewDetailsModalProps) {
+export function ReviewDetailsModal({
+  isOpen,
+  onClose,
+  review,
+}: ReviewDetailsModalProps) {
   if (!isOpen || !review) return null;
 
   return (
-    <div 
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+    <div
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
       onClick={onClose}
     >
-      <div 
-        className="bg-white rounded-xl w-[500px] relative"
-        onClick={e => e.stopPropagation()}
+      <div
+        className="bg-white rounded-xl w-[500px] max-h-[80vh] relative flex flex-col"
+        onClick={(e) => e.stopPropagation()}
       >
-        <button 
+        <button
           onClick={onClose}
-          className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+          className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 z-10"
         >
           <X className="h-5 w-5" />
         </button>
 
-        <div className="flex flex-col items-center pt-8 pb-6">
+        <div className="flex flex-col items-center pt-8 pb-6 border-b">
           <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-100 mb-3">
-            <img 
-              src={review.reviewer.avatar} 
-              alt={review.reviewer.name} 
+            <Image
+              src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${review?.reviewer?.avatar}`}
+              alt={review?.reviewer?.name}
               className="w-full h-full object-cover"
+              height={100}
+              width={100}
             />
           </div>
-          <h2 className="text-xl font-semibold mb-1">{review.reviewer.name}</h2>
-          <p className="text-gray-500 text-sm mb-4">{review.reviewer.email || 'chris_glasser@gmail.com'}</p>
-          
-          <div className="flex items-center gap-1 mb-2">
+          <h2 className="text-xl font-semibold mb-1">{review?.reviewer?.name}</h2>
+          <p className="text-gray-500 text-sm mb-4">
+            {review?.reviewer?.email || "chris_glasser@gmail.com"}
+          </p>
+
+          {/* <div className="flex items-center gap-1 mb-2">
             {[1, 2, 3, 4, 5].map((star) => (
-              <Star 
+              <Star
                 key={star}
                 className={`h-5 w-5 ${
-                  star <= review.rating 
-                    ? 'fill-yellow-400 text-yellow-400' 
-                    : 'fill-gray-200 text-gray-200'
+                  star <= review.rating
+                    ? "fill-yellow-400 text-yellow-400"
+                    : "fill-gray-200 text-gray-200"
                 }`}
               />
             ))}
-          </div>
+          </div> */}
         </div>
 
-        <div className="px-8 pb-8">
-          <h3 className="font-semibold mb-3">Review</h3>
-          <p className="text-gray-600 text-sm leading-relaxed">{review.reviewText}</p>
-          
-          <div className="mt-4 text-gray-400 text-sm">
-            July 2, 2020 03:29 PM
-          </div>
+        <div className="px-8 pb-8 overflow-y-auto">
+          <h3 className="font-semibold mb-3">Report Details</h3>
+          <p className="text-gray-600 text-sm leading-relaxed">
+            {review?.reportDetails}
+          </p>
 
-          <div className="flex items-center justify-between mt-6">
-            <div className="flex items-center gap-2">
-              <button className="flex items-center gap-1 text-blue-600">
-                <span>👍</span>
-                <span>28</span>
-              </button>
-              <button className="flex items-center gap-1 text-gray-500">
-                <span>👎</span>
-                <span>2</span>
-              </button>
+          {review?.personalInfo && (
+            <div className="mt-4 space-y-2">
+              <h4 className="font-medium">Reporter Information:</h4>
+              <p className="text-sm text-gray-600">
+                Display Name: {review?.personalInfo?.display_name}
+              </p>
+              <p className="text-sm text-gray-600">
+                Full Name: {review?.personalInfo?.first_name}{" "}
+                {review?.personalInfo?.last_name}
+              </p>
+              <p className="text-sm text-gray-600">
+                Gender: {review?.personalInfo?.gender}
+              </p>
+              <p className="text-sm text-gray-600">
+                Phone: {review?.personalInfo?.phone_number}
+              </p>
             </div>
+          )}
+
+          {review?.reportDocument && (
+            <div className="mt-4">
+              <h4 className="font-medium mb-2">Supporting Document:</h4>
+              <Image
+                src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${review?.reportDocument}`}
+                alt={review?.reviewer?.name}
+                className="w-full h-full object-cover"
+                height={100}
+                width={100}
+              />
+            </div>
+          )}
+
+          <div className="mt-4 text-gray-400 text-sm">
+            {new Date(review?.createdAt).toLocaleString()}
           </div>
         </div>
       </div>

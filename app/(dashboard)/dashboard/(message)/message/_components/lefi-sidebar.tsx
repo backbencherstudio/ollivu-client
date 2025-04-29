@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import { Connection } from "../_types";
-import ConnectionItem from "./connection-item";
+/** @jsxImportSource react */
+'use client';
+
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { connectionRequests } from "../_data/mock-data";
 import { verifiedUser } from "@/src/utils/token-varify";
 import { authApi } from "@/src/redux/features/auth/authApi";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

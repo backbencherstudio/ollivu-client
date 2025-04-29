@@ -6,10 +6,10 @@ import { Review, ReviewStatus } from '../_types';
 
 interface ReviewTableProps {
   reviews: Review[];
-  onStatusChange: (id: number, status: ReviewStatus) => void;
-  onDelete: (id: number) => void;
-  onApprove: (id: number) => void;
-  onReject: (id: number) => void;
+  onStatusChange: (id: string, status: ReviewStatus) => void;
+  onDelete: (id: string) => void;
+  onApprove: (id: string) => void;
+  onReject: (id: string) => void;
 }
 
 export function ReviewTable({ 
@@ -19,16 +19,17 @@ export function ReviewTable({
   onApprove, 
   onReject 
 }: ReviewTableProps) {
+  // console.log("ReviewTable", reviews);
+  
   return (
     <div className="w-full overflow-auto">
       <table className="w-full">
         <thead>
           <tr className="text-left text-sm text-gray-500 border-b">
-            <th className="pb-4 font-medium">Reviewer</th>
-            <th className="pb-4 font-medium">Service Taken</th>
-            <th className="pb-4 font-medium">Flagged By</th>
+            <th className="pb-4 font-medium">Reporter</th>
+            <th className="pb-4 font-medium">Reported</th>
             <th className="pb-4 font-medium">Review</th>
-            <th className="pb-4 font-medium">Rating</th>
+            {/* <th className="pb-4 font-medium">Rating</th> */}
             <th className="pb-4 font-medium">Status</th>
             <th className="pb-4 font-medium">Action</th>
           </tr>
@@ -36,7 +37,6 @@ export function ReviewTable({
         <tbody>
           {reviews.map((review) => (
             <ReviewRow
-              key={review.id}
               review={review}
               onStatusChange={onStatusChange}
               onDelete={onDelete}

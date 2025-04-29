@@ -7,44 +7,31 @@ import { Message } from "../_types";
 interface MessageItemProps {
   message: Message;
   selectedUserImage: string;
+  currentUserId: string;
 }
 
-export default function MessageItem({ message, selectedUserImage }: MessageItemProps) {
-  const isUser = message.sender === "user";
+export default function MessageItem({ message, selectedUserImage, currentUserId }: MessageItemProps) {
+  const isOwnMessage = message.sender === currentUserId;
 
   return (
-    <div className={`flex items-start mb-4 ${isUser ? 'justify-end' : ''}`}>
-      {!isUser && (
-        <div className="h-8 w-8 mr-2 overflow-hidden rounded-full">
+    <div className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'} mb-4`}>
+      {!isOwnMessage && (
+        <Avatar className="h-8 w-8 mr-2">
           <Image 
             src={selectedUserImage} 
-            alt={message.sender} 
-            width={100}
-            height={100}
-            className="rounded-full object-cover" 
+            alt="User" 
+            className="rounded-full"
+            width={32}
+            height={32}
           />
-        </div>
+        </Avatar>
       )}
-      <div
-        className={`max-w-xs mx-2 ${
-          isUser
-            ? "bg-emerald-500 text-white rounded-tl-lg rounded-tr-lg rounded-bl-lg"
-            : "bg-gray-100 text-gray-800 rounded-tl-lg rounded-tr-lg rounded-br-lg"
-        } px-4 py-2 text-sm`}
-      >
-        {message.text}
+      <div className={`max-w-[70%] ${isOwnMessage ? 'bg-emerald-500 text-white' : 'bg-gray-100'} rounded-lg px-4 py-2`}>
+        <p>{message.content}</p>
+        <span className="text-xs text-gray-500 mt-1 block">
+          {new Date(message.createdAt).toLocaleTimeString()}
+        </span>
       </div>
-      {isUser && (
-        <div className="h-8 w-8 ml-2 overflow-hidden rounded-full">
-          <Image 
-            src={profile} 
-            alt="You" 
-            width={100}
-            height={100}
-            className="rounded-full object-cover" 
-          />
-        </div>
-      )}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { Star } from "lucide-react";
 import profileImg from "@/public/avatars/john.png";
@@ -20,19 +20,28 @@ interface ProfileHeaderProps {
 export default function ProfileHeader({
   formattedInstructor,
 }: ProfileHeaderProps) {
-  // console.log("formattedInstructor", formattedInstructor);
+  const [imageError, setImageError] = useState(false);
+
+  const firstLetter = formattedInstructor?.first_name?.charAt(0)?.toUpperCase() || 'U';
 
   return (
     <div>
       <div className="flex flex-col gap-4 border p-6 rounded-xl">
         <div className="flex items-center gap-4">
-          <div className="w-[140px] h-[140px] rounded-full relative overflow-hidden">
-            <Image
-              src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${formattedInstructor?.profileImage}`}
-              alt={formattedInstructor?.first_name}
-              fill
-              className="object-cover"
-            />
+          <div className="w-[140px] h-[140px] rounded-full relative overflow-hidden bg-gray-100 flex items-center justify-center">
+            {!imageError && formattedInstructor?.profileImage ? (
+              <Image
+                src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${formattedInstructor.profileImage}`}
+                alt={formattedInstructor?.first_name || "User"}
+                fill
+                className="object-cover"
+                onError={() => setImageError(true)}
+              />
+            ) : (
+              <span className="text-5xl font-medium text-gray-400">
+                {firstLetter}
+              </span>
+            )}
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-2">

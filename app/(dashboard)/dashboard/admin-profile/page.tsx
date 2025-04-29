@@ -106,7 +106,7 @@ export default function AdminProfile() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2">
+      <div className="">
         {/* Personal Information Section */}
         <div className="bg-white rounded-xl p-6 mb-6">
           <div className="flex justify-between items-center mb-6">
@@ -165,7 +165,7 @@ export default function AdminProfile() {
         </div>
 
         {/* Service Categories Section */}
-        <div className="bg-white rounded-xl p-6">
+        {/* <div className="bg-white rounded-xl p-6">
           <div className="">
             <div className="mb-4">
               <h2 className="text-lg font-medium">Add Service Categories</h2>
@@ -181,7 +181,7 @@ export default function AdminProfile() {
               Add categories
             </Button>
           </div>
-        </div>
+        </div> */}
 
         <CategoriesModal
           isOpen={isCategoriesModalOpen}

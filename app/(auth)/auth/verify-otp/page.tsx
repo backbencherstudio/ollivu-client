@@ -136,7 +136,7 @@ export default function VerifyOTP() {
             <button
               type="submit"
               disabled={isLoading}
-              className={`w-full primary_color text-white py-2 rounded-full font-medium transition-all flex items-center justify-center gap-2 ${
+              className={`w-full primary_color text-white py-2 rounded-full font-medium transition-all flex items-center justify-center gap-2 cursor-pointer ${
                 isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:opacity-90'
               }`}
             >

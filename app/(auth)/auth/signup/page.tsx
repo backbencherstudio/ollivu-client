@@ -226,7 +226,7 @@ export default function SignupPage() {
           {/* Already have account */}
           <p className="mt-6 text-center text-sm text-gray-400">
             Already have an account?{" "}
-            <a href="/login" className="text-[#20B894] hover:underline">
+            <a href="/auth/login" className="text-[#20B894] hover:underline">
               Log in
             </a>
           </p>

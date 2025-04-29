@@ -89,10 +89,18 @@ export default function Certificate() {
                 alt="Certificate"
                 fill
                 className="object-cover"
+                onError={(e: any) => {
+                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.parentElement.innerHTML = `
+                    <div class="w-full h-full bg-[#20B894] flex items-center justify-center text-white text-lg font-medium">
+                      Certificate
+                    </div>
+                  `;
+                }}
               />
               <button
                 onClick={() => setShowDeleteAlert(true)}
-                className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 cursor-pointer"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -112,12 +120,12 @@ export default function Certificate() {
 
       {/* Certificate Modal */}
       <Dialog open={showCertificateModal} onOpenChange={setShowCertificateModal}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[825px]">
           <DialogHeader>
-            <DialogTitle className="text-xl font-semibold">Add Certificate</DialogTitle>
+            <DialogTitle className="text-xl font-semibold ">Add Certificate</DialogTitle>
             <button 
               onClick={() => setShowCertificateModal(false)}
-              className="absolute right-4 top-4 text-gray-400 hover:text-gray-500"
+              className="absolute right-4 top-4 text-gray-400 hover:text-gray-500 cursor-pointer"
             >
               <X className="h-4 w-4" />
             </button>
@@ -166,7 +174,7 @@ export default function Certificate() {
               <button 
                 onClick={handleUpload}
                 disabled={!selectedFile}
-                className={`px-4 py-2 text-white rounded-md w-24 ${
+                className={`px-4 py-2 text-white rounded-md w-24 cursor-pointer ${
                   selectedFile 
                     ? 'bg-[#20B894] hover:bg-[#1a9678]' 
                     : 'bg-gray-400 cursor-not-allowed'

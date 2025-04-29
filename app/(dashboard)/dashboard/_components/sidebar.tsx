@@ -15,6 +15,7 @@ import {
   MessageCircleMore,
   User,
   SquareKanban,
+  CirclePlus,
 } from "lucide-react";
 import { FaStar } from "react-icons/fa6";
 import logo from "@/public/logo/logo.png";
@@ -59,11 +60,11 @@ export default function Sidebar({ user }) {
     },
     {
       icon: FaStar,
-      label: "Manage Review",
+      label: "Manage Report",
       href: "/dashboard/manage-review",
     },
     {
-      icon: FaStar,
+      icon: CirclePlus,
       label: "Add Category",
       href: "/dashboard/add-category",
     },

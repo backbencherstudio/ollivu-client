@@ -7,6 +7,9 @@ import { MessageInput } from "./_components/MessageInput";
 import { verifiedUser } from "@/src/utils/token-varify";
 import { authApi } from "@/src/redux/features/auth/authApi";
 import { MessageContent } from "./_components/MessageContent";
+import ConfirmServiceModal from "./_components/confirm-service-modal";
+import { toast } from "sonner";
+import { useAcceptExchangeMutation } from "@/src/redux/features/shared/exchangeApi";
 const socket = io("http://localhost:5000");
 
 const Messages = () => {
@@ -35,6 +38,11 @@ const Messages = () => {
   };
 
   const { data: userList } = authApi.useGetAllExchangeDataQuery(finalQuery);
+  const [acceptExchange] = useAcceptExchangeMutation();
+  const users = userList?.data;
+
+  // console.log("currentChat", currentChat);
+
   const [unreadMessages, setUnreadMessages] = useState(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("unreadMessages");
@@ -52,6 +60,8 @@ const Messages = () => {
   });
 
   const [onlineUsers, setOnlineUsers] = useState({});
+
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
   useEffect(() => {
     // Fetch user data on the client side
@@ -275,6 +285,18 @@ const Messages = () => {
       socket.off("message_deleted");
     };
   }, []);
+
+  const modalHandler = async (currentChat) => {
+    if (currentChat?.senderUserId?.email === currentUser?.email) {
+      const result = await acceptExchange({
+        userId: currentUser?.userId,
+        exchangeId: currentChat?._id,
+      });
+      return console.log(result); // show confirmation alart
+    }
+    setIsConfirmModalOpen(true);
+  };
+
   return (
     <div className="">
       {/* Main Content */}
@@ -384,11 +406,38 @@ const Messages = () => {
                   {getOtherUserEmail(currentChat)}
                 </p>
               </div>
-              <div className="mt-6 overflow-hidden">
-                <button className="bg-[#20b894] text-white px-4 py-2 rounded-full w-full text-nowrap overflow-hidden">
+              <div className="flex flex-col gap-2 mt-6">
+                {/* <button
+                  className="bg-[#20b894] text-white px-4 py-2 rounded-full w-full cursor-pointer"
+                  onClick={() => {
+                    const currentExchange = users?.find(
+                      (user) =>
+                        user.reciverUserId?.email ===
+                          getOtherUserEmail(currentChat) ||
+                        user.senderUserId?.email ===
+                          getOtherUserEmail(currentChat)
+                    );
+
+                    if (
+                      currentExchange?.senderUserId?._id === currentUser?.userId
+                    ) {
+                      toast.error("You cannot exchange service with yourself!");
+                      return;
+                    }
+                    setIsConfirmModalOpen(true);
+                  }}
+                >
+                  Confirm Exchange Service
+                </button> */}
+
+                <button
+                  className="bg-[#20b894] text-white px-3 py-2 rounded-full flex-1 cursor-pointer text-sm whitespace-nowrap hover:bg-[#1a9677] transition-colors"
+                  onClick={() => modalHandler(currentChat)}
+                >
                   Confirm Exchange Service
                 </button>
-                <button className="border border-[#b19c87] text-[#b19c87] px-4 py-2 rounded-full mt-2 w-full text-nowrap overflow-hidden">
+
+                <button className="border border-[#b19c87] text-[#b19c87] px-3 py-2 rounded-full flex-1 text-sm whitespace-nowrap hover:bg-[#b19c87] hover:text-white transition-colors">
                   Give Review
                 </button>
               </div>
@@ -419,7 +468,7 @@ const Messages = () => {
 
       {/* Mobile Sidebar */}
       <div
-        className={`lg:hidden fixed inset-y-0 left-0 w-3/4 bg-white z-50 transform transition-transform duration-300 ease-in-out ${
+        className={`md:hidden fixed inset-y-0 left-0 w-3/4 bg-white z-50 transform transition-transform duration-300 ease-in-out ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -518,6 +567,16 @@ const Messages = () => {
           </div>
         )}
       </div>
+      {currentChat && (
+        <ConfirmServiceModal
+          isOpen={isConfirmModalOpen}
+          onClose={() => setIsConfirmModalOpen(false)}
+          id={currentChat?._id}
+          myServices={currentChat?.my_service || []}
+          senderService={currentChat?.senderService || "No service selected"}
+          acceptedService={currentChat?.service || "No service selected"}
+        />
+      )}
     </div>
   );
 };

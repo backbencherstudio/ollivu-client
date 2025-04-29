@@ -30,12 +30,12 @@ export function ReviewActionModal({ isOpen, onClose, review }: ReviewActionModal
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="text-gray-600">Reviewed By:</div>
-              <div className="font-medium">{review.reviewer.name}</div>
+              <div className="font-medium">{review?.reviewer?.name}</div>
             </div>
             
             <div className="flex items-center justify-between">
               <div className="text-gray-600">Flagged By:</div>
-              <div className="font-medium">{review.flaggedBy.name}</div>
+              <div className="font-medium">{review?.flaggedBy?.name}</div>
             </div>
 
             <div className="flex items-center justify-between">
@@ -47,7 +47,7 @@ export function ReviewActionModal({ isOpen, onClose, review }: ReviewActionModal
 
         <div className="bg-gray-50 p-6 rounded-b-lg">
           <h3 className="font-semibold mb-3">Review</h3>
-          <div className="flex items-center gap-1 mb-3">
+          {/* <div className="flex items-center gap-1 mb-3">
             {[1, 2, 3, 4, 5].map((star) => (
               <Star 
                 key={star}
@@ -58,8 +58,8 @@ export function ReviewActionModal({ isOpen, onClose, review }: ReviewActionModal
                 }`}
               />
             ))}
-          </div>
-          <p className="text-gray-600 text-sm leading-relaxed">{review.reviewText}</p>
+          </div> */}
+          <p className="text-gray-600 text-sm leading-relaxed">{review?.reviewText}</p>
           <div className="text-gray-400 text-sm mt-4">
             July 2, 2024 03:29 PM
           </div>

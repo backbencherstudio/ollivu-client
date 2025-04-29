@@ -1,6 +1,7 @@
 "use client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { authApi } from "@/src/redux/features/auth/authApi";
+import { useExchangeChatRequestMutation } from "@/src/redux/features/shared/exchangeApi";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -12,6 +13,9 @@ export const MessageList = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRole, setSelectedRole] = useState("all");
+
+  const [exchangeChatRequest, {isLoading : exchangeChatIsLoading}] = useExchangeChatRequestMutation()
+
   console.log("currentUser", currentUser);
   const [finalQuery, setFinalQuery] = useState({
     userId: userId,
@@ -56,6 +60,27 @@ export const MessageList = ({
   if (error) {
     return <div className="p-4 text-center text-red-500">{error}</div>;
   }
+
+
+  const requestHandler = async (isAccepted, exchangeId)=>{
+
+    const data = {
+      exchangeId,
+      isAccepted,
+      reciverUserId : userId
+    }
+
+    console.log(data);
+    
+
+    const result  = await exchangeChatRequest(data)
+
+    console.log("result", result);
+    
+    
+  }
+
+
 
   return (
     <div className="h-[600px]">
@@ -136,7 +161,7 @@ export const MessageList = ({
                           : user?.senderUserId?.first_name || "UN"}{" "}
                         <span className="text-[#1677ff] text-xs font-thin">{`(${
                           user?.email === currentUser
-                            ? user?.reciverUserId.role
+                            ? user?.reciverUserId?.role
                             : user?.senderUserId?.role
                         })`}</span>
                       </h3>
@@ -202,7 +227,7 @@ export const MessageList = ({
         <TabsContent value="requests">
           <div className="flex flex-col">
             {requestList?.data?.map((request) => (
-              <div key={request.id} className="p-4 border-b border-gray-100">
+              <div key={request._id} className="p-4 border-b border-gray-100">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full relative overflow-hidden">
                     <div className="w-full h-full bg-[#20B894] flex items-center justify-center text-white font-semibold">
@@ -226,10 +251,10 @@ export const MessageList = ({
                   </div>
                 </div>
                 <div className="flex gap-2 mt-2">
-                  <button className="flex-1 py-1 px-3 text-sm font-medium text-white bg-emerald-500 rounded-md hover:bg-emerald-600">
+                  <button onClick={()=>{requestHandler("true", request._id)}} className="flex-1 py-1 px-3 text-sm font-medium text-white bg-emerald-500 rounded-md hover:bg-emerald-600">
                     Accept
                   </button>
-                  <button className="flex-1 py-1 px-3 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200">
+                  <button onClick={()=>{requestHandler("false", request._id)}} className="flex-1 py-1 px-3 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200">
                     Decline
                   </button>
                 </div>
