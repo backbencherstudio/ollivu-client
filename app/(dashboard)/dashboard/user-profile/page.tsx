@@ -46,7 +46,7 @@ export default function UserProfile() {
   const [updateUser] = useUpdateUserMutation();
   const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
   const singleUserData = singleUser?.data;
-  // console.log("singleUser", singleUserData);
+  console.log("singleUser", singleUserData);
 
   // Add these after other state declarations
   const [formData, setFormData] = useState({
@@ -182,22 +182,16 @@ export default function UserProfile() {
 
         // Add about me
         formDataToSend.append("about_me", formData.aboutMe);
-        // Add this after formDataToSend.append("about_me", formData.aboutMe);
-        // Log FormData contents
         for (const pair of formDataToSend.entries()) {
           // console.log(pair[0], pair[1]);
         }
 
-        // Or alternatively, convert to an object and log
         const formDataObject = Object.fromEntries(formDataToSend.entries());
-        // console.log("formDataObject:", formDataObject);
 
         const response = await updateUser(formDataToSend).unwrap();
-        // console.log("response", response);
 
         if (response.success) {
           toast.success("Profile updated successfully");
-          // Clean up preview URL
           if (previewUrl) {
             URL.revokeObjectURL(previewUrl);
           }
@@ -223,24 +217,17 @@ export default function UserProfile() {
     fileInputRef.current?.click();
   };
 
-  // Add this new handler
-  // Remove the profileImage state since we don't need it
-  // const [profileImage, setProfileImage] = useState(profile);
-
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       setSelectedImage(file);
-      // Create preview URL
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
     }
   };
 
-  // Add cleanup effect
   useEffect(() => {
     return () => {
-      // Cleanup preview URL when component unmounts
       if (previewUrl) {
         URL.revokeObjectURL(previewUrl);
       }
@@ -377,19 +364,6 @@ export default function UserProfile() {
               disabled={!isEditing}
             />
           </div>
-
-          {/* <div>
-            <label className="text-sm text-gray-600">Email address</label>
-            <Input
-              value={formData.personalInfo.email}
-              onChange={(e) =>
-                handleInputChange("personalInfo", "email", e.target.value)
-              }
-              placeholder="your@email.com"
-              className="mt-1"
-              disabled={!isEditing}
-            />
-          </div> */}
 
           <div>
             <label className="text-sm text-gray-600">Date of birth</label>
