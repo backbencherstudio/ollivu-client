@@ -7,14 +7,12 @@ import { serviceCategories } from "@/data/services";
 import { CategorySidebar } from "./category-sidebar";
 import { ServiceCard } from "./service-card";
 import { Pagination } from "@/components/reusable/pagination";
-import { useGetAllUsersQuery } from "@/src/redux/features/users/userApi";
+import { useGetAllUsersByServiceQuery, useGetAllUsersQuery } from "@/src/redux/features/users/userApi";
 import serviceImg from "@/public/client/services/service-01.png";
 import avaterImg from "@/public/avatars/emily.png";
 import { ChevronDown, X } from "lucide-react";
 
 const ITEMS_PER_PAGE = 6;
-const DEFAULT_SERVICE_IMAGE = serviceImg;
-const DEFAULT_AVATAR_IMAGE = avaterImg;
 
 interface CategoryItem {
   id: number;
@@ -45,9 +43,6 @@ interface Category {
 export default function ServiceResultContent() {
   const searchParams = useSearchParams();
   const { data: users, isLoading } = useGetAllUsersQuery({});
-  const allUsers = users?.data || [];
-  console.log("all user", allUsers);
-
   const [services, setServices] = useState<Service[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(
     searchParams.get("category")
@@ -57,46 +52,50 @@ export default function ServiceResultContent() {
   );
   const [currentPage, setCurrentPage] = useState(1);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+
+  // Move the query hook up with other hooks
+  const { data: serviceFilteredUsers, isLoading: isFilterLoading } = useGetAllUsersByServiceQuery(
+    selectedCategory || '',
+    { skip: !selectedCategory }
+  );
+
+  const allUsers = users?.data || [];
+  // console.log("all user", allUsers);
 
   const allServices = React.useMemo(() => {
-    if (typeof window === "undefined" || !allUsers.length) return [];
+    if (typeof window === "undefined" || !allUsers?.length) return [];
 
     return allUsers.flatMap((user: any) =>
-      (user.my_service || []).map((service: string) => {
-        const matchingCategory = serviceCategories.find((cat: Category) =>
-          cat.items.some(
+      (user?.my_service || []).map((service: string) => {
+        const matchingCategory = serviceCategories?.find((cat: Category) =>
+          cat?.items?.some(
             (item: CategoryItem) =>
-              item.title.toLowerCase() === String(service).toLowerCase()
+              item?.title?.toLowerCase() === String(service)?.toLowerCase()
           )
         );
 
-        // Ensure proper URL construction for images
-        const portfolioUrl = user.portfolio
-          ? `${process.env.NEXT_PUBLIC_IMAGE_URL}/${user.portfolio.replace(
-              /^\//,
-              ""
-            )}`
-          : DEFAULT_SERVICE_IMAGE.src;
+        // Clean and format image URLs
+        const portfolioUrl = user?.portfolio
+          ? `${process.env.NEXT_PUBLIC_IMAGE_URL}${user?.portfolio}`
+          : null;
 
-        const profileImageUrl = user.profileImage
-          ? `${process.env.NEXT_PUBLIC_IMAGE_URL}/${user.profileImage.replace(
-              /^\//,
-              ""
-            )}`
-          : DEFAULT_AVATAR_IMAGE.src;
+        const profileImageUrl = user?.profileImage
+          ? `${process.env.NEXT_PUBLIC_IMAGE_URL}${user?.profileImage}`
+          : null;
 
         return {
-          id: `${user._id}-${service}`,
+          id: `${user?._id}-${service}`,
           title: service,
           instructor: {
-            id: user._id,
-            name: user.first_name,
-            email: user.email,
+            id: user?._id,
+            name: user?.first_name,
+            email: user?.email,
             experience: "2+ years",
             image: profileImageUrl,
           },
-          rating: user.rating || 0,
-          reviewCount: user.review || 0,
+          rating: user?.rating || 0,
+          reviewCount: user?.review || 0,
           image: portfolioUrl,
           category: matchingCategory?.title || "Other",
         };
@@ -137,6 +136,7 @@ export default function ServiceResultContent() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  // Move the loading check after all hooks
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -179,14 +179,9 @@ export default function ServiceResultContent() {
           <CategorySidebar
             selectedCategory={selectedCategory}
             selectedItem={selectedItem}
-            onCategorySelect={(category) => {
-              setSelectedCategory(category);
-              setIsSidebarOpen(false);
-            }}
-            onItemSelect={(item) => {
-              setSelectedItem(item);
-              setIsSidebarOpen(false);
-            }}
+            onCategorySelect={setSelectedCategory}
+            onItemSelect={setSelectedItem}
+            onServiceFilter={setFilteredUsers}
           />
         </div>
 

@@ -409,7 +409,7 @@ const Messages = () => {
                   {getOtherUserEmail(currentChat)}
                 </p>
               </div>
-              <div className="mt-6">
+              <div className="flex flex-col gap-2 mt-6">
 
                 {/* <button
                   className="bg-[#20b894] text-white px-4 py-2 rounded-full w-full cursor-pointer"
@@ -435,13 +435,13 @@ const Messages = () => {
                 </button> */}
 
                 <button
-                  className="bg-[#20b894] text-white px-4 py-2 rounded-full w-full cursor-pointer"
+                  className="bg-[#20b894] text-white px-3 py-2 rounded-full flex-1 cursor-pointer text-sm whitespace-nowrap hover:bg-[#1a9677] transition-colors"
                   onClick={()=>modalHandler(currentChat)}
                 >
                   Confirm Exchange Service
                 </button>
 
-                <button className="border border-[#b19c87] text-[#b19c87] px-4 py-2 rounded-full mt-2 w-full">
+                <button className="border border-[#b19c87] text-[#b19c87] px-3 py-2 rounded-full flex-1 text-sm whitespace-nowrap hover:bg-[#b19c87] hover:text-white transition-colors">
                   Give Review
                 </button>
               </div>

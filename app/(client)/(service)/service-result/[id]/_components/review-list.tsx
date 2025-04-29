@@ -155,23 +155,41 @@ const ReviewList = ({ review }: ReviewListProps) => {
             {review.review}
           </p>
           <span className="text-base text-[#A5A5AB]">
-            {new Date(review.createdAt).toLocaleString()}
+            {new Date(review.createdAt).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            })}
           </span>
         </div>
 
         {/* Reviewer Info */}
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-gray-200 relative overflow-hidden">
-            <Image
-              src={
-                review?.reviewerId?.profileImage
-                  ? `${process.env.NEXT_PUBLIC_IMAGE_URL}${review.reviewerId.profileImage}`
-                  : "/default-avatar.jpg"
-              }
-              alt={review.reviewerId?.personalInfo?.display_name || "User"}
-              fill
-              className="object-cover"
-            />
+          <div className="w-8 h-8 rounded-full bg-gray-200 relative overflow-hidden flex items-center justify-center">
+            {review?.reviewerId?.profileImage ? (
+              <Image
+                src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${review.reviewerId.profileImage}`}
+                alt={review.reviewerId?.personalInfo?.display_name || "User"}
+                fill
+                className="object-cover"
+                onError={(e: any) => {
+                  const parent = e.currentTarget.parentElement;
+                  if (parent) {
+                    parent.innerHTML = `
+                      <span class="text-lg font-medium text-gray-500">
+                        ${review.reviewerId?.first_name?.charAt(0)?.toUpperCase() || 'U'}
+                      </span>
+                    `;
+                  }
+                }}
+              />
+            ) : (
+              <span className="text-lg font-medium text-gray-500">
+                {review.reviewerId?.first_name?.charAt(0)?.toUpperCase() || 'U'}
+              </span>
+            )}
           </div>
           <div className="flex flex-col">
             <span className="text-lg font-semibold text-[#1D1F2C]">

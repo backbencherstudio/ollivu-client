@@ -253,13 +253,33 @@ const ServiceDetails = () => {
               <h2 className="text-xl font-semibold text-[#070707] mb-4">
                 Portfolio
               </h2>
-              <div className="relative h-[410px] rounded-xl overflow-hidden">
-                <Image
-                  src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${formattedInstructor?.portfolioImage}`}
-                  alt="Portfolio"
-                  fill
-                  className="object-cover"
-                />
+              <div className="relative h-[410px] rounded-xl overflow-hidden bg-gray-100">
+                {formattedInstructor?.portfolioImage && formattedInstructor.portfolioImage !== "/default-portfolio.jpg" ? (
+                  <Image
+                    src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${formattedInstructor.portfolioImage}`}
+                    alt="Portfolio"
+                    fill
+                    className="object-cover"
+                    onError={(e: any) => {
+                      const parent = e.currentTarget.parentElement;
+                      if (parent) {
+                        parent.innerHTML = `
+                          <div class="w-full h-full flex items-center justify-center">
+                            <span class="text-4xl font-medium text-gray-400">
+                              Portfolio
+                            </span>
+                          </div>
+                        `;
+                      }
+                    }}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <span className="text-4xl font-medium text-gray-400">
+                      Portfolio
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -336,13 +356,33 @@ const ServiceDetails = () => {
         <div className="w-[30%]">
           <div className="bg-white rounded-xl shadow-sm p-6">
             <div className="flex flex-col items-center text-center">
-              <div className="w-20 h-20 rounded-full relative overflow-hidden mb-3">
-                <Image
-                  src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${formattedInstructor?.profileImage}`}
-                  alt={instructor.first_name}
-                  fill
-                  className="object-cover"
-                />
+              <div className="w-20 h-20 rounded-full relative overflow-hidden mb-3 bg-gray-100">
+                {formattedInstructor?.profileImage && formattedInstructor.profileImage !== "/default-avatar.jpg" ? (
+                  <Image
+                    src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${formattedInstructor.profileImage}`}
+                    alt={formattedInstructor.first_name || "User"}
+                    fill
+                    className="object-cover"
+                    onError={(e: any) => {
+                      const parent = e.currentTarget.parentElement;
+                      if (parent) {
+                        parent.innerHTML = `
+                          <div class="w-full h-full flex items-center justify-center">
+                            <span class="text-2xl font-medium text-gray-400">
+                              ${formattedInstructor?.first_name?.charAt(0)?.toUpperCase() || 'U'}
+                            </span>
+                          </div>
+                        `;
+                      }
+                    }}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <span className="text-2xl font-medium text-gray-400">
+                      {formattedInstructor?.first_name?.charAt(0)?.toUpperCase() || 'U'}
+                    </span>
+                  </div>
+                )}
               </div>
               <h3 className="font-medium text-[#070707]">
                 {formattedInstructor.first_name}

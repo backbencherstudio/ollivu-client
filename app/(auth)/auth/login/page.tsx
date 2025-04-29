@@ -89,17 +89,17 @@ export default function LoginPage() {
 
             {/* Remember Me & Forgot Password */}
             <div className="flex justify-between items-center text-sm text-gray-300">
-              <label className="flex items-center gap-2">
+              <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
-                  className="accent-[#20B894]"
+                  className="accent-[#20B894] cursor-pointer"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
                 />
                 Remember Me
               </label>
               <Link href="/auth/forgot-password">
-                <button type="button" className="hover:underline">
+                <button type="button" className="hover:underline cursor-pointer">
                   Forgot Password
                 </button>
               </Link>

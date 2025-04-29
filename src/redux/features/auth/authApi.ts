@@ -39,6 +39,32 @@ export const authApi = baseApi.injectEndpoints({
       invalidatesTags: ["User"],
     }),
 
+    verifyOTPForResetPassword: builder.mutation({
+      query: (data) => ({
+        url: "/auth/sendOtpForResetPassword",
+        method: "PATCH",
+        body: {
+          email: data.email,
+          otp: Number(data.otp),
+        },
+        credentials: "include",
+      }),
+      invalidatesTags: ["User"],
+    }),
+
+    resetPassword: builder.mutation({
+      query: (data) => ({
+        url: "/auth/resetPassword",
+        method: "POST",
+        body: {
+          email: data.email,
+          password: data.password,
+        },
+        credentials: "include",
+      }),
+      invalidatesTags: ["User"],
+    }),
+
     getAllExchangeData: builder.query({
       query: (query) => {
         // console.log(46, query);
@@ -52,12 +78,10 @@ export const authApi = baseApi.injectEndpoints({
       providesTags: ["User"],
     }),
 
-
-
     getMessages: builder.query({
       query: ({ senderId, receiverId }) => ({
         url: `/messages?senderId=${senderId}&receiverId=${receiverId}`,
-        method: 'GET',
+        method: "GET",
       }),
     }),
   }),
@@ -66,6 +90,8 @@ export const authApi = baseApi.injectEndpoints({
 export const {
   useCreateUserMutation,
   useVerifyOTPMutation,
+  useVerifyOTPForResetPasswordMutation,
   useLoginUserMutation,
+  useResetPasswordMutation,
   useGetAllExchangeDataQuery,
 } = authApi;
