@@ -10,6 +10,22 @@ export const usersApi = baseApi.injectEndpoints({
       providesTags: ["User"],
     }),
 
+    getAllUsersByService: builder.query({
+      query: ({ service, country, rating, searchTerm }) => {
+        const params = new URLSearchParams();
+        if (searchTerm) params.append('searchTerm', searchTerm);
+        if (service) params.append('my_service', service);
+        if (country) params.append('country', country);
+        if (rating) params.append('rating', rating.toString());
+        
+        return {
+          url: `/auth/allUsers?${params.toString()}`,
+          method: 'GET',
+        };
+      },
+      providesTags: ['User'],
+    }),
+
     getSingleUser: builder.query({
       query: (id: string) => ({
         url: `/auth/${id}`,
@@ -88,13 +104,22 @@ export const usersApi = baseApi.injectEndpoints({
         method: "DELETE",
       }),
       invalidatesTags: ["User"],
-    })
+    }),
+
+    searchUsers: builder.query({
+      query: (searchTerm) => ({
+        url: `/auth/allUsers?searchTerm=${searchTerm}`,
+        method: 'GET',
+      }),
+      providesTags: ['User'],
+    }),
 
   }),
 });
 
 export const {
   useGetAllUsersQuery,
+  useGetAllUsersByServiceQuery,
   useGetSingleUserQuery,
   useGetCurrentUserQuery,
   useUpdateUserMutation,
@@ -103,5 +128,6 @@ export const {
   useUploadPortfolioMutation,
   useDeletePortfolioMutation,
   useUploadCertificateMutation,
-  useDeleteCertificateMutation
+  useDeleteCertificateMutation,
+  useSearchUsersQuery,
 } = usersApi;

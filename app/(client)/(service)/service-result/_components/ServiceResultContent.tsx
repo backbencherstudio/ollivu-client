@@ -7,7 +7,7 @@ import { serviceCategories } from "@/data/services";
 import { CategorySidebar } from "./category-sidebar";
 import { ServiceCard } from "./service-card";
 import { Pagination } from "@/components/reusable/pagination";
-import { useGetAllUsersQuery } from "@/src/redux/features/users/userApi";
+import { useGetAllUsersByServiceQuery, useGetAllUsersQuery } from "@/src/redux/features/users/userApi";
 import serviceImg from "@/public/client/services/service-01.png";
 import avaterImg from "@/public/avatars/emily.png";
 import { ChevronDown, X } from "lucide-react";
@@ -43,9 +43,6 @@ interface Category {
 export default function ServiceResultContent() {
   const searchParams = useSearchParams();
   const { data: users, isLoading } = useGetAllUsersQuery({});
-  const allUsers = users?.data || [];
-  console.log("all user", allUsers);
-
   const [services, setServices] = useState<Service[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(
     searchParams.get("category")
@@ -55,6 +52,16 @@ export default function ServiceResultContent() {
   );
   const [currentPage, setCurrentPage] = useState(1);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+
+  // Move the query hook up with other hooks
+  const { data: serviceFilteredUsers, isLoading: isFilterLoading } = useGetAllUsersByServiceQuery(
+    selectedCategory || '',
+    { skip: !selectedCategory }
+  );
+
+  const allUsers = users?.data || [];
+  // console.log("all user", allUsers);
 
   const allServices = React.useMemo(() => {
     if (typeof window === "undefined" || !allUsers?.length) return [];
@@ -129,6 +136,7 @@ export default function ServiceResultContent() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  // Move the loading check after all hooks
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -171,14 +179,9 @@ export default function ServiceResultContent() {
           <CategorySidebar
             selectedCategory={selectedCategory}
             selectedItem={selectedItem}
-            onCategorySelect={(category) => {
-              setSelectedCategory(category);
-              setIsSidebarOpen(false);
-            }}
-            onItemSelect={(item) => {
-              setSelectedItem(item);
-              setIsSidebarOpen(false);
-            }}
+            onCategorySelect={setSelectedCategory}
+            onItemSelect={setSelectedItem}
+            onServiceFilter={setFilteredUsers}
           />
         </div>
 

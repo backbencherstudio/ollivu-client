@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { StatusDropdown } from "./StatusDropdown";
 import { ViewDetailsModal } from "./ViewDetailsModal";
 import { useState } from "react";
+import Image from "next/image";
 
 // interface Conversation {
 //   id: string;
@@ -57,7 +58,7 @@ export function ConversationTable({
                     <th className="py-3 px-4 font-medium">#</th>
                     <th className="px-4 font-medium">Send Report User</th>
                     <th className="px-4 font-medium">Receive Report User</th>
-                    <th className="px-4 font-medium">Email</th>
+                    {/* <th className="px-4 font-medium">Email</th> */}
                     <th className="px-4 font-medium">Reason</th>
                     <th className="px-4 font-medium">Report Date</th>
                     <th className="px-4 font-medium">Action</th>
@@ -80,9 +81,53 @@ export function ConversationTable({
                   <td className="py-4 px-4">{index + 1}</td>
                   {isReportedView ? (
                     <>
-                      <td className="px-4">{item.reporterId.first_name}</td>
-                      <td className="px-4">{item.reportedId.first_name}</td>
-                      <td className="px-4">{item.email}</td>
+                      <td className="px-4">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-full bg-gray-100 relative overflow-hidden">
+                            {item?.reporterId?.profileImage ? (
+                              <Image
+                                src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${item?.reporterId?.profileImage}`}
+                                alt={item?.reporterId?.first_name || "User"}
+                                fill
+                                className="object-cover"
+                                onError={(e: any) => {
+                                  e.currentTarget.style.display = 'none';
+                                  e.currentTarget.parentElement.innerHTML = `<span class="flex h-full items-center justify-center text-lg font-medium text-gray-500">${item?.reporterId?.first_name?.charAt(0) || 'U'}</span>`;
+                                }}
+                              />
+                            ) : (
+                              <span className="flex h-full items-center justify-center text-lg font-medium text-gray-500">
+                                {item?.reporterId?.first_name?.charAt(0) || 'U'}
+                              </span>
+                            )}
+                          </div>
+                          {item?.reporterId?.first_name || "Anonymous"}
+                        </div>
+                      </td>
+                      <td className="px-4">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-full bg-gray-100 relative overflow-hidden">
+                            {item?.reportedId?.profileImage ? (
+                              <Image
+                                src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${item?.reportedId?.profileImage}`}
+                                alt={item?.reportedId?.first_name || "User"}
+                                fill
+                                className="object-cover"
+                                onError={(e: any) => {
+                                  e.currentTarget.style.display = 'none';
+                                  e.currentTarget.parentElement.innerHTML = `<span class="flex h-full items-center justify-center text-lg font-medium text-gray-500">${item?.reportedId?.first_name?.charAt(0) || 'U'}</span>`;
+                                }}
+                              />
+                            ) : (
+                              <span className="flex h-full items-center justify-center text-lg font-medium text-gray-500">
+                                {item?.reportedId?.first_name?.charAt(0) || 'U'}
+                              </span>
+                            )}
+                          </div>
+                          {item?.reportedId?.first_name || "Anonymous"}
+                        </div>
+                      </td>
+                      {/* <td className="px-4">{item.email}</td> */}
                       <td className="px-4">{item.reason}</td>
                       <td className="px-4">
                         <p className="text-[#4A4C56] text-xs">{item.createdAt}</p>

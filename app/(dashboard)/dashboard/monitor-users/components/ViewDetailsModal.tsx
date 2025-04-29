@@ -67,16 +67,35 @@ export function ViewDetailsModal({ isOpen, onClose, conversation, isReportedView
               </div>
             </div>
 
-            {conversation.supportingFile && (
+            {conversation?.supportingFile ? (
               <div className="space-y-3">
                 <h3 className="font-medium">Supporting Evidence</h3>
-                <div className="relative h-48 w-full rounded-lg overflow-hidden">
+                <div className="relative h-48 w-full rounded-lg overflow-hidden bg-gray-50">
                   <Image
                     src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${conversation.supportingFile}`}
                     alt="Supporting evidence"
                     fill
-                    className="object-contain bg-gray-50"
+                    className="object-contain"
+                    onError={(e: any) => {
+                      e.currentTarget.style.display = 'none';
+                      e.currentTarget.parentElement.innerHTML = `
+                        <div class="flex h-full items-center justify-center">
+                          <span class="text-4xl font-medium text-gray-400">
+                            ${conversation?.reportedId?.first_name?.charAt(0)?.toUpperCase() || 'E'}
+                          </span>
+                        </div>
+                      `;
+                    }}
                   />
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <h3 className="font-medium">Supporting Evidence</h3>
+                <div className="relative h-48 w-full rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center">
+                  <span className="text-4xl font-medium text-gray-400">
+                    {conversation?.reportedId?.first_name?.charAt(0)?.toUpperCase() || 'E'}
+                  </span>
                 </div>
               </div>
             )}

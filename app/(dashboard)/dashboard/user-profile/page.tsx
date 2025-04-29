@@ -253,22 +253,30 @@ export default function UserProfile() {
       <Card className="p-4 md:p-6">
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden mx-auto sm:mx-0">
-            {selectedImage || singleUserData?.profileImage ? (
-              <Image
-                src={
-                  selectedImage
-                    ? previewUrl
-                    : `${process.env.NEXT_PUBLIC_IMAGE_URL}${singleUserData.profileImage}`
-                }
-                alt="Profile"
-                fill
-                className="object-cover"
-              />
+            {(selectedImage || singleUserData?.profileImage) ? (
+              <div className="relative w-full h-full">
+                <Image
+                  src={
+                    selectedImage
+                      ? URL.createObjectURL(selectedImage)
+                      : `${process.env.NEXT_PUBLIC_IMAGE_URL}${singleUserData?.profileImage}`
+                  }
+                  alt="Profile"
+                  fill
+                  className="object-cover"
+                  onError={(e: any) => {
+                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.parentElement.innerHTML = `
+                      <div class="w-full h-full bg-[#20B894] flex items-center justify-center text-white text-xl font-semibold rounded-full">
+                        ${singleUserData?.first_name?.slice(0, 2)?.toUpperCase() || "UN"}
+                      </div>
+                    `;
+                  }}
+                />
+              </div>
             ) : (
-              <div className="w-full h-full bg-[#20B894] flex items-center justify-center text-white text-xl font-semibold">
-                {singleUserData?.first_name
-                  ? singleUserData.first_name.slice(0, 2).toUpperCase()
-                  : "UN"}
+              <div className="w-full h-full bg-[#20B894] flex items-center justify-center text-white text-xl font-semibold rounded-full">
+                {singleUserData?.first_name?.slice(0, 2)?.toUpperCase() || "UN"}
               </div>
             )}
             <input

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -231,7 +231,7 @@ export default function AddCategory() {
               </div>
               <Button
                 onClick={handleAddCategory}
-                className="bg-[#20B894] text-white hover:bg-[#1ca883]"
+                className="bg-[#20B894] text-white hover:bg-[#1ca883] cursor-pointer"
                 disabled={isLoading}
               >
                 {isLoading ? "Adding..." : "Add Category"}

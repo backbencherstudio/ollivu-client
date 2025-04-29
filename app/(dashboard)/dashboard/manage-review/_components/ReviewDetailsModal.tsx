@@ -34,19 +34,19 @@ export function ReviewDetailsModal({
         <div className="flex flex-col items-center pt-8 pb-6 border-b">
           <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-100 mb-3">
             <Image
-              src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${review.reviewer.avatar}`}
-              alt={review.reviewer.name}
+              src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${review?.reviewer?.avatar}`}
+              alt={review?.reviewer?.name}
               className="w-full h-full object-cover"
               height={100}
               width={100}
             />
           </div>
-          <h2 className="text-xl font-semibold mb-1">{review.reviewer.name}</h2>
+          <h2 className="text-xl font-semibold mb-1">{review?.reviewer?.name}</h2>
           <p className="text-gray-500 text-sm mb-4">
-            {review.reviewer.email || "chris_glasser@gmail.com"}
+            {review?.reviewer?.email || "chris_glasser@gmail.com"}
           </p>
 
-          <div className="flex items-center gap-1 mb-2">
+          {/* <div className="flex items-center gap-1 mb-2">
             {[1, 2, 3, 4, 5].map((star) => (
               <Star
                 key={star}
@@ -57,40 +57,40 @@ export function ReviewDetailsModal({
                 }`}
               />
             ))}
-          </div>
+          </div> */}
         </div>
 
         <div className="px-8 pb-8 overflow-y-auto">
           <h3 className="font-semibold mb-3">Report Details</h3>
           <p className="text-gray-600 text-sm leading-relaxed">
-            {review.reportDetails}
+            {review?.reportDetails}
           </p>
 
-          {review.personalInfo && (
+          {review?.personalInfo && (
             <div className="mt-4 space-y-2">
               <h4 className="font-medium">Reporter Information:</h4>
               <p className="text-sm text-gray-600">
-                Display Name: {review.personalInfo.display_name}
+                Display Name: {review?.personalInfo?.display_name}
               </p>
               <p className="text-sm text-gray-600">
-                Full Name: {review.personalInfo.first_name}{" "}
-                {review.personalInfo.last_name}
+                Full Name: {review?.personalInfo?.first_name}{" "}
+                {review?.personalInfo?.last_name}
               </p>
               <p className="text-sm text-gray-600">
-                Gender: {review.personalInfo.gender}
+                Gender: {review?.personalInfo?.gender}
               </p>
               <p className="text-sm text-gray-600">
-                Phone: {review.personalInfo.phone_number}
+                Phone: {review?.personalInfo?.phone_number}
               </p>
             </div>
           )}
 
-          {review.reportDocument && (
+          {review?.reportDocument && (
             <div className="mt-4">
               <h4 className="font-medium mb-2">Supporting Document:</h4>
               <Image
-                src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${review.reportDocument}`}
-                alt={review.reviewer.name}
+                src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${review?.reportDocument}`}
+                alt={review?.reviewer?.name}
                 className="w-full h-full object-cover"
                 height={100}
                 width={100}
@@ -99,7 +99,7 @@ export function ReviewDetailsModal({
           )}
 
           <div className="mt-4 text-gray-400 text-sm">
-            {new Date(review.createdAt).toLocaleString()}
+            {new Date(review?.createdAt).toLocaleString()}
           </div>
         </div>
       </div>
