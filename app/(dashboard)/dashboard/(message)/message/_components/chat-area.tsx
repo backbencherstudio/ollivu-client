@@ -58,7 +58,7 @@ export default function ChatArea({
       email: "user@example.com",
       text: messageInput,
       time: new Date().toLocaleTimeString(),
-      read: true
+      read: true,
     };
 
     setMessages([...messages, newMessage]);

@@ -13,17 +13,17 @@ export const usersApi = baseApi.injectEndpoints({
     getAllUsersByService: builder.query({
       query: ({ service, country, rating, searchTerm }) => {
         const params = new URLSearchParams();
-        if (searchTerm) params.append('searchTerm', searchTerm);
-        if (service) params.append('my_service', service);
-        if (country) params.append('country', country);
-        if (rating) params.append('rating', rating.toString());
-        
+        if (searchTerm) params.append("searchTerm", searchTerm);
+        if (service) params.append("my_service", service);
+        if (country) params.append("country", country);
+        if (rating) params.append("rating", rating);
+
         return {
           url: `/auth/allUsers?${params.toString()}`,
-          method: 'GET',
+          method: "GET",
         };
       },
-      providesTags: ['User'],
+      providesTags: ["User"],
     }),
 
     getSingleUser: builder.query({
@@ -87,10 +87,9 @@ export const usersApi = baseApi.injectEndpoints({
       invalidatesTags: ["User"],
     }),
 
-
     uploadCertificate: builder.mutation({
       query: ({ userId, data }) => ({
-        url: `/auth/setCertificate/${userId}`, 
+        url: `/auth/setCertificate/${userId}`,
         method: "PATCH",
         body: data,
         formData: true,
@@ -99,7 +98,7 @@ export const usersApi = baseApi.injectEndpoints({
     }),
 
     deleteCertificate: builder.mutation({
-      query: ({ userId}) => ({
+      query: ({ userId }) => ({
         url: `/auth/deleteCertificate/${userId}`,
         method: "DELETE",
       }),
@@ -109,11 +108,10 @@ export const usersApi = baseApi.injectEndpoints({
     searchUsers: builder.query({
       query: (searchTerm) => ({
         url: `/auth/allUsers?searchTerm=${searchTerm}`,
-        method: 'GET',
+        method: "GET",
       }),
-      providesTags: ['User'],
+      providesTags: ["User"],
     }),
-
   }),
 });
 

@@ -46,7 +46,7 @@ export default function UserProfile() {
   const [updateUser] = useUpdateUserMutation();
   const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
   const singleUserData = singleUser?.data;
-  // console.log("singleUser", singleUserData);
+  console.log("singleUser", singleUserData);
 
   // Add these after other state declarations
   const [formData, setFormData] = useState({
@@ -182,22 +182,16 @@ export default function UserProfile() {
 
         // Add about me
         formDataToSend.append("about_me", formData.aboutMe);
-        // Add this after formDataToSend.append("about_me", formData.aboutMe);
-        // Log FormData contents
         for (const pair of formDataToSend.entries()) {
           // console.log(pair[0], pair[1]);
         }
 
-        // Or alternatively, convert to an object and log
         const formDataObject = Object.fromEntries(formDataToSend.entries());
-        // console.log("formDataObject:", formDataObject);
 
         const response = await updateUser(formDataToSend).unwrap();
-        // console.log("response", response);
 
         if (response.success) {
           toast.success("Profile updated successfully");
-          // Clean up preview URL
           if (previewUrl) {
             URL.revokeObjectURL(previewUrl);
           }
@@ -223,24 +217,17 @@ export default function UserProfile() {
     fileInputRef.current?.click();
   };
 
-  // Add this new handler
-  // Remove the profileImage state since we don't need it
-  // const [profileImage, setProfileImage] = useState(profile);
-
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       setSelectedImage(file);
-      // Create preview URL
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
     }
   };
 
-  // Add cleanup effect
   useEffect(() => {
     return () => {
-      // Cleanup preview URL when component unmounts
       if (previewUrl) {
         URL.revokeObjectURL(previewUrl);
       }
@@ -253,7 +240,7 @@ export default function UserProfile() {
       <Card className="p-4 md:p-6">
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden mx-auto sm:mx-0">
-            {(selectedImage || singleUserData?.profileImage) ? (
+            {selectedImage || singleUserData?.profileImage ? (
               <div className="relative w-full h-full">
                 <Image
                   src={
@@ -265,10 +252,14 @@ export default function UserProfile() {
                   fill
                   className="object-cover"
                   onError={(e: any) => {
-                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.style.display = "none";
                     e.currentTarget.parentElement.innerHTML = `
                       <div class="w-full h-full bg-[#20B894] flex items-center justify-center text-white text-xl font-semibold rounded-full">
-                        ${singleUserData?.first_name?.slice(0, 2)?.toUpperCase() || "UN"}
+                        ${
+                          singleUserData?.first_name
+                            ?.slice(0, 2)
+                            ?.toUpperCase() || "UN"
+                        }
                       </div>
                     `;
                   }}
@@ -374,19 +365,6 @@ export default function UserProfile() {
             />
           </div>
 
-          {/* <div>
-            <label className="text-sm text-gray-600">Email address</label>
-            <Input
-              value={formData.personalInfo.email}
-              onChange={(e) =>
-                handleInputChange("personalInfo", "email", e.target.value)
-              }
-              placeholder="your@email.com"
-              className="mt-1"
-              disabled={!isEditing}
-            />
-          </div> */}
-
           <div>
             <label className="text-sm text-gray-600">Date of birth</label>
             <Input
@@ -400,7 +378,7 @@ export default function UserProfile() {
             />
           </div>
 
-          <div>
+          <div className="w-full">
             <label className="text-sm text-gray-600">Gender</label>
             <Select
               value={formData.personalInfo.gender}
@@ -409,7 +387,7 @@ export default function UserProfile() {
               }
               disabled={!isEditing}
             >
-              <SelectTrigger className="mt-1">
+              <SelectTrigger className="mt-1 w-full">
                 <SelectValue placeholder="Select gender" />
               </SelectTrigger>
               <SelectContent>
@@ -428,22 +406,15 @@ export default function UserProfile() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           <div>
             <label className="text-sm text-gray-600">Country (optional)</label>
-            <Select
+            <Input
               value={formData.addressInfo.country}
-              onValueChange={(value) =>
-                handleInputChange("addressInfo", "country", value)
+              onChange={(e) =>
+                handleInputChange("addressInfo", "country", e.target.value)
               }
+              placeholder="Enter your country"
+              className="mt-1"
               disabled={!isEditing}
-            >
-              <SelectTrigger className="mt-1">
-                <SelectValue placeholder="United states" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="us">United States</SelectItem>
-                <SelectItem value="uk">United Kingdom</SelectItem>
-                <SelectItem value="ca">Canada</SelectItem>
-              </SelectContent>
-            </Select>
+            />
           </div>
 
           <div>
