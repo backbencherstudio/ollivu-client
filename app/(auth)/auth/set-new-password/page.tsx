@@ -68,18 +68,9 @@ export default function SetNewPassword() {
       return;
     }
 
-    // Log the data when all validations pass
-    // console.log('Form Data:', {
-    //   token,
-    //   password: formData.password,
-    //   confirmPassword: formData.confirmPassword,
-    //   passwordConditions: conditions
-    // });
-
     setIsLoading(true);
 
     try {
-      // Replace with your actual API endpoint
       const response = await fetch('/api/auth/reset-password', {
         method: 'POST',
         headers: {
