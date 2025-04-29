@@ -1,25 +1,32 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import CustomImage from '@/components/reusable/CustomImage';
+import { useState } from "react";
+import Link from "next/link";
+import CustomImage from "@/components/reusable/CustomImage";
 import verifyEmailImage from "@/public/login.png";
-import { MoveUpRight } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useVerifyOTPMutation } from '@/src/redux/features/auth/authApi';
-import { toast } from 'sonner';
+import { MoveUpRight } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useVerifyOTPMutation } from "@/src/redux/features/auth/authApi";
+import { toast } from "sonner";
 
 export default function VerifyOTP() {
-  const [verificationCode, setVerificationCode] = useState(['', '', '', '', '', '']);
+  const [verificationCode, setVerificationCode] = useState([
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+  ]);
   const searchParams = useSearchParams();
   const router = useRouter();
   const [verifyOTP, { isLoading }] = useVerifyOTPMutation();
-  const email = searchParams.get('email') || '';
+  const email = searchParams.get("email") || "";
+  console.log("email", email);
 
   const handleCodeChange = (index: number, value: string) => {
-    // Handle paste event
     if (value.length > 1) {
-      const pastedValue = value.slice(0, 6).split('');
+      const pastedValue = value.slice(0, 6).split("");
       const newCode = [...verificationCode];
       pastedValue.forEach((val, idx) => {
         if (idx < 6) newCode[idx] = val;
@@ -35,21 +42,28 @@ export default function VerifyOTP() {
       setVerificationCode(newCode);
 
       if (value && index < 5) {
-        const nextInput = document.querySelector(`input[name="code-${index + 1}"]`) as HTMLInputElement;
+        const nextInput = document.querySelector(
+          `input[name="code-${index + 1}"]`
+        ) as HTMLInputElement;
         if (nextInput) nextInput.focus();
       }
     }
   };
 
-  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Backspace' && !verificationCode[index]) {
+  const handleKeyDown = (
+    index: number,
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (e.key === "Backspace" && !verificationCode[index]) {
       e.preventDefault();
       if (index > 0) {
-        const prevInput = document.querySelector(`input[name="code-${index - 1}"]`) as HTMLInputElement;
+        const prevInput = document.querySelector(
+          `input[name="code-${index - 1}"]`
+        ) as HTMLInputElement;
         if (prevInput) {
           prevInput.focus();
           const newCode = [...verificationCode];
-          newCode[index - 1] = '';
+          newCode[index - 1] = "";
           setVerificationCode(newCode);
         }
       }
@@ -58,30 +72,31 @@ export default function VerifyOTP() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
-    const otp = verificationCode.join('');
+
+    const otp = verificationCode.join("");
     if (otp.length !== 6) {
-      toast.error('Please enter complete verification code');
+      toast.error("Please enter complete verification code");
       return;
     }
 
     try {
       const response = await verifyOTP({
-        otp: Number(otp)
+        email,
+        otp: Number(otp),
       }).unwrap();
-      // console.log("res", response);
-      
-      
+      console.log("res", response);
+
       if (response.success) {
-        toast.success(response.message || 'Verification successful!');
-        router.push('/auth/login');
+        toast.success(response.message || "Verification successful!");
+        router.push("/auth/login");
       }
     } catch (error: any) {
-      const errorMessage = error?.data?.errorSources?.[0]?.message 
-        || error?.data?.message 
-        || 'Verification failed';
+      const errorMessage =
+        error?.data?.errorSources?.[0]?.message ||
+        error?.data?.message ||
+        "Verification failed";
       toast.error(errorMessage);
-      setVerificationCode(['', '', '', '', '', '']);  
+      setVerificationCode(["", "", "", "", "", ""]);
     }
   };
 
@@ -90,14 +105,18 @@ export default function VerifyOTP() {
       <div className="container w-full flex flex-col md:flex-row overflow-hidden">
         {/* Left Illustration */}
         <div className="hidden md:flex items-center justify-center w-1/2 p-6">
-          <CustomImage src={verifyEmailImage.src} alt="Email Verification Illustration" className="w-full h-auto" />
+          <CustomImage
+            src={verifyEmailImage.src}
+            alt="Email Verification Illustration"
+            className="w-full h-auto"
+          />
         </div>
 
         {/* Right Form */}
         <div className="w-full md:w-1/2 p-8">
           <div className="mb-8">
-            <Link 
-              href="/auth/signup" 
+            <Link
+              href="/auth/signup"
               className="text-sm text-gray-600 hover:text-gray-800 flex items-center gap-2"
             >
               ← Back
@@ -126,7 +145,7 @@ export default function VerifyOTP() {
                   onKeyDown={(e) => handleKeyDown(index, e)}
                   onPaste={(e) => {
                     e.preventDefault();
-                    const pastedData = e.clipboardData.getData('text');
+                    const pastedData = e.clipboardData.getData("text");
                     handleCodeChange(index, pastedData);
                   }}
                 />
@@ -137,10 +156,12 @@ export default function VerifyOTP() {
               type="submit"
               disabled={isLoading}
               className={`w-full primary_color text-white py-2 rounded-full font-medium transition-all flex items-center justify-center gap-2 cursor-pointer ${
-                isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:opacity-90'
+                isLoading ? "opacity-70 cursor-not-allowed" : "hover:opacity-90"
               }`}
             >
-              {isLoading ? 'Verifying...' : (
+              {isLoading ? (
+                "Verifying..."
+              ) : (
                 <>
                   Verify email
                   <MoveUpRight className="w-4 h-4" />
@@ -150,7 +171,10 @@ export default function VerifyOTP() {
           </form>
 
           <p className="text-sm text-center mt-4 text-gray-500">
-            Didn't receive the email? <button className="text-[#20B894] hover:underline">Click to resend</button>
+            Didn't receive the email?{" "}
+            <button className="text-[#20B894] hover:underline">
+              Click to resend
+            </button>
           </p>
         </div>
       </div>
