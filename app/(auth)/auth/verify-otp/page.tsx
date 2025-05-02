@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Link from "next/link";
 import CustomImage from "@/components/reusable/CustomImage";
 import verifyEmailImage from "@/public/login.png";
@@ -9,7 +9,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useVerifyOTPMutation } from "@/src/redux/features/auth/authApi";
 import { toast } from "sonner";
 
-export default function VerifyOTP() {
+function VerifyOTPContent() {
   const [verificationCode, setVerificationCode] = useState([
     "",
     "",
@@ -179,5 +179,13 @@ export default function VerifyOTP() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function VerifyOTP() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <VerifyOTPContent />
+    </Suspense>
   );
 }
