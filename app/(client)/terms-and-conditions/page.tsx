@@ -24,8 +24,24 @@ export default function TermsAndConditions() {
           {activeTab === "terms" ? "Terms and Conditions" : "Privacy Policy"}
         </h1>
         <div className="text-center text-xs flex justify-center items-center gap-10 text-gray-500 mb-6">
-          <span>Last Updated: {termsData?.data[0]?.createdAt ? new Date(termsData.data[0].createdAt).toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'}) : 'N/A'}</span>
-          <span>Last Updated: {termsData?.data[0]?.updatedAt ? new Date(termsData.data[0].createdAt).toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'}) : 'N/A'}</span>
+          <span>
+            Last Updated:{" "}
+            {termsData?.data[0]?.createdAt
+              ? new Date(termsData.data[0].createdAt).toLocaleDateString(
+                  "en-US",
+                  { month: "short", day: "numeric", year: "numeric" }
+                )
+              : "N/A"}
+          </span>
+          <span>
+            Last Updated:{" "}
+            {termsData?.data[0]?.updatedAt
+              ? new Date(termsData.data[0].createdAt).toLocaleDateString(
+                  "en-US",
+                  { month: "short", day: "numeric", year: "numeric" }
+                )
+              : "N/A"}
+          </span>
         </div>
       </div>
 
