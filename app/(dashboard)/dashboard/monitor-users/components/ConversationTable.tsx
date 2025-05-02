@@ -46,6 +46,9 @@ export function ConversationTable({
   //   conversation: null
   // });
 
+  console.log(49, conversations);
+  
+
   return (
     <>
       <div className="relative w-full">
@@ -61,6 +64,7 @@ export function ConversationTable({
                     {/* <th className="px-4 font-medium">Email</th> */}
                     <th className="px-4 font-medium">Reason</th>
                     <th className="px-4 font-medium">Report Date</th>
+                    <th className="px-4 font-medium">Status</th>
                     <th className="px-4 font-medium">Action</th>
                   </>
                 ) : (
@@ -128,9 +132,14 @@ export function ConversationTable({
                         </div>
                       </td>
                       {/* <td className="px-4">{item.email}</td> */}
+
                       <td className="px-4">{item.reason}</td>
+
                       <td className="px-4">
                         <p className="text-[#4A4C56] text-xs">{item.createdAt}</p>
+                      </td>
+                      <td className="px-4">
+                        <p className="text-[#4A4C56] text-xs">{item.action}</p>
                       </td>
                       <td className="px-4">
                         <Button 

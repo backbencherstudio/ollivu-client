@@ -124,6 +124,7 @@ export default function MonitorMessaging() {
       month: 'short',
       day: 'numeric'
     }),
+    action : report.action,
     reporterId: report.reporterId || {},
     reportedId: report.reportedId || {},
     supportingFile: report.supportingFile || '',
