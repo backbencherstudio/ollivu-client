@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import AddSectionModal from "./AddSectionModal";
-import Section from "./Section";
+
 
 interface SectionType {
   id: string;
@@ -97,7 +97,7 @@ export default function TermsContent() {
       </div>
 
       {/* Sections */}
-      {sections.map((section) => (
+      {/* {sections.map((section) => (
         <Section
           key={section.id}
           title={section.title}
@@ -107,7 +107,7 @@ export default function TermsContent() {
           onDelete={() => handleDeleteSection(section.id)}
           onAddSubsection={() => handleAddSubsection(section.id)}
         />
-      ))}
+      ))} */}
 
       {/* Add/Edit Section Modal */}
       <AddSectionModal

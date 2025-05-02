@@ -61,7 +61,7 @@ export default function EditorModal({
           <button
             onClick={onClose}
             disabled={isLoading}
-            className={`px-4 py-2 text-gray-600 border rounded-full 
+            className={`px-4 py-2 text-gray-600 border rounded-full cursor-pointer
                      ${
                        isLoading
                          ? "opacity-50 cursor-not-allowed"
@@ -83,13 +83,13 @@ export default function EditorModal({
           >
             {isLoading ? (
               <>
-                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin cursor-not-allowed"></span>
                 {isEditing ? "Updating..." : "Saving..."}
               </>
             ) : isEditing ? (
-              "Update Section"
+              <p className="cursor-pointer">Update Section</p>
             ) : (
-              "Save Section"
+              <p className="cursor-pointer">Save Section</p>
             )}
           </button>
         </div>
