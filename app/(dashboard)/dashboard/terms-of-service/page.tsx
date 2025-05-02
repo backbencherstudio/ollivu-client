@@ -41,13 +41,16 @@ export default function AdminTermsPage() {
 function TermsContent() {
   return (
     <>
+    <div>
+    <button className="bg-[#20B894] text-white text-sm px-4 mb-2 py-2 rounded-full ease-in-out duration-300 hover:bg-[#198d70] cursor-pointer">Add Section</button>
+    </div>
       <div className="bg-[#F9FAFB] p-6 rounded-xl mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
           <h1 className="font-semibold text-lg">Terms and Conditions</h1>
           <p className="text-sm text-[#4A4C56] mt-2 max-w-2xl py-5">
             Welcome to Ollivu! These Terms and Conditions govern your use of our platform, which facilitates the exchange of services between users. By accessing or using our website, you agree to comply with and be bound by these terms. If you do not agree, please do not use the platform.
           </p>
-          <button className="bg-[#20B894] text-white text-sm px-4 py-2 rounded-full">Edit ↗</button>
+          <button className="bg-[#20B894] text-white text-sm px-4 py-2 rounded-full ease-in-out duration-300 hover:bg-[#198d70] cursor-pointer">Edit ↗</button>
         </div>
         <div className="text-xs text-right text-[#4A4C56]">
           <p>Effective Date: Feb 6, 2024</p>
@@ -61,6 +64,7 @@ function TermsContent() {
           <p className="text-sm text-[#4A4C56]">
             By accessing and using the Admin Dashboard (hereinafter referred to as the “Platform”), you agree to comply with and be bound by these Terms and Conditions. If you do not agree to these terms, you must not use the Platform.
           </p>
+          <button className="bg-[#20B894] text-white text-sm mt-2 px-4 py-2 rounded-full ease-in-out duration-300 hover:bg-[#198d70] cursor-pointer">Edit ↗</button>
         </Section>
 
         <Section title="2. Admin Responsibilities">
@@ -85,6 +89,7 @@ function TermsContent() {
               </ul>
             </li>
           </ul>
+          <button className="bg-[#20B894] text-white text-sm mt-2 px-4 py-2 rounded-full ease-in-out duration-300 hover:bg-[#198d70] cursor-pointer">Edit ↗</button>
         </Section>
 
         <Section title="3. Prohibited Activities">
@@ -93,6 +98,7 @@ function TermsContent() {
             <li><b>Data Manipulation:</b> Do not alter, delete, or manipulate any data without proper authorization.</li>
             <li><b>Spam or Abuse:</b> Do not use the Platform to send spam, phishing emails, or engage in any form of abuse.</li>
           </ul>
+          <button className="bg-[#20B894] text-white text-sm mt-2 px-4 py-2 rounded-full ease-in-out duration-300 hover:bg-[#198d70] cursor-pointer">Edit ↗</button>
         </Section>
 
         <Section title="4. Intellectual Property">
@@ -105,6 +111,7 @@ function TermsContent() {
             </li>
             <li><b>Restrictions:</b> You may not copy, reproduce, distribute, or create derivative works based on the Platform without prior written consent.</li>
           </ul>
+          <button className="bg-[#20B894] text-white text-sm mt-2 px-4 py-2 rounded-full ease-in-out duration-300 hover:bg-[#198d70] cursor-pointer">Edit ↗</button>
         </Section>
 
         <Section title="5. Limitation of Liability">
@@ -117,18 +124,21 @@ function TermsContent() {
             </li>
             <li><b>Indemnification:</b> You agree to indemnify and hold harmless Ollivu from any claims, damages, or losses arising from your misuse of the Platform.</li>
           </ul>
+          <button className="bg-[#20B894] text-white text-sm mt-2 px-4 py-2 rounded-full ease-in-out duration-300 hover:bg-[#198d70] cursor-pointer">Edit ↗</button>
         </Section>
 
         <Section title="6. Termination">
           <p className="text-sm text-[#4A4C56]">
             <b>Suspension or Termination:</b> Ollivu reserves the right to suspend or terminate your access to the Platform at any time, with or without notice, for violation of these Terms and Conditions.
           </p>
+          <button className="bg-[#20B894] text-white text-sm mt-2 px-4 py-2 rounded-full ease-in-out duration-300 hover:bg-[#198d70] cursor-pointer">Edit ↗</button>
         </Section>
 
         <Section title="7. Amendments">
           <p className="text-sm text-[#4A4C56]">
             <b>Changes to Terms:</b> You will be notified of any changes, and continued use of the Platform constitutes acceptance of the updated terms.
           </p>
+          <button className="bg-[#20B894] text-white text-sm mt-2 px-4 py-2 rounded-full ease-in-out duration-300 hover:bg-[#198d70] cursor-pointer">Edit ↗</button>
         </Section>
 
         <Section title="8. Governing Law">
@@ -136,6 +146,7 @@ function TermsContent() {
             <li>These Terms and Conditions are governed by the laws of [Your Country/State].</li>
             <li>Any disputes arising from the use of the Platform shall be resolved in the courts of [Your Country/State].</li>
           </ul>
+          <button className="bg-[#20B894] text-white text-sm mt-2 px-4 py-2 rounded-full ease-in-out duration-300 hover:bg-[#198d70] cursor-pointer">Edit ↗</button>
         </Section>
 
         <Section title="9. Contact Information">
@@ -143,6 +154,7 @@ function TermsContent() {
             Email: hello@serviceinfo.com<br />
             Phone: 12456-999-4735
           </p>
+          <button className="bg-[#20B894] text-white text-sm mt-2 px-4 py-2 rounded-full ease-in-out duration-300 hover:bg-[#198d70] cursor-pointer">Edit ↗</button>
         </Section>
       </div>
     </>
