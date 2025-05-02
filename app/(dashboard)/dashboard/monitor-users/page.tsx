@@ -18,7 +18,7 @@ import { StatCard } from "./components/StatCard";
 import { ConversationTable } from "./components/ConversationTable";
 import ProtectedRoute from "@/src/components/auth/ProtectedRoute";
 import { useGetAllExchangeQuery } from "@/src/redux/features/admin/exchangeApi";
-import { useGetProfileReportQuery } from "@/src/redux/features/admin/profileReportApi";
+import { useGetProfileReportQuery, useGetSuspendedDataQuery } from "@/src/redux/features/admin/profileReportApi";
 import { BanIcon } from "lucide-react";
 
 interface ExchangeUser {
@@ -88,6 +88,7 @@ export default function MonitorMessaging() {
     user: report.reportedId?.first_name || 'Unknown',
     email: report.reportedId?.email || '',
     reason: report.reportType || '',
+    status : report.action || '',
     description: report.description || '',
     createdAt: new Date(report.createdAt).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -100,24 +101,15 @@ export default function MonitorMessaging() {
     reportType: report.reportType || ''
   })) || [];
 
+
+  const {data} = useGetSuspendedDataQuery()
+
+  console.log(107, data?.data);
+  
+
   // Add suspended profiles transformation
-  const suspendedProfiles = [
-    // Temporary mock data - replace with actual API data
-    {
-      id: "1",
-      user: "John Doe",
-      email: "john@example.com",
-      reason: "Multiple violations",
-      suspendedDate: new Date().toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      }),
-      suspendedBy: "Admin",
-      status: "Suspended",
-    },
-    // ... more suspended profiles
-  ];
+  const suspendedProfiles = data?.data;
+
 
   const handleStatusChange = (convId: string, status: string) => {
     setOpen({ ...open, [convId]: false });
@@ -134,7 +126,7 @@ export default function MonitorMessaging() {
   const updatedStatCards = [
     {
       title: "Total Exchanges",
-      value: transformedConversations.length,
+      value: transformedConversations?.length,
       subtitle: "All exchanges",
       icon: MessageIcon,
     },
@@ -148,7 +140,7 @@ export default function MonitorMessaging() {
     },
     {
       title: "Suspended Profiles",
-      value: suspendedProfiles.length,
+      value: suspendedProfiles?.length,
       subtitle: "Blocked accounts",
       icon: BanIcon,
     },

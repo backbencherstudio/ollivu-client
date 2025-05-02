@@ -3,6 +3,8 @@ import { StatusDropdown } from "./StatusDropdown";
 import { ViewDetailsModal } from "./ViewDetailsModal";
 import { useState } from "react";
 import Image from "next/image";
+import { useTakeActionProfileReportMutation } from "@/src/redux/features/admin/profileReportApi";
+import { toast } from "react-toastify";
 
 interface ConversationTableProps {
   conversations: any[];
@@ -22,6 +24,7 @@ export function ConversationTable({
   setOpen,
   onStatusChange,
 }: ConversationTableProps) {
+
   const [viewDetailsModal, setViewDetailsModal] = useState<{
     isOpen: boolean;
     conversation: any;
@@ -29,12 +32,13 @@ export function ConversationTable({
     isOpen: false,
     conversation: null,
   });
+
+
   // const [takeActionModal, setTakeActionModal] = useState<{isOpen: boolean; conversation: any}>({
   //   isOpen: false,
   //   conversation: null
   // });
 
-  console.log(49, conversations);
   
 
   return (
@@ -83,13 +87,13 @@ export function ConversationTable({
                   <td className="py-4 px-4">{index + 1}</td>
                   {isSuspendedView ? (
                     <>
-                      <td className="px-4">{item.user}</td>
-                      <td className="px-4">{item.email}</td>
-                      <td className="px-4">{item.reason}</td>
-                      <td className="px-4">{item.suspendedDate}</td>
+                      <td className="px-4">{item?.reportedId.first_name}</td>
+                      <td className="px-4">{item?.reportedId.email}</td>
+                      <td className="px-4">{item?.reportType}</td>
+                      <td className="px-4">{item.updatedAt}</td>
                       <td className="px-4">
-                        <span className="text-xs px-2 py-1 rounded-full font-medium bg-red-100 text-red-600">
-                          Suspended
+                        <span className="text-xs px-2 py-1 rounded-full font-medium bg-red-100 text-yellow-600">
+                          {item?.action}
                         </span>
                       </td>
                       <td className="px-4">
@@ -171,11 +175,11 @@ export function ConversationTable({
                         </p>
                       </td>
                       <td className="px-4">
-                        <p className="text-[#4A4C56] text-xs">{item.action}</p>
+                        <p className="text-[#4A4C56] text-xs">{item.status}</p>
                       </td>
-                      <td className="px-4">
+                      {/* <td className="px-4">
                         <p className="text-[#4A4C56] text-xs">{item.action}</p>
-                      </td>
+                      </td> */}
                       <td className="px-4">
                         <Button
                           variant="link"
@@ -238,10 +242,11 @@ export function ConversationTable({
 
       <ViewDetailsModal
         isOpen={viewDetailsModal.isOpen}
+        setViewDetailsModal={setViewDetailsModal}
         onClose={() =>
           setViewDetailsModal({ isOpen: false, conversation: null })
         }
-        conversation={viewDetailsModal.conversation}
+        conversation={viewDetailsModal?.conversation}
         isReportedView={isReportedView}
         isSuspendedView={isSuspendedView}
       />
