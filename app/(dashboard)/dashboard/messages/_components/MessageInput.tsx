@@ -19,8 +19,8 @@ export const MessageInput = ({ sendMessage, message, setMessage }) => {
   };
 
   return (
-    <div>
-      <div className="md:p-1 pb-0 py-4 border-gray-100 absolute bg-white bottom-0 w-[90%] md:w-full">
+    <div className="sticky bottom-0 bg-white border-t border-gray-100">
+      <div className="p-4">
         <form
           onSubmit={handleSubmit}
           className="flex gap-2 items-center relative"
@@ -40,8 +40,7 @@ export const MessageInput = ({ sendMessage, message, setMessage }) => {
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Type message..."
-            className="flex-grow p-2 rounded-lg focus:outline-none h-40 border border-gray-200"
-            // disabled={!currentChat}
+            className="flex-grow p-2 rounded-lg focus:outline-none h-20 border border-gray-200 resize-none"
           />
           {/* <IoIosAttach className="text-gray-500 h-6 w-6 cursor-pointer" /> */}
           <button

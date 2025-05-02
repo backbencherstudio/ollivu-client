@@ -14,6 +14,7 @@ const socket = io("http://localhost:5000");
 
 const Messages = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
   const [currentChat, setCurrentChat] = useState(null);
@@ -26,14 +27,10 @@ const Messages = () => {
   });
 
   const getOtherUserEmail = (chat) => {
-
     return chat?.email === currentUser?.email
       ? chat?.reciverUserId?.email
       : chat?.senderUserId?.email;
-
-
   };
-
 
   const getOtherUserName = (chat) => {
     return chat?.email === currentUser?.email
@@ -42,7 +39,7 @@ const Messages = () => {
   };
 
   const { data: userList } = authApi.useGetAllExchangeDataQuery(finalQuery);
-  const [acceptExchange] = useAcceptExchangeMutation()
+  const [acceptExchange] = useAcceptExchangeMutation();
   const users = userList?.data;
 
   // console.log("currentChat", currentChat);
@@ -89,7 +86,7 @@ const Messages = () => {
             if (
               !lastMessagesMap[otherUser] ||
               new Date(msg.timestamp) >
-              new Date(lastMessagesMap[otherUser].timestamp)
+                new Date(lastMessagesMap[otherUser].timestamp)
             ) {
               lastMessagesMap[otherUser] = {
                 content: msg.content,
@@ -226,7 +223,8 @@ const Messages = () => {
     try {
       // Fetch messages for the selected chat
       const messagesResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/chats?email=${currentUser?.email
+        `${process.env.NEXT_PUBLIC_API_URL}/chats?email=${
+          currentUser?.email
         }&recipient=${getOtherUserEmail(user)}`
       );
       const messagesData = await messagesResponse.json();
@@ -289,27 +287,24 @@ const Messages = () => {
     };
   }, []);
 
-
-
   const modalHandler = async (currentChat) => {
-    if(currentChat?.senderUserId?.email === currentUser?.email){      
-      const result = await acceptExchange({ userId : currentUser?.userId, exchangeId : currentChat?._id })
-      return console.log(result)  // show confirmation alart 
+    if (currentChat?.senderUserId?.email === currentUser?.email) {
+      const result = await acceptExchange({
+        userId: currentUser?.userId,
+        exchangeId: currentChat?._id,
+      });
+      return console.log(result); // show confirmation alart
     }
-    setIsConfirmModalOpen(true)
-  }
-
-
+    setIsConfirmModalOpen(true);
+  };
 
   return (
-    <div className="">
+    <div className="h-screen flex flex-col">
       {/* Main Content */}
-      <div className="bg-white rounded-lg h-[85vh] hidden md:grid md:grid-cols-4 shadow-sm">
+      <div className="bg-white rounded-lg h-full hidden md:grid md:grid-cols-4 shadow-sm">
         {/* Left Sidebar */}
         <div className="col-span-1 border-r border-gray-100">
-          {/* Search and Add Button */}
-
-          <div className="overflow-y-auto h-full">
+          <div className="h-full flex flex-col">
             <MessageList
               onChatSelect={handleChatSelect}
               userData={userList?.data?.map((user) => ({
@@ -325,8 +320,9 @@ const Messages = () => {
           </div>
         </div>
 
+        {/* Chat Area */}
         <div className="col-span-2 flex flex-col bg-white relative">
-          <div className="p-4 flex items-center justify-between">
+          <div className="p-4 flex items-center justify-between border-b border-gray-100">
             <div className="flex items-center gap-3">
               {currentChat?.profileImage ? (
                 <img
@@ -340,11 +336,11 @@ const Messages = () => {
                     {currentChat?.name?.slice(0, 2).toUpperCase()}
                     {currentChat?.email === currentUser.email
                       ? currentChat?.reciverUserId?.first_name
-                        .slice(0, 2)
-                        .toUpperCase()
+                          .slice(0, 2)
+                          .toUpperCase()
                       : currentChat?.senderUserId?.first_name
-                        .slice(0, 2)
-                        .toUpperCase() || "UN"}
+                          .slice(0, 2)
+                          .toUpperCase() || "UN"}
                   </span>
                 </div>
               )}
@@ -353,10 +349,11 @@ const Messages = () => {
                   {getOtherUserName(currentChat) || "Select a chat"}
                 </h3>
                 <span
-                  className={`text-sm ${onlineUsers[getOtherUserEmail(currentChat)]
+                  className={`text-sm ${
+                    onlineUsers[getOtherUserEmail(currentChat)]
                       ? "text-green-500"
                       : "text-gray-500"
-                    }`}
+                  }`}
                 >
                   {onlineUsers[getOtherUserEmail(currentChat)]
                     ? "Online"
@@ -385,19 +382,21 @@ const Messages = () => {
             </div>
           )}
         </div>
-        <div className="col-span-1 p-5">
-          <div>
+
+        {/* Right Sidebar */}
+        <div className="col-span-1 p-5 border-l border-gray-100">
+          <div className="h-full flex flex-col">
             <h3 className="text-gray-500">Details</h3>
             <div className="bg-gray-100 p-6 rounded-lg mt-5 text-center flex items-center gap-3 justify-center flex-col">
               <div className="w-20 h-20 rounded-full bg-[#20b894] flex items-center justify-center">
                 <span className="text-white text-2xl font-semibold">
                   {currentChat?.email === currentUser.email
                     ? currentChat?.reciverUserId?.first_name
-                      .slice(0, 2)
-                      .toUpperCase()
+                        .slice(0, 2)
+                        .toUpperCase()
                     : currentChat?.senderUserId?.first_name
-                      .slice(0, 2)
-                      .toUpperCase() || "UN"}
+                        .slice(0, 2)
+                        .toUpperCase() || "UN"}
                 </span>
               </div>
               <div>
@@ -405,42 +404,16 @@ const Messages = () => {
                   {getOtherUserName(currentChat)}
                 </h3>
                 <p className="text-gray-500">
-                  {" "}
                   {getOtherUserEmail(currentChat)}
                 </p>
               </div>
-              <div className="flex flex-col gap-2 mt-6">
-
-                {/* <button
-                  className="bg-[#20b894] text-white px-4 py-2 rounded-full w-full cursor-pointer"
-                  onClick={() => {
-                    const currentExchange = users?.find(
-                      (user) =>
-                        user.reciverUserId?.email ===
-                          getOtherUserEmail(currentChat) ||
-                        user.senderUserId?.email ===
-                          getOtherUserEmail(currentChat)
-                    );
-
-                    if (
-                      currentExchange?.senderUserId?._id === currentUser?.userId
-                    ) {
-                      toast.error("You cannot exchange service with yourself!");
-                      return;
-                    }
-                    setIsConfirmModalOpen(true);
-                  }}
-                >
-                  Confirm Exchange Service
-                </button> */}
-
+              <div className="flex flex-col gap-2 mt-6 w-full">
                 <button
                   className="bg-[#20b894] text-white px-3 py-2 rounded-full flex-1 cursor-pointer text-sm whitespace-nowrap hover:bg-[#1a9677] transition-colors"
-                  onClick={()=>modalHandler(currentChat)}
+                  onClick={() => modalHandler(currentChat)}
                 >
                   Confirm Exchange Service
                 </button>
-
                 <button className="border border-[#b19c87] text-[#b19c87] px-3 py-2 rounded-full flex-1 text-sm whitespace-nowrap hover:bg-[#b19c87] hover:text-white transition-colors">
                   Give Review
                 </button>
@@ -449,34 +422,147 @@ const Messages = () => {
           </div>
         </div>
       </div>
-      <div className="md:hidden mt-4">
-        <button
-          onClick={() => setIsSidebarOpen(true)}
-          className="p-2 bg-black rounded-lg"
-        >
-          <svg
-            className="w-6 h-6 text-white"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M4 6h16M4 12h16m-7 6h7"
-            />
-          </svg>
-        </button>
+
+      {/* Mobile View */}
+      <div className="md:hidden h-full flex flex-col">
+        {/* Mobile Header */}
+        <div className="p-4 flex items-center justify-between bg-white border-b border-gray-100">
+          <h3 className="font-bold">Messages</h3>
+          <button onClick={() => setIsSidebarOpen(true)} className="p-2">
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4 6h16M4 12h16m-7 6h7"
+              />
+            </svg>
+          </button>
+        </div>
+
+        {/* Mobile Chat Area */}
+        <div className="flex-1 flex flex-col bg-white">
+          {currentChat ? (
+            <>
+              <div className="p-4 flex items-center justify-between border-b border-gray-100">
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setIsProfileOpen(!isProfileOpen)}
+                    className="flex items-center gap-3"
+                  >
+                    {currentChat?.profileImage ? (
+                      <img
+                        src={`${currentChat?.profileImage}`}
+                        alt="UN"
+                        className="w-10 h-10 rounded-full"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                        <span className="text-gray-500">
+                          {currentChat?.name?.slice(0, 2).toUpperCase()}
+                          {currentChat?.email === currentUser.email
+                            ? currentChat?.reciverUserId?.first_name
+                                .slice(0, 2)
+                                .toUpperCase()
+                            : currentChat?.senderUserId?.first_name
+                                .slice(0, 2)
+                                .toUpperCase() || "UN"}
+                        </span>
+                      </div>
+                    )}
+                    <div>
+                      <h3 className="font-semibold">
+                        {getOtherUserName(currentChat)}
+                      </h3>
+                      <span
+                        className={`text-sm ${
+                          onlineUsers[getOtherUserEmail(currentChat)]
+                            ? "text-green-500"
+                            : "text-gray-500"
+                        }`}
+                      >
+                        {onlineUsers[getOtherUserEmail(currentChat)]
+                          ? "Online"
+                          : "Offline"}
+                      </span>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              {/* Mobile Profile Details */}
+              {isProfileOpen && (
+                <div className="bg-white border-b border-gray-100 p-4">
+                  <div className="bg-gray-100 p-4 rounded-lg text-center flex items-center gap-3 justify-center flex-col">
+                    <div className="w-16 h-16 rounded-full bg-[#20b894] flex items-center justify-center">
+                      <span className="text-white text-xl font-semibold">
+                        {currentChat?.email === currentUser.email
+                          ? currentChat?.reciverUserId?.first_name
+                              .slice(0, 2)
+                              .toUpperCase()
+                          : currentChat?.senderUserId?.first_name
+                              .slice(0, 2)
+                              .toUpperCase() || "UN"}
+                      </span>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-[16px]">
+                        {getOtherUserName(currentChat)}
+                      </h3>
+                      <p className="text-gray-500 text-sm">
+                        {getOtherUserEmail(currentChat)}
+                      </p>
+                    </div>
+                    <div className="flex flex-col gap-2 mt-4 w-full">
+                      <button
+                        className="bg-[#20b894] text-white px-3 py-2 rounded-full flex-1 cursor-pointer text-sm whitespace-nowrap hover:bg-[#1a9677] transition-colors"
+                        onClick={() => {
+                          modalHandler(currentChat);
+                          setIsProfileOpen(false);
+                        }}
+                      >
+                        Confirm Exchange Service
+                      </button>
+                      <button className="border border-[#b19c87] text-[#b19c87] px-3 py-2 rounded-full flex-1 text-sm whitespace-nowrap hover:bg-[#b19c87] hover:text-white transition-colors">
+                        Give Review
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <MessageContent
+                messages={messages}
+                currentUser={currentUser}
+                currentChat={currentChat}
+                deleteMessage={deleteMessage}
+              />
+              <MessageInput
+                message={message}
+                setMessage={setMessage}
+                sendMessage={sendMessage}
+              />
+            </>
+          ) : (
+            <div className="flex-1 flex items-center justify-center text-gray-500">
+              Select a chat to start messaging
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Mobile Sidebar */}
       <div
-        className={`md:hidden fixed inset-y-0 left-0 w-3/4 bg-white z-50 transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
+        className={`md:hidden fixed inset-y-0 left-0 w-3/4 bg-white z-50 transform transition-transform duration-300 ease-in-out ${
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
       >
-        {/* Search Header */}
-        <div className="flex justify-between items-center m-4 mt-8">
+        <div className="flex justify-between items-center p-4 border-b border-gray-100">
           <h3 className="font-bold">Messages</h3>
           <button onClick={() => setIsSidebarOpen(false)} className="p-2">
             <svg
@@ -494,9 +580,12 @@ const Messages = () => {
             </svg>
           </button>
         </div>
-        <div className="overflow-y-auto h-[calc(100%-137px)]">
+        <div className="h-[calc(100%-64px)]">
           <MessageList
-            onChatSelect={handleChatSelect}
+            onChatSelect={(user) => {
+              handleChatSelect(user);
+              setIsSidebarOpen(false);
+            }}
             userData={userList?.data?.map((user) => ({
               ...user,
               hasUnread: Boolean(unreadMessages[user.email]),
@@ -509,66 +598,7 @@ const Messages = () => {
           />
         </div>
       </div>
-      <div className="md:hidden mt-4 bg-white rounded-lg  h-[660px] p-4 relative">
-        <div className="p-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            {currentChat?.profileImage ? (
-              <img
-                src={`${currentChat?.profileImage}`}
-                alt="UN"
-                className="w-10 h-10 rounded-full"
-              />
-            ) : (
-              <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                <span className="text-gray-500">
-                  {currentChat?.name?.slice(0, 2).toUpperCase()}
-                  {currentChat?.email === currentUser.email
-                    ? currentChat?.reciverUserId?.first_name
-                      .slice(0, 2)
-                      .toUpperCase()
-                    : currentChat?.senderUserId?.first_name
-                      .slice(0, 2)
-                      .toUpperCase() || "UN"}
-                </span>
-              </div>
-            )}
-            <div>
-              <h3 className="font-semibold">
-                {getOtherUserName(currentChat) || "Select a chat"}
-              </h3>
-              <span
-                className={`text-sm ${onlineUsers[getOtherUserEmail(currentChat)]
-                    ? "text-green-500"
-                    : "text-gray-500"
-                  }`}
-              >
-                {onlineUsers[getOtherUserEmail(currentChat)]
-                  ? "Online"
-                  : "Offline"}
-              </span>
-            </div>
-          </div>
-        </div>
-        {currentChat ? (
-          <>
-            <MessageContent
-              messages={messages}
-              currentUser={currentUser}
-              currentChat={currentChat}
-              deleteMessage={deleteMessage}
-            />
-            <MessageInput
-              message={message}
-              setMessage={setMessage}
-              sendMessage={sendMessage}
-            />
-          </>
-        ) : (
-          <div className="flex items-center justify-center h-full text-gray-500">
-            Select a chat to start messaging
-          </div>
-        )}
-      </div>
+
       {currentChat && (
         <ConfirmServiceModal
           isOpen={isConfirmModalOpen}

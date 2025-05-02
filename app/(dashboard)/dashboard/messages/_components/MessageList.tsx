@@ -14,7 +14,8 @@ export const MessageList = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRole, setSelectedRole] = useState("all");
 
-  const [exchangeChatRequest, {isLoading : exchangeChatIsLoading}] = useExchangeChatRequestMutation()
+  const [exchangeChatRequest, { isLoading: exchangeChatIsLoading }] =
+    useExchangeChatRequestMutation();
 
   console.log("currentUser", currentUser);
   const [finalQuery, setFinalQuery] = useState({
@@ -61,30 +62,23 @@ export const MessageList = ({
     return <div className="p-4 text-center text-red-500">{error}</div>;
   }
 
-
-  const requestHandler = async (isAccepted, exchangeId)=>{
-
+  const requestHandler = async (isAccepted, exchangeId) => {
     const data = {
       exchangeId,
       isAccepted,
-      reciverUserId : userId
-    }
+      reciverUserId: userId,
+    };
 
     console.log(data);
-    
 
-    const result  = await exchangeChatRequest(data)
+    const result = await exchangeChatRequest(data);
 
     console.log("result", result);
-    
-    
-  }
-
-
+  };
 
   return (
-    <div className="h-[600px]">
-      <div className="p-4">
+    <div className="h-full flex flex-col">
+      <div className="p-4 sticky top-0 bg-white border-b border-gray-100">
         <div className="flex gap-2">
           <input
             type="text"
@@ -95,8 +89,8 @@ export const MessageList = ({
           />
         </div>
       </div>
-      <Tabs defaultValue="messages" className="w-full">
-        <TabsList className="w-full bg-white border-b rounded-none">
+      <Tabs defaultValue="messages" className="flex-1 flex flex-col">
+        <TabsList className="w-full bg-white border-b rounded-none sticky top-[72px] z-10">
           <TabsTrigger
             value="messages"
             className="flex-1 data-[state=active]:border-b-2 border-l-0 border-r-0 border-t-0 rounded-none data-[state=active]:border-[#20b894] data-[state=active]:bg-white"
@@ -110,7 +104,7 @@ export const MessageList = ({
             Requests
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="messages">
+        <TabsContent value="messages" className="flex-1 overflow-y-auto">
           <div className="overflow-y-auto">
             {filteredUsers?.map((user) => (
               <button
@@ -251,10 +245,20 @@ export const MessageList = ({
                   </div>
                 </div>
                 <div className="flex gap-2 mt-2">
-                  <button onClick={()=>{requestHandler("true", request._id)}} className="flex-1 py-1 px-3 text-sm font-medium text-white bg-emerald-500 rounded-md hover:bg-emerald-600">
+                  <button
+                    onClick={() => {
+                      requestHandler("true", request._id);
+                    }}
+                    className="flex-1 py-1 px-3 text-sm font-medium text-white bg-emerald-500 rounded-md hover:bg-emerald-600"
+                  >
                     Accept
                   </button>
-                  <button onClick={()=>{requestHandler("false", request._id)}} className="flex-1 py-1 px-3 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200">
+                  <button
+                    onClick={() => {
+                      requestHandler("false", request._id);
+                    }}
+                    className="flex-1 py-1 px-3 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200"
+                  >
                     Decline
                   </button>
                 </div>
