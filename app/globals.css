@@ -156,3 +156,61 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+
+
+.ProseMirror {
+  > * + * {
+    margin-top: 0.75em;
+  }
+
+  table {
+    border-collapse: collapse;
+    margin: 0;
+    overflow: hidden;
+    table-layout: fixed;
+    width: 100%;
+
+    td,
+    th {
+      border: 2px solid #ced4da;
+      box-sizing: border-box;
+      min-width: 1em;
+      padding: 3px 5px;
+      position: relative;
+      vertical-align: top;
+
+      > * {
+        margin-bottom: 0;
+      }
+    }
+
+    th {
+      background-color: #f8f9fa;
+      font-weight: bold;
+      text-align: left;
+    }
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  a {
+    color: #0d6efd;
+    text-decoration: underline;
+  }
+}
+
+.ProseMirror:focus {
+  outline: none;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  color: #adb5bd;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}

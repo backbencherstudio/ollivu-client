@@ -4,47 +4,31 @@ import { ViewDetailsModal } from "./ViewDetailsModal";
 import { useState } from "react";
 import Image from "next/image";
 
-// interface Conversation {
-//   id: string;
-//   senderService: string;
-//   receverServer: string;
-//   status: string;
-//   joinDate: string;
-// }
-
-// interface ReportedProfile {
-//   id: string;
-//   user: string;
-//   email: string;
-//   reason: string;
-//   description: string;
-//   createdAt: string;
-// }
-
 interface ConversationTableProps {
   conversations: any[];
   isReportedView?: boolean;
+  isSuspendedView?: boolean;
   open: { [key: string]: boolean };
   setOpen: (open: { [key: string]: boolean }) => void;
   onStatusChange: (id: string, status: string) => void;
   onTakeAction: (conversation: any) => void;
 }
 
-export function ConversationTable({ 
-  conversations, 
+export function ConversationTable({
+  conversations,
   isReportedView = false,
-  open, 
-  setOpen, 
+  isSuspendedView = false,
+  open,
+  setOpen,
   onStatusChange,
 }: ConversationTableProps) {
-  const [viewDetailsModal, setViewDetailsModal] = useState<{isOpen: boolean; conversation: any}>({
+  const [viewDetailsModal, setViewDetailsModal] = useState<{
+    isOpen: boolean;
+    conversation: any;
+  }>({
     isOpen: false,
-    conversation: null
+    conversation: null,
   });
-  // const [takeActionModal, setTakeActionModal] = useState<{isOpen: boolean; conversation: any}>({
-  //   isOpen: false,
-  //   conversation: null
-  // });
 
   return (
     <>
@@ -53,7 +37,17 @@ export function ConversationTable({
           <table className="w-full min-w-[800px] text-sm">
             <thead>
               <tr className="text-left text-gray-500 border-b bg-gray-50">
-                {isReportedView ? (
+                {isSuspendedView ? (
+                  <>
+                    <th className="py-3 px-4 font-medium">#</th>
+                    <th className="px-4 font-medium">User</th>
+                    <th className="px-4 font-medium">Email</th>
+                    <th className="px-4 font-medium">Reason</th>
+                    <th className="px-4 font-medium">Suspended Date</th>
+                    <th className="px-4 font-medium">Status</th>
+                    <th className="px-4 font-medium">Action</th>
+                  </>
+                ) : isReportedView ? (
                   <>
                     <th className="py-3 px-4 font-medium">#</th>
                     <th className="px-4 font-medium">Send Report User</th>
@@ -79,7 +73,33 @@ export function ConversationTable({
               {conversations.map((item, index) => (
                 <tr key={item.id} className="border-b hover:bg-gray-50">
                   <td className="py-4 px-4">{index + 1}</td>
-                  {isReportedView ? (
+                  {isSuspendedView ? (
+                    <>
+                      <td className="px-4">{item.user}</td>
+                      <td className="px-4">{item.email}</td>
+                      <td className="px-4">{item.reason}</td>
+                      <td className="px-4">{item.suspendedDate}</td>
+                      <td className="px-4">
+                        <span className="text-xs px-2 py-1 rounded-full font-medium bg-red-100 text-red-600">
+                          Suspended
+                        </span>
+                      </td>
+                      <td className="px-4">
+                        <Button
+                          variant="link"
+                          className="p-0 text-[#4A4C56] hover:text-[#20B894] cursor-pointer"
+                          onClick={() =>
+                            setViewDetailsModal({
+                              isOpen: true,
+                              conversation: item,
+                            })
+                          }
+                        >
+                          View details
+                        </Button>
+                      </td>
+                    </>
+                  ) : isReportedView ? (
                     <>
                       <td className="px-4">
                         <div className="flex items-center gap-2">
@@ -91,13 +111,16 @@ export function ConversationTable({
                                 fill
                                 className="object-cover"
                                 onError={(e: any) => {
-                                  e.currentTarget.style.display = 'none';
-                                  e.currentTarget.parentElement.innerHTML = `<span class="flex h-full items-center justify-center text-lg font-medium text-gray-500">${item?.reporterId?.first_name?.charAt(0) || 'U'}</span>`;
+                                  e.currentTarget.style.display = "none";
+                                  e.currentTarget.parentElement.innerHTML = `<span class="flex h-full items-center justify-center text-lg font-medium text-gray-500">${
+                                    item?.reporterId?.first_name?.charAt(0) ||
+                                    "U"
+                                  }</span>`;
                                 }}
                               />
                             ) : (
                               <span className="flex h-full items-center justify-center text-lg font-medium text-gray-500">
-                                {item?.reporterId?.first_name?.charAt(0) || 'U'}
+                                {item?.reporterId?.first_name?.charAt(0) || "U"}
                               </span>
                             )}
                           </div>
@@ -114,13 +137,16 @@ export function ConversationTable({
                                 fill
                                 className="object-cover"
                                 onError={(e: any) => {
-                                  e.currentTarget.style.display = 'none';
-                                  e.currentTarget.parentElement.innerHTML = `<span class="flex h-full items-center justify-center text-lg font-medium text-gray-500">${item?.reportedId?.first_name?.charAt(0) || 'U'}</span>`;
+                                  e.currentTarget.style.display = "none";
+                                  e.currentTarget.parentElement.innerHTML = `<span class="flex h-full items-center justify-center text-lg font-medium text-gray-500">${
+                                    item?.reportedId?.first_name?.charAt(0) ||
+                                    "U"
+                                  }</span>`;
                                 }}
                               />
                             ) : (
                               <span className="flex h-full items-center justify-center text-lg font-medium text-gray-500">
-                                {item?.reportedId?.first_name?.charAt(0) || 'U'}
+                                {item?.reportedId?.first_name?.charAt(0) || "U"}
                               </span>
                             )}
                           </div>
@@ -130,13 +156,20 @@ export function ConversationTable({
                       {/* <td className="px-4">{item.email}</td> */}
                       <td className="px-4">{item.reason}</td>
                       <td className="px-4">
-                        <p className="text-[#4A4C56] text-xs">{item.createdAt}</p>
+                        <p className="text-[#4A4C56] text-xs">
+                          {item.createdAt}
+                        </p>
                       </td>
                       <td className="px-4">
-                        <Button 
-                          variant="link" 
+                        <Button
+                          variant="link"
                           className="p-0 text-[#4A4C56] hover:text-[#20B894] cursor-pointer"
-                          onClick={() => setViewDetailsModal({ isOpen: true, conversation: item })}
+                          onClick={() =>
+                            setViewDetailsModal({
+                              isOpen: true,
+                              conversation: item,
+                            })
+                          }
                         >
                           View details
                         </Button>
@@ -151,18 +184,29 @@ export function ConversationTable({
                           status={item.status}
                           convId={item.id}
                           open={open[item.id]}
-                          onOpenChange={(isOpen) => setOpen({ ...open, [item.id]: isOpen })}
-                          onStatusChange={(status) => onStatusChange(item.id, status)}
+                          onOpenChange={(isOpen) =>
+                            setOpen({ ...open, [item.id]: isOpen })
+                          }
+                          onStatusChange={(status) =>
+                            onStatusChange(item.id, status)
+                          }
                         />
                       </td>
                       <td className="px-4">
-                        <p className="text-[#4A4C56] text-xs">{item.joinDate}</p>
+                        <p className="text-[#4A4C56] text-xs">
+                          {item.joinDate}
+                        </p>
                       </td>
                       <td className="px-4">
-                        <Button 
-                          variant="link" 
+                        <Button
+                          variant="link"
                           className="p-0 text-[#4A4C56] hover:text-[#20B894] cursor-pointer"
-                          onClick={() => setViewDetailsModal({ isOpen: true, conversation: item })}
+                          onClick={() =>
+                            setViewDetailsModal({
+                              isOpen: true,
+                              conversation: item,
+                            })
+                          }
                         >
                           View details
                         </Button>
@@ -176,11 +220,14 @@ export function ConversationTable({
         </div>
       </div>
 
-      <ViewDetailsModal 
+      <ViewDetailsModal
         isOpen={viewDetailsModal.isOpen}
-        onClose={() => setViewDetailsModal({ isOpen: false, conversation: null })}
+        onClose={() =>
+          setViewDetailsModal({ isOpen: false, conversation: null })
+        }
         conversation={viewDetailsModal.conversation}
         isReportedView={isReportedView}
+        isSuspendedView={isSuspendedView}
       />
     </>
   );
