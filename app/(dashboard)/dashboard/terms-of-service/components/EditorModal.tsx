@@ -1,6 +1,6 @@
 "use client";
 
-import TextEditor from "./_text-editor";
+import TextEditor from "./text-editor";
 import { Section } from "../types";
 
 interface EditorModalProps {

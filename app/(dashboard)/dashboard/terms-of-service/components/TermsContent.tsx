@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import AddSectionModal from "./AddSectionModal";
 
-
 interface SectionType {
   id: string;
   title: string;

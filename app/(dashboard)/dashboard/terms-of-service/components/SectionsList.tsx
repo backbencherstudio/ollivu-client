@@ -1,4 +1,4 @@
-import { Section } from "../types";
+import { Section } from "@/app/(dashboard)/dashboard/terms-of-service/types";
 
 interface SectionsListProps {
   sections: Section[];

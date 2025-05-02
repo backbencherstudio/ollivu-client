@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import TextEditor from "./_text-editor";
-
+import TextEditor from "./text-editor";
 
 interface AddSectionModalProps {
   isOpen: boolean;
@@ -81,7 +80,7 @@ export default function AddSectionModal({
           />
         </div>
 
-        <TextEditor ref={editorRef} />
+        <TextEditor value={initialData?.content} onChange={(content) => {}} />
 
         <div className="flex justify-end gap-3 mt-4">
           <button
