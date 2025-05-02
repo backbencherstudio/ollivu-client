@@ -8,8 +8,9 @@ import verifyEmailImage from "@/public/login.png";
 import { MoveUpRight } from "lucide-react";
 import { useVerifyOTPForResetPasswordMutation } from "@/src/redux/features/auth/authApi";
 import { toast } from "sonner";
+import { Suspense } from "react";
 
-export default function ResetPasswordOTPVerify() {
+function ResetPasswordOTPVerifyContent() {
   const [verificationCode, setVerificationCode] = useState([
     "",
     "",
@@ -175,5 +176,13 @@ export default function ResetPasswordOTPVerify() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ResetPasswordOTPVerify() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResetPasswordOTPVerifyContent />
+    </Suspense>
   );
 }
