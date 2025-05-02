@@ -1,15 +1,16 @@
 "use client";
 
-import { useState, Suspense } from "react";
 import Link from "next/link";
+import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import CustomImage from "@/components/reusable/CustomImage";
 import verifyEmailImage from "@/public/login.png";
 import { MoveUpRight } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useVerifyOTPMutation } from "@/src/redux/features/auth/authApi";
+import { useVerifyOTPForResetPasswordMutation } from "@/src/redux/features/auth/authApi";
 import { toast } from "sonner";
+import { Suspense } from "react";
 
-function VerifyOTPContent() {
+function ResetPasswordOTPVerifyContent() {
   const [verificationCode, setVerificationCode] = useState([
     "",
     "",
@@ -19,10 +20,9 @@ function VerifyOTPContent() {
     "",
   ]);
   const searchParams = useSearchParams();
-  const router = useRouter();
-  const [verifyOTP, { isLoading }] = useVerifyOTPMutation();
   const email = searchParams.get("email") || "";
-  console.log("email", email);
+  const router = useRouter();
+  const [verifyOTP, { isLoading }] = useVerifyOTPForResetPasswordMutation();
 
   const handleCodeChange = (index: number, value: string) => {
     if (value.length > 1) {
@@ -84,10 +84,9 @@ function VerifyOTPContent() {
         email,
         otp: Number(otp),
       }).unwrap();
-      console.log("res", response);
 
       if (response.success) {
-        toast.success(response.message || "Verification successful!");
+        toast.success("OTP verification successful!");
         router.push("/auth/login");
       }
     } catch (error: any) {
@@ -116,7 +115,7 @@ function VerifyOTPContent() {
         <div className="w-full md:w-1/2 p-8">
           <div className="mb-8">
             <Link
-              href="/auth/signup"
+              href="/auth/forgot-password"
               className="text-sm text-gray-600 hover:text-gray-800 flex items-center gap-2"
             >
               ← Back
@@ -124,11 +123,11 @@ function VerifyOTPContent() {
           </div>
 
           <h1 className="text-[32px] font-medium leading-[126%] tracking-[-0.96px] heading_color mb-6">
-            Check your email
+            Verify OTP
           </h1>
 
           <p className="text-sm text-gray-600 mb-8">
-            We sent a verification link to {email}
+            We sent a verification code to {email}
           </p>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-6">
@@ -155,15 +154,13 @@ function VerifyOTPContent() {
             <button
               type="submit"
               disabled={isLoading}
-              className={`w-full primary_color text-white py-2 rounded-full font-medium transition-all flex items-center justify-center gap-2 cursor-pointer ${
-                isLoading ? "opacity-70 cursor-not-allowed" : "hover:opacity-90"
-              }`}
+              className="w-full primary_color hover:opacity-90 text-white py-2 rounded-full font-medium transition-all flex items-center justify-center gap-2"
             >
               {isLoading ? (
                 "Verifying..."
               ) : (
                 <>
-                  Verify email
+                  Verify OTP
                   <MoveUpRight className="w-4 h-4" />
                 </>
               )}
@@ -171,7 +168,7 @@ function VerifyOTPContent() {
           </form>
 
           <p className="text-sm text-center mt-4 text-gray-500">
-            Didn't receive the email?{" "}
+            Didn't receive the code?{" "}
             <button className="text-[#20B894] hover:underline">
               Click to resend
             </button>
@@ -182,10 +179,10 @@ function VerifyOTPContent() {
   );
 }
 
-export default function VerifyOTP() {
+export default function ResetPasswordOTPVerify() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <VerifyOTPContent />
+      <ResetPasswordOTPVerifyContent />
     </Suspense>
   );
 }

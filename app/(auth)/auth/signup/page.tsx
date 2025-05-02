@@ -52,11 +52,13 @@ export default function SignupPage() {
         email: form.email,
         password: form.password,
       }).unwrap();
+      console.log("signup response", response?.data);
+      
       if (response.success) {
         toast.success(
           "Your account has been created successfully! Please check your email to verify your account."
         );
-        router.push("/auth/verify-otp");
+        router.push(`/auth/verify-otp?email=${encodeURIComponent(form.email)}`);
       }
     } catch (error: any) {
       toast.error(error?.data?.message || "Something went wrong");
@@ -142,11 +144,11 @@ export default function SignupPage() {
 
             {/* Remember Me & Forgot Password */}
             <div className="flex justify-between items-center text-sm text-gray-300">
-              <label className="flex items-center gap-2">
+              <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
                   name="rememberMe"
-                  className="accent-[#20B894]"
+                  className="accent-[#20B894] cursor-pointer"
                   checked={form.rememberMe}
                   onChange={handleChange}
                 />
@@ -176,11 +178,11 @@ export default function SignupPage() {
 
           {/* Policy Checkboxes */}
           <div className="flex flex-col gap-2 mt-4 text-sm text-black">
-            <label className="flex items-start gap-2">
+            <label className="flex items-start gap-2 cursor-pointer">
               <input
                 type="checkbox"
                 name="agreeTerms"
-                className="accent-[#20B894] mt-[2px]"
+                className="accent-[#20B894] mt-[2px] cursor-pointer"
                 checked={form.agreeTerms}
                 onChange={handleChange}
               />
@@ -189,11 +191,11 @@ export default function SignupPage() {
                 Policy.
               </span>
             </label>
-            <label className="flex items-start gap-2">
+            <label className="flex items-start gap-2 cursor-pointer">
               <input
                 type="checkbox"
                 name="confirmInfo"
-                className="accent-[#20B894] mt-[2px]"
+                className="accent-[#20B894] mt-[2px] cursor-pointer"
                 checked={form.confirmInfo}
                 onChange={handleChange}
               />
