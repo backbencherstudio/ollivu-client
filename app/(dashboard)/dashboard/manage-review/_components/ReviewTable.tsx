@@ -19,7 +19,7 @@ export function ReviewTable({
   onApprove, 
   onReject 
 }: ReviewTableProps) {
-  // console.log("ReviewTable", reviews);
+  console.log("ReviewTable", reviews);
   
   return (
     <div className="w-full overflow-auto">
@@ -32,6 +32,7 @@ export function ReviewTable({
             {/* <th className="pb-4 font-medium">Rating</th> */}
             <th className="pb-4 font-medium">Status</th>
             <th className="pb-4 font-medium">Action</th>
+            <th className="pb-4 font-medium">Details</th>
           </tr>
         </thead>
         <tbody>
