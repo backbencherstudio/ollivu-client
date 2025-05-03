@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import { ReviewTable } from "./ReviewTable";
 import { useReviews } from "../_hooks/useReviews";
-import { useGetAllProfileReportQuery } from "@/src/redux/features/shared/reportApi";
+import {  useGetAllReviewReportQuery } from "@/src/redux/features/shared/reportApi";
 
 export function ManageReview() {
   const {
@@ -15,22 +15,25 @@ export function ManageReview() {
     setReviews,
   } = useReviews();
 
-  const { data: getAllProfileReport } = useGetAllProfileReportQuery({});
-  console.log("getAllProfileReport: ", getAllProfileReport?.data);
+  const { data: getAllReviewReport } = useGetAllReviewReportQuery(undefined);
+
+  console.log(getAllReviewReport);
+  
   
 
   useEffect(() => {
-    if (getAllProfileReport?.data) {
-      const formattedReviews = getAllProfileReport.data.map((report: any) => ({
+
+    if (getAllReviewReport?.data) {
+      const formattedReviews = getAllReviewReport.data.map((report: any) => ({
         id: report?._id,
         reviewer: {
           name: report?.reporterId?.first_name,
           email: report?.reporterId?.email,
-          avatar: report?.reporterId?.profileImage || "", // Changed from reportedId to reporterId
+          avatar: report?.reporterId?.profileImage || "", 
         },
         flaggedBy: {
           name: report?.reportedId?.first_name,
-          avatar: report?.reportedId?.profileImage || "", // Changed from reporterId to reportedId
+          avatar: report?.reportedId?.profileImage || "", 
         },
         reviewText: report?.reportType,
         rating: 0,
@@ -43,7 +46,7 @@ export function ManageReview() {
 
       setReviews(formattedReviews);
     }
-  }, [getAllProfileReport?.data, setReviews]);
+  }, [getAllReviewReport?.data, setReviews]);
 
   return (
     <div className="w-full p-6 bg-white rounded-lg">
