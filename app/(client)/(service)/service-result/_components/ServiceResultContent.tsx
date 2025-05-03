@@ -7,12 +7,7 @@ import { serviceCategories } from "@/data/services";
 import { CategorySidebar } from "./category-sidebar";
 import { ServiceCard } from "./service-card";
 import { Pagination } from "@/components/reusable/pagination";
-import {
-  // useGetAllUsersByServiceQuery,
-  useGetAllUsersQuery,
-} from "@/src/redux/features/users/userApi";
-import serviceImg from "@/public/client/services/service-01.png";
-import avaterImg from "@/public/avatars/emily.png";
+import { useGetAllUsersQuery } from "@/src/redux/features/users/userApi";
 import { ChevronDown, X } from "lucide-react";
 
 const ITEMS_PER_PAGE = 6;
@@ -45,91 +40,90 @@ interface Category {
 
 export default function ServiceResultContent() {
   const searchParams = useSearchParams();
-  const { data: users, isLoading } = useGetAllUsersQuery({});
   const [services, setServices] = useState<Service[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(
-    searchParams.get("category")
+    searchParams.get("category") || null
   );
   const [selectedItem, setSelectedItem] = useState<string | null>(
-    searchParams.get("item")
+    searchParams.get("item") || null
   );
   const [currentPage, setCurrentPage] = useState(1);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
 
-  // // Move the query hook up with other hooks
-  // const { data: serviceFilteredUsers, isLoading: isFilterLoading } =
-  //   useGetAllUsersByServiceQuery(selectedCategory || "", {
-  //     skip: !selectedCategory,
-  //   });
+  // Extract the filter parameters from URL
+  const myServiceParam = searchParams.get("my_service");
+  const ratingParam = searchParams.get("rating");
+  const locationParam = searchParams.get("country");
+  const searchTermParam = searchParams.get("searchTerm");
 
-  const allUsers = users?.data || [];
-  console.log("all user", allUsers);
+  // Fetch all users with the filter params if they exist
+  const { data: users, isLoading } = useGetAllUsersQuery({
+    ...(myServiceParam && { my_service: myServiceParam }),
+    ...(ratingParam && { rating: Number(ratingParam) }),
+    ...(locationParam && { country: locationParam }),
+    ...(searchTermParam && { searchTerm: searchTermParam }),
+  });
 
-  const allServices = React.useMemo(() => {
-    if (typeof window === "undefined" || !allUsers?.length) return [];
+  // Set initial state based on URL parameters
+  useEffect(() => {
+    if (myServiceParam) {
+      // Try to determine if it's a category or subcategory
+      const categoryMatch = serviceCategories.find(
+        (cat) => cat.title === myServiceParam
+      );
 
-    return allUsers.flatMap((user: any) =>
-      (user?.my_service || []).map((service: string) => {
-        const matchingCategory = serviceCategories?.find((cat: Category) =>
-          cat?.items?.some(
-            (item: CategoryItem) =>
-              item?.title?.toLowerCase() === String(service)?.toLowerCase()
-          )
+      if (categoryMatch) {
+        setSelectedCategory(myServiceParam);
+        setSelectedItem(null);
+      } else {
+        // Check if it's a subcategory
+        const parentCategory = serviceCategories.find((cat) =>
+          cat.items.some((item) => item.title === myServiceParam)
         );
 
-        // Clean and format image URLs
-        const portfolioUrl = user?.portfolio
-          ? `${process.env.NEXT_PUBLIC_IMAGE_URL}${user?.portfolio}`
-          : null;
-
-        const profileImageUrl = user?.profileImage
-          ? `${process.env.NEXT_PUBLIC_IMAGE_URL}${user?.profileImage}`
-          : null;
-
-        return {
-          id: `${user?._id}-${service}`,
-          title: service,
-          instructor: {
-            id: user?._id,
-            name: user?.first_name,
-            email: user?.email,
-            experience: "2+ years",
-            image: profileImageUrl,
-          },
-          rating: user?.rating || 0,
-          reviewCount: user?.review || 0,
-          image: portfolioUrl,
-          category: matchingCategory?.title || "Other",
-        };
-      })
-    );
-  }, [allUsers]);
-
-  useEffect(() => {
-    if (allServices.length > 0) {
-      setServices(allServices);
+        if (parentCategory) {
+          setSelectedCategory(parentCategory.title);
+          setSelectedItem(myServiceParam);
+        } else {
+          // If not found in our structure, just use it as a search term
+          setSelectedCategory(myServiceParam);
+          setSelectedItem(null);
+        }
+      }
     }
-  }, [allServices]);
+  }, [myServiceParam]);
 
-  const filteredServices = React.useMemo(() => {
-    return services.filter((service) => {
-      if (selectedItem) {
-        return service.title.toLowerCase() === selectedItem.toLowerCase();
-      }
-      if (selectedCategory) {
-        return service.category === selectedCategory;
-      }
-      return true;
-    });
-  }, [services, selectedItem, selectedCategory]);
-
+  // Initialize filtered users when data is loaded
   useEffect(() => {
-    setCurrentPage(1);
-  }, [selectedItem, selectedCategory]);
+    if (users?.data) {
+      setFilteredUsers(users.data);
+    }
+  }, [users]);
 
-  const totalPages = Math.ceil(filteredServices.length / ITEMS_PER_PAGE);
-  const paginatedServices = filteredServices.slice(
+  // Handle category selection
+  const handleCategorySelect = (category: string | null) => {
+    setSelectedCategory(category);
+    // When selecting a category, clear any selected item
+    if (category !== selectedCategory) {
+      setSelectedItem(null);
+    }
+  };
+
+  // Handle item selection
+  const handleItemSelect = (item: string | null) => {
+    setSelectedItem(item);
+  };
+
+  // Handle service filtering
+  const handleServiceFilter = (filteredData: any[]) => {
+    setFilteredUsers(filteredData);
+    setCurrentPage(1);
+  };
+
+  const totalItems = filteredUsers.length;
+  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+  const paginatedUsers = filteredUsers.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
@@ -139,9 +133,14 @@ export default function ServiceResultContent() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Move the loading check after all hooks
+  // Render loading state
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="container mx-auto p-4 text-center py-20">
+        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-teal-500 border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
+        <p className="mt-4 text-gray-600">Loading services...</p>
+      </div>
+    );
   }
 
   return (
@@ -182,9 +181,9 @@ export default function ServiceResultContent() {
           <CategorySidebar
             selectedCategory={selectedCategory}
             selectedItem={selectedItem}
-            onCategorySelect={setSelectedCategory}
-            onItemSelect={setSelectedItem}
-            onServiceFilter={setFilteredUsers}
+            onCategorySelect={handleCategorySelect}
+            onItemSelect={handleItemSelect}
+            onServiceFilter={handleServiceFilter}
           />
         </div>
 
@@ -198,35 +197,35 @@ export default function ServiceResultContent() {
 
         {/* Main Content */}
         <div className="lg:w-3/4 w-full">
+          {/* Page header with service count */}
           <div className="mb-6">
             <h1 className="text-xl md:text-2xl font-bold text-gray-900">
               {selectedItem || selectedCategory || "All Services"} (
-              {filteredUsers.length})
+              {
+                paginatedUsers.filter(
+                  (user: any) => user.my_service && user.my_service.length > 0
+                ).length
+              }
+              )
             </h1>
           </div>
 
+          {/* Service Cards Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {filteredUsers.length > 0 ? (
-              filteredUsers.map((user: any) =>
-                user?.my_service?.length > 0 ? (
-                  <ServiceCard key={user._id} user={user} />
-                ) : null
-              )
+            {paginatedUsers.length > 0 ? (
+              paginatedUsers
+                .filter(
+                  (user: any) => user.my_service && user.my_service.length > 0
+                )
+                .map((user: any) => <ServiceCard key={user._id} user={user} />)
             ) : (
-              allUsers.map((user: any) =>
-                user?.my_service?.length > 0 ? (
-                  <ServiceCard key={user._id} user={user} />
-                ) : null
-              )
+              <div className="col-span-3 text-center py-10">
+                <p className="text-gray-500">No services found</p>
+              </div>
             )}
           </div>
 
-          {filteredUsers.length === 0 && !allUsers.length && (
-            <div className="text-center py-10">
-              <p className="text-gray-500">No services found</p>
-            </div>
-          )}
-
+          {/* Pagination */}
           {totalPages > 1 && (
             <div className="mt-8">
               <Pagination

@@ -31,57 +31,58 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Check if a rating is in URL on component mount
+  // Check for initial URL params
   useEffect(() => {
+    const myServiceParam = searchParams.get("my_service");
     const ratingParam = searchParams.get("rating");
+    const locationParam = searchParams.get("country");
+    
+    // Initialize filters from URL
+    if (myServiceParam) {
+      // Find if it's a category or subcategory
+      const parentCategory = categories.find((cat) => 
+        cat.category_name === myServiceParam ||
+        cat.subCategories?.some((sub: any) => sub.subCategory === myServiceParam)
+      );
+      
+      if (parentCategory) {
+        if (parentCategory.category_name === myServiceParam) {
+          onCategorySelect(myServiceParam);
+          onItemSelect(null);
+          setOpenCategories([myServiceParam]);
+        } else {
+          const isSubcategory = parentCategory.subCategories?.some(
+            (sub: any) => sub.subCategory === myServiceParam
+          );
+          if (isSubcategory) {
+            onCategorySelect(parentCategory.category_name);
+            onItemSelect(myServiceParam);
+            setOpenCategories([parentCategory.category_name]);
+          }
+        }
+      } else {
+        // It might be a service that doesn't map directly to our categories
+        onCategorySelect(myServiceParam);
+        onItemSelect(null);
+      }
+    }
+    
     if (ratingParam) {
       setSelectedRating(Number(ratingParam));
     }
-  }, []);
-
-  const toggleCategory = (categoryTitle: string) => {
-    setOpenCategories((prev) =>
-      prev.includes(categoryTitle)
-        ? prev.filter((title) => title !== categoryTitle)
-        : [...prev, categoryTitle]
-    );
-
-    const currentCategory = categories.find(
-      (cat) => cat.category_name === categoryTitle
-    );
-
-    if (currentCategory?.subCategories?.length > 0) {
-      const firstSubCategory = currentCategory.subCategories[0].subCategory;
-      onCategorySelect(categoryTitle);
-      onItemSelect(firstSubCategory);
-      router.push(
-        `/service-result?my_service=${(firstSubCategory)}`
-      );
-    } else {
-      onCategorySelect(categoryTitle);
-      onItemSelect(null);
-      router.push(
-        `/service-result?my_service=${(categoryTitle)}`
-      );
+    
+    if (locationParam) {
+      setLocation(locationParam);
     }
-  };
+  }, [categories, searchParams, onCategorySelect, onItemSelect]);
 
-  const handleItemClick = (categoryTitle: string, itemTitle: string) => {
-    onCategorySelect(categoryTitle);
-    onItemSelect(itemTitle);
-    router.push(`/service-result?my_service=${(itemTitle)}`);
-  };
-
-  const isOpen = (categoryTitle: string) =>
-    openCategories.includes(categoryTitle);
-
-  // Replace multiple queries with single query
+  // Use the updated query to get filtered users data
   const { data: filteredUsers, isLoading: isFilteredDataLoading } =
     useGetAllUsersQuery(
       {
         ...(searchTerm && { searchTerm }),
         ...(selectedItem && { my_service: selectedItem }),
-        ...(selectedCategory && { my_service: selectedCategory }),
+        ...(selectedCategory && !selectedItem && { my_service: selectedCategory }),
         ...(location && { country: location }),
         ...(selectedRating && { rating: selectedRating }),
       },
@@ -89,17 +90,68 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
         skip: false,
       }
     );
-    // console.log("filterUser", filteredUsers);
-    
 
-  // Update the debounced filter function
+  // Update service filter when data changes
+  useEffect(() => {
+    if (filteredUsers?.data) {
+      onServiceFilter(filteredUsers.data);
+    }
+  }, [filteredUsers, onServiceFilter]);
+
+  // Toggle category open/closed and handle selection
+  const toggleCategory = (categoryTitle: string) => {
+    // Toggle open/closed state
+    setOpenCategories((prev) =>
+      prev.includes(categoryTitle)
+        ? prev.filter((title) => title !== categoryTitle)
+        : [...prev, categoryTitle]
+    );
+
+    // Find the current category
+    const currentCategory = categories.find(
+      (cat) => cat.category_name === categoryTitle
+    );
+
+    // Handle selection and navigation
+    if (currentCategory?.subCategories?.length > 0) {
+      // If category has subcategories, select the first subcategory
+      const firstSubCategory = currentCategory.subCategories[0].subCategory;
+      onCategorySelect(categoryTitle);
+      onItemSelect(firstSubCategory);
+      
+      // Update URL and trigger API request
+      router.push(`/service-result?my_service=${firstSubCategory}`);
+    } else {
+      // If no subcategories, select the category itself
+      onCategorySelect(categoryTitle);
+      onItemSelect(null);
+      
+      // Update URL and trigger API request
+      router.push(`/service-result?my_service=${categoryTitle}`);
+    }
+  };
+
+  // Handle subcategory item click
+  const handleItemClick = (categoryTitle: string, itemTitle: string) => {
+    onCategorySelect(categoryTitle);
+    onItemSelect(itemTitle);
+    
+    // Update URL with the selected item
+    router.push(`/service-result?my_service=${itemTitle}`);
+  };
+
+  // Check if a category is open
+  const isOpen = (categoryTitle: string) =>
+    openCategories.includes(categoryTitle);
+
+  // Debounced filter function to update URL and trigger API requests
   const debouncedFilter = useCallback(
     debounce(
       (params: {
-        location?: string;
-        rating?: number | null;
         searchTerm?: string;
         my_service?: string;
+        location?: string;
+        rating?: number | null;
       }) => {
         const urlParams = new URLSearchParams();
         
@@ -107,9 +159,10 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
         if (params.searchTerm) urlParams.append("searchTerm", params.searchTerm);
         if (params.my_service) urlParams.append("my_service", params.my_service);
         if (params.location) urlParams.append("country", params.location);
-        if (params.rating) urlParams.append("rating", params.rating.toString());
+        if (params.rating !== null && params.rating !== undefined) 
+          urlParams.append("rating", params.rating.toString());
 
-        // Only push if we have parameters
+        // Update URL
         if (urlParams.toString()) {
           router.push(`/service-result?${urlParams.toString()}`);
         } else {
@@ -121,112 +174,68 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
     [router]
   );
 
-  // Update search handler
+  // Handle search input change
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value);
     debouncedFilter({
       searchTerm: value,
       my_service: selectedItem || selectedCategory || undefined,
-      country: location,
+      location,
       rating: selectedRating,
     });
   };
 
-  // Update location handler
+  // Handle location input change
   const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setLocation(value);
     debouncedFilter({
       searchTerm,
       my_service: selectedItem || selectedCategory || undefined,
-      country: value,
+      location: value,
       rating: selectedRating,
     });
   };
 
-  // Update rating handler
+  // Handle rating selection
   const handleRatingSelect = (rating: number) => {
+    // Toggle rating or set new rating
     const newRating = selectedRating === rating ? null : rating;
     setSelectedRating(newRating);
-
-    const params = {
-      rating: newRating || undefined,
-    };
-
-    router.push(
-      `/service-result${
-        new URLSearchParams(params as any).toString()
-          ? `?${new URLSearchParams(params as any).toString()}`
-          : ""
-      }`
-    );
+    
+    // Update URL and trigger API request
+    debouncedFilter({
+      searchTerm,
+      my_service: selectedItem || selectedCategory || undefined,
+      location,
+      rating: newRating,
+    });
   };
 
-  // Add effect to handle filtered data updates
-  useEffect(() => {
-    if (filteredUsers?.data) {
-      // Filter by rating if selected
-      const filteredResults = selectedRating
-        ? filteredUsers.data.filter(
-            (user: any) => user.rating === selectedRating
-          )
-        : filteredUsers.data;
-
-      // Update UI through parent component
-      onServiceFilter(filteredResults);
-    }
-  }, [filteredUsers, selectedRating, onServiceFilter]);
-
-  // Update reset handlers
+  // Reset location filter
   const handleLocationReset = () => {
     setLocation("");
     debouncedFilter({
       searchTerm,
       my_service: selectedItem || selectedCategory || undefined,
-      country: "",
+      location: "",
       rating: selectedRating,
     });
   };
 
+  // Reset rating filter
   const handleRatingReset = () => {
     setSelectedRating(null);
-
-    // Immediate UI update
-    if (filteredUsers?.data) {
-      onServiceFilter(filteredUsers.data);
-    }
-
     debouncedFilter({
       searchTerm,
       my_service: selectedItem || selectedCategory || undefined,
-      country: location,
+      location,
       rating: null,
     });
   };
 
-  // Enhanced useEffect to handle route changes
-  useEffect(() => {
-    // Check if URL has no query parameters
-    if (!searchParams.toString()) {
-      // Reset all filters and states
-      onCategorySelect(null);
-      onItemSelect(null);
-      setOpenCategories([]);
-      setSearchTerm("");
-      setLocation("");
-      setSelectedRating(null);
-      onServiceFilter([]); // Reset service filter
-    } else {
-      // Check if there's a rating in the URL
-      const ratingParam = searchParams.get("rating");
-      if (ratingParam) {
-        setSelectedRating(Number(ratingParam));
-      }
-    }
-  }, [searchParams, onCategorySelect, onItemSelect, onServiceFilter]);
-
-  // Add this keyboard handler
+  // Handle keyboard navigation for search results
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const uniqueServices = Array.from(
       new Set(
@@ -259,31 +268,34 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
     }
   };
 
-  // Add this function to handle service selection
+  // Handle service selection from search results
   const handleServiceSelect = (uniqueService: string) => {
     setSearchTerm("");
 
+    // Find if service is a subcategory
     const parentCategory = categories.find((cat) =>
       cat.subCategories?.some((sub: any) => sub.subCategory === uniqueService)
     );
 
     if (parentCategory) {
+      // It's a subcategory
       onCategorySelect(parentCategory.category_name);
       onItemSelect(uniqueService);
       setOpenCategories([parentCategory.category_name]);
     } else {
+      // It's a main category or a service not in our category hierarchy
       onCategorySelect(uniqueService);
       onItemSelect(null);
       setOpenCategories([uniqueService]);
     }
 
-    router.push(
-      `/service-result?my_service=${encodeURIComponent(uniqueService)}`
-    );
+    // Update URL and trigger API request
+    router.push(`/service-result?my_service=${uniqueService}`);
   };
 
   return (
     <div className="p-4 bg-gray-50 border border-[#D2B9A1] rounded-lg w-full sm:w-[300px]">
+      {/* Search Box */}
       <div className="relative">
         <input
           type="search"
@@ -343,7 +355,7 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
                 : "hover:bg-gray-200"
             }`}
             onClick={() => {
-              // Clear all filters including rating
+              // Clear all filters
               onCategorySelect(null);
               onItemSelect(null);
               setOpenCategories([]);
