@@ -30,7 +30,7 @@ export default function ReportModal({ isOpen, onClose, onSubmit }: ReportModalPr
         return;
       }
       setFile(selectedFile);
-      
+
       if (selectedFile.type.startsWith('image/')) {
         const url = URL.createObjectURL(selectedFile);
         setPreviewUrl(url);
@@ -43,7 +43,7 @@ export default function ReportModal({ isOpen, onClose, onSubmit }: ReportModalPr
       toast.error("Please provide a description");
       return;
     }
-    
+
     try {
       setIsSubmitting(true);
       await onSubmit(description, file);
