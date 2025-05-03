@@ -3,13 +3,38 @@ import { baseApi } from "../../api/baseApi";
 export const usersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     
+    // getAllUsers: builder.query({
+    //   query: () => ({
+    //     url: "/auth/allUsers",
+    //     method: "GET",
+    //   }),
+    //   providesTags: ["User"],
+    // }),
+
     getAllUsers: builder.query({
-      query: () => ({
-        url: "/auth/allUsers",
-        method: "GET",
-      }),
+      query: (query) => {
+        const queryString = new URLSearchParams(query).toString();
+        console.log("queryString", queryString);
+        return {
+          
+          url: `/auth/allUsers${queryString ? `?${queryString}` : ''}`,
+          method: "GET",
+        };
+      },
       providesTags: ["User"],
     }),
+    
+
+//     getALlUser: builder.query({
+//       query: (query) => {
+//         const queryString = new URLSearchParams(query).toString();
+//         return {
+//           url: /auth/allUsers?${queryString},
+//           method: "GET",
+//         };
+//       },
+//       providesTags: ["user"],
+//     }),
 
     getAllUsersByService: builder.query({
       query: ({ service, country, rating, searchTerm }) => {

@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { ChevronDown, ChevronUp, MapPin, Star } from "lucide-react";
 import { useGetAllCategoriesQuery } from "@/src/redux/features/categories/categoriesApi";
-import { useGetAllUsersByServiceQuery } from "@/src/redux/features/users/userApi";
-import { useSearchUsersQuery } from "@/src/redux/features/users/userApi";
+import { useGetAllUsersQuery } from "@/src/redux/features/users/userApi";
 import { useRouter, useSearchParams } from "next/navigation";
 import { debounce } from "lodash";
 
@@ -76,13 +75,6 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
   const isOpen = (categoryTitle: string) =>
     openCategories.includes(categoryTitle);
 
-  const { data: searchResults, isLoading: isSearching } = useSearchUsersQuery(
-    searchTerm,
-    {
-      skip: searchTerm.length < 1,
-    }
-  );
-
   // Update the debounced filter function
   const debouncedFilter = useCallback(
     debounce(
@@ -90,12 +82,13 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
         location?: string;
         rating?: number | null;
         searchTerm?: string;
-        service?: string;
+        my_service?: string;
       }) => {
         const urlParams = new URLSearchParams();
         if (params.searchTerm)
           urlParams.append("searchTerm", params.searchTerm);
-        if (params.service) urlParams.append("my_service", params.service);
+        if (params.my_service)
+          urlParams.append("my_service", params.my_service);
         if (params.location) urlParams.append("country", params.location);
         if (params.rating) urlParams.append("rating", params.rating.toString());
 
@@ -106,14 +99,28 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
     [router]
   );
 
+  // Replace multiple queries with single query
+  const { data: filteredUsers, isLoading: isFilteredDataLoading } =
+    useGetAllUsersQuery(
+      {
+        searchTerm: searchTerm || undefined,
+        my_service: selectedItem || selectedCategory || undefined,
+        country: location || undefined,
+        rating: selectedRating || undefined,
+      },
+      {
+        skip: false,
+      }
+    );
+
   // Update search handler
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value);
     debouncedFilter({
       searchTerm: value,
-      service: selectedItem || selectedCategory || "",
-      location,
+      my_service: selectedItem || selectedCategory || undefined,
+      country: location,
       rating: selectedRating,
     });
   };
@@ -124,48 +131,27 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
     setLocation(value);
     debouncedFilter({
       searchTerm,
-      service: selectedItem || selectedCategory || "",
-      location: value,
+      my_service: selectedItem || selectedCategory || undefined,
+      country: value,
       rating: selectedRating,
     });
   };
-
-  // Add filtered data state
-  const [filteredData, setFilteredData] = useState<any[]>([]);
-
-  // Update API query
-  const { data: filteredUsers, isLoading: isFilteredDataLoading } =
-    useGetAllUsersByServiceQuery(
-      {
-        service: selectedItem || selectedCategory || "",
-        country: location,
-        rating: selectedRating,
-        searchTerm,
-      },
-      {
-        skip: false,
-      }
-    );
 
   // Update rating handler
   const handleRatingSelect = (rating: number) => {
     const newRating = selectedRating === rating ? null : rating;
     setSelectedRating(newRating);
 
-    // Clear other filters
-    onCategorySelect(null);
-    onItemSelect(null);
-    setOpenCategories([]);
-    setSearchTerm("");
-    setLocation("");
+    const params = {
+      rating: newRating || undefined,
+    };
 
-    // Update URL
-    const urlParams = new URLSearchParams();
-    if (newRating) {
-      urlParams.append("rating", newRating.toString());
-    }
     router.push(
-      `/service-result${urlParams.toString() ? `?${urlParams.toString()}` : ""}`
+      `/service-result${
+        new URLSearchParams(params as any).toString()
+          ? `?${new URLSearchParams(params as any).toString()}`
+          : ""
+      }`
     );
   };
 
@@ -181,7 +167,6 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
 
       // Update UI through parent component
       onServiceFilter(filteredResults);
-      setFilteredData(filteredResults);
     }
   }, [filteredUsers, selectedRating, onServiceFilter]);
 
@@ -190,8 +175,8 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
     setLocation("");
     debouncedFilter({
       searchTerm,
-      service: selectedItem || selectedCategory || "",
-      location: "",
+      my_service: selectedItem || selectedCategory || undefined,
+      country: "",
       rating: selectedRating,
     });
   };
@@ -206,8 +191,8 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
 
     debouncedFilter({
       searchTerm,
-      service: selectedItem || selectedCategory || "",
-      location,
+      my_service: selectedItem || selectedCategory || undefined,
+      country: location,
       rating: null,
     });
   };
@@ -237,7 +222,7 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const uniqueServices = Array.from(
       new Set(
-        searchResults?.data
+        filteredUsers?.data
           ?.flatMap((result: any) => result.my_service)
           ?.filter((service: string) =>
             service?.toLowerCase().includes(searchTerm?.toLowerCase())
@@ -302,11 +287,11 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
         />
 
         {/* Search Results Dropdown */}
-        {searchResults?.data?.length > 0 && searchTerm && (
+        {filteredUsers?.data?.length > 0 && searchTerm && (
           <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
             {Array.from(
               new Set(
-                searchResults?.data
+                filteredUsers?.data
                   ?.flatMap((result: any) => result.my_service)
                   ?.filter((service: string) =>
                     service?.toLowerCase().includes(searchTerm?.toLowerCase())
@@ -329,7 +314,7 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
         )}
 
         {/* Loading State */}
-        {isSearching && searchTerm && (
+        {isFilteredDataLoading && searchTerm && (
           <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-4 text-center text-gray-500">
             Searching...
           </div>

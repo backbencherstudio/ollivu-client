@@ -1,122 +1,139 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
-import { Service } from "@/types/service.types";
 import { Star } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { User } from "@/src/redux/types/authInterface";
 
 interface ServiceCardProps {
-  service: Service;
+  user: User;
 }
 
-export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
-  const [serviceImageError, setServiceImageError] = useState(false);
+export const ServiceCard: React.FC<ServiceCardProps> = ({ user }) => {
   const [instructorImageError, setInstructorImageError] = useState(false);
-  
+  const [portfolioImageError, setPortfolioImageError] = useState(false);
   const router = useRouter();
 
   const handleCardClick = () => {
-    if (service.instructor?.id) {
-      router.push(`/service-result/${service.instructor.id}`);
+    if (user?._id) {
+      router.push(`/service-result/${user._id}`);
     }
   };
 
+  const profileImageUrl = user?.profileImage
+    ? `${process.env.NEXT_PUBLIC_IMAGE_URL}${user.profileImage}`
+    : null;
+
+  const portfolioImageUrl = user?.portfolio
+    ? `${process.env.NEXT_PUBLIC_IMAGE_URL}${user.portfolio}`
+    : null;
+
   return (
     <Card className="w-full bg-white rounded-xl overflow-hidden shadow hover:shadow-md transition-all flex flex-col h-full p-0">
-      <div className="relative w-full h-44 bg-gray-200 flex items-center justify-center">
-        {service.image && !serviceImageError ? (
+      {/* Portfolio Image Section */}
+      <div className="w-full h-48 relative bg-gray-100">
+        {portfolioImageUrl && !portfolioImageError ? (
           <Image
-            src={service.image}
-            alt={service.title}
+            src={portfolioImageUrl}
+            alt="Portfolio"
             fill
             className="object-cover"
-            priority
-            onError={() => setServiceImageError(true)}
+            onError={() => setPortfolioImageError(true)}
           />
         ) : (
-          <span className="text-4xl font-medium text-gray-600">
-            {service.title?.charAt(0).toUpperCase() || 'S'}
-          </span>
+          <div className="w-full h-full flex items-center justify-center bg-gray-100">
+            <span className="text-gray-400">No portfolio image</span>
+          </div>
         )}
       </div>
 
       {/* Content Section */}
-      <div className="p-3 flex flex-col flex-grow">
-        <div className="flex-grow">
-          {/* Title and Rating */}
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-lg font-medium text-[#070707] line-clamp-1">
-              {service.title}
-            </h3>
-            
-            <div className="flex items-center gap-1">
-              <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-              <span className="text-gray-700 font-medium">
-                {typeof service.rating === 'number' ? service.rating.toFixed(1) : '0.0'}
+      <div className="p-4 flex flex-col flex-grow">
+        {/* Rating */}
+        <div className="flex items-center justify-end mb-3">
+          <div className="flex items-center gap-1">
+            <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+            <span className="text-gray-700 font-medium">
+              {typeof user?.rating === "number"
+                ? user.rating.toFixed(1)
+                : "0.0"}
+            </span>
+          </div>
+        </div>
+
+        {/* User Info */}
+        <div className="bg-[#F9F9F9] p-4 rounded-lg">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-16 h-16 rounded-full bg-gray-200 relative overflow-hidden flex items-center justify-center">
+              {profileImageUrl && !instructorImageError ? (
+                <Image
+                  src={profileImageUrl}
+                  alt={user?.first_name || "User"}
+                  fill
+                  className="object-cover"
+                  onError={() => setInstructorImageError(true)}
+                />
+              ) : (
+                <span className="text-2xl font-medium text-gray-600">
+                  {user?.first_name?.charAt(0).toUpperCase() || "U"}
+                </span>
+              )}
+            </div>
+            <div>
+              <h4 className="text-xl font-medium text-[#070707]">
+                {user?.first_name || "User"}
+              </h4>
+              <p className="text-sm text-[#777980]">{user?.email}</p>
+            </div>
+          </div>
+
+          {/* Services List */}
+          <div className="mb-4">
+            <h5 className="text-sm font-medium text-[#777980] mb-2">
+              Services:
+            </h5>
+            <div className="flex flex-wrap gap-2">
+              {user?.my_service?.map((service, index) => (
+                <span
+                  key={index}
+                  className="bg-teal-50 text-teal-700 text-xs px-2 py-1 rounded-full"
+                >
+                  {service}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2 mt-4">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-[#777980]">Experience:</span>
+              <span className="font-medium text-[#4A4C56]">2+ years</span>
+            </div>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-[#777980]">Reviews:</span>
+              <span className="font-medium text-[#4A4C56]">
+                {user?.review || 0}
               </span>
             </div>
           </div>
-
-          {/* Instructor Info */}
-          <div className="bg-[#F9F9F9] p-3 rounded-lg">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 rounded-full bg-gray-200 relative overflow-hidden flex items-center justify-center">
-                {service.instructor?.image && !instructorImageError ? (
-                  <Image
-                    src={service.instructor.image}
-                    alt={service.instructor?.name || "Instructor"}
-                    fill
-                    className="object-cover"
-                    onError={() => setInstructorImageError(true)}
-                  />
-                ) : (
-                  <span className="text-sm font-medium text-gray-600">
-                    {service.instructor?.name?.charAt(0).toUpperCase() || 'I'}
-                  </span>
-                )}
-              </div>
-              {/* Rest of the instructor info */}
-              <div>
-                <h4 className="font-medium text-[#070707]">
-                  {service.instructor?.name || "Instructor"}
-                </h4>
-                <p className="text-sm text-[#777980]">{service.instructor?.email}</p>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-1 mt-4 text-sm">
-              <p className="font-regular text-[#777980]">
-                Experience:{" "}
-                <span className="font-normal text-[#4A4C56]">
-                  {service.instructor?.experience || "Not specified"}
-                </span>
-              </p>
-              <p className="font-regular text-[#777980]">
-                Reviews:{" "}
-                <span className="font-normal text-[#4A4C56]">
-                  {service.reviewCount || 0} Reviews
-                </span>
-              </p>
-            </div>
-          </div>
-
-          {/* Connect Button */}
-          <button 
-            onClick={handleCardClick}  
-            className="w-full py-2.5 bg-[#20B894] text-white rounded-lg font-medium text-md hover:bg-emerald-700 transition-colors flex items-center justify-center gap-1.5 mt-3 cursor-pointer"
-          >
-            Details
-            <svg
-              className="w-3.5 h-3.5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M5 12h14m-7-7l7 7-7 7" />
-            </svg>
-          </button>
         </div>
+
+        {/* View Profile Button */}
+        <button
+          onClick={handleCardClick}
+          className="w-full py-3 bg-[#20B894] text-white rounded-lg font-medium text-md hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2 mt-4"
+        >
+          View Profile
+          <svg
+            className="w-4 h-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path d="M5 12h14m-7-7l7 7-7 7" />
+          </svg>
+        </button>
       </div>
     </Card>
   );
