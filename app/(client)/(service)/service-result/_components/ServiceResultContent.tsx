@@ -8,7 +8,7 @@ import { CategorySidebar } from "./category-sidebar";
 import { ServiceCard } from "./service-card";
 import { Pagination } from "@/components/reusable/pagination";
 import {
-  useGetAllUsersByServiceQuery,
+  // useGetAllUsersByServiceQuery,
   useGetAllUsersQuery,
 } from "@/src/redux/features/users/userApi";
 import serviceImg from "@/public/client/services/service-01.png";
@@ -57,11 +57,11 @@ export default function ServiceResultContent() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [filteredUsers, setFilteredUsers] = useState([]);
 
-  // Move the query hook up with other hooks
-  const { data: serviceFilteredUsers, isLoading: isFilterLoading } =
-    useGetAllUsersByServiceQuery(selectedCategory || "", {
-      skip: !selectedCategory,
-    });
+  // // Move the query hook up with other hooks
+  // const { data: serviceFilteredUsers, isLoading: isFilterLoading } =
+  //   useGetAllUsersByServiceQuery(selectedCategory || "", {
+  //     skip: !selectedCategory,
+  //   });
 
   const allUsers = users?.data || [];
   console.log("all user", allUsers);
@@ -201,21 +201,27 @@ export default function ServiceResultContent() {
           <div className="mb-6">
             <h1 className="text-xl md:text-2xl font-bold text-gray-900">
               {selectedItem || selectedCategory || "All Services"} (
-              {filteredServices.length})
+              {filteredUsers.length})
             </h1>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {allUsers.map(
-              (user) =>
-                // Only show users who have services
-                user?.my_service?.length > 0 && (
+            {filteredUsers.length > 0 ? (
+              filteredUsers.map((user: any) =>
+                user?.my_service?.length > 0 ? (
                   <ServiceCard key={user._id} user={user} />
-                )
+                ) : null
+              )
+            ) : (
+              allUsers.map((user: any) =>
+                user?.my_service?.length > 0 ? (
+                  <ServiceCard key={user._id} user={user} />
+                ) : null
+              )
             )}
           </div>
 
-          {filteredServices.length === 0 && (
+          {filteredUsers.length === 0 && !allUsers.length && (
             <div className="text-center py-10">
               <p className="text-gray-500">No services found</p>
             </div>

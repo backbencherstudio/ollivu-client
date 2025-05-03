@@ -55,13 +55,13 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
       onCategorySelect(categoryTitle);
       onItemSelect(firstSubCategory);
       router.push(
-        `/service-result?my_service=${encodeURIComponent(firstSubCategory)}`
+        `/service-result?my_service=${(firstSubCategory)}`
       );
     } else {
       onCategorySelect(categoryTitle);
       onItemSelect(null);
       router.push(
-        `/service-result?my_service=${encodeURIComponent(categoryTitle)}`
+        `/service-result?my_service=${(categoryTitle)}`
       );
     }
   };
@@ -69,11 +69,28 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
   const handleItemClick = (categoryTitle: string, itemTitle: string) => {
     onCategorySelect(categoryTitle);
     onItemSelect(itemTitle);
-    router.push(`/service-result?my_service=${encodeURIComponent(itemTitle)}`);
+    router.push(`/service-result?my_service=${(itemTitle)}`);
   };
 
   const isOpen = (categoryTitle: string) =>
     openCategories.includes(categoryTitle);
+
+  // Replace multiple queries with single query
+  const { data: filteredUsers, isLoading: isFilteredDataLoading } =
+    useGetAllUsersQuery(
+      {
+        ...(searchTerm && { searchTerm }),
+        ...(selectedItem && { my_service: selectedItem }),
+        ...(selectedCategory && { my_service: selectedCategory }),
+        ...(location && { country: location }),
+        ...(selectedRating && { rating: selectedRating }),
+      },
+      {
+        skip: false,
+      }
+    );
+    // console.log("filterUser", filteredUsers);
+    
 
   // Update the debounced filter function
   const debouncedFilter = useCallback(
@@ -85,33 +102,24 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
         my_service?: string;
       }) => {
         const urlParams = new URLSearchParams();
-        if (params.searchTerm)
-          urlParams.append("searchTerm", params.searchTerm);
-        if (params.my_service)
-          urlParams.append("my_service", params.my_service);
+        
+        // Only add parameters that have values
+        if (params.searchTerm) urlParams.append("searchTerm", params.searchTerm);
+        if (params.my_service) urlParams.append("my_service", params.my_service);
         if (params.location) urlParams.append("country", params.location);
         if (params.rating) urlParams.append("rating", params.rating.toString());
 
-        router.push(`/service-result?${urlParams.toString()}`);
+        // Only push if we have parameters
+        if (urlParams.toString()) {
+          router.push(`/service-result?${urlParams.toString()}`);
+        } else {
+          router.push('/service-result');
+        }
       },
       500
     ),
     [router]
   );
-
-  // Replace multiple queries with single query
-  const { data: filteredUsers, isLoading: isFilteredDataLoading } =
-    useGetAllUsersQuery(
-      {
-        searchTerm: searchTerm || undefined,
-        my_service: selectedItem || selectedCategory || undefined,
-        country: location || undefined,
-        rating: selectedRating || undefined,
-      },
-      {
-        skip: false,
-      }
-    );
 
   // Update search handler
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
