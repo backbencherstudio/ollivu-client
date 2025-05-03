@@ -153,11 +153,11 @@ const ServiceDetails = () => {
         senderService: selectedService,
         my_service: currentUsreInfo?.my_service,
       }];
-      // console.log("exchange Data", exchangeData);
+      console.log("exchange Data", exchangeData);
       
 
       const response = await createExchange(exchangeData).unwrap();
-      // console.log("send exchange response", response);
+      console.log("send exchange response", response);
 
       if (response?.success) {
         toast.success("Message request sent successfully");

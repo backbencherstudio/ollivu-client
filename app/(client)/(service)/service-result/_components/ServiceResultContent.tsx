@@ -7,7 +7,10 @@ import { serviceCategories } from "@/data/services";
 import { CategorySidebar } from "./category-sidebar";
 import { ServiceCard } from "./service-card";
 import { Pagination } from "@/components/reusable/pagination";
-import { useGetAllUsersByServiceQuery, useGetAllUsersQuery } from "@/src/redux/features/users/userApi";
+import {
+  useGetAllUsersByServiceQuery,
+  useGetAllUsersQuery,
+} from "@/src/redux/features/users/userApi";
 import serviceImg from "@/public/client/services/service-01.png";
 import avaterImg from "@/public/avatars/emily.png";
 import { ChevronDown, X } from "lucide-react";
@@ -55,13 +58,13 @@ export default function ServiceResultContent() {
   const [filteredUsers, setFilteredUsers] = useState([]);
 
   // Move the query hook up with other hooks
-  const { data: serviceFilteredUsers, isLoading: isFilterLoading } = useGetAllUsersByServiceQuery(
-    selectedCategory || '',
-    { skip: !selectedCategory }
-  );
+  const { data: serviceFilteredUsers, isLoading: isFilterLoading } =
+    useGetAllUsersByServiceQuery(selectedCategory || "", {
+      skip: !selectedCategory,
+    });
 
   const allUsers = users?.data || [];
-  // console.log("all user", allUsers);
+  console.log("all user", allUsers);
 
   const allServices = React.useMemo(() => {
     if (typeof window === "undefined" || !allUsers?.length) return [];
@@ -203,9 +206,13 @@ export default function ServiceResultContent() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {paginatedServices.map((service) => (
-              <ServiceCard key={service.id} service={service} />
-            ))}
+            {allUsers.map(
+              (user) =>
+                // Only show users who have services
+                user?.my_service?.length > 0 && (
+                  <ServiceCard key={user._id} user={user} />
+                )
+            )}
           </div>
 
           {filteredServices.length === 0 && (
