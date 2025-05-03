@@ -9,6 +9,7 @@ interface ViewDetailsModalProps {
   onClose: () => void;
   conversation: any;
   isReportedView: boolean;
+  isSuspendedView: boolean;
   setViewDetailsModal : any
 }
 
@@ -26,17 +27,17 @@ export function ViewDetailsModal({ isOpen, onClose, conversation, isReportedView
   }
 
   return (
-    <div 
+    <div
       className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
       onClick={onClose}
     >
-      <div 
+      <div
         className="bg-white rounded-xl w-[500px] p-6"
-        onClick={e => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold">Report Details</h2>
-          <button 
+          <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700"
           >
@@ -52,30 +53,45 @@ export function ViewDetailsModal({ isOpen, onClose, conversation, isReportedView
                 <div className="flex justify-between items-start">
                   <span className="text-gray-500">Reporter:</span>
                   <div className="text-right">
-                    <p className="font-medium">{conversation.reporterId.first_name}</p>
-                    <p className="text-sm text-gray-500">{conversation.reporterId.email}</p>
+                    <p className="font-medium">
+                      {conversation.reporterId.first_name}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {conversation.reporterId.email}
+                    </p>
                   </div>
                 </div>
                 <div className="flex justify-between items-start">
                   <span className="text-gray-500">Reported User:</span>
                   <div className="text-right">
-                    <p className="font-medium">{conversation.reportedId.first_name}</p>
-                    <p className="text-sm text-gray-500">{conversation.reportedId.email}</p>
+                    <p className="font-medium">
+                      {conversation.reportedId.first_name}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {conversation.reportedId.email}
+                    </p>
                   </div>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500">Report Type:</span>
-                  <span className="text-red-500 font-medium">{conversation.reportType}</span>
+                  <span className="text-red-500 font-medium">
+                    {conversation.reportType}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500">Report Date:</span>
-                  <span>{new Date(conversation.createdAt).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}</span>
+                  <span>
+                    {new Date(conversation.createdAt).toLocaleDateString(
+                      "en-US",
+                      {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      }
+                    )}
+                  </span>
                 </div>
               </div>
             </div>
@@ -90,11 +106,15 @@ export function ViewDetailsModal({ isOpen, onClose, conversation, isReportedView
                     fill
                     className="object-contain"
                     onError={(e: any) => {
-                      e.currentTarget.style.display = 'none';
+                      e.currentTarget.style.display = "none";
                       e.currentTarget.parentElement.innerHTML = `
                         <div class="flex h-full items-center justify-center">
                           <span class="text-4xl font-medium text-gray-400">
-                            ${conversation?.reportedId?.first_name?.charAt(0)?.toUpperCase() || 'E'}
+                            ${
+                              conversation?.reportedId?.first_name
+                                ?.charAt(0)
+                                ?.toUpperCase() || "E"
+                            }
                           </span>
                         </div>
                       `;
@@ -107,7 +127,9 @@ export function ViewDetailsModal({ isOpen, onClose, conversation, isReportedView
                 <h3 className="font-medium">Supporting Evidence</h3>
                 <div className="relative h-48 w-full rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center">
                   <span className="text-4xl font-medium text-gray-400">
-                    {conversation?.reportedId?.first_name?.charAt(0)?.toUpperCase() || 'E'}
+                    {conversation?.reportedId?.first_name
+                      ?.charAt(0)
+                      ?.toUpperCase() || "E"}
                   </span>
                 </div>
               </div>
@@ -146,15 +168,21 @@ export function ViewDetailsModal({ isOpen, onClose, conversation, isReportedView
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-sm">Sendedr Service</span>
-                  <span className="text-sm font-medium">{conversation.user1}</span>
+                  <span className="text-sm font-medium">
+                    {conversation.user1}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm">Receiver Service</span>
-                  <span className="text-sm font-medium">{conversation.user2}</span>
+                  <span className="text-sm font-medium">
+                    {conversation.user2}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm">Status</span>
-                  <span className="text-sm font-medium text-green-600">{conversation.status}</span>
+                  <span className="text-sm font-medium text-green-600">
+                    {conversation.status}
+                  </span>
                 </div>
               </div>
             </div>

@@ -35,7 +35,7 @@ export const MessageContent = ({
   };
   return (
     <div
-      className="flex-grow h-[540px] overflow-y-auto p-4 mb-36"
+      className="flex-grow overflow-y-auto p-4  bg-white h-[560px]"
       style={{ display: "flex", flexDirection: "column-reverse" }}
     >
       <div ref={messagesEndRef} />
