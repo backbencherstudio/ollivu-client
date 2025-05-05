@@ -10,6 +10,7 @@ export const MessageList = ({
   userData,
   currentUser,
   userId,
+  userImage
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRole, setSelectedRole] = useState("all");
@@ -17,7 +18,7 @@ export const MessageList = ({
   const [exchangeChatRequest, { isLoading: exchangeChatIsLoading }] =
     useExchangeChatRequestMutation();
 
-  console.log("currentUser", currentUser);
+  console.log("user Data", userData);
   const [finalQuery, setFinalQuery] = useState({
     userId: userId,
     isAccepted: true,
@@ -27,9 +28,10 @@ export const MessageList = ({
     userId: userId,
     isAccepted: false,
   });
+  console.log("requestList", requestList);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  console.log("userData", userData);
+  // console.log("userData", userData);
   const filteredUsers = userData
     ?.filter((user) =>
       (user?.email || "")
@@ -42,6 +44,7 @@ export const MessageList = ({
 
       return new Date(timeB).getTime() - new Date(timeA).getTime(); // Most recent first
     });
+  // console.log("filteredUsers", filteredUsers);
 
   if (!isLoading) {
     return (
@@ -69,11 +72,11 @@ export const MessageList = ({
       reciverUserId: userId,
     };
 
-    console.log(data);
+    // console.log(data);
 
     const result = await exchangeChatRequest(data);
 
-    console.log("result", result);
+    // console.log("result", result);
   };
 
   return (
@@ -108,57 +111,51 @@ export const MessageList = ({
           <div className="overflow-y-auto">
             {filteredUsers?.map((user) => (
               <button
-                key={user.id}
+                key={user._id}
                 onClick={() => onChatSelect(user)}
-                className={`w-full text-left hover:bg-gray-50 p-4 border-b border-gray-100 ${
-                  user.hasUnread ? "bg-blue-50" : ""
-                }`}
+                className={`w-full text-left hover:bg-gray-50 p-4 border-b border-gray-100 ${user.hasUnread ? "bg-blue-50" : ""
+                  }`}
               >
                 <div className="flex items-center gap-3">
                   <div className="relative">
-                    {user?.profileImage ? (
-                      <img
-                        src={`${user?.profileImage}`}
-                        alt={user?.name?.slice(0, 2).toUpperCase()}
+                    {user?.senderUserId?.profileImage ? (
+                      <Image
+                        src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${user?.senderUserId?.profileImage}`}
+                        alt={user?.senderUserId?.first_name?.slice(0, 2).toUpperCase()}
+                        width={40}
+                        height={40}
                         className="w-10 h-10 rounded-full"
                       />
                     ) : (
-                      <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                        <span className="text-gray-500">
+                      <div className="w-10 h-10 rounded-full bg-[#20b894] flex items-center justify-center">
+                        <span className="text-white text-lg font-semibold">
                           {user?.email === currentUser
-                            ? user?.reciverUserId?.first_name
-                                .slice(0, 2)
-                                .toUpperCase()
-                            : user?.senderUserId?.first_name
-                                .slice(0, 2)
-                                .toUpperCase() || "UN"}{" "}
+                            ? user?.reciverUserId?.first_name?.charAt(0).toUpperCase()
+                            : user?.senderUserId?.first_name?.charAt(0).toUpperCase() || "U"}
                         </span>
                       </div>
                     )}
                     <span
-                      className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${
-                        user.isOnline ? "bg-green-500" : "bg-gray-400"
-                      }`}
+                      className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${user.isOnline ? "bg-green-500" : "bg-gray-400"
+                        }`}
                     ></span>
                   </div>
                   <div className="flex-grow">
                     <div className="flex items-center justify-between">
                       <h3
-                        className={`text-sm ${
-                          user.hasUnread
+                        className={`text-sm ${user.hasUnread
                             ? "font-bold text-blue-900"
                             : "font-semibold"
-                        }`}
+                          }`}
                       >
                         {user?.email === currentUser
                           ? user?.reciverUserId?.first_name
                           : user?.senderUserId?.first_name || "UN"}{" "}
-                        <span className="text-[#1677ff] text-xs font-thin">{`(${
-                          user?.email === currentUser
+                        <span className="text-[#1677ff] text-xs font-thin">{`(${user?.email === currentUser
                             ? user?.reciverUserId?.role
                             : user?.senderUserId?.role
-                        })`}</span>
-                      </h3> 
+                          })`}</span>
+                      </h3>
                       {user.lastMessage?.timestamp && (
                         <span className="text-xs text-gray-400">
                           {new Date(
@@ -171,13 +168,12 @@ export const MessageList = ({
                       )}
                     </div>
                     <p
-                      className={`text-sm truncate ${
-                        user.hasUnread
+                      className={`text-sm truncate ${user.hasUnread
                           ? "font-semibold text-blue-800"
                           : "text-gray-500"
-                      }`}
+                        }`}
                     >
-                      {/* {user.lastMessage?.content || "No messages yet"} */}
+                      {user.lastMessage?.content || "No messages yet"}
                       {user?.email === currentUser
                         ? user?.reciverUserId?.email
                         : user?.email || "No messages yet"}
@@ -185,20 +181,19 @@ export const MessageList = ({
                   </div>
                   <div className="flex flex-col items-end">
                     <span
-                      className={`text-xs ${
-                        user.hasUnread
+                      className={`text-xs ${user.hasUnread
                           ? "text-blue-600 font-bold"
                           : "text-gray-400"
-                      }`}
+                        }`}
                     >
                       {user.lastMessageTime
                         ? new Date(user.lastMessageTime).toLocaleTimeString(
-                            [],
-                            {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            }
-                          )
+                          [],
+                          {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          }
+                        )
                         : ""}
                     </span>
                     {user.unreadCount > 0 && (
@@ -223,21 +218,31 @@ export const MessageList = ({
             {requestList?.data?.map((request) => (
               <div key={request._id} className="p-4 border-b border-gray-100">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full relative overflow-hidden">
-                    <div className="w-full h-full bg-[#20B894] flex items-center justify-center text-white font-semibold">
-                      {request?.senderUserId?.first_name
-                        ? request?.senderUserId.first_name
-                            .slice(0, 2)
-                            .toUpperCase()
-                        : "UN"}
-                    </div>
+                  <div className="w-12 h-12 rounded-full relative overflow-hidden">
+                    {request?.senderUserId?.profileImage ? (
+                      <Image
+                        src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${request?.senderUserId?.profileImage}`}
+                        alt={request?.senderUserId?.first_name?.slice(0, 2).toUpperCase()}
+                        width={100}
+                        height={100}
+                        className="w-full h-full object-cover rounded-full"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-[#20B894] flex items-center justify-center text-white font-semibold">
+                        {request?.senderUserId?.first_name
+                          ? request?.senderUserId.first_name
+                              .slice(0, 2)
+                              .toUpperCase()
+                          : "UN"}
+                      </div>
+                    )}
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-sm font-medium">
+                    <h3 className="text-base font-medium">
                       {request?.senderUserId?.first_name}
                     </h3>
                     <p className="text-xs text-emerald-500">
-                      {request.message}
+                      {request?.senderUserId?.first_name} Sent You a Request
                     </p>
                     <span className="text-xs text-gray-500">
                       {request.time}
