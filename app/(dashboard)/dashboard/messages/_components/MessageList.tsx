@@ -19,6 +19,7 @@ export const MessageList = ({
     useExchangeChatRequestMutation();
 
   // console.log("user Data", userData);
+  // console.log("user id", userId);
   const [finalQuery, setFinalQuery] = useState({
     userId: userId,
     isAccepted: true,
@@ -116,7 +117,27 @@ export const MessageList = ({
                   {/* User Avatar Section */}
                   <div className="relative">
                     <div className="w-12 h-12 rounded-full overflow-hidden">
-                      {user?.senderUserId?.profileImage ? (
+                      {userId === user?.senderUserId?._id ? (
+                        // If userId matches senderUserId, show reciverUserId's image
+                        user?.reciverUserId?.profileImage ? (
+                          <Image
+                            src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${user?.reciverUserId?.profileImage}`}
+                            alt="Profile"
+                            width={48}
+                            height={48}
+                            className="object-cover w-full h-full"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-[#20b894] flex items-center justify-center">
+                            <span className="text-white text-lg font-medium">
+                              {user?.reciverUserId?.first_name
+                                ?.charAt(0)
+                                .toUpperCase() || "U"}
+                            </span>
+                          </div>
+                        )
+                      ) : // If userId doesn't match senderUserId, show senderUserId's image
+                      user?.senderUserId?.profileImage ? (
                         <Image
                           src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${user?.senderUserId?.profileImage}`}
                           alt="Profile"
@@ -127,10 +148,7 @@ export const MessageList = ({
                       ) : (
                         <div className="w-full h-full bg-[#20b894] flex items-center justify-center">
                           <span className="text-white text-lg font-medium">
-                            {(user?.email === currentUser
-                              ? user?.reciverUserId?.first_name
-                              : user?.senderUserId?.first_name
-                            )
+                            {user?.senderUserId?.first_name
                               ?.charAt(0)
                               .toUpperCase() || "U"}
                           </span>
