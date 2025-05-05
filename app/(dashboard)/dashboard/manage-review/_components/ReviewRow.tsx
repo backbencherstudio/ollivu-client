@@ -28,6 +28,11 @@ export function ReviewRow({
   const [isActionModalOpen, setIsActionModalOpen] = useState(false);
   console.log("review: ", review);
 
+
+
+
+
+
   return (
     <>
       <tr className="border-b">
@@ -80,7 +85,11 @@ export function ReviewRow({
           className="py-4 text-sm max-w-xs cursor-pointer hover:text-gray-600"
           onClick={() => setIsReviewModalOpen(true)}
         >
-          {review?.reviewText}
+          {review?.reportDetails &&
+            (review.reportDetails.length > 50
+              ? `${review.reportDetails.substring(0, 50)}...`
+              : review.reportDetails)}
+
         </td>
         {/* <td className="py-4">
           <div className="flex items-center">
@@ -89,10 +98,11 @@ export function ReviewRow({
           </div>
         </td> */}
         <td className="py-4">
-          <StatusDropdown
+          {/* <StatusDropdown
             currentStatus={review?.status}
             onStatusChange={(status) => onStatusChange(review?.id, status)}
-          />
+          /> */}
+          {review?.status}
         </td>
         <td className="py-4">
           {review.status === "Pending" ? (
@@ -146,25 +156,87 @@ export function ReviewRow({
             </div>
           ) : (
             <div className="flex items-center space-x-2">
-              <Button
+              {/* <Button
                 variant="ghost"
                 size="sm"
                 className="text-blue-500 p-0 ml-5"
                 onClick={() => setIsActionModalOpen(true)}
               >
                 View details
-              </Button>
-              <Button
+              </Button> */}
+
+              {/* <Button
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8 text-gray-400"
                 onClick={() => onDelete(review.id)}
               >
                 <Trash2 className="h-5 w-5" />
+
+              </Button> */}
+
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-green-500"
+                onClick={() => onApprove(review.id)}
+              >
+                <span className="sr-only">Approve</span>
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M5 12L10 17L20 7"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
               </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-red-500"
+                onClick={() => onReject(review.id)}
+              >
+                <span className="sr-only">Reject</span>
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M18 6L6 18M6 6L18 18"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </Button>
+
             </div>
           )}
         </td>
+
+        <td>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-blue-500 p-0 ml-5"
+            onClick={() => setIsActionModalOpen(true)}
+          >
+            View details
+          </Button>
+        </td>
+
       </tr>
 
       {/* Modal for Review column click */}

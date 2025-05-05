@@ -650,6 +650,7 @@ const Messages = () => {
             }))}
             currentUser={currentUser?.email}
             userId={currentUser?.userId}
+            userImage={undefined}
           />
         </div>
       </div>
