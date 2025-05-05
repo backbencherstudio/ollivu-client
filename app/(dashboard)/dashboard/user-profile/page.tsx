@@ -180,13 +180,10 @@ export default function UserProfile() {
           formData.addressInfo.zipCode
         );
 
-        // Add about me
-        formDataToSend.append("about_me", formData.aboutMe);
-        for (const pair of formDataToSend.entries()) {
-          // console.log(pair[0], pair[1]);
-        }
+    
 
         const formDataObject = Object.fromEntries(formDataToSend.entries());
+        console.log("formDataObject", formDataObject);
 
         const response = await updateUser(formDataToSend).unwrap();
 

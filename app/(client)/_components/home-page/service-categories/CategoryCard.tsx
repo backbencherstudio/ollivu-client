@@ -6,7 +6,10 @@ interface CategoryCardProps {
   onExchangeClick: (category: any) => void;
 }
 
-export default function CategoryCard({ category, onExchangeClick }: CategoryCardProps) {
+export default function CategoryCard({
+  category,
+  onExchangeClick,
+}: CategoryCardProps) {
   return (
     <div className="border border-[#20B894] rounded-2xl p-6 text-center hover:bg-[#F1FCF9] hover:text-[#070707] transition">
       <div className="relative w-28 h-28 mx-auto mb-4 border rounded-full overflow-hidden">

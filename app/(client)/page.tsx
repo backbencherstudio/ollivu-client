@@ -15,6 +15,5 @@ export default function HomePage() {
     <ServiceCategoriesSection />
     <HowWorks />
     <Community />
-    <Footer/>
   </div>;
 }

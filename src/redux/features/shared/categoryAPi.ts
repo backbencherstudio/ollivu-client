@@ -15,9 +15,8 @@ export const categoryApi = baseApi.injectEndpoints({
         method: "GET",
       }),
     }),
-
-
   }),
 });
 
-export const { useGetAllCategoryQuery, useGetAllUserBaseOnSubCategoryQuery } = categoryApi;
+export const { useGetAllCategoryQuery, useGetAllUserBaseOnSubCategoryQuery } =
+  categoryApi;
