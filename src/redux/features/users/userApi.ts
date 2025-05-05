@@ -136,6 +136,23 @@ export const usersApi = baseApi.injectEndpoints({
       }),
       providesTags: ["User"],
     }),
+
+    getExchangeHistory: builder.query({
+      query: (userId) => ({
+        url: `/auth/exchangeHistorybyUser/${userId}`,
+        method: "GET",
+      }),
+      providesTags: ["User"],
+    }),
+
+    getAllOverviewDataByUser: builder.query({
+      query: (userId) => ({
+        url: `/auth/getAllDataOverviewByUser/${userId}`,
+        method: "GET",
+      }),
+      providesTags: ["User"],
+    }),
+
   }),
 });
 
@@ -152,4 +169,6 @@ export const {
   useUploadCertificateMutation,
   useDeleteCertificateMutation,
   useSearchUsersQuery,
+  useGetExchangeHistoryQuery,
+  useGetAllOverviewDataByUserQuery,
 } = usersApi;

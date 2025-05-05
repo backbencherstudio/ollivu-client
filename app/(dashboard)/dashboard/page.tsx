@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 import {
   AreaChart,
   Area,
@@ -9,28 +9,36 @@ import {
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
-} from 'recharts';
-import { BadgeCheck, CheckCircle, Lock } from 'lucide-react';
-import Image from 'next/image';
-import ProtectedRoute from '@/src/components/auth/ProtectedRoute';
-
-const exchangeData = [
-  { month: 'Jan', count: 0 },
-  { month: 'Feb', count: 5 },
-  { month: 'Mar', count: 9 },
-  { month: 'Apr', count: 18 },
-  { month: 'May', count: 15 },
-  { month: 'Jun', count: 22 },
-  { month: 'Jul', count: 8 },
-  { month: 'Aug', count: 6 },
-  { month: 'Sep', count: 10 },
-  { month: 'Oct', count: 17 },
-  { month: 'Nov', count: 10 },
-  { month: 'Dec', count: 3 },
-];
+} from "recharts";
+import Image from "next/image";
+import { verifiedUser } from "@/src/utils/token-varify";
+import {
+  useGetAllOverviewDataByUserQuery,
+  useGetExchangeHistoryQuery,
+  useGetSingleUserQuery,
+} from "@/src/redux/features/users/userApi";
+import VerifiedIcons from "@/public/icons/verified-icons";
+import { useGetAllExchangeQuery } from "@/src/redux/features/admin/exchangeApi";
 
 export default function UserDashboardHome() {
-  const [filter, setFilter] = useState('Month');
+  const [filter, setFilter] = useState("Month");
+  const validUser = verifiedUser();
+  const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
+  const singleUserData = singleUser?.data;
+  console.log("singleUserData user", singleUserData);
+  const { data: getExchangeHistory } = useGetExchangeHistoryQuery(
+    validUser?.userId
+  );
+  const getExchangeHistoryData = getExchangeHistory?.data;
+  const { data: getAllOverviewDataByUser } = useGetAllOverviewDataByUserQuery(
+    validUser?.userId
+  );
+  const getAllOverviewDataByUserData = getAllOverviewDataByUser?.data;
+
+  const {data: allExchangeData} = useGetAllExchangeQuery({})
+  const allExchangeDataData = allExchangeData?.data
+
+  console.log("getExchangeHistoryData", allExchangeDataData);
 
   return (
     // <ProtectedRoute allowedRoles={["user"]}>
@@ -38,10 +46,19 @@ export default function UserDashboardHome() {
       {/* Top Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { title: 'Total Exchange Request', value: 20 },
-          { title: 'Confirmed Exchange', value: 5 },
-          { title: 'New Connect Requests', value: 12 },
-          { title: 'Total Reviews', value: 32 },
+          {
+            title: "Total Exchange Request",
+            value: getAllOverviewDataByUserData?.exchangeRequest,
+          },
+          {
+            title: "Confirmed Exchange",
+            value: getAllOverviewDataByUserData?.confirmExchange,
+          },
+          { title: "New Connect Requests", value: 12 },
+          {
+            title: "Total Reviews",
+            value: getAllOverviewDataByUserData?.totalReview,
+          },
         ].map((stat, idx) => (
           <div
             key={idx}
@@ -56,7 +73,7 @@ export default function UserDashboardHome() {
       </div>
 
       {/* Connection Requests & Active Chats */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 ">
         <div className="border rounded-xl bg-white shadow-sm">
           <div className="flex justify-between items-center p-4 border-b">
             <h3 className="font-semibold">Connection Request</h3>
@@ -77,29 +94,29 @@ export default function UserDashboardHome() {
               <tbody>
                 {[
                   {
-                    name: 'Kristin Watson',
-                    service: 'Graphic design',
-                    status: 'Accepted',
+                    name: "Kristin Watson",
+                    service: "Graphic design",
+                    status: "Accepted",
                   },
                   {
-                    name: 'Eleanor Pena',
-                    service: 'Legal Advice',
-                    status: 'Accepted',
+                    name: "Eleanor Pena",
+                    service: "Legal Advice",
+                    status: "Accepted",
                   },
                   {
-                    name: 'Courtney Henry',
-                    service: 'Caricature Drawing',
-                    status: 'Canceled',
+                    name: "Courtney Henry",
+                    service: "Caricature Drawing",
+                    status: "Canceled",
                   },
                   {
-                    name: 'Dianne Russell',
-                    service: 'Event Planning',
-                    status: 'Pending',
+                    name: "Dianne Russell",
+                    service: "Event Planning",
+                    status: "Pending",
                   },
                   {
-                    name: 'Albert Flores',
-                    service: 'Moving Help',
-                    status: 'Canceled',
+                    name: "Albert Flores",
+                    service: "Moving Help",
+                    status: "Canceled",
                   },
                 ].map((req, i) => (
                   <tr key={i} className="border-b">
@@ -108,11 +125,11 @@ export default function UserDashboardHome() {
                     <td className="p-3">
                       <span
                         className={`text-xs px-2 py-1 rounded-full font-medium ${
-                          req.status === 'Accepted'
-                            ? 'bg-green-100 text-green-600'
-                            : req.status === 'Pending'
-                            ? 'bg-yellow-100 text-yellow-600'
-                            : 'bg-red-100 text-red-500'
+                          req.status === "Accepted"
+                            ? "bg-green-100 text-green-600"
+                            : req.status === "Pending"
+                            ? "bg-yellow-100 text-yellow-600"
+                            : "bg-red-100 text-red-500"
                         }`}
                       >
                         {req.status}
@@ -129,7 +146,7 @@ export default function UserDashboardHome() {
         </div>
 
         {/* Active Chats */}
-        <div className="border rounded-xl bg-white shadow-sm p-4">
+        {/* <div className="border rounded-xl bg-white shadow-sm p-4">
           <h3 className="font-semibold mb-4">Active Chats</h3>
           <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-[#D0A07A]">
             {[
@@ -185,127 +202,136 @@ export default function UserDashboardHome() {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Badges & Graph */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-       {/* Badges & Achievements */}
-       <div className="border rounded-xl bg-white shadow-sm p-4">
-        <h3 className="font-semibold mb-4">Badges & Achievements</h3>
-        <div className="grid grid-cols-2 gap-4">
-          {[
-            {
-              label: 'Years Expertise',
-              status: 'claim',
-              icon: '/badges/icon.png',
-              progress: 75,
-            },
-            {
-              label: 'Quality Service Ensured',
-              status: 'claim',
-              icon: '/badges/icon (2).png',
-              progress: 60,
-            },
-            {
-              label: '100% Customer Satisfaction',
-              status: 'claim-green',
-              icon: '/badges/icon.png',
-              verified: true,
-              progress: 80,
-            },
-            {
-              label: 'Verified Trainer',
-              status: 'locked',
-              icon: '/badges/lock.png',
-              progress: 50,
-            },
-          ].map((badge, i) => (
-            <div
-              key={i}
-              className="relative border rounded-xl px-3 py-4 flex flex-col items-center text-center shadow-sm bg-white"
-            >
-              <div className="absolute top-2 right-2 text-gray-400">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-4 h-4"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="12" y1="16" x2="12" y2="12" />
-                  <line x1="12" y1="8" x2="12.01" y2="8" />
-                </svg>
-              </div>
-
-              <div className="relative w-20 h-20 mb-3">
-                <svg className="w-20 h-20 transform -rotate-90" viewBox="0 0 36 36">
-                  <path
-                    className="text-gray-200"
-                    strokeWidth="4"
-                    stroke="currentColor"
-                    fill="none"
-                    d="M18 2.0845
-                    a 15.9155 15.9155 0 0 1 0 31.831
-                    a 15.9155 15.9155 0 0 1 0 -31.831"
+        {/* Badges & Achievements */}
+        <div className="border rounded-xl bg-white shadow-sm p-4">
+          <h3 className="font-semibold mb-4">Badges & Achievements</h3>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              {
+                label: "Years Expertise",
+                status: "claim",
+                icon: "/badges/icon.png",
+                progress: 75,
+              },
+              {
+                label: "Quality Service Ensured",
+                status: "claim",
+                icon: "/badges/icon (2).png",
+                progress: 60,
+              },
+              {
+                label: "Verified Trainer",
+                status: singleUserData?.cartificate ? "claim-green" : "locked",
+                icon: (
+                  <VerifiedIcons
+                    className={
+                      singleUserData?.cartificate
+                        ? "text-[#20B894]"
+                        : "text-gray-400"
+                    }
                   />
-                  <path
-                    className="text-[#FACC15]"
-                    strokeWidth="4"
-                    strokeDasharray={`${badge.progress}, 100`}
+                ),
+                progress: singleUserData?.cartificate ? 100 : 0,
+                verified: singleUserData?.cartificate,
+              },
+            ].map((badge, i) => (
+              <div
+                key={i}
+                className="relative border rounded-xl px-3 py-4 flex flex-col items-center text-center shadow-sm bg-white"
+              >
+                <div className="absolute top-2 right-2 text-gray-400">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-4 h-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
                     strokeLinecap="round"
-                    stroke="currentColor"
-                    fill="none"
-                    d="M18 2.0845
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="16" x2="12" y2="12" />
+                    <line x1="12" y1="8" x2="12.01" y2="8" />
+                  </svg>
+                </div>
+
+                <div className="relative w-20 h-20 mb-3">
+                  <svg
+                    className="w-20 h-20 transform -rotate-90"
+                    viewBox="0 0 36 36"
+                  >
+                    <path
+                      className="text-gray-200"
+                      strokeWidth="4"
+                      stroke="currentColor"
+                      fill="none"
+                      d="M18 2.0845
                     a 15.9155 15.9155 0 0 1 0 31.831
                     a 15.9155 15.9155 0 0 1 0 -31.831"
-                  />
-                </svg>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Image
-                    src={badge.icon}
-                    alt={badge.label}
-                    width={24}
-                    height={24}
-                    className="object-contain"
-                  />
+                    />
+                    <path
+                      className="text-[#FACC15]"
+                      strokeWidth="4"
+                      strokeDasharray={`${badge.progress}, 100`}
+                      strokeLinecap="round"
+                      stroke="currentColor"
+                      fill="none"
+                      d="M18 2.0845
+                    a 15.9155 15.9155 0 0 1 0 31.831
+                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    {typeof badge.icon === "string" ? (
+                      <Image
+                        src={badge.icon}
+                        alt={badge.label}
+                        width={24}
+                        height={24}
+                        className="object-contain"
+                      />
+                    ) : (
+                      badge.icon
+                    )}
+                  </div>
                 </div>
+
+                <p className="text-sm text-[#4A4C56] mb-2">{badge.label}</p>
+
+                {badge.status === "locked" ? (
+                  <button className="bg-gray-300 text-white text-sm px-4 py-2 rounded-full w-full">
+                    Locked
+                  </button>
+                ) : badge.status === "claim-green" ? (
+                  <button className="bg-[#20B894] text-white text-sm px-4 py-2 rounded-full w-full">
+                    Claim
+                  </button>
+                ) : (
+                  <button className="bg-[#C5C7CD] text-white text-sm px-4 py-2 rounded-full w-full">
+                    Claim
+                  </button>
+                )}
+
+                {/* {badge.verified && (
+                  <div className="absolute bottom-14 right-10 w-5 h-5 rounded-full bg-white shadow flex items-center justify-center">
+                    <Image
+                      src="/badges/check.png"
+                      alt="check"
+                      width={14}
+                      height={14}
+                    />
+                  </div>
+                )} */}
               </div>
-
-              <p className="text-sm text-[#4A4C56] mb-2">{badge.label}</p>
-
-              {badge.status === 'locked' ? (
-                <button className="bg-gray-300 text-white text-sm px-4 py-2 rounded-full w-full">
-                  Locked
-                </button>
-              ) : badge.status === 'claim-green' ? (
-                <button className="bg-[#20B894] text-white text-sm px-4 py-2 rounded-full w-full">
-                  Claim
-                </button>
-              ) : (
-                <button className="bg-[#C5C7CD] text-white text-sm px-4 py-2 rounded-full w-full">
-                  Claim
-                </button>
-              )}
-
-              {badge.verified && (
-                <div className="absolute bottom-14 right-10 w-5 h-5 rounded-full bg-white shadow flex items-center justify-center">
-                  <Image
-                    src="/badges/check.png"
-                    alt="check"
-                    width={14}
-                    height={14}
-                  />
-                </div>
-              )}
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
 
         {/* Chart */}
         <div className="border rounded-2xl bg-white shadow-sm p-4">
@@ -325,7 +351,7 @@ export default function UserDashboardHome() {
 
           <ResponsiveContainer width="100%" height={300}>
             <AreaChart
-              data={exchangeData}
+              data={getExchangeHistoryData}
               margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
             >
               <defs>
@@ -355,12 +381,12 @@ export default function UserDashboardHome() {
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#fff',
-                  borderRadius: '10px',
-                  borderColor: '#E5E7EB',
+                  backgroundColor: "#fff",
+                  borderRadius: "10px",
+                  borderColor: "#E5E7EB",
                 }}
-                labelStyle={{ color: '#20B894', fontWeight: 'bold' }}
-                formatter={(value: number) => ['Exchange request', value]}
+                labelStyle={{ color: "#20B894", fontWeight: "bold" }}
+                formatter={(value: number) => ["Exchange request", value]}
               />
               <Area
                 type="monotone"

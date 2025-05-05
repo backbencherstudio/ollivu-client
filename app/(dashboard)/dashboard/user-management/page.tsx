@@ -25,7 +25,7 @@ export default function UserManagement() {
     setSelectedUser(null);
   };
 
-  const usersPerPage = 5; // Changed to 5 items per page
+  const usersPerPage = 10; // Changed to 5 items per page
   const [currentPage, setCurrentPage] = useState(1);
   const startIndex = (currentPage - 1) * usersPerPage;
   const endIndex = startIndex + usersPerPage;
