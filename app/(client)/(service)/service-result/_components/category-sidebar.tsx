@@ -563,7 +563,7 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
           value={searchTerm}
           onChange={handleSearchChange}
           onKeyDown={handleKeyDown}
-          placeholder="Search services, locations and more..."
+          placeholder="Search services/locations/postal/zip"
           className="w-full p-2 border border-[#D2B9A1] rounded-full mb-4 text-sm"
           disabled={isTransitioning}
         />
