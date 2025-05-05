@@ -32,7 +32,7 @@ export default function ServiceExchangeFlow() {
 
   const { data: getAllCategory } = useGetAllCategoryQuery([]);
   const allCategories = getAllCategory?.data || [];
-  console.log("allCategories", allCategories);
+  // console.log("allCategories", allCategories);
 
   const { data: getAllUserBaseOnSubCategory, isLoading: isLoadingUsers } =
     useGetAllUserBaseOnSubCategoryQuery(selectedService.subCategory, {
@@ -40,12 +40,14 @@ export default function ServiceExchangeFlow() {
     });
 
   const allUsers = getAllUserBaseOnSubCategory?.data || [];
+  // console.log("allUsers", allUsers);
 
   const [createExchange] = useCreateExchangeMutation();
 
   const currentUser = verifiedUser();
   const { data: currentUserData } = useGetCurrentUserQuery(currentUser?.userId);
   const currentUserInfo = currentUserData?.data;
+  // console.log("currentUserInfo", currentUserInfo);
 
   // Update the handleExchangeClick function
   const handleExchangeClick = (service: any) => {
@@ -53,7 +55,7 @@ export default function ServiceExchangeFlow() {
     setModalStep("users");
     setSelectedUsers([]); // Reset selected users when changing category
   };
-  console.log("currentUserInfo", currentUserInfo);
+  // console.log("currentUserInfo", currentUserInfo);
 
   const handleUserToggle = (userId: string) => {
     setSelectedUsers((prev) =>
@@ -78,7 +80,7 @@ export default function ServiceExchangeFlow() {
       }));
 
       const response = await createExchange(exchangeRequests).unwrap();
-      console.log("response", response?.data);
+      // console.log("response", response?.data);
       
 
       if (response?.success) {

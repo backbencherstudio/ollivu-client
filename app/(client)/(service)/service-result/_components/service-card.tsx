@@ -63,27 +63,30 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ user }) => {
 
         {/* User Info */}
         <div className="bg-[#F9F9F9] p-4 rounded-lg">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-16 h-16 rounded-full bg-gray-200 relative overflow-hidden flex items-center justify-center">
+          <div className="flex items-center gap-4 mb-3">
+            <div className="w-16 h-16 rounded-full bg-gray-200 relative overflow-hidden flex-shrink-0">
               {profileImageUrl && !instructorImageError ? (
                 <Image
                   src={profileImageUrl}
                   alt={user?.first_name || "User"}
                   fill
+                  sizes="64px"
                   className="object-cover"
                   onError={() => setInstructorImageError(true)}
                 />
               ) : (
-                <span className="text-2xl font-medium text-gray-600">
-                  {user?.first_name?.charAt(0).toUpperCase() || "U"}
-                </span>
+                <div className="w-full h-full flex items-center justify-center">
+                  <span className="text-2xl font-medium text-gray-600">
+                    {user?.first_name?.charAt(0).toUpperCase() || "U"}
+                  </span>
+                </div>
               )}
             </div>
-            <div>
-              <h4 className="text-xl font-medium text-[#070707]">
+            <div className="min-w-0">
+              <h4 className="text-xl font-medium text-[#070707] truncate">
                 {user?.first_name || "User"}
               </h4>
-              <p className="text-sm text-[#777980]">{user?.email}</p>
+              <p className="text-sm text-[#777980] truncate">{user?.email}</p>
             </div>
           </div>
 

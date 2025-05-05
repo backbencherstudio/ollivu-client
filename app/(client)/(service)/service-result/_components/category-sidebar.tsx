@@ -334,27 +334,70 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
   // Handle location input change
   const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    startTransition();
-
-    setLocation(value);
-    // Reset skipQuery flag when changing location
+    setLocationSearchTerm(value);
     setSkipQuery(false);
-    setAllServicesSelected(
-      value === "" &&
-        !searchTerm &&
-        !selectedItem &&
-        !selectedCategory &&
-        !selectedRating
+
+    if (value.trim()) {
+      // Filter users based on location search term
+      const filteredLocations = allUsers?.data?.filter((user: any) => {
+        const { country, city, zipCode } = user.addressInfo || {};
+        return (
+          country?.toLowerCase().includes(value.toLowerCase()) ||
+          city?.toLowerCase().includes(value.toLowerCase()) ||
+          zipCode?.includes(value)
+        );
+      });
+
+      // Get unique locations
+      const uniqueLocations = Array.from(
+        new Set(
+          filteredLocations?.map((user: any) => ({
+            country: user.addressInfo?.country,
+            city: user.addressInfo?.city,
+            zipCode: user.addressInfo?.zipCode,
+          }))
+        )
+      );
+
+      setLocationResults(uniqueLocations);
+      setShowLocationResults(true);
+    } else {
+      setLocationResults([]);
+      setShowLocationResults(false);
+      handleLocationReset();
+    }
+  };
+
+  // Handle location selection
+  const handleLocationSelect = (selectedLocation: any) => {
+    setSkipQuery(false);
+    setAllServicesSelected(false);
+
+    // Set the search term to show the selected location
+    setLocationSearchTerm(
+      selectedLocation.city ||
+        selectedLocation.zipCode ||
+        selectedLocation.country ||
+        ""
     );
 
+    // Update URL and trigger API request with proper query parameters
     debouncedFilter({
       searchTerm,
       my_service: selectedItem || selectedCategory || undefined,
-      location: value,
+      ...(selectedLocation.country && {
+        "addressInfo.country": selectedLocation.country,
+      }),
+      ...(selectedLocation.city && {
+        "addressInfo.city": selectedLocation.city,
+      }),
+      ...(selectedLocation.zipCode && {
+        "addressInfo.zipCode": selectedLocation.zipCode,
+      }),
       rating: selectedRating,
     });
 
-    endTransition();
+    setShowLocationResults(false);
   };
 
   // Reset location filter
@@ -491,6 +534,10 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
     });
   };
 
+  const [locationSearchTerm, setLocationSearchTerm] = useState("");
+  const [locationResults, setLocationResults] = useState([]);
+  const [showLocationResults, setShowLocationResults] = useState(false);
+
   return (
     <div className="p-4 bg-gray-50 border border-[#D2B9A1] rounded-lg w-full sm:w-[300px]">
       {/* Add CSS transition for smooth state changes */}
@@ -516,7 +563,7 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
           value={searchTerm}
           onChange={handleSearchChange}
           onKeyDown={handleKeyDown}
-          placeholder="Search services..."
+          placeholder="Search services, locations and more..."
           className="w-full p-2 border border-[#D2B9A1] rounded-full mb-4 text-sm"
           disabled={isTransitioning}
         />
@@ -642,11 +689,12 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
             : ""
         }`}
       >
-        <div className="flex justify-between items-center mb-4">
+        {/* Location Filter */}
+        {/* <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold text-[#070707]">Location</h2>
           <button
             onClick={handleLocationReset}
-            className="text-xs text-teal-600 hover:text-teal-700"
+            className="text-xs text-teal-600 hover:text-teal-700 cursor-pointer"
             disabled={isTransitioning}
           >
             Reset
@@ -658,12 +706,12 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
           <input
             type="text"
             placeholder="Enter post code/location"
-            value={location}
+            value={locationSearchTerm}
             onChange={handleLocationChange}
             className="w-full pl-10 p-2 border border-[#D2B9A1] rounded-full text-sm"
             disabled={isTransitioning}
           />
-        </div>
+        </div> */}
       </div>
 
       {/* Ratings Filter with transition effect */}
@@ -678,7 +726,7 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
           <h2 className="text-lg font-semibold text-[#070707]">Ratings</h2>
           <button
             onClick={handleRatingReset}
-            className="text-xs text-teal-600 hover:text-teal-700"
+            className="text-xs text-teal-600 hover:text-teal-700 cursor-pointer"
             disabled={isTransitioning}
           >
             Reset
@@ -728,6 +776,28 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
           ))}
         </div>
       </div>
+
+      {showLocationResults && locationResults.length > 0 && (
+        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+          {locationResults.map((location, index) => (
+            <div
+              key={index}
+              className="p-2 cursor-pointer text-sm hover:bg-gray-100"
+              onClick={() => handleLocationSelect(location)}
+            >
+              <div className="flex flex-col">
+                {location.city && (
+                  <span className="font-medium">{location.city}</span>
+                )}
+                <div className="flex justify-between text-gray-600">
+                  {location.country && <span>{location.country}</span>}
+                  {location.zipCode && <span>ZIP: {location.zipCode}</span>}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
