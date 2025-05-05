@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import React from 'react';
+import logo from '@/public/logo/logo.png';
 
 export default function Footer() {
   return (
@@ -16,7 +17,7 @@ export default function Footer() {
     {/* Center Logo */}
     <div className="flex justify-center">
       <Image
-        src="/logo/Gray.png"
+        src={logo}
         alt="Ollivu Logo"
         width={100}
         height={100}

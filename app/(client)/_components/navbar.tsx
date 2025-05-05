@@ -33,13 +33,10 @@ export default function Navbar() {
   const { data: getAllCategories, isLoading } =
     useGetAllCategoriesQuery(undefined);
   const categories = getAllCategories?.data || [];
-  // console.log("getAllCategories", getAllCategories);
 
   const validUser = verifiedUser();
   const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
   const singleUserData = singleUser?.data;
-  // console.log("singleUserData", singleUserData);
-  
 
   // Update the authentication check
   useEffect(() => {
@@ -56,10 +53,6 @@ export default function Navbar() {
     return () => window.removeEventListener("storage", checkAuth);
   }, []);
 
-  // Update the user verification
-  // const user = typeof window !== 'undefined' ? verifiedUser() : null;
-
-  // Add logout handler
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
     document.cookie =
@@ -113,7 +106,6 @@ export default function Navbar() {
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
             <Link href="/" className="text-2xl font-bold text-teal-600">
-              {/* <Image src={logo} width={100} height={100} alt="Logo" /> */}
               <CustomImage
                 src={logo.src}
                 alt="Company Logo"
@@ -165,12 +157,16 @@ export default function Navbar() {
                               className="text-xs md:text-sm text-gray-600 hover:text-teal-600 transition-colors"
                             >
                               <Link
-                                href={`/service-result?category=${encodeURIComponent(
-                                  category.category_name
-                                )}&service=${encodeURIComponent(
+                                href={`/service-result?my_service=${encodeURIComponent(
                                   item.subCategory
                                 )}`}
                                 className="block py-1"
+                                onClick={() => {
+                                  if (isMobileMenuOpen) {
+                                    setIsMobileMenuOpen(false);
+                                    setIsServicesOpen(false);
+                                  }
+                                }}
                               >
                                 {item.subCategory}
                               </Link>

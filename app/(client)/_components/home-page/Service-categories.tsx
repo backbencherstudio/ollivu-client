@@ -15,6 +15,8 @@ import { useCreateExchangeMutation } from "@/src/redux/features/shared/exchangeA
 import { verifiedUser } from "@/src/utils/token-varify";
 import { useGetCurrentUserQuery } from "@/src/redux/features/users/userApi";
 import { toast } from "sonner";
+import { useGetAllCategoriesQuery } from "@/src/redux/features/categories/categoriesApi";
+import Link from "next/link";
 
 export default function ServiceExchangeFlow() {
   const [modalStep, setModalStep] = useState<
@@ -29,10 +31,16 @@ export default function ServiceExchangeFlow() {
     _id: "",
     my_service: [],
   });
+  console.log("selectedService", selectedService);
+  
 
   const { data: getAllCategory } = useGetAllCategoryQuery([]);
   const allCategories = getAllCategory?.data || [];
-  console.log("allCategories", allCategories);
+  // console.log("allCategories", allCategories);
+
+  const { data: categories } = useGetAllCategoriesQuery({});
+  const categoriesData = categories?.data;
+  console.log("categoriesData", categoriesData);
 
   const { data: getAllUserBaseOnSubCategory, isLoading: isLoadingUsers } =
     useGetAllUserBaseOnSubCategoryQuery(selectedService.subCategory, {
@@ -40,20 +48,21 @@ export default function ServiceExchangeFlow() {
     });
 
   const allUsers = getAllUserBaseOnSubCategory?.data || [];
+  // console.log("allUsers", allUsers);
 
   const [createExchange] = useCreateExchangeMutation();
 
   const currentUser = verifiedUser();
   const { data: currentUserData } = useGetCurrentUserQuery(currentUser?.userId);
   const currentUserInfo = currentUserData?.data;
+  // console.log("currentUserInfo", currentUserInfo);
 
   // Update the handleExchangeClick function
   const handleExchangeClick = (service: any) => {
     setSelectedService(service);
     setModalStep("users");
-    setSelectedUsers([]); // Reset selected users when changing category
+    setSelectedUsers([]);
   };
-  console.log("currentUserInfo", currentUserInfo);
 
   const handleUserToggle = (userId: string) => {
     setSelectedUsers((prev) =>
@@ -69,17 +78,16 @@ export default function ServiceExchangeFlow() {
 
   const handleSendRequest = async () => {
     try {
-      const exchangeRequests = selectedUsers.map(userId => ({
+      const exchangeRequests = selectedUsers.map((userId) => ({
         senderUserId: currentUser?.userId,
         reciverUserId: userId,
         email: currentUser?.email,
         senderService: selectedSkill,
-        my_service: currentUserInfo?.my_service
+        my_service: currentUserInfo?.my_service,
       }));
 
       const response = await createExchange(exchangeRequests).unwrap();
-      console.log("response", response?.data);
-      
+      // console.log("response", response?.data);
 
       if (response?.success) {
         setModalStep("success");
@@ -108,6 +116,7 @@ export default function ServiceExchangeFlow() {
         </div>
       </section>
 
+      {/* exchange modal */}
       {modalStep !== "none" && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl w-full p-10 max-w-[70%] relative">
@@ -138,7 +147,9 @@ export default function ServiceExchangeFlow() {
                       onClick={handleSendRequest}
                       disabled={selectedUsers.length === 0}
                       className={`bg-[#20B894] text-white px-6 py-2 rounded-full cursor-pointer ${
-                        selectedUsers.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#1a9677] ease-in-out duration-300'
+                        selectedUsers.length === 0
+                          ? "opacity-50 cursor-not-allowed"
+                          : "hover:bg-[#1a9677] ease-in-out duration-300"
                       }`}
                     >
                       Send Request
@@ -169,12 +180,17 @@ export default function ServiceExchangeFlow() {
       {/* Only show the View All button if there are more than 8 categories */}
       {allCategories.length > 8 && (
         <div className="text-center">
-          <button
+          {/* <button
             onClick={() => setShowAll(!showAll)}
             className="bg-[#20B894] text-white text-sm font-medium px-6 py-3 rounded-full flex items-center gap-2 mx-auto hover:opacity-90 transition"
           >
             {showAll ? "View Less" : "View All"}
-          </button>
+          </button> */}
+          <Link href="/service-list">
+            <button className="bg-[#20B894] text-white text-sm font-medium px-6 py-3 rounded-full flex items-center gap-2 mx-auto hover:opacity-90 transition cursor-pointer mb-10">
+              View All
+            </button>
+          </Link>
         </div>
       )}
     </>

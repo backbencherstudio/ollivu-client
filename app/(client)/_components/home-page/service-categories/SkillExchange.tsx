@@ -7,7 +7,12 @@ interface SkillExchangeProps {
   users: any[];
 }
 
-export default function SkillExchange({ selectedService, selectedSkill, onSkillChange, users }: SkillExchangeProps) {
+export default function SkillExchange({
+  selectedService,
+  selectedSkill,
+  onSkillChange,
+  users,
+}: SkillExchangeProps) {
   return (
     <div className="flex flex-col sm:flex-row gap-4 mt-10 mb-6">
       <div className="bg-[#F5F5F5] p-4 rounded w-full">
@@ -26,12 +31,7 @@ export default function SkillExchange({ selectedService, selectedSkill, onSkillC
       </div>
 
       <div className="flex items-center justify-center my-4 sm:my-0">
-        <Image
-          src="/swapicon.png"
-          alt="Swap Icon"
-          width={100}
-          height={100}
-        />
+        <Image src="/swapicon.png" alt="Swap Icon" width={100} height={100} />
       </div>
 
       <div className="bg-[#F5F5F5] p-4 rounded w-full">
