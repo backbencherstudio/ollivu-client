@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import { ReviewTable } from "./ReviewTable";
 import { useReviews } from "../_hooks/useReviews";
-import {  useGetAllReviewReportQuery } from "@/src/redux/features/shared/reportApi";
+import { useGetAllReviewReportQuery } from "@/src/redux/features/shared/reportApi";
 
 export function ManageReview() {
   const {
@@ -17,36 +17,43 @@ export function ManageReview() {
 
   const { data: getAllReviewReport } = useGetAllReviewReportQuery(undefined);
 
-  console.log(getAllReviewReport);
-  
-  
+  console.log(getAllReviewReport?.data);
+
+
 
   useEffect(() => {
 
     if (getAllReviewReport?.data) {
-      const formattedReviews = getAllReviewReport.data.map((report: any) => ({
-        id: report?._id,
-        reviewer: {
-          name: report?.reporterId?.first_name,
-          email: report?.reporterId?.email,
-          avatar: report?.reporterId?.profileImage || "", 
-        },
-        flaggedBy: {
-          name: report?.reportedId?.first_name,
-          avatar: report?.reportedId?.profileImage || "", 
-        },
-        reviewText: report?.reportType,
-        rating: 0,
-        status: report?.action === "pending" ? "Pending" : "Accepted",
-        createdAt: report?.createdAt,
-        reportDetails: report?.reportType,
-        reportDocument: report?.supportingFile,
-        personalInfo: report?.reporterId?.personalInfo,
-      }));
+      const formattedReviews = getAllReviewReport?.data?.map((report: any) => {
+        console.log(28, report );
+        
+        return {
+          id: report?._id,
+          reviewer: {
+            name: report?.reviewId?.reciverId?.first_name,
+            email: report?.reviewId?.reciverId?.email,
+            avatar: report?.reviewId?.reciverId?.profileImage || "",
+          },
+          flaggedBy: {
+            name: report?.reviewId?.reviewerId?.first_name,
+            avatar: report?.reviewId?.reviewerId?.profileImage || "",
+          },
+          reviewText: report?.reportType,
+          rating: 0,
+          status: report?.status,
+          createdAt: report?.createdAt,
+          reportDetails: report?.reportDetails,
+          reportDocument: report?.supportingFile,
+          personalInfo: report?.reporterId?.personalInfo,
+        }
+      });
 
       setReviews(formattedReviews);
     }
   }, [getAllReviewReport?.data, setReviews]);
+
+  console.log(51,reviews);
+  
 
   return (
     <div className="w-full p-6 bg-white rounded-lg">
