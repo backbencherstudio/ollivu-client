@@ -21,7 +21,7 @@ export default function Portfolio() {
   const [uploadPortfolio] = useUploadPortfolioMutation();
 
   const [deletePortfolio] = useDeletePortfolioMutation()
-  console.log("deletePortfolio", deletePortfolio);
+  // console.log("deletePortfolio", deletePortfolio);
   
 
   const portfolioImage = userData?.data?.portfolio 
