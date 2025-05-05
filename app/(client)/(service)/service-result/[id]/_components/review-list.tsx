@@ -1,6 +1,6 @@
 import { serviceCategories } from "@/constants/serviceCategories";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Flag, Star } from "lucide-react";
 import FlagIcon from "@/public/icons/flag-icon";
 import { useGetSingleReviewQuery } from "@/src/redux/features/shared/reviewApi";
@@ -8,6 +8,10 @@ import { useCreateReviewReportMutation } from "@/src/redux/features/shared/repor
 import { verifiedUser } from "@/src/utils/token-varify";
 import ReportModal from "@/app/(dashboard)/dashboard/review/_components/report-modal";
 import { toast } from "sonner";
+import {
+  useCreateDislikeMutation,
+  useCreateLikeMutation,
+} from "@/src/redux/features/shared/likeApi";
 
 interface ReviewListProps {
   instructor: {
@@ -38,44 +42,142 @@ interface ReviewListProps {
     like: number;
     disLike: number;
     report: boolean;
+    likedBy?: string[]; // Track who liked the review
+    dislikedBy?: string[]; // Track who disliked the review
   };
 }
 
 const ReviewList = ({ review }: ReviewListProps) => {
-  console.log("review list insidee", review);
-
   const [likes, setLikes] = useState(review.like || 0);
   const [dislikes, setDislikes] = useState(review.disLike || 0);
   const [userAction, setUserAction] = useState<"like" | "dislike" | null>(null);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [createReviewReport] = useCreateReviewReportMutation();
   const currentUser = verifiedUser();
-  // console.log("current user", currentUser?.userId);
-  
+  const [createLike] = useCreateLikeMutation();
+  const [createDislike] = useCreateDislikeMutation();
 
-  const handleLike = () => {
-    if (userAction === "like") {
-      setLikes((prev) => prev - 1);
-      setUserAction(null);
-    } else {
-      if (userAction === "dislike") {
-        setDislikes((prev) => prev - 1);
+  // Track if the current user has already liked or disliked this review
+  const [isLiked, setIsLiked] = useState(false);
+  const [isDisliked, setIsDisliked] = useState(false);
+
+  // Check if user has already liked or disliked this review on component mount
+  useEffect(() => {
+    const userInteractions = JSON.parse(
+      localStorage.getItem("reviewInteractions") || "{}"
+    );
+    const reviewInteraction = userInteractions[review._id] || {};
+
+    // Check for likes
+    if (
+      review.likedBy &&
+      Array.isArray(review.likedBy) &&
+      currentUser?.userId
+    ) {
+      if (review.likedBy.includes(currentUser.userId)) {
+        setIsLiked(true);
+        setUserAction("like");
       }
-      setLikes((prev) => prev + 1);
+    } else if (reviewInteraction.action === "like") {
+      setIsLiked(true);
       setUserAction("like");
+    }
+
+    // Check for dislikes
+    if (
+      review.dislikedBy &&
+      Array.isArray(review.dislikedBy) &&
+      currentUser?.userId
+    ) {
+      if (review.dislikedBy.includes(currentUser.userId)) {
+        setIsDisliked(true);
+        setUserAction("dislike");
+      }
+    } else if (reviewInteraction.action === "dislike") {
+      setIsDisliked(true);
+      setUserAction("dislike");
+    }
+  }, [review._id, review.likedBy, review.dislikedBy, currentUser?.userId]);
+
+  // Helper function to update localStorage
+  const updateLocalStorage = (
+    reviewId: string,
+    action: "like" | "dislike" | null
+  ) => {
+    const userInteractions = JSON.parse(
+      localStorage.getItem("reviewInteractions") || "{}"
+    );
+
+    if (action === null) {
+      // Remove the action
+      if (userInteractions[reviewId]) {
+        delete userInteractions[reviewId];
+      }
+    } else {
+      // Set the action
+      userInteractions[reviewId] = {
+        action,
+        timestamp: new Date().toISOString(),
+      };
+    }
+
+    localStorage.setItem(
+      "reviewInteractions",
+      JSON.stringify(userInteractions)
+    );
+  };
+
+  const handleLike = async () => {
+    // If already liked or disliked, prevent action
+    if (isLiked || isDisliked) return;
+
+    try {
+      const response = await createLike({
+        reviewId: review._id,
+        userId: currentUser?.userId,
+      }).unwrap();
+
+      if (response.success) {
+        // Update UI
+        setLikes((prev) => prev + 1);
+        setUserAction("like");
+        setIsLiked(true);
+
+        // Store interaction in localStorage
+        updateLocalStorage(review._id, "like");
+
+        toast.success("Review liked successfully");
+      }
+    } catch (error) {
+      console.error("Error handling like:", error);
+      toast.error("Failed to update like");
     }
   };
 
-  const handleDislike = () => {
-    if (userAction === "dislike") {
-      setDislikes((prev) => prev - 1);
-      setUserAction(null);
-    } else {
-      if (userAction === "like") {
-        setLikes((prev) => prev - 1);
+  const handleDislike = async () => {
+    // If already liked or disliked, prevent action
+    if (isLiked || isDisliked) return;
+
+    try {
+      const response = await createDislike({
+        reviewId: review._id,
+        userId: currentUser?.userId,
+      }).unwrap();
+
+      if (response.success) {
+        // Update UI
+        setDislikes((prev) => prev + 1);
+        setUserAction("dislike");
+        setIsDisliked(true);
+
+        // Store interaction in localStorage
+        updateLocalStorage(review._id, "dislike");
+
+        toast.success("Review disliked");
       }
-      setDislikes((prev) => prev + 1);
-      setUserAction("dislike");
+    } catch (error) {
+      console.error("Error handling dislike:", error);
+      toast.error("Failed to update dislike");
     }
   };
 
@@ -120,49 +222,20 @@ const ReviewList = ({ review }: ReviewListProps) => {
             ))}
           </div>
           <span className="text-base text-[#1D1F2C]">({review.rating})</span>
-          {/* <button 
-            className={`text-[#1D1F2C] hover:text-gray-600 ml-10 cursor-pointer flex items-center gap-2 ${
-              review.report ? 'text-red-500' : ''
-            }`}
-          >
-            <FlagIcon />
-            {review.report ? 'Reported' : 'Report'}
-          </button> */}
-          {/* Report Button Section */}
-          {/* {currentUser?.userId === review.reciverId ? (
-            // If current user is the receiver, only show "Reported" text
-            <div className="text-gray-500 ml-10 flex items-center gap-2">
-              <FlagIcon />
-              <span>Reported</span>
-            </div>
-          ) : (
-            // If not the receiver, show the normal Report button with functionality
-            <button
-              onClick={() => setIsReportModalOpen(true)}
-              className={`text-[#1D1F2C] hover:text-gray-600 ml-10 cursor-pointer flex items-center gap-2 ${
-                review?.report ? "text-red-500" : ""
-              }`}
-            >
-              <FlagIcon />
-              {review?.report ? "Reported" : "Report"}
-            </button>
-          )} */}
-          {
-              review.reciverId === currentUser?.userId && (
-                <div className="text-gray-500 ml-10 flex items-center gap-2">
-                <button
-                  onClick={() => setIsReportModalOpen(true)}
-                  className={`text-[#1D1F2C] hover:text-gray-600 ml-10 cursor-pointer flex items-center gap-2 ${
-                    review?.report? "text-red-500" : ""
-                  }`}
-                >
-                  <FlagIcon />
-                  <p className={``}>{review.report? "Reported" : "Report"}</p>
-                </button>
-              </div>
-              )
-            }
 
+          {review.reciverId === currentUser?.userId && (
+            <div className="text-gray-500 ml-10 flex items-center gap-2">
+              <button
+                onClick={() => setIsReportModalOpen(true)}
+                className={`text-[#1D1F2C] hover:text-gray-600 ml-10 cursor-pointer flex items-center gap-2 ${
+                  review?.report ? "text-red-500" : ""
+                }`}
+              >
+                <FlagIcon />
+                <p>{review.report ? "Reported" : "Report"}</p>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Review Text */}
@@ -171,12 +244,12 @@ const ReviewList = ({ review }: ReviewListProps) => {
             {review.review}
           </p>
           <span className="text-base text-[#A5A5AB]">
-            {new Date(review.createdAt).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit'
+            {new Date(review.createdAt).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
             })}
           </span>
         </div>
@@ -195,7 +268,11 @@ const ReviewList = ({ review }: ReviewListProps) => {
                   if (parent) {
                     parent.innerHTML = `
                       <span class="text-lg font-medium text-gray-500">
-                        ${review.reviewerId?.first_name?.charAt(0)?.toUpperCase() || 'U'}
+                        ${
+                          review.reviewerId?.first_name
+                            ?.charAt(0)
+                            ?.toUpperCase() || "U"
+                        }
                       </span>
                     `;
                   }
@@ -203,7 +280,7 @@ const ReviewList = ({ review }: ReviewListProps) => {
               />
             ) : (
               <span className="text-lg font-medium text-gray-500">
-                {review.reviewerId?.first_name?.charAt(0)?.toUpperCase() || 'U'}
+                {review.reviewerId?.first_name?.charAt(0)?.toUpperCase() || "U"}
               </span>
             )}
           </div>
@@ -214,19 +291,31 @@ const ReviewList = ({ review }: ReviewListProps) => {
           </div>
         </div>
 
-        {/* Like/Dislike Section remains the same */}
+        {/* Like/Dislike Section with improved UI */}
         <div className="flex items-center gap-4 mt-4">
           <button
             onClick={handleLike}
-            className={`flex items-center gap-1.5 ${
-              userAction === "like" ? "text-[#20B894]" : "text-[#777980]"
-            } hover:text-[#20B894] transition-colors`}
+            disabled={isLiked || isDisliked}
+            className={`flex items-center gap-1.5 transition-colors ${
+              isLiked
+                ? "text-[#20B894] cursor-not-allowed"
+                : isDisliked
+                ? "text-[#777980] cursor-not-allowed opacity-50"
+                : "text-[#777980] hover:text-[#20B894]"
+            }`}
+            title={
+              isLiked
+                ? "You already liked this review"
+                : isDisliked
+                ? "You already disliked this review"
+                : "Like this review"
+            }
           >
             <span className="text-sm">{likes}</span>
             <svg
               className="w-4 h-4"
               viewBox="0 0 24 24"
-              fill={userAction === "like" ? "currentColor" : "none"}
+              fill={isLiked ? "currentColor" : "none"}
               stroke="currentColor"
               strokeWidth="2"
             >
@@ -239,15 +328,27 @@ const ReviewList = ({ review }: ReviewListProps) => {
           </button>
           <button
             onClick={handleDislike}
-            className={`flex items-center gap-1.5 ${
-              userAction === "dislike" ? "text-red-500" : "text-[#777980]"
-            } hover:text-red-500 transition-colors`}
+            disabled={isLiked || isDisliked}
+            className={`flex items-center gap-1.5 transition-colors ${
+              isDisliked
+                ? "text-red-500 cursor-not-allowed"
+                : isLiked
+                ? "text-[#777980] cursor-not-allowed opacity-50"
+                : "text-[#777980] hover:text-red-500"
+            }`}
+            title={
+              isDisliked
+                ? "You already disliked this review"
+                : isLiked
+                ? "You already liked this review"
+                : "Dislike this review"
+            }
           >
             {dislikes > 0 && <span className="text-sm">{dislikes}</span>}
             <svg
               className="w-4 h-4 rotate-180"
               viewBox="0 0 24 24"
-              fill={userAction === "dislike" ? "currentColor" : "none"}
+              fill={isDisliked ? "currentColor" : "none"}
               stroke="currentColor"
               strokeWidth="2"
             >
