@@ -158,7 +158,7 @@ export const MessageList = ({
                             ? user?.reciverUserId?.role
                             : user?.senderUserId?.role
                         })`}</span>
-                      </h3>
+                      </h3> 
                       {user.lastMessage?.timestamp && (
                         <span className="text-xs text-gray-400">
                           {new Date(

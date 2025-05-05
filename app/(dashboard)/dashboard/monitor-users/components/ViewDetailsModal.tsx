@@ -1,6 +1,8 @@
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { useTakeActionProfileReportMutation } from "@/src/redux/features/admin/profileReportApi";
+import { toast } from "sonner";
 
 interface ViewDetailsModalProps {
   isOpen: boolean;
@@ -8,16 +10,21 @@ interface ViewDetailsModalProps {
   conversation: any;
   isReportedView: boolean;
   isSuspendedView: boolean;
+  setViewDetailsModal : any
 }
 
-export function ViewDetailsModal({
-  isOpen,
-  onClose,
-  conversation,
-  isReportedView,
-  isSuspendedView,
-}: ViewDetailsModalProps) {
+export function ViewDetailsModal({ isOpen, onClose, conversation, isReportedView, setViewDetailsModal }: ViewDetailsModalProps) {
   if (!isOpen) return null;
+
+  const [takeActionProfileReport] = useTakeActionProfileReportMutation();
+
+  const actionHandler = async(action) =>{    
+    const result = await takeActionProfileReport(action)
+    if (result?.data?.success) {
+      toast.success(result?.data?.message)   
+      setViewDetailsModal(false)   
+    }
+  }
 
   return (
     <div
@@ -129,19 +136,30 @@ export function ViewDetailsModal({
             )}
 
             <div className="space-y-3">
-              <h3 className="font-medium">Actions</h3>
-              <div className="flex gap-3">
-                <Button
-                  variant="outline"
+              <h3 className="font-medium">Take Actions</h3>
+              <div className="flex flex-col justify-center items-center gap-3">
+                <Button 
+                onClick={()=>actionHandler({ action : "safe", id : conversation.id })}
+                  variant="outline" 
                   className="w-1/2 text-red-500 hover:text-red-600 hover:bg-red-50"
                 >
-                  Ban User
+                  Mark as safe
                 </Button>
-                <Button className="w-1/2 bg-green-600 hover:bg-green-700 text-white">
-                  Dismiss Report
+                <Button 
+                 onClick={()=>actionHandler({ action : "suspend", id : conversation.id })}
+                 className="w-1/2 bg-green-600 hover:bg-green-700 text-white"
+                 >
+                  Suspend Account
+                </Button>
+                <Button 
+                  onClick={()=>actionHandler({ action : "blocked", id : conversation.id })}
+                  className="w-1/2 bg-green-600 hover:bg-green-700 text-white"
+                >
+                  Block & Remove Profile
                 </Button>
               </div>
             </div>
+
           </div>
         ) : (
           <div className="space-y-6">
@@ -181,10 +199,20 @@ export function ViewDetailsModal({
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-medium">{conversation.user2}</p>
-                  <p className="text-xs text-gray-500">Language Exchange</p>
                 </div>
               </div>
             </div>
+
+            <div className="flex flex-col justify-center items-center gap-3">
+                <Button 
+                onClick={()=>actionHandler({ action : "safe", id : conversation?._id })}
+                  variant="outline" 
+                  className="w-1/2 text-red-500 hover:text-red-600 hover:bg-red-50"
+                >
+                  Mark as safe
+                </Button>
+               
+              </div>
           </div>
         )}
       </div>

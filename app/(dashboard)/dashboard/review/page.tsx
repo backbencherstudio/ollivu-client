@@ -20,7 +20,7 @@ export default function AdminReviewsPage() {
   const [createReviewReport] = useCreateReviewReportMutation();
 
   const currentUser = verifiedUser();
-  console.log("cr", currentUser);
+  // console.log("cr", currentUser.userId);
 
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10;
@@ -30,6 +30,7 @@ export default function AdminReviewsPage() {
   );
 
   const singleUserAllReview = getSingleReview?.data;
+  console.log("singleUserAllReview", singleUserAllReview);
 
   // Calculate pagination
   const filteredReviews = useMemo(() => {
@@ -46,13 +47,14 @@ export default function AdminReviewsPage() {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-
+  // Update the handleReportSubmit function
   const handleReportSubmit = async (description: string, file: File | null) => {
     try {
       const formData = new FormData();
       formData.append("reporterId", currentUser.userId);
-      formData.append("reportDetails", description);
+      formData.append("receiverId", selectedReview?.reviewerId?._id);
       formData.append("reviewId", selectedReview._id);
+      formData.append("reportDetails", description);
       if (file) {
         formData.append("document", file);
       }
@@ -120,7 +122,8 @@ export default function AdminReviewsPage() {
               />
             ) : (
               <div className="w-12 h-12 rounded-full bg-[#20B894] text-white flex items-center justify-center text-lg font-semibold">
-                {review?.reviewerId?.first_name?.charAt(0)?.toUpperCase() || "U"}
+                {review?.reviewerId?.first_name?.charAt(0)?.toUpperCase() ||
+                  "U"}
               </div>
             )}
             <div className="flex-1">
@@ -142,15 +145,18 @@ export default function AdminReviewsPage() {
               <div className="flex items-center gap-2 mt-2 text-sm">
                 <StarRating rating={review?.rating} />
                 <span className="text-gray-500">({review?.rating})</span>
-                <button 
-          onClick={() => setIsReportModalOpen(true)}
-          className={`text-[#1D1F2C] hover:text-gray-600 ml-10 cursor-pointer flex items-center gap-2 ${
-            review?.report ? 'text-red-500' : ''
-          }`}
-        >
-          <FlagIcon />
-          {review?.report ? 'Reported' : 'Report'}
-        </button>
+                <button
+                  onClick={() => {
+                    setSelectedReview(review); // Store the full review object
+                    setIsReportModalOpen(true);
+                  }}
+                  className={`text-[#1D1F2C] hover:text-gray-600 ml-10 cursor-pointer flex items-center gap-2 ${
+                    review?.report ? "text-red-500" : ""
+                  }`}
+                >
+                  <FlagIcon />
+                  {review?.report ? "Reported" : "Report"}
+                </button>
               </div>
             </div>
           </div>

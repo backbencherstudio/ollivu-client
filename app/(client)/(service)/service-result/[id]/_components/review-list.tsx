@@ -50,7 +50,7 @@ const ReviewList = ({ review }: ReviewListProps) => {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [createReviewReport] = useCreateReviewReportMutation();
   const currentUser = verifiedUser();
-  console.log("current user", currentUser?.userId);
+  // console.log("current user", currentUser?.userId);
   
 
   const handleLike = () => {
@@ -129,7 +129,7 @@ const ReviewList = ({ review }: ReviewListProps) => {
             {review.report ? 'Reported' : 'Report'}
           </button> */}
           {/* Report Button Section */}
-          {currentUser?.userId === review.reciverId ? (
+          {/* {currentUser?.userId === review.reciverId ? (
             // If current user is the receiver, only show "Reported" text
             <div className="text-gray-500 ml-10 flex items-center gap-2">
               <FlagIcon />
@@ -146,7 +146,23 @@ const ReviewList = ({ review }: ReviewListProps) => {
               <FlagIcon />
               {review?.report ? "Reported" : "Report"}
             </button>
-          )}
+          )} */}
+          {
+              review.reciverId === currentUser?.userId && (
+                <div className="text-gray-500 ml-10 flex items-center gap-2">
+                <button
+                  onClick={() => setIsReportModalOpen(true)}
+                  className={`text-[#1D1F2C] hover:text-gray-600 ml-10 cursor-pointer flex items-center gap-2 ${
+                    review?.report? "text-red-500" : ""
+                  }`}
+                >
+                  <FlagIcon />
+                  <p className={``}>{review.report? "Reported" : "Report"}</p>
+                </button>
+              </div>
+              )
+            }
+
         </div>
 
         {/* Review Text */}

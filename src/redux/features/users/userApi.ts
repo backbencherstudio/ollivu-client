@@ -2,29 +2,53 @@ import { baseApi } from "../../api/baseApi";
 
 export const usersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+    // getAllUsers: builder.query({
+    //   query: () => ({
+    //     url: "/auth/allUsers",
+    //     method: "GET",
+    //   }),
+    //   providesTags: ["User"],
+    // }),
+
     getAllUsers: builder.query({
-      query: () => ({
-        url: "/auth/allUsers",
-        method: "GET",
-      }),
-      providesTags: ["User"],
-    }),
-
-    getAllUsersByService: builder.query({
-      query: ({ service, country, rating, searchTerm }) => {
-        const params = new URLSearchParams();
-        if (searchTerm) params.append("searchTerm", searchTerm);
-        if (service) params.append("my_service", service);
-        if (country) params.append("country", country);
-        if (rating) params.append("rating", rating);
-
+      query: (query) => {
+        const queryString = new URLSearchParams(query).toString();
+        console.log("queryString", queryString);
         return {
-          url: `/auth/allUsers?${params.toString()}`,
+          url: `/auth/allUsers${queryString ? `?${queryString}` : ""}`,
           method: "GET",
         };
       },
       providesTags: ["User"],
     }),
+
+    //     getALlUser: builder.query({
+    //       query: (query) => {
+    //         const queryString = new URLSearchParams(query).toString();
+    //         return {
+    //           url: /auth/allUsers?${queryString},
+    //           method: "GET",
+    //         };
+    //       },
+    //       providesTags: ["user"],
+    //     }),
+
+    // getAllUsersByService: builder.query({
+    //   query: ({ service, country, rating, searchTerm }) => {
+    //     const params = new URLSearchParams();
+    //     if (searchTerm) params.append("searchTerm", searchTerm);
+    //     if (service) params.append("my_service", service);
+    //     if (country) params.append("country", country);
+    //     if (rating) params.append("rating", rating);
+    
+
+    //     return {
+    //       url: `/auth/allUsers?${params.toString()}`,
+    //       method: "GET",
+    //     };
+    //   },
+    //   providesTags: ["User"],
+    // }),
 
     getSingleUser: builder.query({
       query: (id: string) => ({
@@ -117,7 +141,7 @@ export const usersApi = baseApi.injectEndpoints({
 
 export const {
   useGetAllUsersQuery,
-  useGetAllUsersByServiceQuery,
+  // useGetAllUsersByServiceQuery,
   useGetSingleUserQuery,
   useGetCurrentUserQuery,
   useUpdateUserMutation,
