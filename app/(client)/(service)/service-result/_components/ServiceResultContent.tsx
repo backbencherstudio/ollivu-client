@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { Service } from "@/types/service.types";
 import { serviceCategories } from "@/data/services";
@@ -8,9 +8,9 @@ import { CategorySidebar } from "./category-sidebar";
 import { ServiceCard } from "./service-card";
 import { Pagination } from "@/components/reusable/pagination";
 import { useGetAllUsersQuery } from "@/src/redux/features/users/userApi";
-import { ChevronDown, X } from "lucide-react";
+import { ChevronDown, X, LoaderCircle } from "lucide-react";
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 10;
 
 interface CategoryItem {
   id: number;
@@ -40,30 +40,62 @@ interface Category {
 
 export default function ServiceResultContent() {
   const searchParams = useSearchParams();
-  const [services, setServices] = useState<Service[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(
-    searchParams.get("category") || null
-  );
-  const [selectedItem, setSelectedItem] = useState<string | null>(
-    searchParams.get("item") || null
-  );
+  
+  // State for selected filters and pagination
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
+  
+  // Animation and transition state
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const transitionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Extract the filter parameters from URL
+  // Extract filter parameters from URL
   const myServiceParam = searchParams.get("my_service");
   const ratingParam = searchParams.get("rating");
   const locationParam = searchParams.get("country");
   const searchTermParam = searchParams.get("searchTerm");
 
-  // Fetch all users with the filter params if they exist
-  const { data: users, isLoading } = useGetAllUsersQuery({
+  // Create a query params object for fetching
+  const queryParams = {
     ...(myServiceParam && { my_service: myServiceParam }),
     ...(ratingParam && { rating: Number(ratingParam) }),
     ...(locationParam && { country: locationParam }),
     ...(searchTermParam && { searchTerm: searchTermParam }),
+  };
+
+  // Fetch all users with filter params
+  const { 
+    data: users, 
+    isLoading, 
+    isFetching 
+  } = useGetAllUsersQuery(queryParams, {
+    refetchOnMountOrArgChange: true
   });
+
+  // Handle content transitions
+  const startTransition = useCallback(() => {
+    setIsTransitioning(true);
+    
+    // Clear any existing timeouts
+    if (transitionTimeoutRef.current) {
+      clearTimeout(transitionTimeoutRef.current);
+    }
+  }, []);
+
+  const endTransition = useCallback(() => {
+    transitionTimeoutRef.current = setTimeout(() => {
+      setIsTransitioning(false);
+    }, 300);
+    
+    return () => {
+      if (transitionTimeoutRef.current) {
+        clearTimeout(transitionTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Set initial state based on URL parameters
   useEffect(() => {
@@ -91,36 +123,47 @@ export default function ServiceResultContent() {
           setSelectedItem(null);
         }
       }
+    } else {
+      // If no service parameter, reset selections
+      setSelectedCategory(null);
+      setSelectedItem(null);
     }
   }, [myServiceParam]);
 
   // Initialize filtered users when data is loaded
   useEffect(() => {
-    if (users?.data) {
+    if (isLoading || isFetching) {
+      startTransition();
+    } else if (users?.data) {
+      startTransition();
       setFilteredUsers(users.data);
+      endTransition();
     }
-  }, [users]);
+  }, [users, isLoading, isFetching, startTransition, endTransition]);
 
   // Handle category selection
-  const handleCategorySelect = (category: string | null) => {
+  const handleCategorySelect = useCallback((category: string | null) => {
     setSelectedCategory(category);
-    // When selecting a category, clear any selected item
+    // When selecting a category, clear any selected item if category changes
     if (category !== selectedCategory) {
       setSelectedItem(null);
     }
-  };
+  }, [selectedCategory]);
 
   // Handle item selection
-  const handleItemSelect = (item: string | null) => {
+  const handleItemSelect = useCallback((item: string | null) => {
     setSelectedItem(item);
-  };
+  }, []);
 
   // Handle service filtering
-  const handleServiceFilter = (filteredData: any[]) => {
+  const handleServiceFilter = useCallback((filteredData: any[]) => {
+    startTransition();
     setFilteredUsers(filteredData);
     setCurrentPage(1);
-  };
+    endTransition();
+  }, [startTransition, endTransition]);
 
+  // Calculate pagination values
   const totalItems = filteredUsers.length;
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
   const paginatedUsers = filteredUsers.slice(
@@ -128,13 +171,21 @@ export default function ServiceResultContent() {
     currentPage * ITEMS_PER_PAGE
   );
 
-  const handlePageChange = (page: number) => {
+  // Handle page change with smooth transition
+  const handlePageChange = useCallback((page: number) => {
+    startTransition();
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+    endTransition();
+  }, [startTransition, endTransition]);
+
+  // Handle sidebar toggle for mobile
+  const toggleSidebar = useCallback(() => {
+    setIsSidebarOpen(prev => !prev);
+  }, []);
 
   // Render loading state
-  if (isLoading) {
+  if (isLoading && !filteredUsers.length) {
     return (
       <div className="container mx-auto p-4 text-center py-20">
         <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-teal-500 border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
@@ -143,12 +194,30 @@ export default function ServiceResultContent() {
     );
   }
 
+  // Count valid services (with my_service property)
+  const validServiceCount = paginatedUsers.filter(
+    (user: any) => user.my_service && user.my_service.length > 0
+  ).length;
+
   return (
     <div className="container mx-auto p-4">
+      {/* Add CSS transition for smooth content changes */}
+      <style jsx>{`
+        .content-transition {
+          transition: opacity 0.3s ease-in-out, filter 0.3s ease-in-out;
+          opacity: 1;
+        }
+        .content-transition.loading {
+          opacity: 0.7;
+          filter: grayscale(20%);
+          pointer-events: none;
+        }
+      `}</style>
+      
       {/* Mobile Filter Button */}
       <div className="lg:hidden mb-4 mt-5">
         <button
-          onClick={() => setIsSidebarOpen(true)}
+          onClick={toggleSidebar}
           className="w-full py-2 px-4 bg-teal-500 text-white rounded-lg flex items-center justify-between"
         >
           <span>Filter Categories</span>
@@ -195,19 +264,22 @@ export default function ServiceResultContent() {
           />
         )}
 
-        {/* Main Content */}
-        <div className="lg:w-3/4 w-full">
+        {/* Main Content with transition */}
+        <div className={`lg:w-3/4 w-full content-transition ${isTransitioning || isFetching ? "loading" : ""}`}>
           {/* Page header with service count */}
-          <div className="mb-6">
+          <div className="mb-6 flex justify-between items-center">
             <h1 className="text-xl md:text-2xl font-bold text-gray-900">
-              {selectedItem || selectedCategory || "All Services"} (
-              {
-                paginatedUsers.filter(
-                  (user: any) => user.my_service && user.my_service.length > 0
-                ).length
-              }
-              )
+              {!selectedCategory && !selectedItem
+                ? "All Services"
+                : selectedItem || selectedCategory || "All Services"}
+              {" "}
+              <span className="text-gray-500">({validServiceCount})</span>
             </h1>
+            
+            {/* Loading indicator next to title */}
+            {(isFetching || isTransitioning) && (
+              <LoaderCircle className="animate-spin text-teal-500 h-5 w-5" />
+            )}
           </div>
 
           {/* Service Cards Grid */}
@@ -221,6 +293,11 @@ export default function ServiceResultContent() {
             ) : (
               <div className="col-span-3 text-center py-10">
                 <p className="text-gray-500">No services found</p>
+                {(isLoading || isFetching) && (
+                  <div className="mt-4 flex justify-center">
+                    <LoaderCircle className="animate-spin text-teal-500 h-6 w-6" />
+                  </div>
+                )}
               </div>
             )}
           </div>

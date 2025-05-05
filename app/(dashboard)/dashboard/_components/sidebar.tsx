@@ -33,7 +33,7 @@ export default function Sidebar({ user }) {
     },
     { icon: MessageSquare, label: "Message", href: "/dashboard/messages" },
     { icon: Star, label: "Review", href: "/dashboard/review" },
-    { icon: Settings, label: "Settings", href: "/dashboard/settings" },
+    // { icon: Settings, label: "Settings", href: "/dashboard/settings" },
   ];
 
   // Admin menu items
@@ -48,11 +48,7 @@ export default function Sidebar({ user }) {
       label: "Admin Profile",
       href: "/dashboard/admin-profile",
     },
-    {
-      icon: ReceiptText,
-      label: "Terms of Service",
-      href: "/dashboard/terms-of-service",
-    },
+    
     {
       icon: MessageCircleMore,
       label: "Monitor users",
@@ -67,6 +63,11 @@ export default function Sidebar({ user }) {
       icon: CirclePlus,
       label: "Add Category",
       href: "/dashboard/add-category",
+    },
+    {
+      icon: ReceiptText,
+      label: "Terms of Service",
+      href: "/dashboard/terms-of-service",
     },
   ];
 
