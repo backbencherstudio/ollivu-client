@@ -148,25 +148,54 @@ export default function MyService({ singleUser }: MyServiceProps) {
     }
   }, [singleUser]);
 
+  // Add this new state for bulk delete
+  const [showBulkDeleteAlert, setShowBulkDeleteAlert] = useState(false);
+  
+  // Add this new handler for bulk delete
+  const handleBulkDelete = async () => {
+    try {
+      // Delete all services one by one
+      for (const service of services) {
+        await deleteUserService({
+          userId: validUser?.userId,
+          data: {
+            service: service
+          }
+        }).unwrap();
+      }
+      
+      setServices([]); // Clear all services
+      toast.success("All services deleted successfully");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to delete services");
+    }
+    setShowBulkDeleteAlert(false);
+  };
+  
+  // Update the services display section
   return (
     <>
       <Card className="p-6">
-        <h2 className="text-lg font-medium mb-4">My Services</h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-medium">My Services</h2>
+          {services.length > 0 && (
+            <button
+              onClick={() => setShowBulkDeleteAlert(true)}
+              className="px-3 py-1.5 text-sm text-red-500 border border-red-500 rounded-md hover:bg-red-50"
+            >
+              Remove All Services
+            </button>
+          )}
+        </div>
 
-        {/* Display services - single unified section */}
+        {/* Display services without individual delete buttons */}
         <div className="flex flex-wrap gap-2 mb-4">
           {services.map((service, index) => (
             <div
               key={index}
-              className="flex items-center gap-2 px-3 py-1.5 bg-[#F5F5F5] rounded-full border border-gray-200"
+              className="px-3 py-1.5 bg-[#F5F5F5] rounded-full border border-gray-200"
             >
               <span>{service}</span>
-              <button
-                onClick={() => handleDeleteClick(service)}
-                className="text-gray-400 hover:text-red-500"
-              >
-                <X className="h-4 w-4" />
-              </button>
             </div>
           ))}
         </div>
@@ -174,14 +203,14 @@ export default function MyService({ singleUser }: MyServiceProps) {
         <div className="flex gap-2">
           <button
             onClick={handleAddService}
-            className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678] flex items-center gap-2 cursor-pointer"
+            className="px-3 py-1.5 text-sm text-[#20B894] border border-[#20B894] rounded-md flex items-center gap-2 cursor-pointer hover:bg-[#20B894] hover:text-white ease-in duration-300"
           >
             Add Services
           </button>
 
           <button
             onClick={handleSaveServices}
-            className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678] flex items-center gap-2 cursor-pointer"
+             className="px-3 py-1.5 text-sm text-[#20B894] border border-[#20B894] rounded-md flex items-center gap-2 cursor-pointer hover:bg-[#20B894] hover:text-white ease-in duration-300"
           >
             Save
           </button>
@@ -296,6 +325,26 @@ export default function MyService({ singleUser }: MyServiceProps) {
               className="bg-red-500 hover:bg-red-600"
             >
               Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      {/* Add this new Alert Dialog for bulk delete */}
+      <AlertDialog open={showBulkDeleteAlert} onOpenChange={setShowBulkDeleteAlert}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove All Services?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete all your services. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleBulkDelete}
+              className="bg-red-500 hover:bg-red-600"
+            >
+              Delete All
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

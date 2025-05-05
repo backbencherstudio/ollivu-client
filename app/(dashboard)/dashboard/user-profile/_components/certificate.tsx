@@ -111,7 +111,7 @@ export default function Certificate() {
         <div className="flex gap-2">
           <button 
             onClick={() => setShowCertificateModal(true)}
-            className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678] cursor-pointer"
+             className="px-3 py-1.5 text-sm text-[#20B894] border border-[#20B894] rounded-md flex items-center gap-2 cursor-pointer hover:bg-[#20B894] hover:text-white ease-in duration-300"
           >
             {certificateImage ? 'Change Image' : 'Add file'}
           </button>
@@ -174,7 +174,7 @@ export default function Certificate() {
               <button 
                 onClick={handleUpload}
                 disabled={!selectedFile}
-                className={`px-4 py-2 text-white rounded-md w-24 cursor-pointer ${
+                className={`px-4 py-2 text-white  rounded-md w-24 cursor-pointer ${
                   selectedFile 
                     ? 'bg-[#20B894] hover:bg-[#1a9678]' 
                     : 'bg-gray-400 cursor-not-allowed'
