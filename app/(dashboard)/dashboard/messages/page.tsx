@@ -331,7 +331,9 @@ const Messages = () => {
               {currentChat?.senderUserId?.profileImage ? (
                 <Image
                   src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.senderUserId?.profileImage}`}
-                  alt={currentChat?.senderUserId?.name?.slice(0, 2).toUpperCase()}
+                  alt={currentChat?.senderUserId?.name
+                    ?.slice(0, 2)
+                    .toUpperCase()}
                   width={30}
                   height={30}
                   className="w-10 h-10 rounded-full"
@@ -397,7 +399,9 @@ const Messages = () => {
               {currentChat?.senderUserId?.profileImage ? (
                 <Image
                   src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.senderUserId?.profileImage}`}
-                  alt={currentChat?.senderUserId?.name?.slice(0, 2).toUpperCase()}
+                  alt={currentChat?.senderUserId?.name
+                    ?.slice(0, 2)
+                    .toUpperCase()}
                   width={30}
                   height={30}
                   className="w-20 h-20 rounded-full"
@@ -471,16 +475,19 @@ const Messages = () => {
                     onClick={() => setIsProfileOpen(!isProfileOpen)}
                     className="flex items-center gap-3"
                   >
-                    {currentChat?.profileImage ? (
-                      <img
-                        src={`${currentChat?.profileImage}`}
-                        alt="UN"
-                        className="w-10 h-10 rounded-full"
+                    {currentChat?.senderUserId?.profileImage ? (
+                      <Image
+                        src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.senderUserId?.profileImage}`}
+                        alt={currentChat?.senderUserId?.name
+                          ?.slice(0, 2)
+                          .toUpperCase()}
+                        width={30}
+                        height={30}
+                        className="w-14 h-14 rounded-full"
                       />
                     ) : (
-                      <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                        <span className="text-gray-500">
-                          {currentChat?.name?.slice(0, 2).toUpperCase()}
+                      <div className="w-10 h-10 rounded-full bg-[#20b894] flex items-center justify-center">
+                        <span className="text-white text-lg font-semibold">
                           {currentChat?.email === currentUser.email
                             ? currentChat?.reciverUserId?.first_name
                                 .slice(0, 2)
@@ -515,16 +522,47 @@ const Messages = () => {
               {isProfileOpen && (
                 <div className="bg-white border-b border-gray-100 p-4">
                   <div className="bg-gray-100 p-4 rounded-lg text-center flex items-center gap-3 justify-center flex-col">
-                    <div className="w-16 h-16 rounded-full bg-[#20b894] flex items-center justify-center">
-                      <span className="text-white text-xl font-semibold">
-                        {currentChat?.email === currentUser.email
-                          ? currentChat?.reciverUserId?.first_name
-                              .slice(0, 2)
-                              .toUpperCase()
-                          : currentChat?.senderUserId?.first_name
-                              .slice(0, 2)
-                              .toUpperCase() || "UN"}
-                      </span>
+                    <div className="flex items-center gap-3">
+                      {currentChat?.senderUserId?.profileImage ? (
+                        <Image
+                          src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.senderUserId?.profileImage}`}
+                          alt={currentChat?.senderUserId?.name
+                            ?.slice(0, 2)
+                            .toUpperCase()}
+                          width={30}
+                          height={30}
+                          className="w-10 h-10 rounded-full"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                          <span className="text-gray-500">
+                            {currentChat?.name?.slice(0, 2).toUpperCase()}
+                            {currentChat?.email === currentUser.email
+                              ? currentChat?.reciverUserId?.first_name
+                                  .slice(0, 2)
+                                  .toUpperCase()
+                              : currentChat?.senderUserId?.first_name
+                                  .slice(0, 2)
+                                  .toUpperCase() || "UN"}
+                          </span>
+                        </div>
+                      )}
+                      <div>
+                        <h3 className="font-semibold">
+                          {getOtherUserName(currentChat) || "Select a chat"}
+                        </h3>
+                        <span
+                          className={`text-sm ${
+                            onlineUsers[getOtherUserEmail(currentChat)]
+                              ? "text-green-500"
+                              : "text-gray-500"
+                          }`}
+                        >
+                          {onlineUsers[getOtherUserEmail(currentChat)]
+                            ? "Online"
+                            : "Offline"}
+                        </span>
+                      </div>
                     </div>
                     <div>
                       <h3 className="font-semibold text-[16px]">
