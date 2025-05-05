@@ -6,6 +6,7 @@ import { useGetAllUsersQuery } from "@/src/redux/features/users/userApi";
 import { X } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
+import { Pagination } from "@/components/reusable/pagination";
 
 export default function UserManagement() {
   const { data: users, isLoading, error } = useGetAllUsersQuery({});
@@ -24,15 +25,17 @@ export default function UserManagement() {
     setSelectedUser(null);
   };
 
-  const usersPerPage = 10;
+  const usersPerPage = 5; // Changed to 5 items per page
   const [currentPage, setCurrentPage] = useState(1);
   const startIndex = (currentPage - 1) * usersPerPage;
   const endIndex = startIndex + usersPerPage;
   const currentUsers = users?.data?.slice(startIndex, endIndex) || [];
-  const totalPages = Math.ceil(users?.data?.length / usersPerPage);
+  const totalPages = Math.ceil((users?.data?.length || 0) / usersPerPage);
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error loading users</div>;
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <ProtectedRoute allowedRoles={["admin"]}>
@@ -82,34 +85,16 @@ export default function UserManagement() {
           </table>
         </div>
 
-        {/* Pagination */}
-        <div className="flex items-center justify-end mt-6 space-x-2">
-          <button
-            onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-            disabled={currentPage === 1}
-            className="px-3 py-1 border rounded disabled:opacity-50"
-          >
-            Previous
-          </button>
-          {[...Array(totalPages)].map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setCurrentPage(i + 1)}
-              className={`px-3 py-1 rounded border ${
-                currentPage === i + 1 ? "bg-green-500 text-white" : ""
-              }`}
-            >
-              {i + 1}
-            </button>
-          ))}
-          <button
-            onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-            disabled={currentPage === totalPages}
-            className="px-3 py-1 border rounded disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
+        {/* Replace existing pagination with new component */}
+        {totalPages > 1 && (
+          <div className="mt-4">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        )}
 
         {/* Modal */}
         {isModalOpen && selectedUser && (
