@@ -19,6 +19,8 @@ import {
 } from "@/src/redux/features/users/userApi";
 import VerifiedIcons from "@/public/icons/verified-icons";
 import { useGetAllExchangeQuery } from "@/src/redux/features/admin/exchangeApi";
+import { useGetAllExchangeDataQuery } from "@/src/redux/features/auth/authApi";
+import { differenceInDays } from "date-fns";
 
 export default function UserDashboardHome() {
   const [filter, setFilter] = useState("Month");
@@ -35,10 +37,77 @@ export default function UserDashboardHome() {
   );
   const getAllOverviewDataByUserData = getAllOverviewDataByUser?.data;
 
-  const {data: allExchangeData} = useGetAllExchangeQuery({})
-  const allExchangeDataData = allExchangeData?.data
+  const { data: allExchangeData } = useGetAllExchangeQuery({});
+  const allExchangeDataData = allExchangeData?.data;
 
-  console.log("getExchangeHistoryData", allExchangeDataData);
+  const userId = validUser?.userId;
+  const { data: requestList } = useGetAllExchangeDataQuery({
+    userId: userId,
+    isAccepted: false,
+  });
+  const requestListData = requestList?.data;
+  // console.log("requestList", requestListData);
+
+  // console.log("getExchangeHistoryData", allExchangeDataData);
+
+  // Calculate days since user creation
+  const daysSinceCreation = singleUserData?.createdAt
+    ? differenceInDays(new Date(), new Date(singleUserData.createdAt))
+    : 0;
+
+  // Check if user has completed one year
+  const hasCompletedOneYear = daysSinceCreation >= 365;
+
+  // Calculate quality service status from singleUserData
+  const totalReviews = singleUserData?.reviews?.length || 0;
+  const averageRating =
+    singleUserData?.reviews?.reduce(
+      (acc: number, review: any) => acc + review.rating,
+      0
+    ) / totalReviews || 0;
+  const hasQualityService = totalReviews > 10 && averageRating >= 4.5;
+
+  // Calculate quality service progress
+  const qualityServiceProgress = () => {
+    if (totalReviews === 0) return 0;
+    if (totalReviews < 10) {
+      return Math.min(Math.round((totalReviews / 10) * 50), 50); // First 50% based on review count
+    }
+    if (averageRating < 4.5) {
+      return 50 + Math.min(Math.round((averageRating / 4.5) * 50), 49); // Last 50% based on rating
+    }
+    return 100; // Full progress when both conditions are met
+  };
+
+  const badges = [
+    {
+      label: "Years Expertise",
+      status: hasCompletedOneYear ? "claim-green" : "claim",
+      icon: "/badges/icon.png",
+      progress: hasCompletedOneYear
+        ? 100
+        : Math.min(Math.round((daysSinceCreation / 365) * 100), 99),
+    },
+    {
+      label: "Quality Service Ensured",
+      status: hasQualityService ? "claim-green" : "claim",
+      icon: "/badges/icon (2).png",
+      progress: qualityServiceProgress(),
+    },
+    {
+      label: "Verified Trainer",
+      status: singleUserData?.cartificate ? "claim-green" : "locked",
+      icon: (
+        <VerifiedIcons
+          className={
+            singleUserData?.cartificate ? "text-[#20B894]" : "text-gray-400"
+          }
+        />
+      ),
+      progress: singleUserData?.cartificate ? 100 : 0,
+      verified: singleUserData?.cartificate,
+    },
+  ];
 
   return (
     // <ProtectedRoute allowedRoles={["user"]}>
@@ -54,7 +123,7 @@ export default function UserDashboardHome() {
             title: "Confirmed Exchange",
             value: getAllOverviewDataByUserData?.confirmExchange,
           },
-          { title: "New Connect Requests", value: 12 },
+          { title: "New Connect Requests", value: requestListData?.length },
           {
             title: "Total Reviews",
             value: getAllOverviewDataByUserData?.totalReview,
@@ -92,47 +161,21 @@ export default function UserDashboardHome() {
                 </tr>
               </thead>
               <tbody>
-                {[
-                  {
-                    name: "Kristin Watson",
-                    service: "Graphic design",
-                    status: "Accepted",
-                  },
-                  {
-                    name: "Eleanor Pena",
-                    service: "Legal Advice",
-                    status: "Accepted",
-                  },
-                  {
-                    name: "Courtney Henry",
-                    service: "Caricature Drawing",
-                    status: "Canceled",
-                  },
-                  {
-                    name: "Dianne Russell",
-                    service: "Event Planning",
-                    status: "Pending",
-                  },
-                  {
-                    name: "Albert Flores",
-                    service: "Moving Help",
-                    status: "Canceled",
-                  },
-                ].map((req, i) => (
+                {requestListData?.map((req, i) => (
                   <tr key={i} className="border-b">
-                    <td className="p-3">{req.name}</td>
-                    <td className="p-3">{req.service}</td>
+                    <td className="p-3">{req?.senderUserId?.first_name}</td>
+                    <td className="p-3">{req?.senderService}</td>
                     <td className="p-3">
                       <span
                         className={`text-xs px-2 py-1 rounded-full font-medium ${
-                          req.status === "Accepted"
+                          req.isAccepted === true
                             ? "bg-green-100 text-green-600"
-                            : req.status === "Pending"
-                            ? "bg-yellow-100 text-yellow-600"
-                            : "bg-red-100 text-red-500"
+                            : req.isAccepted === false
+                            ? "bg-red-100 text-red-500"
+                            : "bg-yellow-100 text-yellow-600"
                         }`}
                       >
-                        {req.status}
+                        {req.isAccepted === true ? "Accepted" : "Pending"}
                       </span>
                     </td>
                     <td className="p-3 text-[#20B894] cursor-pointer">
@@ -211,35 +254,7 @@ export default function UserDashboardHome() {
         <div className="border rounded-xl bg-white shadow-sm p-4">
           <h3 className="font-semibold mb-4">Badges & Achievements</h3>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[
-              {
-                label: "Years Expertise",
-                status: "claim",
-                icon: "/badges/icon.png",
-                progress: 75,
-              },
-              {
-                label: "Quality Service Ensured",
-                status: "claim",
-                icon: "/badges/icon (2).png",
-                progress: 60,
-              },
-              {
-                label: "Verified Trainer",
-                status: singleUserData?.cartificate ? "claim-green" : "locked",
-                icon: (
-                  <VerifiedIcons
-                    className={
-                      singleUserData?.cartificate
-                        ? "text-[#20B894]"
-                        : "text-gray-400"
-                    }
-                  />
-                ),
-                progress: singleUserData?.cartificate ? 100 : 0,
-                verified: singleUserData?.cartificate,
-              },
-            ].map((badge, i) => (
+            {badges.map((badge, i) => (
               <div
                 key={i}
                 className="relative border rounded-xl px-3 py-4 flex flex-col items-center text-center shadow-sm bg-white"

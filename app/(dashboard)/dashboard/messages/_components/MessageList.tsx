@@ -1,6 +1,6 @@
 "use client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { authApi } from "@/src/redux/features/auth/authApi";
+import { authApi, useGetAllExchangeDataQuery } from "@/src/redux/features/auth/authApi";
 import { useExchangeChatRequestMutation } from "@/src/redux/features/shared/exchangeApi";
 import Image from "next/image";
 import { useState } from "react";
@@ -24,8 +24,8 @@ export const MessageList = ({
     userId: userId,
     isAccepted: true,
   });
-  const { data } = authApi.useGetAllExchangeDataQuery(finalQuery);
-  const { data: requestList } = authApi.useGetAllExchangeDataQuery({
+  const { data } = useGetAllExchangeDataQuery(finalQuery);
+  const { data: requestList } = useGetAllExchangeDataQuery({
     userId: userId,
     isAccepted: false,
   });
