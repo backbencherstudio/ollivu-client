@@ -137,21 +137,30 @@ export default function UserDashboardHome() {
     }
   });
 
+  // Calculate counts from exchangeDashboardData
+  const confirmedExchanges =
+    exchangeDashboardData?.filter((exchange) => exchange.isAccepted === "true")
+      .length || 0;
+
+  const totalExchangeRequests =
+    exchangeDashboardData?.filter((exchange) => exchange.isAccepted === "false")
+      .length || 0;
+
   return (
     // <ProtectedRoute allowedRoles={["user"]}>
     <div className="bg-white min-h-screen p-6 space-y-6">
       {/* Top Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {[
           {
             title: "Total Exchange Request",
-            value: getAllOverviewDataByUserData?.exchangeRequest,
+            value: totalExchangeRequests,
           },
           {
             title: "Confirmed Exchange",
-            value: getAllOverviewDataByUserData?.confirmExchange,
+            value: confirmedExchanges,
           },
-          { title: "New Connect Requests", value: requestListData?.length },
+          // { title: "New Connect Requests", value: exchangeDashboardData?.length },
           {
             title: "Total Reviews",
             value: getAllOverviewDataByUserData?.totalReview,
