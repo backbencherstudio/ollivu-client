@@ -87,23 +87,23 @@ export default function Header({ user }) {
   };
 
   // Close dropdowns when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (profileRef.current && !profileRef.current.contains(event.target)) {
-        setShowProfile(false);
-      }
-      if (
-        notificationRef.current &&
-        !notificationRef.current.contains(event.target)
-      ) {
-        setShowNotifications(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  // useEffect(() => {
+  //   function handleClickOutside(event) {
+  //     if (profileRef.current && !profileRef.current.contains(event.target)) {
+  //       setShowProfile(false);
+  //     }
+  //     if (
+  //       notificationRef.current &&
+  //       !notificationRef.current.contains(event.target)
+  //     ) {
+  //       setShowNotifications(false);
+  //     }
+  //   }
+  //   document.addEventListener("mousedown", handleClickOutside);
+  //   return () => {
+  //     document.removeEventListener("mousedown", handleClickOutside);
+  //   };
+  // }, []);
 
   // Add logout handler
   const handleLogout = () => {
@@ -119,15 +119,20 @@ export default function Header({ user }) {
       <div className="flex items-center justify-end">
         <div className="flex items-center gap-6">
           {/* Message Icon */}
-          <button className="relative cursor-pointer">
-            <MessageCircle className="w-6 h-6 text-gray-600" />
-            <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#20B894] text-white text-xs rounded-full flex items-center justify-center">
+          {
+            singleUserData?.role === "user" && (
+          <Link href="/dashboard/messages">
+            <button className="relative cursor-pointer">
+              <MessageCircle className="w-6 h-6 text-gray-600" />
+            {/* <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#20B894] text-white text-xs rounded-full flex items-center justify-center">
               {2}
-            </span>
-          </button>
+            </span> */}
+            </button>
+          </Link>
+          )}
 
           {/* Notification Bell */}
-          <div ref={notificationRef} className="relative">
+          {/* <div ref={notificationRef} className="relative">
             <button
               onClick={handleNotificationClick}
               className="relative cursor-pointer"
@@ -138,7 +143,6 @@ export default function Header({ user }) {
               </span>
             </button>
 
-            {/* Notification Dropdown */}
             {showNotifications && (
               <div className="absolute top-12 right-0 bg-gray-50 shadow-lg rounded-md p-4 w-[500px]">
                 <h3 className="text-lg font-medium mb-2">Your Notifications</h3>
@@ -174,7 +178,6 @@ export default function Header({ user }) {
                       </div>
                     </div>
                   ))}
-                  {/* Inside the notification dropdown */}
                   <button
                     className="w-full  text-[#20B894] hover:text-[#1a9678] text-sm font-medium cursor-pointer"
                     onClick={() => {
@@ -187,7 +190,7 @@ export default function Header({ user }) {
                 </div>
               </div>
             )}
-          </div>
+          </div> */}
 
           {/* Profile Dropdown */}
           <div ref={profileRef} className="relative">
