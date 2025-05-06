@@ -4,12 +4,24 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { ChevronDown, ChevronRight, Plus, X, Search } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronRight,
+  Plus,
+  X,
+  Search,
+  Trash2,
+  SquarePen,
+} from "lucide-react";
 import {
   useCreateCategoryMutation,
   useGetAllCategoriesQuery,
+  useUpdateCategoryMutation,
 } from "@/src/redux/features/categories/categoriesApi";
-import { useCreateSubCategoryMutation } from "@/src/redux/features/categories/subCategoryApi";
+import {
+  useCreateSubCategoryMutation,
+  useDeleteSubCategoryMutation,
+} from "@/src/redux/features/categories/subCategoryApi";
 import {
   Command,
   CommandEmpty,
@@ -24,6 +36,16 @@ import {
 } from "@/components/ui/popover";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function AddCategory() {
   // Add these states at the top with other states
@@ -38,11 +60,21 @@ export default function AddCategory() {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
     null
   );
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [selectedSubCategory, setSelectedSubCategory] = useState<string | null>(
+    null
+  );
+  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(
+    null
+  );
+  const [editedCategoryName, setEditedCategoryName] = useState("");
 
   // Fetch existing categories
   const { data: getAllCategories } = useGetAllCategoriesQuery({});
   const [createCategory] = useCreateCategoryMutation();
   const [createSubCategory] = useCreateSubCategoryMutation();
+  const [deleteSubCategory] = useDeleteSubCategoryMutation();
+  const [updateCategory] = useUpdateCategoryMutation();
 
   const categories = getAllCategories?.data || [];
   console.log("categories", categories);
@@ -141,18 +173,18 @@ export default function AddCategory() {
       formData.append("categoryImage", subCategoryImage);
 
       // Debug log
-      console.log(
-        "Sending request to:",
-        `/categories/sub-category/${selectedCategoryId}`
-      );
-      console.log("Form data:", {
-        subCategory: newSubCategory,
-        categoryId: selectedCategoryId,
-        categoryImage: subCategoryImage.name,
-      });
+      // console.log(
+      //   "Sending request to:",
+      //   `/categories/sub-category/${selectedCategoryId}`
+      // );
+      // console.log("Form data:", {
+      //   subCategory: newSubCategory,
+      //   categoryId: selectedCategoryId,
+      //   categoryImage: subCategoryImage.name,
+      // });
 
       const result = await createSubCategory(formData).unwrap();
-      console.log("API Response:", result);
+      // console.log("API Response:", result);
 
       if (result) {
         setNewSubCategory("");
@@ -168,6 +200,63 @@ export default function AddCategory() {
       toast.error(error?.data?.message || "Failed to add subcategory");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Handle delete click
+  const handleDeleteClick = (categoryId: string, subCategoryId: string) => {
+    setSelectedCategoryId(categoryId);
+    setSelectedSubCategory(subCategoryId);
+    setDeleteModalOpen(true);
+  };
+
+  // Handle confirm delete
+  const handleConfirmDelete = async () => {
+    if (!selectedSubCategory || !selectedCategoryId) return;
+
+    try {
+      const result = await deleteSubCategory({
+        categoryId: selectedCategoryId,
+        subCategorieId: selectedSubCategory,
+      }).unwrap();
+      // console.log("result", result?.data);
+
+      if (result.success) {
+        toast.success(result?.message || "Subcategory deleted successfully");
+        setDeleteModalOpen(false);
+        setSelectedSubCategory(null);
+      }
+    } catch (error) {
+      toast.error(error?.data?.message || "Failed to delete subcategory");
+    }
+  };
+
+  // Add edit handler
+  const handleEditClick = (categoryId: string, currentName: string) => {
+    setEditingCategoryId(categoryId);
+    setEditedCategoryName(currentName);
+  };
+
+  // Add save handler
+  const handleSaveEdit = async (categoryId: string) => {
+    if (!editedCategoryName.trim()) {
+      toast.error("Category name cannot be empty");
+      return;
+    }
+
+    try {
+      const result = await updateCategory({
+        id: categoryId,
+        category_name: editedCategoryName.trim(),
+      }).unwrap();
+
+      if (result.success) {
+        toast.success("Category updated successfully");
+        setEditingCategoryId(null);
+        setEditedCategoryName("");
+      }
+    } catch (error) {
+      toast.error("Failed to update category");
     }
   };
 
@@ -326,18 +415,71 @@ export default function AddCategory() {
                         ) : (
                           <ChevronRight className="h-5 w-5 text-[#20B894]" />
                         )}
-                        <span className="font-medium">
-                          {category.category_name}
-                        </span>
-                        <span className="text-sm text-gray-500">
-                          ({category.subCategories?.length || 0} subcategories)
-                        </span>
+                        {editingCategoryId === category._id ? (
+                          <div className="flex items-center gap-2">
+                            <Input
+                              value={editedCategoryName}
+                              onChange={(e) =>
+                                setEditedCategoryName(e.target.value)
+                              }
+                              className="w-48"
+                              autoFocus
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  handleSaveEdit(category._id);
+                                }
+                                if (e.key === "Escape") {
+                                  setEditingCategoryId(null);
+                                  setEditedCategoryName("");
+                                }
+                              }}
+                            />
+                            <Button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSaveEdit(category._id);
+                              }}
+                              className="bg-[#20B894] text-white hover:bg-[#1ca883] h-8 px-3 cursor-pointer"
+                            >
+                              Save
+                            </Button>
+                            <Button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingCategoryId(null);
+                                setEditedCategoryName("");
+                              }}
+                              variant="ghost"
+                              className="h-8 px-3 cursor-pointer"
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-3">
+                            <span className="font-medium">
+                              {category.category_name}
+                            </span>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEditClick(
+                                  category._id,
+                                  category.category_name
+                                );
+                              }}
+                              className="p-1.5 hover:bg-[#20B89410] rounded-md transition-all duration-300 ease-in-out cursor-pointer"
+                            >
+                              <SquarePen 
+                                className="w-4 h-4 text-[#20B894]" 
+                              />
+                            </button>
+                          </div>
+                        )}
                       </div>
-                      {selectedCategoryId === category._id && (
-                        <span className="text-sm text-[#20B894] bg-[#20B89410] px-3 py-1 rounded-full">
-                          Selected
-                        </span>
-                      )}
+                      <span className="text-sm text-gray-500">
+                        ({category.subCategories?.length || 0} subcategories)
+                      </span>
                     </div>
                     {expandedCategories.includes(category._id) && (
                       <div className="p-4 bg-gray-50 border-t">
@@ -365,7 +507,7 @@ export default function AddCategory() {
                             />
                             <Button
                               onClick={handleAddSubCategory}
-                              className="bg-[#20B894] text-white hover:bg-[#1ca883]"
+                              className="bg-[#20B894] text-white hover:bg-[#1ca883] cursor-pointer"
                               disabled={
                                 !newSubCategory ||
                                 !subCategoryImage ||
@@ -405,24 +547,37 @@ export default function AddCategory() {
                             {category.subCategories?.map((sub: any) => (
                               <div
                                 key={sub._id}
-                                className="p-3 bg-white rounded-lg shadow-sm flex items-center gap-3"
+                                className="p-3 bg-white rounded-lg shadow-sm flex items-center justify-between gap-3"
                               >
-                                {sub?.categoryImage ? (
-                                  <Image
-                                    src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${sub?.categoryImage}`}
-                                    alt={sub.subCategory}
-                                    width={48}
-                                    height={48}
-                                    className="w-12 h-12 rounded object-cover"
-                                  />
-                                ) : (
-                                  <div className="w-12 h-12 rounded-full bg-[#20B89410] flex items-center justify-center text-[#20B894] font-semibold text-lg">
-                                    {sub?.subCategory?.charAt(0).toUpperCase()}
-                                  </div>
-                                )}
-                                <span className="font-medium">
-                                  {sub?.subCategory}
-                                </span>
+                                <div className="flex items-center gap-3">
+                                  {sub?.categoryImage ? (
+                                    <Image
+                                      src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${sub?.categoryImage}`}
+                                      alt={sub.subCategory}
+                                      width={48}
+                                      height={48}
+                                      className="w-12 h-12 rounded object-cover"
+                                    />
+                                  ) : (
+                                    <div className="w-12 h-12 rounded-full bg-[#20B89410] flex items-center justify-center text-[#20B894] font-semibold text-lg">
+                                      {sub?.subCategory
+                                        ?.charAt(0)
+                                        .toUpperCase()}
+                                    </div>
+                                  )}
+                                  <span className="font-medium">
+                                    {sub?.subCategory}
+                                  </span>
+                                </div>
+
+                                <button
+                                  onClick={() =>
+                                    handleDeleteClick(category._id, sub._id)
+                                  }
+                                  className="text-red-500 hover:text-red-600 p-1 rounded-full hover:bg-red-50 transition-colors cursor-pointer"
+                                >
+                                  <X className="h-4 w-4" />
+                                </button>
                               </div>
                             ))}
                           </div>
@@ -440,6 +595,35 @@ export default function AddCategory() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Delete Confirmation Modal */}
+      <AlertDialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Subcategory</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this subcategory? This action
+              cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              onClick={() => {
+                setDeleteModalOpen(false);
+                setSelectedSubCategory(null);
+              }}
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              className="bg-red-500 hover:bg-red-600"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
