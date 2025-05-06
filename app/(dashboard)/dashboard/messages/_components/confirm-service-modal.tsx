@@ -12,6 +12,7 @@ import {
 import { useState } from "react";
 import { useAcceptExchangeMutation } from "@/src/redux/features/shared/exchangeApi";
 import { verifiedUser } from "@/src/utils/token-varify";
+import { toast } from "sonner";
 
 interface ConfirmServiceModalProps {
   id: string;
@@ -49,19 +50,22 @@ export default function ConfirmServiceModal({
       return;
     }
 
-
     console.log("Confirmation Details:", {
       id: id,
       mySelectedService: selectedService,
       senderRequestedService: senderService,
       acceptedService: acceptedService,
-      allAvailableServices: myServices
+      allAvailableServices: myServices,
     });
 
-    const result = await acceptExchange({ userId: currentUser?.userId, exchangeId: id , reciverService: selectedService})
+    const result = await acceptExchange({
+      userId: currentUser?.userId,
+      exchangeId: id,
+      reciverService: selectedService,
+    });
+    toast.success(result?.data?.message);
 
-    console.log(63, result);   //========= need to show success message
-    
+    // console.log(63, result); //========= need to show success message
 
     if (result?.data?.success) {
       onClose();

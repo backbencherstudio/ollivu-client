@@ -10,6 +10,8 @@ import { MessageContent } from "./_components/MessageContent";
 import ConfirmServiceModal from "./_components/confirm-service-modal";
 import { toast } from "sonner";
 import { useAcceptExchangeMutation } from "@/src/redux/features/shared/exchangeApi";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 const socket = io("http://localhost:5000");
 
 const Messages = () => {
@@ -20,6 +22,7 @@ const Messages = () => {
   const [currentChat, setCurrentChat] = useState(null);
   const [user, setUser] = useState(null); // Updated to null initially
   const currentUser = verifiedUser();
+  const router = useRouter();
   const [recipient, setRecipient] = useState(currentUser?.email);
   const [finalQuery, setFinalQuery] = useState({
     userId: currentUser?.userId,
@@ -219,6 +222,7 @@ const Messages = () => {
     }
   };
   const handleChatSelect = async (user) => {
+    console.log("selected user", user);
     setCurrentChat(user);
     try {
       // Fetch messages for the selected chat
@@ -287,16 +291,31 @@ const Messages = () => {
     };
   }, []);
 
+  const handleReviewClick = (chat) => {
+    if (!chat) return;
+
+    const userId =
+      chat?.email === currentUser?.email
+        ? chat?.reciverUserId?._id
+        : chat?.senderUserId?._id;
+
+    if (userId) {
+      router.push(`/service-result/${userId}`);
+    }
+  };
+
   const modalHandler = async (currentChat) => {
     if (currentChat?.senderUserId?.email === currentUser?.email) {
       const result = await acceptExchange({
         userId: currentUser?.userId,
         exchangeId: currentChat?._id,
       });
-      return console.log(result); // show confirmation alart
+      // toast.success(result?.data?.message);
+      return console.log("result", result); // show confirmation alart
     }
     setIsConfirmModalOpen(true);
   };
+  console.log("currentChat", currentChat);
 
   return (
     <div className="h-screen flex flex-col">
@@ -316,38 +335,53 @@ const Messages = () => {
               }))}
               currentUser={currentUser?.email}
               userId={currentUser?.userId}
+              userImage={undefined}
             />
           </div>
         </div>
 
         {/* Chat Area */}
         <div className="col-span-2 flex flex-col bg-white relative">
+          {/* Chat Area Header */}
           <div className="p-4 flex items-center justify-between border-b border-gray-100">
             <div className="flex items-center gap-3">
-              {currentChat?.profileImage ? (
-                <img
-                  src={`${currentChat?.profileImage}`}
-                  alt={currentChat?.name?.slice(0, 2).toUpperCase()}
-                  className="w-10 h-10 rounded-full"
-                />
+              {currentUser?.userId === currentChat?.senderUserId?._id ? (
+                // Show receiver's image if current user is sender
+                currentChat?.reciverUserId?.profileImage ? (
+                  <Image
+                    src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.reciverUserId?.profileImage}`}
+                    alt={currentChat?.reciverUserId?.first_name?.slice(0, 2).toUpperCase()}
+                    width={30}
+                    height={30}
+                    className="w-10 h-10 rounded-full"
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-[#20b894] flex items-center justify-center">
+                    <span className="text-white text-lg font-semibold">
+                      {currentChat?.reciverUserId?.first_name?.slice(0, 2).toUpperCase() || "UN"}
+                    </span>
+                  </div>
+                )
               ) : (
-                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                  <span className="text-gray-500">
-                    {currentChat?.name?.slice(0, 2).toUpperCase()}
-                    {currentChat?.email === currentUser.email
-                      ? currentChat?.reciverUserId?.first_name
-                          .slice(0, 2)
-                          .toUpperCase()
-                      : currentChat?.senderUserId?.first_name
-                          .slice(0, 2)
-                          .toUpperCase() || "UN"}
-                  </span>
-                </div>
+                // Show sender's image if current user is receiver
+                currentChat?.senderUserId?.profileImage ? (
+                  <Image
+                    src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.senderUserId?.profileImage}`}
+                    alt={currentChat?.senderUserId?.first_name?.slice(0, 2).toUpperCase()}
+                    width={30}
+                    height={30}
+                    className="w-10 h-10 rounded-full"
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-[#20b894] flex items-center justify-center">
+                    <span className="text-white text-lg font-semibold">
+                      {currentChat?.senderUserId?.first_name?.slice(0, 2).toUpperCase() || "UN"}
+                    </span>
+                  </div>
+                )
               )}
               <div>
-                <h3 className="font-semibold">
-                  {getOtherUserName(currentChat) || "Select a chat"}
-                </h3>
+                <h3 className="font-semibold">{getOtherUserName(currentChat)}</h3>
                 <span
                   className={`text-sm ${
                     onlineUsers[getOtherUserEmail(currentChat)]
@@ -388,24 +422,44 @@ const Messages = () => {
           <div className="h-full flex flex-col">
             <h3 className="text-gray-500">Details</h3>
             <div className="bg-gray-100 p-6 rounded-lg mt-5 text-center flex items-center gap-3 justify-center flex-col">
-              <div className="w-20 h-20 rounded-full bg-[#20b894] flex items-center justify-center">
-                <span className="text-white text-2xl font-semibold">
-                  {currentChat?.email === currentUser.email
-                    ? currentChat?.reciverUserId?.first_name
-                        .slice(0, 2)
-                        .toUpperCase()
-                    : currentChat?.senderUserId?.first_name
-                        .slice(0, 2)
-                        .toUpperCase() || "UN"}
-                </span>
-              </div>
+              {currentUser?.userId === currentChat?.senderUserId?._id ? (
+                // Show receiver's image if current user is sender
+                currentChat?.reciverUserId?.profileImage ? (
+                  <Image
+                    src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.reciverUserId?.profileImage}`}
+                    alt={currentChat?.reciverUserId?.first_name?.slice(0, 2).toUpperCase()}
+                    width={30}
+                    height={30}
+                    className="w-20 h-20 rounded-full"
+                  />
+                ) : (
+                  <div className="w-20 h-20 rounded-full bg-[#20b894] flex items-center justify-center">
+                    <span className="text-white text-2xl font-semibold">
+                      {currentChat?.reciverUserId?.first_name?.slice(0, 2).toUpperCase() || "UN"}
+                    </span>
+                  </div>
+                )
+              ) : (
+                // Show sender's image if current user is receiver
+                currentChat?.senderUserId?.profileImage ? (
+                  <Image
+                    src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.senderUserId?.profileImage}`}
+                    alt={currentChat?.senderUserId?.first_name?.slice(0, 2).toUpperCase()}
+                    width={30}
+                    height={30}
+                    className="w-20 h-20 rounded-full"
+                  />
+                ) : (
+                  <div className="w-20 h-20 rounded-full bg-[#20b894] flex items-center justify-center">
+                    <span className="text-white text-2xl font-semibold">
+                      {currentChat?.senderUserId?.first_name?.slice(0, 2).toUpperCase() || "UN"}
+                    </span>
+                  </div>
+                )
+              )}
               <div>
-                <h3 className="font-semibold text-[18px]">
-                  {getOtherUserName(currentChat)}
-                </h3>
-                <p className="text-gray-500">
-                  {getOtherUserEmail(currentChat)}
-                </p>
+                <h3 className="font-semibold text-[18px]">{getOtherUserName(currentChat)}</h3>
+                <p className="text-gray-500">{getOtherUserEmail(currentChat)}</p>
               </div>
               <div className="flex flex-col gap-2 mt-6 w-full">
                 <button
@@ -414,7 +468,10 @@ const Messages = () => {
                 >
                   Confirm Exchange Service
                 </button>
-                <button className="border border-[#b19c87] text-[#b19c87] px-3 py-2 rounded-full flex-1 text-sm whitespace-nowrap hover:bg-[#b19c87] hover:text-white transition-colors">
+                <button
+                  className="border border-[#b19c87] text-[#b19c87] px-3 py-2 rounded-full flex-1 text-sm whitespace-nowrap hover:bg-[#b19c87] hover:text-white transition-colors cursor-pointer"
+                  onClick={() => handleReviewClick(currentChat)}
+                >
                   Give Review
                 </button>
               </div>
@@ -455,16 +512,19 @@ const Messages = () => {
                     onClick={() => setIsProfileOpen(!isProfileOpen)}
                     className="flex items-center gap-3"
                   >
-                    {currentChat?.profileImage ? (
-                      <img
-                        src={`${currentChat?.profileImage}`}
-                        alt="UN"
-                        className="w-10 h-10 rounded-full"
+                    {currentChat?.senderUserId?.profileImage ? (
+                      <Image
+                        src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.senderUserId?.profileImage}`}
+                        alt={currentChat?.senderUserId?.name
+                          ?.slice(0, 2)
+                          .toUpperCase()}
+                        width={30}
+                        height={30}
+                        className="w-14 h-14 rounded-full"
                       />
                     ) : (
-                      <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                        <span className="text-gray-500">
-                          {currentChat?.name?.slice(0, 2).toUpperCase()}
+                      <div className="w-10 h-10 rounded-full bg-[#20b894] flex items-center justify-center">
+                        <span className="text-white text-lg font-semibold">
                           {currentChat?.email === currentUser.email
                             ? currentChat?.reciverUserId?.first_name
                                 .slice(0, 2)
@@ -499,16 +559,47 @@ const Messages = () => {
               {isProfileOpen && (
                 <div className="bg-white border-b border-gray-100 p-4">
                   <div className="bg-gray-100 p-4 rounded-lg text-center flex items-center gap-3 justify-center flex-col">
-                    <div className="w-16 h-16 rounded-full bg-[#20b894] flex items-center justify-center">
-                      <span className="text-white text-xl font-semibold">
-                        {currentChat?.email === currentUser.email
-                          ? currentChat?.reciverUserId?.first_name
-                              .slice(0, 2)
-                              .toUpperCase()
-                          : currentChat?.senderUserId?.first_name
-                              .slice(0, 2)
-                              .toUpperCase() || "UN"}
-                      </span>
+                    <div className="flex items-center gap-3">
+                      {currentChat?.senderUserId?.profileImage ? (
+                        <Image
+                          src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.senderUserId?.profileImage}`}
+                          alt={currentChat?.senderUserId?.name
+                            ?.slice(0, 2)
+                            .toUpperCase()}
+                          width={30}
+                          height={30}
+                          className="w-10 h-10 rounded-full"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                          <span className="text-gray-500">
+                            {currentChat?.name?.slice(0, 2).toUpperCase()}
+                            {currentChat?.email === currentUser.email
+                              ? currentChat?.reciverUserId?.first_name
+                                  .slice(0, 2)
+                                  .toUpperCase()
+                              : currentChat?.senderUserId?.first_name
+                                  .slice(0, 2)
+                                  .toUpperCase() || "UN"}
+                          </span>
+                        </div>
+                      )}
+                      <div>
+                        <h3 className="font-semibold">
+                          {getOtherUserName(currentChat) || "Select a chat"}
+                        </h3>
+                        <span
+                          className={`text-sm ${
+                            onlineUsers[getOtherUserEmail(currentChat)]
+                              ? "text-green-500"
+                              : "text-gray-500"
+                          }`}
+                        >
+                          {onlineUsers[getOtherUserEmail(currentChat)]
+                            ? "Online"
+                            : "Offline"}
+                        </span>
+                      </div>
                     </div>
                     <div>
                       <h3 className="font-semibold text-[16px]">
@@ -528,7 +619,13 @@ const Messages = () => {
                       >
                         Confirm Exchange Service
                       </button>
-                      <button className="border border-[#b19c87] text-[#b19c87] px-3 py-2 rounded-full flex-1 text-sm whitespace-nowrap hover:bg-[#b19c87] hover:text-white transition-colors">
+                      <button
+                        className="border border-[#b19c87] text-[#b19c87] px-3 py-2 rounded-full flex-1 text-sm whitespace-nowrap hover:bg-[#b19c87] hover:text-white transition-colors cursor-pointer"
+                        onClick={() => {
+                          handleReviewClick(currentChat);
+                          setIsProfileOpen(false);
+                        }}
+                      >
                         Give Review
                       </button>
                     </div>
@@ -592,9 +689,11 @@ const Messages = () => {
               lastMessage: lastMessages[user.email],
               isOnline: onlineUsers[user.email] || false,
               unreadCount: unreadMessages[user.email] || 0,
+              userImage: user?.senderUserId?.profileImage,
             }))}
             currentUser={currentUser?.email}
             userId={currentUser?.userId}
+            userImage={undefined}
           />
         </div>
       </div>

@@ -21,7 +21,7 @@ export default function Portfolio() {
   const [uploadPortfolio] = useUploadPortfolioMutation();
 
   const [deletePortfolio] = useDeletePortfolioMutation()
-  console.log("deletePortfolio", deletePortfolio);
+  // console.log("deletePortfolio", deletePortfolio);
   
 
   const portfolioImage = userData?.data?.portfolio 
@@ -112,7 +112,7 @@ export default function Portfolio() {
         <div className="flex gap-2">
           <button 
             onClick={() => setShowPortfolioModal(true)}
-            className="px-3 py-1.5 text-sm text-white bg-[#20B894] rounded-md hover:bg-[#1a9678] cursor-pointer"
+            className="px-3 py-1.5 text-sm text-[#20B894] border border-[#20B894] rounded-md flex items-center gap-2 cursor-pointer hover:bg-[#20B894] hover:text-white ease-in duration-300"
           >
             {portfolioImage ? 'Change Image' : 'Add file'}
           </button>

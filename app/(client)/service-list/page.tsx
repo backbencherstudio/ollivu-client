@@ -92,7 +92,7 @@ export default function ServiceList() {
         senderUserId: currentUser?.userId,
         reciverUserId: userId,
         email: currentUser?.email,
-        senderService: selectedService,
+        senderService: selectedService?.subCategory,
         my_service: currentUserInfo?.my_service,
       }));
 
@@ -108,7 +108,6 @@ export default function ServiceList() {
           setModalStep("none");
           setSelectedUsers([]);
           setSelectedService("");
-          // setSelectedSkill("");
         }, 2000);
       }
     } catch (error) {

@@ -8,19 +8,20 @@ import ReportModal from "./_components/report-modal";
 import { toast } from "sonner";
 import { useCreateReviewReportMutation } from "@/src/redux/features/shared/reportApi";
 import { StatCard } from "./_components/stat-card";
-import { RatingBreakdown } from "./_components/rating-breakdown";
 import { StarRating } from "./_components/star-rating";
 import { Pagination } from "@/components/reusable/pagination";
 import FlagIcon from "@/public/icons/flag-icon";
+import { useGetSingleUserQuery } from "@/src/redux/features/users/userApi";
 
 export default function AdminReviewsPage() {
-  const [sort, setSort] = useState("recent");
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [selectedReview, setSelectedReview] = useState<any>(null);
   const [createReviewReport] = useCreateReviewReportMutation();
 
   const currentUser = verifiedUser();
-  // console.log("cr", currentUser.userId);
+  const { data: singleUser } = useGetSingleUserQuery(currentUser?.userId);
+  const singleUserData = singleUser?.data;
+  console.log("singleUserData", singleUserData);
 
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10;
@@ -30,12 +31,14 @@ export default function AdminReviewsPage() {
   );
 
   const singleUserAllReview = getSingleReview?.data;
-  console.log("singleUserAllReview", singleUserAllReview);
+  // console.log("singleUserAllReview", singleUserAllReview);
 
   // Calculate pagination
   const filteredReviews = useMemo(() => {
     return singleUserAllReview || [];
   }, [singleUserAllReview]);
+  const review = filteredReviews?.length;
+  // console.log("filteredReviews", filteredReviews);
 
   const totalPages = Math.ceil(filteredReviews.length / ITEMS_PER_PAGE);
   const paginatedReviews = filteredReviews.slice(
@@ -78,17 +81,17 @@ export default function AdminReviewsPage() {
   return (
     <div className="bg-white text-[#1D1F2C] min-h-screen p-6 md:p-10 space-y-6">
       {/* Stats Section */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="md:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4">
           <StatCard
             title="Total Reviews"
-            value="1k+"
+            value={singleUserData?.review || 0}
             valueClass="text-[#20B894]"
             subtitle="Growth in reviews on this year"
           />
           <StatCard
             title="Average Rating"
-            value="4.5"
+            value={singleUserData?.rating || 0}
             subtitle="Average Rating on this year"
             stars
           />
@@ -99,9 +102,9 @@ export default function AdminReviewsPage() {
             subtitle="Average Rating on this year"
           />
         </div>
-        <div className="md:col-span-2">
+        {/* <div className="md:col-span-2">
           <RatingBreakdown />
-        </div>
+        </div> */}
       </div>
       {/* Sort + Header */}
       <div className="flex items-center justify-between mt-8 border-b pb-3">

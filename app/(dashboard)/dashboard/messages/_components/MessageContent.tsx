@@ -8,6 +8,7 @@ export const MessageContent = ({
   currentChat,
   deleteMessage,
 }) => {
+  // console.log("currentChat MessageContent", currentChat?.senderUserId?.profileImage  );
   const messagesEndRef = useRef(null);
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -82,7 +83,7 @@ export const MessageContent = ({
                       : "rounded-bl-none"
                   }`}
                 >
-                  {console.log(msg)}
+                  {/* {console.log(msg)} */}
                   {msg.content}
                 </div>
                 <div className="text-xs text-gray-500 mt-1">
