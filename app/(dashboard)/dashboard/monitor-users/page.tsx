@@ -101,10 +101,12 @@ export default function MonitorMessaging() {
     reportType: report.reportType || ''
   })) || [];
 
+  console.log("reportedProfile", reportedProfile);
 
-  const {data} = useGetSuspendedDataQuery()
+  const {data} = useGetSuspendedDataQuery({})
+  const suspendData = data?.data
 
-  console.log(107, data?.data);
+  // console.log(107, data?.data);
   
 
   // Add suspended profiles transformation
@@ -121,6 +123,8 @@ export default function MonitorMessaging() {
     }
     return conv.status === "Pending";
   });
+  console.log("filteredConversations", filteredConversations);
+  
 
   // Update STAT_CARDS with suspended profiles count
   const updatedStatCards = [
@@ -132,9 +136,7 @@ export default function MonitorMessaging() {
     },
     {
       title: "Pending Exchanges",
-      value: transformedConversations.filter(
-        (conv) => conv.status === "Pending"
-      ).length,
+        value: reportedProfile?.length,
       subtitle: "Awaiting Completion",
       icon: PendingIcon,
     },
@@ -172,13 +174,13 @@ export default function MonitorMessaging() {
 
           <Tabs defaultValue="Completed Exchange" onValueChange={setFilter}>
             <TabsList>
-              <TabsTrigger value="Completed Exchange">
+              <TabsTrigger value="Completed Exchange" className="cursor-pointer">
                 Completed Exchange
               </TabsTrigger>
-              <TabsTrigger value="Reported Profile">
+              <TabsTrigger value="Reported Profile" className="cursor-pointer">
                 Reported Profile
               </TabsTrigger>
-              <TabsTrigger value="Suspended Profiles">
+              <TabsTrigger value="Suspended Profiles" className="cursor-pointer">
                 Suspended Profiles
               </TabsTrigger>
             </TabsList>
@@ -221,6 +223,7 @@ export default function MonitorMessaging() {
               isSuspendedView={filter === "Suspended Profiles"}
               open={open}
               setOpen={setOpen}
+              suspendData={suspendData}
               onStatusChange={handleStatusChange}
               onTakeAction={(conversation) => {
                 console.log("Taking action:", conversation);

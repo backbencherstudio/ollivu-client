@@ -18,14 +18,12 @@ export default function ServiceList() {
   const { data: categories } = useGetAllCategoriesQuery({});
   const categoriesData = categories?.data;
 
-  // States
   const [activeCategory, setActiveCategory] = useState<string>("All");
   const [modalStep, setModalStep] = useState<"none" | "users" | "success">(
     "none"
   );
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [selectedService, setSelectedService] = useState<any>(null);
-  // const [selectedSkill, setSelectedSkill] = useState<string>("web development");
 
   // Fetch users based on selected service
   const { data: getUsersByService, isLoading: isLoadingUsers } =
@@ -33,10 +31,8 @@ export default function ServiceList() {
       skip: !selectedService?.subCategory,
     });
 
-  // Filter users who have the selected service
   const filteredUsers = getUsersByService?.data || [];
 
-  // Get all unique subcategories for "All" tab
   const allSubCategories =
     categoriesData?.flatMap((category) =>
       category.subCategories.map((sub) => ({
@@ -45,19 +41,16 @@ export default function ServiceList() {
       }))
     ) || [];
 
-  // Filter subcategories based on active category
   const filteredSubCategories =
     activeCategory === "All"
       ? allSubCategories
       : categoriesData?.find((cat) => cat.category_name === activeCategory)
           ?.subCategories || [];
 
-  // Get current user data
   const currentUser = verifiedUser();
   const { data: currentUserData } = useGetCurrentUserQuery(currentUser?.userId);
   const currentUserInfo = currentUserData?.data;
 
-  // Create exchange mutation
   const [createExchange] = useCreateExchangeMutation();
 
   // Handle user selection
@@ -82,7 +75,6 @@ export default function ServiceList() {
     setSelectedUsers([]);
     setSelectedService("");
     // setSelectedSkill("");
-
   };
 
   // Handle send request
@@ -97,7 +89,7 @@ export default function ServiceList() {
       }));
 
       const response = await createExchange(exchangeRequests).unwrap();
-      console.log("response", response?.data);
+      // console.log("response", response?.data);
 
       if (response?.success) {
         setModalStep("success");
@@ -137,7 +129,7 @@ export default function ServiceList() {
             <button
               onClick={() => setActiveCategory("All")}
               className={cn(
-                "px-4 py-2 rounded-md transition-all",
+                "px-4 py-2 rounded-md transition-all cursor-pointer",
                 activeCategory === "All"
                   ? "bg-teal-500 text-white"
                   : "hover:bg-gray-200"
@@ -150,7 +142,7 @@ export default function ServiceList() {
                 key={category._id}
                 onClick={() => setActiveCategory(category.category_name)}
                 className={cn(
-                  "px-4 py-2 rounded-md transition-all whitespace-nowrap",
+                  "px-4 py-2 rounded-md transition-all whitespace-nowrap cursor-pointer",
                   activeCategory === category.category_name
                     ? "bg-teal-500 text-white"
                     : "hover:bg-gray-200"

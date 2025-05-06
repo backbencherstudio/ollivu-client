@@ -1,3 +1,5 @@
+import { useGetSingleUserQuery } from "@/src/redux/features/users/userApi";
+import { verifiedUser } from "@/src/utils/token-varify";
 import Image from "next/image";
 
 interface SkillExchangeProps {
@@ -13,6 +15,12 @@ export default function SkillExchange({
   onSkillChange,
   users,
 }: SkillExchangeProps) {
+  
+  const validUser = verifiedUser();
+  const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
+  const singleUserData = singleUser?.data;
+  // console.log("singleUserData", singleUserData);
+  
   return (
     <div className="flex flex-col sm:flex-row gap-4 mt-10 mb-6">
       <div className="bg-[#F5F5F5] p-4 rounded w-full">
@@ -22,9 +30,9 @@ export default function SkillExchange({
           onChange={(e) => onSkillChange(e.target.value)}
           className="w-full p-2 rounded border border-gray-300 text-sm"
         >
-          {users.map((user) => (
+          {singleUserData?.my_service?.map((user) => (
             <option key={user._id} value={user._id}>
-              {user?.my_service}
+              {user}
             </option>
           ))}
         </select>

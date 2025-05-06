@@ -23,8 +23,21 @@ export const categoriesApi = baseApi.injectEndpoints({
                 }
             }),
             providesTags: ["Category"]
+        }),
+
+        updateCategory: builder.mutation({
+            query: (data) => ({
+                url: `/categories/updateCategory/${data.id}`,
+                method: "PATCH",
+                body: data,
+                headers: {
+                    authorization: `${localStorage.getItem('accessToken')}`
+                }
+            }),
+            invalidatesTags: ["Category"]
         })
+
     })
 });
 
-export const { useGetAllCategoriesQuery, useCreateCategoryMutation } = categoriesApi;
+export const { useGetAllCategoriesQuery, useCreateCategoryMutation, useUpdateCategoryMutation } = categoriesApi;

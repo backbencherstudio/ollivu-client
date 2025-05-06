@@ -310,7 +310,9 @@ const Messages = () => {
         userId: currentUser?.userId,
         exchangeId: currentChat?._id,
       });
-      // toast.success(result?.data?.message);
+      console.log("result", result?.data?.message);
+
+      toast.success(result?.data?.message);
       return console.log("result", result); // show confirmation alart
     }
     setIsConfirmModalOpen(true);
@@ -350,7 +352,9 @@ const Messages = () => {
                 currentChat?.reciverUserId?.profileImage ? (
                   <Image
                     src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.reciverUserId?.profileImage}`}
-                    alt={currentChat?.reciverUserId?.first_name?.slice(0, 2).toUpperCase()}
+                    alt={currentChat?.reciverUserId?.first_name
+                      ?.slice(0, 2)
+                      .toUpperCase()}
                     width={30}
                     height={30}
                     className="w-10 h-10 rounded-full"
@@ -358,30 +362,36 @@ const Messages = () => {
                 ) : (
                   <div className="w-10 h-10 rounded-full bg-[#20b894] flex items-center justify-center">
                     <span className="text-white text-lg font-semibold">
-                      {currentChat?.reciverUserId?.first_name?.slice(0, 2).toUpperCase() || "UN"}
+                      {currentChat?.reciverUserId?.first_name
+                        ?.slice(0, 2)
+                        .toUpperCase() || "UN"}
                     </span>
                   </div>
                 )
+              ) : // Show sender's image if current user is receiver
+              currentChat?.senderUserId?.profileImage ? (
+                <Image
+                  src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.senderUserId?.profileImage}`}
+                  alt={currentChat?.senderUserId?.first_name
+                    ?.slice(0, 2)
+                    .toUpperCase()}
+                  width={30}
+                  height={30}
+                  className="w-10 h-10 rounded-full"
+                />
               ) : (
-                // Show sender's image if current user is receiver
-                currentChat?.senderUserId?.profileImage ? (
-                  <Image
-                    src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.senderUserId?.profileImage}`}
-                    alt={currentChat?.senderUserId?.first_name?.slice(0, 2).toUpperCase()}
-                    width={30}
-                    height={30}
-                    className="w-10 h-10 rounded-full"
-                  />
-                ) : (
-                  <div className="w-10 h-10 rounded-full bg-[#20b894] flex items-center justify-center">
-                    <span className="text-white text-lg font-semibold">
-                      {currentChat?.senderUserId?.first_name?.slice(0, 2).toUpperCase() || "UN"}
-                    </span>
-                  </div>
-                )
+                <div className="w-10 h-10 rounded-full bg-[#20b894] flex items-center justify-center">
+                  <span className="text-white text-lg font-semibold">
+                    {currentChat?.senderUserId?.first_name
+                      ?.slice(0, 2)
+                      .toUpperCase() || "UN"}
+                  </span>
+                </div>
               )}
               <div>
-                <h3 className="font-semibold">{getOtherUserName(currentChat)}</h3>
+                <h3 className="font-semibold">
+                  {getOtherUserName(currentChat)}
+                </h3>
                 <span
                   className={`text-sm ${
                     onlineUsers[getOtherUserEmail(currentChat)]
@@ -427,7 +437,9 @@ const Messages = () => {
                 currentChat?.reciverUserId?.profileImage ? (
                   <Image
                     src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.reciverUserId?.profileImage}`}
-                    alt={currentChat?.reciverUserId?.first_name?.slice(0, 2).toUpperCase()}
+                    alt={currentChat?.reciverUserId?.first_name
+                      ?.slice(0, 2)
+                      .toUpperCase()}
                     width={30}
                     height={30}
                     className="w-20 h-20 rounded-full"
@@ -435,38 +447,61 @@ const Messages = () => {
                 ) : (
                   <div className="w-20 h-20 rounded-full bg-[#20b894] flex items-center justify-center">
                     <span className="text-white text-2xl font-semibold">
-                      {currentChat?.reciverUserId?.first_name?.slice(0, 2).toUpperCase() || "UN"}
+                      {currentChat?.reciverUserId?.first_name
+                        ?.slice(0, 2)
+                        .toUpperCase() || "UN"}
                     </span>
                   </div>
                 )
+              ) : // Show sender's image if current user is receiver
+              currentChat?.senderUserId?.profileImage ? (
+                <Image
+                  src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.senderUserId?.profileImage}`}
+                  alt={currentChat?.senderUserId?.first_name
+                    ?.slice(0, 2)
+                    .toUpperCase()}
+                  width={30}
+                  height={30}
+                  className="w-20 h-20 rounded-full"
+                />
               ) : (
-                // Show sender's image if current user is receiver
-                currentChat?.senderUserId?.profileImage ? (
-                  <Image
-                    src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.senderUserId?.profileImage}`}
-                    alt={currentChat?.senderUserId?.first_name?.slice(0, 2).toUpperCase()}
-                    width={30}
-                    height={30}
-                    className="w-20 h-20 rounded-full"
-                  />
-                ) : (
-                  <div className="w-20 h-20 rounded-full bg-[#20b894] flex items-center justify-center">
-                    <span className="text-white text-2xl font-semibold">
-                      {currentChat?.senderUserId?.first_name?.slice(0, 2).toUpperCase() || "UN"}
-                    </span>
-                  </div>
-                )
+                <div className="w-20 h-20 rounded-full bg-[#20b894] flex items-center justify-center">
+                  <span className="text-white text-2xl font-semibold">
+                    {currentChat?.senderUserId?.first_name
+                      ?.slice(0, 2)
+                      .toUpperCase() || "UN"}
+                  </span>
+                </div>
               )}
               <div>
-                <h3 className="font-semibold text-[18px]">{getOtherUserName(currentChat)}</h3>
-                <p className="text-gray-500">{getOtherUserEmail(currentChat)}</p>
+                <h3 className="font-semibold text-[18px]">
+                  {getOtherUserName(currentChat)}
+                </h3>
+                <p className="text-gray-500">
+                  {getOtherUserEmail(currentChat)}
+                </p>
               </div>
               <div className="flex flex-col gap-2 mt-6 w-full">
                 <button
-                  className="bg-[#20b894] text-white px-3 py-2 rounded-full flex-1 cursor-pointer text-sm whitespace-nowrap hover:bg-[#1a9677] transition-colors"
-                  onClick={() => modalHandler(currentChat)}
+                  className={`px-3 py-2 rounded-full flex-1 text-sm whitespace-nowrap transition-colors ${
+                    currentChat?.senderUserAccepted &&
+                    currentChat?.reciverUserAccepted
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-[#20b894] text-white hover:bg-[#1a9677]"
+                  }`}
+                  onClick={() => {
+                    modalHandler(currentChat);
+                    setIsProfileOpen(false);
+                  }}
+                  disabled={
+                    currentChat?.senderUserAccepted &&
+                    currentChat?.reciverUserAccepted
+                  }
                 >
-                  Confirm Exchange Service
+                  {currentChat?.senderUserAccepted &&
+                  currentChat?.reciverUserAccepted
+                    ? "Exchange Confirmed"
+                    : "Confirm Exchange Service"}
                 </button>
                 <button
                   className="border border-[#b19c87] text-[#b19c87] px-3 py-2 rounded-full flex-1 text-sm whitespace-nowrap hover:bg-[#b19c87] hover:text-white transition-colors cursor-pointer"
@@ -611,13 +646,25 @@ const Messages = () => {
                     </div>
                     <div className="flex flex-col gap-2 mt-4 w-full">
                       <button
-                        className="bg-[#20b894] text-white px-3 py-2 rounded-full flex-1 cursor-pointer text-sm whitespace-nowrap hover:bg-[#1a9677] transition-colors"
+                        className={`px-3 py-2 rounded-full flex-1 text-sm whitespace-nowrap transition-colors ${
+                          currentChat?.senderUserAccepted &&
+                          currentChat?.reciverUserAccepted
+                            ? "bg-gray-400 cursor-not-allowed"
+                            : "bg-[#20b894] text-white hover:bg-[#1a9677]"
+                        }`}
                         onClick={() => {
                           modalHandler(currentChat);
                           setIsProfileOpen(false);
                         }}
+                        disabled={
+                          currentChat?.senderUserAccepted &&
+                          currentChat?.reciverUserAccepted
+                        }
                       >
-                        Confirm Exchange Service
+                        {currentChat?.senderUserAccepted &&
+                        currentChat?.reciverUserAccepted
+                          ? "Exchange Confirmed"
+                          : "Confirm Exchange Service"}
                       </button>
                       <button
                         className="border border-[#b19c87] text-[#b19c87] px-3 py-2 rounded-full flex-1 text-sm whitespace-nowrap hover:bg-[#b19c87] hover:text-white transition-colors cursor-pointer"

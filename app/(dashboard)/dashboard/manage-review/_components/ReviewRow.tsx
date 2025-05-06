@@ -28,11 +28,6 @@ export function ReviewRow({
   const [isActionModalOpen, setIsActionModalOpen] = useState(false);
   console.log("review: ", review);
 
-
-
-
-
-
   return (
     <>
       <tr className="border-b">
@@ -89,7 +84,6 @@ export function ReviewRow({
             (review.reportDetails.length > 50
               ? `${review.reportDetails.substring(0, 50)}...`
               : review.reportDetails)}
-
         </td>
         {/* <td className="py-4">
           <div className="flex items-center">
@@ -221,7 +215,6 @@ export function ReviewRow({
                   />
                 </svg>
               </Button>
-
             </div>
           )}
         </td>
@@ -236,7 +229,6 @@ export function ReviewRow({
             View details
           </Button>
         </td>
-
       </tr>
 
       {/* Modal for Review column click */}

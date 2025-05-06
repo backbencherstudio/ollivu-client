@@ -37,6 +37,7 @@ export default function Navbar() {
   const validUser = verifiedUser();
   const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
   const singleUserData = singleUser?.data;
+  console.log("singleUserData", singleUserData);
 
   // Update the authentication check
   useEffect(() => {
@@ -213,12 +214,23 @@ export default function Navbar() {
               </div>
 
               <Link
-                href="https://ollivu-client.vercel.app/#how-it-works"
+                href="/#how-it-works"
                 className={`font-medium hover:text-teal-600 ${
-                  pathname === "https://ollivu-client.vercel.app/#how-it-works"
+                  pathname === "/how-it-works"
                     ? "text-[#070707]"
                     : "text-[#777980]"
                 }`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (pathname !== "/") {
+                    router.push("/#how-it-works");
+                  } else {
+                    document.getElementById("how-it-works")?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "start",
+                    });
+                  }
+                }}
               >
                 How it works
               </Link>
@@ -292,14 +304,23 @@ export default function Navbar() {
                     Dashboard
                   </DropdownMenuItem>
 
-                  <DropdownMenuItem className="cursor-pointer">
-                    <User className="mr-2 h-4 w-4" />
-                    Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer">
-                    <Settings className="mr-2 h-4 w-4" />
-                    Settings
-                  </DropdownMenuItem>
+                  {singleUserData?.role === "user" ? (
+                    <Link href="/dashboard/user-profile">
+                      <DropdownMenuItem className="cursor-pointer">
+                        <User className="mr-2 h-4 w-4" />
+                        Profile
+                      </DropdownMenuItem>
+                    </Link>
+                  ):
+                  (
+                    <Link href="/dashboard/admin-profile">
+                      <DropdownMenuItem className="cursor-pointer">
+                        <User className="mr-2 h-4 w-4" />
+                        Profile
+                      </DropdownMenuItem>
+                    </Link>
+                  )}
+                  
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     className="cursor-pointer text-red-600 focus:text-red-600"
@@ -422,12 +443,24 @@ export default function Navbar() {
             </div>
 
             <Link
-              href="/how-it-works"
+              href="/#how-it-works"
               className={`block px-3 py-2 rounded-md text-base font-medium ${
                 pathname === "/how-it-works"
                   ? "text-[#070707]"
                   : "text-[#777980]"
               } hover:text-teal-600`}
+              onClick={(e) => {
+                e.preventDefault();
+                if (pathname !== "/") {
+                  router.push("/#how-it-works");
+                } else {
+                  document.getElementById("how-it-works")?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                  });
+                }
+                setIsMobileMenuOpen(false); // Close mobile menu after click
+              }}
             >
               How it works
             </Link>

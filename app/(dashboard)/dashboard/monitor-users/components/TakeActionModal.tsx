@@ -40,6 +40,8 @@ export function TakeActionModal({ isOpen, onClose, conversation }: TakeActionMod
     title: "",
     message: ""
   });
+  console.log("conversation", conversation);
+  
 
   const handleSubmit = () => {
     if (selectedAction === "suspend") {

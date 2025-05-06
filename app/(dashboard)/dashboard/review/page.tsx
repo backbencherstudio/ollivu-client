@@ -31,14 +31,14 @@ export default function AdminReviewsPage() {
   );
 
   const singleUserAllReview = getSingleReview?.data;
-  // console.log("singleUserAllReview", singleUserAllReview);
+  console.log("singleUserAllReview", singleUserAllReview);
 
   // Calculate pagination
   const filteredReviews = useMemo(() => {
     return singleUserAllReview || [];
   }, [singleUserAllReview]);
   const review = filteredReviews?.length;
-  // console.log("filteredReviews", filteredReviews);
+  console.log("filteredReviews", review);
 
   const totalPages = Math.ceil(filteredReviews.length / ITEMS_PER_PAGE);
   const paginatedReviews = filteredReviews.slice(
@@ -85,7 +85,7 @@ export default function AdminReviewsPage() {
         <div className="md:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4">
           <StatCard
             title="Total Reviews"
-            value={singleUserData?.review || 0}
+            value={review || 0}
             valueClass="text-[#20B894]"
             subtitle="Growth in reviews on this year"
           />
