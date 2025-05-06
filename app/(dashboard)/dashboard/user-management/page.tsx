@@ -14,6 +14,7 @@ export default function UserManagement() {
 
   const [selectedUser, setSelectedUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // console.log("selectedUser", selectedUser);
 
   const openModal = (user) => {
     setSelectedUser(user);
@@ -127,13 +128,15 @@ export default function UserManagement() {
                   <h2 className="text-xl font-semibold text-gray-900">
                     {selectedUser.first_name}
                   </h2>
-                  <p className="text-gray-500">{selectedUser.email}</p>
+                  <p className="text-gray-500">{selectedUser?.email}</p>
                 </div>
               </div>
 
               <div className="space-y-6">
                 <div className="bg-gray-50 rounded-xl p-4">
-                  <h3 className="text-sm font-medium text-gray-900 mb-3">User Information</h3>
+                  <h3 className="text-sm font-medium text-gray-900 mb-3">
+                    User Information
+                  </h3>
                   <div className="space-y-3">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-500">User ID</span>
@@ -141,17 +144,17 @@ export default function UserManagement() {
                         #{selectedUser._id.slice(-6).toUpperCase()}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between text-sm">
+                    {/* <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-500">Role</span>
                       <span className="bg-emerald-50 text-emerald-600 px-2.5 py-0.5 rounded-full text-xs font-medium">
-                        {selectedUser.role || "User"}
+                        {selectedUser?.role || "User"}
                       </span>
-                    </div>
+                    </div> */}
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-500">Services</span>
                       <div className="flex flex-wrap justify-end gap-1 max-w-[200px]">
                         {selectedUser.my_service?.map((service, index) => (
-                          <span 
+                          <span
                             key={index}
                             className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-xs"
                           >
@@ -170,7 +173,6 @@ export default function UserManagement() {
                   >
                     Close
                   </button>
-                  
                 </div>
               </div>
             </div>
