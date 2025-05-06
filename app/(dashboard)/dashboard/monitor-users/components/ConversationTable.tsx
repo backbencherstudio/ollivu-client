@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { StatusDropdown } from "./StatusDropdown";
+import { StatusDropdown } from "./_StatusDropdown";
 import { ViewDetailsModal } from "./ViewDetailsModal";
 import { useState } from "react";
 import Image from "next/image";
@@ -10,6 +10,7 @@ interface ConversationTableProps {
   conversations: any[];
   isReportedView?: boolean;
   isSuspendedView?: boolean;
+  suspendData?: any;
   open: { [key: string]: boolean };
   setOpen: (open: { [key: string]: boolean }) => void;
   onStatusChange: (id: string, status: string) => void;
@@ -18,12 +19,15 @@ interface ConversationTableProps {
 
 export function ConversationTable({
   conversations,
+  suspendData,
   isReportedView = false,
   isSuspendedView = false,
   open,
   setOpen,
   onStatusChange,
 }: ConversationTableProps) {
+  // console.log("conversations", conversations);
+  
 
   const [viewDetailsModal, setViewDetailsModal] = useState<{
     isOpen: boolean;
@@ -199,8 +203,8 @@ export function ConversationTable({
                     <>
                       <td className="px-4">{item.user1}</td>
                       <td className="px-4">{item.user2}</td>
-                      <td className="px-4">
-                        <StatusDropdown
+                      <td className="">
+                        {/* <StatusDropdown
                           status={item.status}
                           convId={item.id}
                           open={open[item.id]}
@@ -210,7 +214,10 @@ export function ConversationTable({
                           onStatusChange={(status) =>
                             onStatusChange(item.id, status)
                           }
-                        />
+                        /> */}
+                        <p className={`text-xs px-2 py-1 rounded-full font-medium text-center ${item.status === "Completed" ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"}`}>
+                          {item.status}
+                        </p>
                       </td>
                       <td className="px-4">
                         <p className="text-[#4A4C56] text-xs">
@@ -242,6 +249,7 @@ export function ConversationTable({
 
       <ViewDetailsModal
         isOpen={viewDetailsModal.isOpen}
+        suspendData={suspendData}
         setViewDetailsModal={setViewDetailsModal}
         onClose={() =>
           setViewDetailsModal({ isOpen: false, conversation: null })
