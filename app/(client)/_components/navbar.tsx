@@ -213,12 +213,23 @@ export default function Navbar() {
               </div>
 
               <Link
-                href="https://ollivu-client.vercel.app/#how-it-works"
+                href="/#how-it-works"
                 className={`font-medium hover:text-teal-600 ${
-                  pathname === "https://ollivu-client.vercel.app/#how-it-works"
+                  pathname === "/how-it-works"
                     ? "text-[#070707]"
                     : "text-[#777980]"
                 }`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (pathname !== "/") {
+                    router.push("/#how-it-works");
+                  } else {
+                    document.getElementById("how-it-works")?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "start",
+                    });
+                  }
+                }}
               >
                 How it works
               </Link>
@@ -422,12 +433,24 @@ export default function Navbar() {
             </div>
 
             <Link
-              href="/how-it-works"
+              href="/#how-it-works"
               className={`block px-3 py-2 rounded-md text-base font-medium ${
                 pathname === "/how-it-works"
                   ? "text-[#070707]"
                   : "text-[#777980]"
               } hover:text-teal-600`}
+              onClick={(e) => {
+                e.preventDefault();
+                if (pathname !== "/") {
+                  router.push("/#how-it-works");
+                } else {
+                  document.getElementById("how-it-works")?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                  });
+                }
+                setIsMobileMenuOpen(false); // Close mobile menu after click
+              }}
             >
               How it works
             </Link>
