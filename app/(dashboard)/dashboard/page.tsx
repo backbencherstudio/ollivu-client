@@ -21,9 +21,12 @@ import VerifiedIcons from "@/public/icons/verified-icons";
 import { useGetAllExchangeQuery } from "@/src/redux/features/admin/exchangeApi";
 import { useGetAllExchangeDataQuery } from "@/src/redux/features/auth/authApi";
 import { differenceInDays } from "date-fns";
+import { useGetExchangeDashboardQuery } from "@/src/redux/features/shared/exchangeDashboardApi";
+import { Dialog } from "@/components/ui/dialog";
 
 export default function UserDashboardHome() {
   const [filter, setFilter] = useState("Month");
+  const [timeFilter, setTimeFilter] = useState("7"); // Default 7 days
   const validUser = verifiedUser();
   const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
   const singleUserData = singleUser?.data;
@@ -46,6 +49,10 @@ export default function UserDashboardHome() {
     isAccepted: false,
   });
   const requestListData = requestList?.data;
+
+  const { data: exchangeDashboard } = useGetExchangeDashboardQuery(userId);
+  const exchangeDashboardData = exchangeDashboard?.data;
+  console.log("exchangeDashboardData", exchangeDashboardData);
   // console.log("requestList", requestListData);
 
   // console.log("getExchangeHistoryData", allExchangeDataData);
@@ -109,6 +116,27 @@ export default function UserDashboardHome() {
     },
   ];
 
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Filter data based on selected time period
+  const filteredExchangeDashboardData = exchangeDashboardData?.filter((req) => {
+    const requestDate = new Date(req.createdAt);
+    const today = new Date();
+    const daysDifference = differenceInDays(today, requestDate);
+
+    switch (timeFilter) {
+      case "7":
+        return daysDifference <= 7;
+      case "15":
+        return daysDifference <= 15;
+      case "30":
+        return daysDifference <= 30;
+      default:
+        return true;
+    }
+  });
+
   return (
     // <ProtectedRoute allowedRoles={["user"]}>
     <div className="bg-white min-h-screen p-6 space-y-6">
@@ -146,8 +174,14 @@ export default function UserDashboardHome() {
         <div className="border rounded-xl bg-white shadow-sm">
           <div className="flex justify-between items-center p-4 border-b">
             <h3 className="font-semibold">Connection Request</h3>
-            <select className="text-sm text-gray-600">
-              <option>Most Recent</option>
+            <select
+              className="text-sm text-gray-600 border rounded px-2 py-1"
+              value={timeFilter}
+              onChange={(e) => setTimeFilter(e.target.value)}
+            >
+              <option value="7">Last 7 days</option>
+              <option value="15">Last 15 days</option>
+              <option value="30">Last 30 days</option>
             </select>
           </div>
           <div className="overflow-x-auto">
@@ -161,25 +195,31 @@ export default function UserDashboardHome() {
                 </tr>
               </thead>
               <tbody>
-                {requestListData?.map((req, i) => (
+                {filteredExchangeDashboardData?.map((req, i) => (
                   <tr key={i} className="border-b">
                     <td className="p-3">{req?.senderUserId?.first_name}</td>
                     <td className="p-3">{req?.senderService}</td>
                     <td className="p-3">
                       <span
                         className={`text-xs px-2 py-1 rounded-full font-medium ${
-                          req.isAccepted === true
+                          req?.isAccepted === "true"
                             ? "bg-green-100 text-green-600"
-                            : req.isAccepted === false
-                            ? "bg-red-100 text-red-500"
                             : "bg-yellow-100 text-yellow-600"
                         }`}
                       >
-                        {req.isAccepted === true ? "Accepted" : "Pending"}
+                        {req?.isAccepted === "true" ? "Accepted" : "Pending"}
                       </span>
                     </td>
-                    <td className="p-3 text-[#20B894] cursor-pointer">
-                      View details
+                    <td className="p-3">
+                      <button
+                        onClick={() => {
+                          setSelectedRequest(req);
+                          setIsModalOpen(true);
+                        }}
+                        className="text-[#20B894] hover:text-[#1a9677] cursor-pointer"
+                      >
+                        View details
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -416,6 +456,123 @@ export default function UserDashboardHome() {
           </ResponsiveContainer>
         </div>
       </div>
+
+      {/* Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/50 bg-opacity-50 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg w-[500px] max-h-[90vh] overflow-y-auto relative">
+            {/* Modal Header */}
+            <div className="flex justify-between items-center p-6 border-b">
+              <h3 className="text-lg font-semibold">
+                Exchange Request Details
+              </h3>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="text-gray-400 hover:text-gray-500 cursor-pointer"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            {selectedRequest && (
+              <div className="p-6 space-y-4">
+                {/* Sender Info */}
+                <div className="space-y-2">
+                  <h4 className="font-medium text-gray-700">
+                    Sender Information
+                  </h4>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-100">
+                      {selectedRequest?.senderUserId?.profileImage ? (
+                        <Image
+                          src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${selectedRequest.senderUserId.profileImage}`}
+                          alt={selectedRequest.senderUserId.first_name}
+                          width={40}
+                          height={40}
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-600">
+                          {selectedRequest.senderUserId.first_name[0]}
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <p className="font-medium">
+                        {selectedRequest.senderUserId.first_name}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        {selectedRequest.senderUserId.email}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Service Details */}
+                <div className="space-y-2">
+                  <h4 className="font-medium text-gray-700">Service Details</h4>
+                  <div className="bg-gray-50 p-3 rounded">
+                    <p className="text-sm">
+                      <span className="font-medium">Sender Service:</span>{" "}
+                      {selectedRequest.senderService}
+                    </p>
+                    <p className="text-sm">
+                      <span className="font-medium">Receiver Service:</span>{" "}
+                      {selectedRequest.receiverService}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Status */}
+                <div className="space-y-2">
+                  <h4 className="font-medium text-gray-700">Status</h4>
+                  <span
+                    className={`text-xs px-2 py-1 rounded-full font-medium ${
+                      selectedRequest.isAccepted === "true"
+                        ? "bg-green-100 text-green-600"
+                        : "bg-yellow-100 text-yellow-600"
+                    }`}
+                  >
+                    {selectedRequest.isAccepted === "true"
+                      ? "Accepted"
+                      : "Pending"}
+                  </span>
+                </div>
+
+                {/* Date */}
+                <div className="space-y-2">
+                  <h4 className="font-medium text-gray-700">Request Date</h4>
+                  <p className="text-sm text-gray-600">
+                    {new Date(selectedRequest.createdAt).toLocaleDateString(
+                      "en-US",
+                      {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      }
+                    )}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
     // </ProtectedRoute>
   );
