@@ -507,24 +507,24 @@ export default function UserDashboardHome() {
                     <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-100">
                       {selectedRequest?.senderUserId?.profileImage ? (
                         <Image
-                          src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${selectedRequest.senderUserId.profileImage}`}
-                          alt={selectedRequest.senderUserId.first_name}
+                          src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${selectedRequest?.senderUserId?.profileImage}`}
+                          alt={selectedRequest?.senderUserId?.first_name}
                           width={40}
                           height={40}
                           className="object-cover"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-600">
-                          {selectedRequest.senderUserId.first_name[0]}
+                          {selectedRequest?.senderUserId?.first_name[0]}
                         </div>
                       )}
                     </div>
                     <div>
                       <p className="font-medium">
-                        {selectedRequest.senderUserId.first_name}
+                        {selectedRequest?.senderUserId?.first_name}
                       </p>
                       <p className="text-sm text-gray-500">
-                        {selectedRequest.senderUserId.email}
+                        {selectedRequest?.senderUserId?.email}
                       </p>
                     </div>
                   </div>
@@ -536,12 +536,12 @@ export default function UserDashboardHome() {
                   <div className="bg-gray-50 p-3 rounded">
                     <p className="text-sm">
                       <span className="font-medium">Sender Service:</span>{" "}
-                      {selectedRequest.senderService}
+                      {selectedRequest?.senderService}
                     </p>
-                    <p className="text-sm">
+                    {/* <p className="text-sm">
                       <span className="font-medium">Receiver Service:</span>{" "}
                       {selectedRequest.receiverService}
-                    </p>
+                    </p> */}
                   </div>
                 </div>
 
@@ -550,7 +550,7 @@ export default function UserDashboardHome() {
                   <h4 className="font-medium text-gray-700">Status</h4>
                   <span
                     className={`text-xs px-2 py-1 rounded-full font-medium ${
-                      selectedRequest.isAccepted === "true"
+                      selectedRequest?.isAccepted === "true"
                         ? "bg-green-100 text-green-600"
                         : "bg-yellow-100 text-yellow-600"
                     }`}
