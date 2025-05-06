@@ -37,6 +37,7 @@ export default function Navbar() {
   const validUser = verifiedUser();
   const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
   const singleUserData = singleUser?.data;
+  console.log("singleUserData", singleUserData);
 
   // Update the authentication check
   useEffect(() => {
@@ -303,14 +304,23 @@ export default function Navbar() {
                     Dashboard
                   </DropdownMenuItem>
 
-                  <DropdownMenuItem className="cursor-pointer">
-                    <User className="mr-2 h-4 w-4" />
-                    Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer">
-                    <Settings className="mr-2 h-4 w-4" />
-                    Settings
-                  </DropdownMenuItem>
+                  {singleUserData?.role === "user" ? (
+                    <Link href="/dashboard/user-profile">
+                      <DropdownMenuItem className="cursor-pointer">
+                        <User className="mr-2 h-4 w-4" />
+                        Profile
+                      </DropdownMenuItem>
+                    </Link>
+                  ):
+                  (
+                    <Link href="/dashboard/admin-profile">
+                      <DropdownMenuItem className="cursor-pointer">
+                        <User className="mr-2 h-4 w-4" />
+                        Profile
+                      </DropdownMenuItem>
+                    </Link>
+                  )}
+                  
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     className="cursor-pointer text-red-600 focus:text-red-600"
