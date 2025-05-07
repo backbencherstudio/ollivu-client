@@ -13,6 +13,7 @@ import { ArrowUpRight, X } from "lucide-react";
 import UserList from "../_components/home-page/service-categories/UserList";
 import SkillExchange from "../_components/home-page/service-categories/SkillExchange";
 import SuccessMessage from "../_components/home-page/service-categories/SuccessMessage";
+import exchange from "@/public/service-list.png";
 
 export default function ServiceList() {
   const { data: categories } = useGetAllCategoriesQuery({});
@@ -111,9 +112,14 @@ export default function ServiceList() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-center items-center gap-10 mb-12">
-        <h2 className="text-[40px] font-medium font-inter">
-          Explore & Exchange: Your Marketplace for <br /> Services
+       <div>
+       <h2 className="text-[40px] font-medium font-inter">
+          Explore & Exchange: Your Marketplace <br /> for Services
         </h2>
+       </div>
+       <div>
+        <Image src={exchange} alt="Exchange" width={400} height={400} />
+       </div>
       </div>
 
       <div className="mt-12">
@@ -124,15 +130,15 @@ export default function ServiceList() {
         </div>
 
         {/* Category Tabs */}
-        <div className="flex justify-center mb-8 overflow-x-auto">
-          <div className="flex space-x-2 p-2 bg-gray-50 rounded-lg">
+        <div className="container mx-auto mb-8">
+          <div className="flex items-center justify-center flex-wrap gap-3 p-2 bg-[#F9F9F9] rounded-xl">
             <button
               onClick={() => setActiveCategory("All")}
               className={cn(
-                "px-4 py-2 rounded-md transition-all cursor-pointer",
+                "px-6 py-3 rounded-md transition-all cursor-pointer text-[16px] font-medium",
                 activeCategory === "All"
-                  ? "bg-teal-500 text-white"
-                  : "hover:bg-gray-200"
+                  ? "bg-[#20B894] text-white"
+                  : "text-[#777980] hover:bg-gray-100"
               )}
             >
               All
@@ -142,10 +148,10 @@ export default function ServiceList() {
                 key={category._id}
                 onClick={() => setActiveCategory(category.category_name)}
                 className={cn(
-                  "px-4 py-2 rounded-md transition-all whitespace-nowrap cursor-pointer",
+                  "px-6 py-3 rounded-md transition-all cursor-pointer text-[16px] font-medium",
                   activeCategory === category.category_name
-                    ? "bg-teal-500 text-white"
-                    : "hover:bg-gray-200"
+                    ? "bg-[#20B894] text-white"
+                    : "text-[#777980] hover:bg-gray-100"
                 )}
               >
                 {category.category_name}
@@ -155,7 +161,7 @@ export default function ServiceList() {
         </div>
 
         {/* Service Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-10">
           {filteredSubCategories.map((subCategory) => (
             <div
               key={subCategory._id}
