@@ -41,7 +41,7 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
 
   // Check for initial URL params
   useEffect(() => {
-    const myServiceParam = searchParams.get("my_service");
+    const myServiceParam = searchParams.get("searchTerm");
     const ratingParam = searchParams.get("rating");
     const locationParam = searchParams.get("country");
     const searchTermParam = searchParams.get("searchTerm");
@@ -103,9 +103,9 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
     useGetAllUsersQuery(
       {
         ...(searchTerm && { searchTerm }),
-        ...(selectedItem && { my_service: selectedItem }),
+        ...(selectedItem && { searchTerm: selectedItem }),
         ...(selectedCategory &&
-          !selectedItem && { my_service: selectedCategory }),
+          !selectedItem && { searchTerm: selectedCategory }),
         ...(location && { country: location }),
         ...(selectedRating && { rating: selectedRating }),
       },
@@ -203,7 +203,7 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
       // Update "All Services" selection state
       setAllServicesSelected(newRating === null && !searchTerm && !location);
 
-      // Update URL and trigger API request - removed my_service parameter
+      // Update URL and trigger API request - removed searchTerm parameter
       debouncedFilter({
         searchTerm,
         location,
@@ -213,33 +213,32 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
   };
 
   // Toggle category open/closed and handle selection
+  // Modify toggleCategory function
   const toggleCategory = (categoryTitle: string) => {
     safeStateUpdate(() => {
-      // Reset skipQuery flag when selecting a category
       setSkipQuery(false);
       setAllServicesSelected(false);
-
-      // Clear rating when selecting category
       setSelectedRating(null);
 
-      // Toggle open/closed state
+      const encodedCategoryTitle = encodeURIComponent(categoryTitle);
+
       setOpenCategories((prev) =>
         prev.includes(categoryTitle)
           ? prev.filter((title) => title !== categoryTitle)
           : [...prev, categoryTitle]
       );
 
-      // Find the current category
       const currentCategory = categories.find(
         (cat) => cat.category_name === categoryTitle
       );
 
-      // Handle selection and navigation
       if (currentCategory?.subCategories?.length > 0) {
         onCategorySelect(categoryTitle);
-        onItemSelect(currentCategory.subCategories[0].subCategory);
+        const subCategory = currentCategory.subCategories[0].subCategory;
+        const encodedSubCategory = encodeURIComponent(subCategory);
+        onItemSelect(subCategory);
         router.push(
-          `/service-result?my_service=${currentCategory.subCategories[0].subCategory}`,
+          `/service-result?searchTerm=${encodedSubCategory}`,
           {
             scroll: false,
           }
@@ -247,23 +246,77 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
       } else {
         onCategorySelect(categoryTitle);
         onItemSelect(null);
-        router.push(`/service-result?my_service=${categoryTitle}`, {
+        router.push(`/service-result?searchTerm=${encodedCategoryTitle}`, {
           scroll: false,
         });
       }
     });
   };
 
-  // Handle subcategory item click
+  // Modify handleItemClick function
   const handleItemClick = (categoryTitle: string, itemTitle: string) => {
     safeStateUpdate(() => {
       setSkipQuery(false);
       setAllServicesSelected(false);
       onCategorySelect(categoryTitle);
       onItemSelect(itemTitle);
-      router.push(`/service-result?my_service=${itemTitle}`, { scroll: false });
+      
+      const encodedItemTitle = encodeURIComponent(itemTitle);
+      router.push(`/service-result?searchTerm=${encodedItemTitle}`, { scroll: false });
     });
   };
+
+  // Modify the initial URL params check in useEffect
+  useEffect(() => {
+    const myServiceParam = searchParams.get("searchTerm");
+    const ratingParam = searchParams.get("rating");
+    const locationParam = searchParams.get("country");
+    const searchTermParam = searchParams.get("searchTerm");
+
+    if (myServiceParam || ratingParam || locationParam || searchTermParam) {
+      setAllServicesSelected(false);
+    } else {
+      setAllServicesSelected(true);
+    }
+
+    if (myServiceParam) {
+      const decodedServiceParam = decodeURIComponent(myServiceParam);
+      const parentCategory = categories.find(
+        (cat) =>
+          cat.category_name === decodedServiceParam ||
+          cat.subCategories?.some(
+            (sub: any) => sub.subCategory === decodedServiceParam
+          )
+      );
+
+      if (parentCategory) {
+        if (parentCategory.category_name === decodedServiceParam) {
+          onCategorySelect(decodedServiceParam);
+          onItemSelect(null);
+          setOpenCategories([decodedServiceParam]);
+        } else {
+          const isSubcategory = parentCategory.subCategories?.some(
+            (sub: any) => sub.subCategory === decodedServiceParam
+          );
+          if (isSubcategory) {
+            onCategorySelect(parentCategory.category_name);
+            onItemSelect(decodedServiceParam);
+            setOpenCategories([parentCategory.category_name]);
+          }
+        }
+      } else {
+        onCategorySelect(decodedServiceParam);
+        onItemSelect(null);
+      }
+    }
+    if (ratingParam) {
+      setSelectedRating(Number(ratingParam));
+    }
+
+    if (locationParam) {
+      setLocation(locationParam);
+    }
+  }, [categories, searchParams, onCategorySelect, onItemSelect]);
 
   // Check if a category is open
   const isOpen = (categoryTitle: string) =>
@@ -274,7 +327,7 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
     debounce(
       (params: {
         searchTerm?: string;
-        my_service?: string;
+        // searchTerm?: string;
         location?: string;
         rating?: number | null;
       }) => {
@@ -284,7 +337,7 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
         // If any filter is active, "All Services" is not selected
         setAllServicesSelected(
           !params.searchTerm &&
-            !params.my_service &&
+            !params.searchTerm &&
             !params.location &&
             !params.rating
         );
@@ -294,8 +347,8 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
         // Only add parameters that have values
         if (params.searchTerm)
           urlParams.append("searchTerm", params.searchTerm);
-        if (params.my_service)
-          urlParams.append("my_service", params.my_service);
+        if (params.searchTerm)
+          urlParams.append("searchTerm", params.searchTerm);
         if (params.location) urlParams.append("country", params.location);
         if (params.rating !== null && params.rating !== undefined)
           urlParams.append("rating", params.rating.toString());
@@ -324,8 +377,8 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
     setAllServicesSelected(value === "");
 
     debouncedFilter({
-      searchTerm: value,
-      my_service: selectedItem || selectedCategory || undefined,
+      // searchTerm: value,
+      searchTerm: selectedItem || selectedCategory || undefined,
       location,
       rating: selectedRating,
     });
@@ -383,8 +436,8 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
 
     // Update URL and trigger API request with proper query parameters
     debouncedFilter({
-      searchTerm,
-      my_service: selectedItem || selectedCategory || undefined,
+      // searchTerm,
+      searchTerm: selectedItem || selectedCategory || undefined,
       ...(selectedLocation.country && {
         "addressInfo.country": selectedLocation.country,
       }),
@@ -413,8 +466,8 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
       );
 
       debouncedFilter({
-        searchTerm,
-        my_service: selectedItem || selectedCategory || undefined,
+        // searchTerm,
+        searchTerm: selectedItem || selectedCategory || undefined,
         location: "",
         rating: selectedRating,
       });
@@ -434,8 +487,8 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
       );
 
       debouncedFilter({
-        searchTerm,
-        my_service: selectedItem || selectedCategory || undefined,
+        // searchTerm,
+        searchTerm: selectedItem || selectedCategory || undefined,
         location,
         rating: null,
       });
@@ -447,7 +500,7 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
     const uniqueServices = Array.from(
       new Set(
         filteredUsers?.data
-          ?.flatMap((result: any) => result.my_service)
+          ?.flatMap((result: any) => result.searchTerm)
           ?.filter((service: string) =>
             service?.toLowerCase().includes(searchTerm?.toLowerCase())
           )
@@ -501,7 +554,7 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
       }
 
       // Update URL and trigger API request
-      router.push(`/service-result?my_service=${uniqueService}`, {
+      router.push(`/service-result?searchTerm=${uniqueService}`, {
         scroll: false,
       });
     });
@@ -574,7 +627,7 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
             {Array.from(
               new Set(
                 filteredUsers?.data
-                  ?.flatMap((result: any) => result.my_service)
+                  ?.flatMap((result: any) => result.searchTerm)
                   ?.filter((service: string) =>
                     service?.toLowerCase().includes(searchTerm?.toLowerCase())
                   )
