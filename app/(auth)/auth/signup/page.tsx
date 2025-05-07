@@ -53,11 +53,13 @@ export default function SignupPage() {
         password: form.password,
       }).unwrap();
       console.log("signup response", response?.data);
-      
+
+      // if (response.success) {
+      //   toast.success(
+      //     "Your account has been created successfully! Please check your email to verify your account."
+      //   );
       if (response.success) {
-        toast.success(
-          "Your account has been created successfully! Please check your email to verify your account."
-        );
+        toast.success(response.message);
         router.push(`/auth/verify-otp?email=${encodeURIComponent(form.email)}`);
       }
     } catch (error: any) {
