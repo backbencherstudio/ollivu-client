@@ -32,6 +32,11 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [skipQuery, setSkipQuery] = useState(false);
 
+  // Add state for live suggestions
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
   // Flag for "All Services" selection state
   const [allServicesSelected, setAllServicesSelected] = useState(true);
 
@@ -120,6 +125,52 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
     {
       skip: !skipQuery,
     }
+  );
+
+  // Get suggestions based on input
+  const updateSuggestions = useCallback(
+    (input: string) => {
+      if (!input.trim()) {
+        setSuggestions([]);
+        setShowSuggestions(false);
+        return;
+      }
+
+      // Collect all possible service names from categories and subcategories
+      const categoryNames = categories.map((cat) => cat.category_name);
+      const subcategoryNames = categories.flatMap(
+        (cat) => cat.subCategories?.map((sub: any) => sub.subCategory) || []
+      );
+
+      // Add any service names from user data that might not be in categories
+      const serviceNames =
+        allUsers?.data?.flatMap((user: any) => user.searchTerm || []) || [];
+
+      // Combine all possible sources of service names
+      const allServiceNames = [
+        ...new Set([...categoryNames, ...subcategoryNames, ...serviceNames]),
+      ];
+
+      // Filter for matches
+      const matchingSuggestions = allServiceNames.filter(
+        (name) => name && name.toLowerCase().includes(input.toLowerCase())
+      );
+
+      // Sort by relevance (starting with the search term first)
+      matchingSuggestions.sort((a, b) => {
+        const aStartsWith = a.toLowerCase().startsWith(input.toLowerCase());
+        const bStartsWith = b.toLowerCase().startsWith(input.toLowerCase());
+
+        if (aStartsWith && !bStartsWith) return -1;
+        if (!aStartsWith && bStartsWith) return 1;
+        return a.localeCompare(b);
+      });
+
+      // Take top results
+      setSuggestions(matchingSuggestions.slice(0, 8));
+      setShowSuggestions(matchingSuggestions.length > 0);
+    },
+    [categories, allUsers?.data]
   );
 
   // Improved transition handling
@@ -321,12 +372,19 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
   const isOpen = (categoryTitle: string) =>
     openCategories.includes(categoryTitle);
 
+  // New debounced handler for live suggestions
+  const debouncedUpdateSuggestions = useCallback(
+    debounce((value) => {
+      updateSuggestions(value);
+    }, 200), // Quick response for suggestions (200ms)
+    [updateSuggestions]
+  );
+
   // Debounced filter function to update URL and trigger API requests
   const debouncedFilter = useCallback(
     debounce(
       (params: {
         searchTerm?: string;
-        // searchTerm?: string;
         location?: string;
         rating?: number | null;
       }) => {
@@ -335,17 +393,12 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
 
         // If any filter is active, "All Services" is not selected
         setAllServicesSelected(
-          !params.searchTerm &&
-            !params.searchTerm &&
-            !params.location &&
-            !params.rating
+          !params.searchTerm && !params.location && !params.rating
         );
 
         const urlParams = new URLSearchParams();
 
         // Only add parameters that have values
-        if (params.searchTerm)
-          urlParams.append("searchTerm", params.searchTerm);
         if (params.searchTerm)
           urlParams.append("searchTerm", params.searchTerm);
         if (params.location) urlParams.append("country", params.location);
@@ -366,20 +419,74 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
     [router]
   );
 
-  // Handle search input change
+  // Handle search input change - modified for live suggestions
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value);
+
+    // Update live suggestions as user types
+    debouncedUpdateSuggestions(value);
+
+    // Show suggestions dropdown if input has content
+    setShowSuggestions(value.trim().length > 0);
+
+    // Reset selected index when input changes
+    setSelectedIndex(-1);
 
     // Reset skipQuery flag when searching
     setSkipQuery(false);
     setAllServicesSelected(value === "");
 
-    debouncedFilter({
-      // searchTerm: value,
-      searchTerm: selectedItem || selectedCategory || undefined,
-      location,
-      rating: selectedRating,
+    // Don't immediately filter/update URL while user is typing
+    // (we'll do that when they select a suggestion or press Enter)
+  };
+
+  // Handle suggestion selection
+  const handleSuggestionSelect = (suggestion: string) => {
+    safeStateUpdate(() => {
+      // Hide suggestions
+      setShowSuggestions(false);
+
+      // Reset skipQuery flag when selecting a suggestion
+      setSkipQuery(false);
+      setAllServicesSelected(false);
+
+      // Clear search input after selection
+      setSearchTerm("");
+
+      // Find if suggestion is a category, subcategory, or service
+      let parentCategory = categories.find(
+        (cat) => cat.category_name === suggestion
+      );
+
+      if (parentCategory) {
+        // It's a main category
+        onCategorySelect(suggestion);
+        onItemSelect(null);
+        setOpenCategories([suggestion]);
+      } else {
+        // Check if it's a subcategory
+        parentCategory = categories.find((cat) =>
+          cat.subCategories?.some((sub: any) => sub.subCategory === suggestion)
+        );
+
+        if (parentCategory) {
+          // It's a subcategory
+          onCategorySelect(parentCategory.category_name);
+          onItemSelect(suggestion);
+          setOpenCategories([parentCategory.category_name]);
+        } else {
+          // It's a service not in our category hierarchy
+          onCategorySelect(suggestion);
+          onItemSelect(null);
+        }
+      }
+
+      // Update URL and trigger API request
+      const encodedSuggestion = encodeURIComponent(suggestion);
+      router.push(`/service-result?searchTerm=${encodedSuggestion}`, {
+        scroll: false,
+      });
     });
   };
 
@@ -435,7 +542,6 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
 
     // Update URL and trigger API request with proper query parameters
     debouncedFilter({
-      // searchTerm,
       searchTerm: selectedItem || selectedCategory || undefined,
       ...(selectedLocation.country && {
         "addressInfo.country": selectedLocation.country,
@@ -465,7 +571,6 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
       );
 
       debouncedFilter({
-        // searchTerm,
         searchTerm: selectedItem || selectedCategory || undefined,
         location: "",
         rating: selectedRating,
@@ -486,7 +591,6 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
       );
 
       debouncedFilter({
-        // searchTerm,
         searchTerm: selectedItem || selectedCategory || undefined,
         location,
         rating: null,
@@ -494,70 +598,58 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
     });
   };
 
-  // Handle keyboard navigation for search results
+  // Handle keyboard navigation for search suggestions
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const uniqueServices = Array.from(
-      new Set(
-        filteredUsers?.data
-          ?.flatMap((result: any) => result.searchTerm)
-          ?.filter((service: string) =>
-            service?.toLowerCase().includes(searchTerm?.toLowerCase())
-          )
-      )
-    );
+    if (!showSuggestions || suggestions.length === 0) return;
 
     switch (e.key) {
       case "ArrowDown":
         e.preventDefault();
         setSelectedIndex((prev) =>
-          prev < uniqueServices.length - 1 ? prev + 1 : prev
+          prev < suggestions.length - 1 ? prev + 1 : prev
         );
         break;
       case "ArrowUp":
         e.preventDefault();
-        setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
+        setSelectedIndex((prev) => (prev > 0 ? prev - 1 : 0));
         break;
       case "Enter":
         e.preventDefault();
-        if (selectedIndex >= 0 && uniqueServices[selectedIndex]) {
-          const selectedService = uniqueServices[selectedIndex] as string;
-          handleServiceSelect(selectedService);
+        if (selectedIndex >= 0 && suggestions[selectedIndex]) {
+          handleSuggestionSelect(suggestions[selectedIndex]);
+        } else if (searchTerm.trim()) {
+          // If no suggestion is selected but there's search text, use the search term
+          debouncedFilter({
+            searchTerm: searchTerm.trim(),
+            location,
+            rating: selectedRating,
+          });
         }
+        setShowSuggestions(false);
+        break;
+      case "Escape":
+        e.preventDefault();
+        setShowSuggestions(false);
         break;
     }
   };
 
-  // Handle service selection from search results
-  const handleServiceSelect = (uniqueService: string) => {
-    safeStateUpdate(() => {
-      // Reset skipQuery flag when selecting a service
-      setSkipQuery(false);
-      setAllServicesSelected(false);
-      setSearchTerm("");
-
-      // Find if service is a subcategory
-      const parentCategory = categories.find((cat) =>
-        cat.subCategories?.some((sub: any) => sub.subCategory === uniqueService)
-      );
-
-      if (parentCategory) {
-        // It's a subcategory
-        onCategorySelect(parentCategory.category_name);
-        onItemSelect(uniqueService);
-        setOpenCategories([parentCategory.category_name]);
-      } else {
-        // It's a main category or a service not in our category hierarchy
-        onCategorySelect(uniqueService);
-        onItemSelect(null);
-        setOpenCategories([uniqueService]);
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        searchInputRef.current &&
+        !searchInputRef.current.contains(event.target as Node)
+      ) {
+        setShowSuggestions(false);
       }
+    };
 
-      // Update URL and trigger API request
-      router.push(`/service-result?searchTerm=${uniqueService}`, {
-        scroll: false,
-      });
-    });
-  };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleResetAllFilters = () => {
     safeStateUpdate(() => {
@@ -569,6 +661,7 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
       setLocation("");
       setSelectedRating(null);
       setSelectedIndex(-1);
+      setShowSuggestions(false);
 
       // Set All Services as selected and reset query state
       setAllServicesSelected(true);
@@ -610,42 +703,45 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
         .item-transition {
           transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
         }
+        .suggestion-item {
+          padding: 10px;
+          cursor: pointer;
+          transition: background-color 0.15s ease;
+        }
+        .suggestion-item:hover,
+        .suggestion-item.selected {
+          background-color: #edf2f7;
+        }
+        .suggestion-item.selected {
+          background-color: #e2e8f0;
+        }
       `}</style>
 
-      {/* Search Box */}
-      <div className="relative">
+      {/* Search Box with Live Suggestions */}
+      <div className="relative" ref={searchInputRef}>
         <input
           type="search"
           value={searchTerm}
           onChange={handleSearchChange}
           onKeyDown={handleKeyDown}
+          onFocus={() => searchTerm.trim() && setShowSuggestions(true)}
           placeholder="Search services/locations/postal/zip"
           className="w-full p-2 border border-[#D2B9A1] rounded-full mb-4 text-sm"
           disabled={isTransitioning}
         />
 
-        {/* Search Results Dropdown */}
-        {filteredUsers?.data?.length > 0 && searchTerm && (
+        {/* Live Suggestions Dropdown */}
+        {showSuggestions && suggestions.length > 0 && (
           <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-            {Array.from(
-              new Set(
-                filteredUsers?.data
-                  ?.flatMap((result: any) => result.searchTerm)
-                  ?.filter((service: string) =>
-                    service?.toLowerCase().includes(searchTerm?.toLowerCase())
-                  )
-              )
-            )?.map((uniqueService: string, index) => (
+            {suggestions.map((suggestion, index) => (
               <div
-                key={uniqueService}
-                className={`p-2 cursor-pointer text-sm item-transition ${
-                  index === selectedIndex
-                    ? "bg-teal-500 text-white"
-                    : "hover:bg-gray-100 text-gray-600"
+                key={index}
+                className={`suggestion-item text-sm ${
+                  index === selectedIndex ? "selected" : ""
                 }`}
-                onClick={() => handleServiceSelect(uniqueService)}
+                onClick={() => handleSuggestionSelect(suggestion)}
               >
-                <div>{uniqueService}</div>
+                {suggestion}
               </div>
             ))}
           </div>
@@ -796,7 +892,7 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
         )}
 
         <div className="space-y-2">
-          {[5, 4, 3, 2, 1].map((rating) => (
+          {[5, 4.5, 4, 3.5, 3, 2.5, 2, 1.5, 1].map((rating) => (
             <div
               key={rating}
               onClick={() => handleRatingSelect(rating)}
@@ -826,7 +922,7 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
                     }`}
                   />
                 ))}
-                <span className="ml-2">({rating}.0)</span>
+                <span className="ml-2">({rating})</span>
               </div>
             </div>
           ))}
