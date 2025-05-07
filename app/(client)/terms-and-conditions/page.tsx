@@ -8,38 +8,36 @@ type TabType = "terms" | "privacy";
 
 export default function TermsAndConditions() {
   const [activeTab, setActiveTab] = useState<TabType>("terms");
-  const { data: termsData, isLoading: isLoadingTerms } = useGetTermsQuery(undefined);
-  const { data: privacyData, isLoading: isLoadingPrivacy } = useGetPrivacyQuery(undefined);
+  const { data: termsData, isLoading: isLoadingTerms } =
+    useGetTermsQuery(undefined);
+  const { data: privacyData, isLoading: isLoadingPrivacy } =
+    useGetPrivacyQuery(undefined);
 
   const isLoading = isLoadingTerms || isLoadingPrivacy;
 
-  // Sort updates by _id in ascending order (oldest first)
   const sortedTermsData = useMemo(() => {
     return [...(termsData?.data || [])].sort((a, b) => {
-      // Convert MongoDB ObjectId to timestamp and sort
       const timestampA = parseInt(a._id.substring(0, 8), 16) * 1000;
       const timestampB = parseInt(b._id.substring(0, 8), 16) * 1000;
-      return timestampA - timestampB; // Changed the order here
+      return timestampA - timestampB;
     });
   }, [termsData]);
 
   const sortedPrivacyData = useMemo(() => {
     return [...(privacyData?.data || [])].sort((a, b) => {
-      // Convert MongoDB ObjectId to timestamp and sort
       const timestampA = parseInt(a._id.substring(0, 8), 16) * 1000;
       const timestampB = parseInt(b._id.substring(0, 8), 16) * 1000;
-      return timestampA - timestampB; // Changed the order here
+      return timestampA - timestampB;
     });
   }, [privacyData]);
 
-  // Get the latest update date based on _id timestamp
   const getLatestUpdateDate = (data: any[]) => {
     if (!data?.length) return "N/A";
     const timestamp = parseInt(data[0]._id.substring(0, 8), 16) * 1000;
     return new Date(timestamp).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
-      year: "numeric"
+      year: "numeric",
     });
   };
 
@@ -52,10 +50,10 @@ export default function TermsAndConditions() {
         </h1>
         <div className="text-center text-xs flex justify-center items-center gap-10 text-gray-500 mb-6">
           <span>
-            Last Updated: {activeTab === "terms" 
+            Last Updated:{" "}
+            {activeTab === "terms"
               ? getLatestUpdateDate(sortedTermsData)
-              : getLatestUpdateDate(sortedPrivacyData)
-            }
+              : getLatestUpdateDate(sortedPrivacyData)}
           </span>
         </div>
       </div>
@@ -105,10 +103,11 @@ export default function TermsAndConditions() {
                   <div className="flex justify-between items-center mb-4">
                     <h3 className="font-semibold">{section.title}</h3>
                     <span className="text-xs text-gray-500">
-                      Updated: {new Date(section.updatedAt).toLocaleDateString("en-US", {
+                      Updated:{" "}
+                      {new Date(section.updatedAt).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
-                        year: "numeric"
+                        year: "numeric",
                       })}
                     </span>
                   </div>
@@ -126,10 +125,11 @@ export default function TermsAndConditions() {
                   <div className="flex justify-between items-center mb-4">
                     <h3 className="font-semibold">{section.title}</h3>
                     <span className="text-xs text-gray-500">
-                      Updated: {new Date(section.updatedAt).toLocaleDateString("en-US", {
+                      Updated:{" "}
+                      {new Date(section.updatedAt).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
-                        year: "numeric"
+                        year: "numeric",
                       })}
                     </span>
                   </div>

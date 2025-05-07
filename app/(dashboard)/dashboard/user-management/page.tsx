@@ -1,16 +1,27 @@
 "use client";
 
-import CustomImage from "@/components/reusable/CustomImage";
 import ProtectedRoute from "@/src/components/auth/ProtectedRoute";
 import { useGetAllUsersQuery } from "@/src/redux/features/users/userApi";
 import { X } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { Pagination } from "@/components/reusable/pagination";
+import { verifiedUser } from "@/src/utils/token-varify";
 
 export default function UserManagement() {
   const { data: users, isLoading, error } = useGetAllUsersQuery({});
-  // console.log("users: ", users?.data);
+  const currentUser = verifiedUser();
+
+  // Filter out the current user from the users list
+  const filteredUsers =
+    users?.data?.filter((user) => user._id !== currentUser?.userId) || [];
+
+  const usersPerPage = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+  const startIndex = (currentPage - 1) * usersPerPage;
+  const endIndex = startIndex + usersPerPage;
+  const currentUsers = filteredUsers.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
 
   const [selectedUser, setSelectedUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,12 +37,12 @@ export default function UserManagement() {
     setSelectedUser(null);
   };
 
-  const usersPerPage = 10; // Changed to 5 items per page
-  const [currentPage, setCurrentPage] = useState(1);
-  const startIndex = (currentPage - 1) * usersPerPage;
-  const endIndex = startIndex + usersPerPage;
-  const currentUsers = users?.data?.slice(startIndex, endIndex) || [];
-  const totalPages = Math.ceil((users?.data?.length || 0) / usersPerPage);
+  // const usersPerPage = 10; // Changed to 5 items per page
+  // const [currentPage, setCurrentPage] = useState(1);
+  // const startIndex = (currentPage - 1) * usersPerPage;
+  // const endIndex = startIndex + usersPerPage;
+  // const currentUsers = users?.data?.slice(startIndex, endIndex) || [];
+  // const totalPages = Math.ceil((users?.data?.length || 0) / usersPerPage);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -62,11 +73,13 @@ export default function UserManagement() {
                             alt={user?.first_name || "User"}
                             width={40}
                             height={40}
-                            className="object-cover"
+                            className="object-cover w-full h-full"
+                            priority
+                            quality={100}
                           />
                         ) : (
                           <div className="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-lg font-medium">
-                            {user.first_name?.charAt(0).toUpperCase() || "U"}
+                            {(user?.first_name?.charAt(0) || "U").toUpperCase()}
                           </div>
                         )}
                       </div>
@@ -151,12 +164,14 @@ export default function UserManagement() {
                       </span>
                     </div> */}
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-500">Services</span>
-                      <div className="flex flex-wrap justify-end gap-1 max-w-[200px]">
+                      <span className="text-gray-500 font-medium">
+                        Services
+                      </span>
+                      <div className="flex flex-wrap justify-end gap-2 max-w-[220px]">
                         {selectedUser.my_service?.map((service, index) => (
                           <span
                             key={index}
-                            className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-xs"
+                            className="bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full text-xs font-medium shadow-sm hover:bg-emerald-100 transition-colors"
                           >
                             {service}
                           </span>
