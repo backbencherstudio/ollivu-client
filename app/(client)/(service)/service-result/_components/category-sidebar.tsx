@@ -237,12 +237,9 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
         const subCategory = currentCategory.subCategories[0].subCategory;
         const encodedSubCategory = encodeURIComponent(subCategory);
         onItemSelect(subCategory);
-        router.push(
-          `/service-result?searchTerm=${encodedSubCategory}`,
-          {
-            scroll: false,
-          }
-        );
+        router.push(`/service-result?searchTerm=${encodedSubCategory}`, {
+          scroll: false,
+        });
       } else {
         onCategorySelect(categoryTitle);
         onItemSelect(null);
@@ -260,9 +257,11 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
       setAllServicesSelected(false);
       onCategorySelect(categoryTitle);
       onItemSelect(itemTitle);
-      
+
       const encodedItemTitle = encodeURIComponent(itemTitle);
-      router.push(`/service-result?searchTerm=${encodedItemTitle}`, { scroll: false });
+      router.push(`/service-result?searchTerm=${encodedItemTitle}`, {
+        scroll: false,
+      });
     });
   };
 
@@ -571,20 +570,24 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
       setSelectedRating(null);
       setSelectedIndex(-1);
 
-      // Set All Services as selected
+      // Set All Services as selected and reset query state
       setAllServicesSelected(true);
-
-      // Set skipQuery to true to use the "all users" query
       setSkipQuery(true);
 
-      // Reset URL and trigger API request
-      router.push("/service-result", { scroll: false });
+      // Reset URL and force a clean state
+      router.replace("/service-result", { scroll: false });
 
       // Force immediate service filter update with all users
       if (allUsers?.data) {
         onServiceFilter(allUsers.data);
       }
     });
+
+    // Force URL params cleanup after state update
+    const currentUrl = new URL(window.location.href);
+    if (currentUrl.searchParams.toString()) {
+      window.history.replaceState({}, "", "/service-result");
+    }
   };
 
   const [locationSearchTerm, setLocationSearchTerm] = useState("");
