@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useGetTermsQuery } from "@/src/redux/features/termsAndPrivacy/termsApi";
 import { useGetPrivacyQuery } from "@/src/redux/features/termsAndPrivacy/privacyApi";
 
@@ -8,39 +8,54 @@ type TabType = "terms" | "privacy";
 
 export default function TermsAndConditions() {
   const [activeTab, setActiveTab] = useState<TabType>("terms");
-  const { data: termsData, isLoading: isLoadingTerms } =
-    useGetTermsQuery(undefined);
-  console.log("termsData", termsData);
-  const { data: privacyData, isLoading: isLoadingPrivacy } =
-    useGetPrivacyQuery(undefined);
+  const { data: termsData, isLoading: isLoadingTerms } = useGetTermsQuery(undefined);
+  const { data: privacyData, isLoading: isLoadingPrivacy } = useGetPrivacyQuery(undefined);
 
   const isLoading = isLoadingTerms || isLoadingPrivacy;
+
+  // Sort updates by _id in ascending order (oldest first)
+  const sortedTermsData = useMemo(() => {
+    return [...(termsData?.data || [])].sort((a, b) => {
+      // Convert MongoDB ObjectId to timestamp and sort
+      const timestampA = parseInt(a._id.substring(0, 8), 16) * 1000;
+      const timestampB = parseInt(b._id.substring(0, 8), 16) * 1000;
+      return timestampA - timestampB; // Changed the order here
+    });
+  }, [termsData]);
+
+  const sortedPrivacyData = useMemo(() => {
+    return [...(privacyData?.data || [])].sort((a, b) => {
+      // Convert MongoDB ObjectId to timestamp and sort
+      const timestampA = parseInt(a._id.substring(0, 8), 16) * 1000;
+      const timestampB = parseInt(b._id.substring(0, 8), 16) * 1000;
+      return timestampA - timestampB; // Changed the order here
+    });
+  }, [privacyData]);
+
+  // Get the latest update date based on _id timestamp
+  const getLatestUpdateDate = (data: any[]) => {
+    if (!data?.length) return "N/A";
+    const timestamp = parseInt(data[0]._id.substring(0, 8), 16) * 1000;
+    return new Date(timestamp).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric"
+    });
+  };
 
   return (
     <main className="bg-white text-[#1D1F2C] py-16 px-4 md:px-8 max-w-[1320px] mx-auto">
       {/* Header Section */}
       <div className="py-20 bg-[#F9F9F9]">
-        <h1 className="text-center text-3xl font-semibold mb-2 cursor-pointer">
+        <h1 className="text-center text-3xl font-semibold mb-2">
           {activeTab === "terms" ? "Terms and Conditions" : "Privacy Policy"}
         </h1>
         <div className="text-center text-xs flex justify-center items-center gap-10 text-gray-500 mb-6">
           <span>
-            Last Updated:{" "}
-            {termsData?.data[0]?.createdAt
-              ? new Date(termsData.data[0].createdAt).toLocaleDateString(
-                  "en-US",
-                  { month: "short", day: "numeric", year: "numeric" }
-                )
-              : "N/A"}
-          </span>
-          <span>
-            Last Updated:{" "}
-            {termsData?.data[0]?.updatedAt
-              ? new Date(termsData.data[0].createdAt).toLocaleDateString(
-                  "en-US",
-                  { month: "short", day: "numeric", year: "numeric" }
-                )
-              : "N/A"}
+            Last Updated: {activeTab === "terms" 
+              ? getLatestUpdateDate(sortedTermsData)
+              : getLatestUpdateDate(sortedPrivacyData)
+            }
           </span>
         </div>
       </div>
@@ -82,26 +97,42 @@ export default function TermsAndConditions() {
       {!isLoading && (
         <div className="space-y-8">
           {activeTab === "terms"
-            ? // Terms and Conditions Content
-              termsData?.data.map((section, idx) => (
+            ? sortedTermsData?.map((section) => (
                 <div
                   key={section._id}
                   className="border border-[#E8E8E9] rounded-lg p-6"
                 >
-                  <h3 className="font-semibold mb-4">{section.title}</h3>
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="font-semibold">{section.title}</h3>
+                    <span className="text-xs text-gray-500">
+                      Updated: {new Date(section.updatedAt).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric"
+                      })}
+                    </span>
+                  </div>
                   <div
                     className="prose max-w-none text-gray-600"
                     dangerouslySetInnerHTML={{ __html: section.content }}
                   />
                 </div>
               ))
-            : // Privacy Policy Content
-              privacyData?.data.map((section, idx) => (
+            : sortedPrivacyData?.map((section) => (
                 <div
                   key={section._id}
                   className="border border-[#E8E8E9] rounded-lg p-6"
                 >
-                  <h3 className="font-semibold mb-4">{section.title}</h3>
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="font-semibold">{section.title}</h3>
+                    <span className="text-xs text-gray-500">
+                      Updated: {new Date(section.updatedAt).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric"
+                      })}
+                    </span>
+                  </div>
                   <div
                     className="prose max-w-none text-gray-600"
                     dangerouslySetInnerHTML={{ __html: section.content }}
