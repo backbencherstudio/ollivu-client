@@ -1,22 +1,12 @@
-export type ReviewStatus = 'Pending' | 'Accepted' | 'Cancelled';
-
-export interface PersonalInfo {
-  display_name: string;
-  first_name: string;
-  last_name: string;
-  gender: string;
-  phone_number: number;
-  dath_of_birth: string;
-}
+export type ReviewStatus = 'accept' | 'reject' | 'pending';
 
 export interface Review {
   id: string;
   reviewer: {
     name: string;
-    avatar: string;
     email: string;
+    avatar: string;
   };
-  serviceType: string;
   flaggedBy: {
     name: string;
     avatar: string;
@@ -26,6 +16,6 @@ export interface Review {
   status: ReviewStatus;
   createdAt: string;
   reportDetails: string;
-  reportDocument?: string;
-  personalInfo?: PersonalInfo;
+  reportDocument: string;
+  personalInfo: any;
 }

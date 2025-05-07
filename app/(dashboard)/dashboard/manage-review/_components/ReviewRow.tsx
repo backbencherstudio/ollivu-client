@@ -1,13 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { Trash2, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { StatusDropdown } from "./StatusDropdown";
 import { Review, ReviewStatus } from "../_types";
 import { ReviewDetailsModal } from "./ReviewDetailsModal";
 import { ReviewActionModal } from "./ReviewActionModal";
 import Image from "next/image";
+import { useActionReviewReportMutation } from "@/src/redux/features/shared/reportApi";
 
 interface ReviewRowProps {
   review: Review;
@@ -17,16 +16,10 @@ interface ReviewRowProps {
   onReject: (id: string) => void;
 }
 
-export function ReviewRow({
-  review,
-  onStatusChange,
-  onDelete,
-  onApprove,
-  onReject,
-}: ReviewRowProps) {
+export function ReviewRow({ review, onApprove, onReject }: ReviewRowProps) {
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [isActionModalOpen, setIsActionModalOpen] = useState(false);
-  console.log("review: ", review);
+  const [actionReviewReport] = useActionReviewReportMutation();
 
   return (
     <>
@@ -91,16 +84,79 @@ export function ReviewRow({
             <span className="ml-1 text-sm">{review?.rating?.toFixed(1)}</span>
           </div>
         </td> */}
-        <td className="py-4">
-          {/* <StatusDropdown
-            currentStatus={review?.status}
-            onStatusChange={(status) => onStatusChange(review?.id, status)}
-          /> */}
-          {review?.status}
+        <td className={`py-4 uppercase `}>
+          <span className={`px-3 py-1 rounded-full text-xs font-medium uppercase ${
+            review?.status === 'accept' 
+              ? 'bg-green-100 text-green-700' 
+              : review?.status === 'reject' 
+                ? 'bg-red-100 text-red-700'
+                : 'bg-yellow-100 text-yellow-700'
+          }`}>
+            {review?.status === 'accept' 
+              ? 'Accepted' 
+              : review?.status === 'reject' 
+                ? 'Rejected' 
+                : 'Pending'}
+          </span>
         </td>
         <td className="py-4">
-          {review.status === "Pending" ? (
-            <div className="flex space-x-2">
+          {/* Show only Reject button if status is accept */}
+          {review?.status === 'accept' && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-red-500"
+              onClick={() => onReject(review.id)}
+            >
+              <span className="sr-only">Reject</span>
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M18 6L6 18M6 6L18 18"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </Button>
+          )}
+
+          {/* Show only Accept button if status is reject */}
+          {review?.status === 'reject' && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-green-500"
+              onClick={() => onApprove(review.id)}
+            >
+              <span className="sr-only">Approve</span>
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 12L10 17L20 7"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </Button>
+          )}
+
+          {/* Show both buttons if status is neither accept nor reject */}
+          {review?.status !== 'accept' && review?.status !== 'reject' && (
+            <>
               <Button
                 variant="ghost"
                 size="icon"
@@ -147,75 +203,7 @@ export function ReviewRow({
                   />
                 </svg>
               </Button>
-            </div>
-          ) : (
-            <div className="flex items-center space-x-2">
-              {/* <Button
-                variant="ghost"
-                size="sm"
-                className="text-blue-500 p-0 ml-5"
-                onClick={() => setIsActionModalOpen(true)}
-              >
-                View details
-              </Button> */}
-
-              {/* <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-gray-400"
-                onClick={() => onDelete(review.id)}
-              >
-                <Trash2 className="h-5 w-5" />
-
-              </Button> */}
-
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-green-500"
-                onClick={() => onApprove(review.id)}
-              >
-                <span className="sr-only">Approve</span>
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M5 12L10 17L20 7"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-red-500"
-                onClick={() => onReject(review.id)}
-              >
-                <span className="sr-only">Reject</span>
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M18 6L6 18M6 6L18 18"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </Button>
-            </div>
+            </>
           )}
         </td>
 

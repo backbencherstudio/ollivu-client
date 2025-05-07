@@ -14,6 +14,8 @@ export function ReviewDetailsModal({
   review,
 }: ReviewDetailsModalProps) {
   if (!isOpen || !review) return null;
+  console.log("review details modal", review);
+  
 
   return (
     <div
@@ -46,7 +48,7 @@ export function ReviewDetailsModal({
             {review?.reviewer?.email || "chris_glasser@gmail.com"}
           </p>
 
-          {/* <div className="flex items-center gap-1 mb-2">
+          <div className="flex items-center gap-1 mb-2">
             {[1, 2, 3, 4, 5].map((star) => (
               <Star
                 key={star}
@@ -57,16 +59,16 @@ export function ReviewDetailsModal({
                 }`}
               />
             ))}
-          </div> */}
+          </div>
         </div>
 
-        <div className="px-8 pb-8 overflow-y-auto">
+        <div className="px-8  py-8 overflow-y-auto">
           <h3 className="font-semibold mb-3">Report Details</h3>
           <p className="text-gray-600 text-sm leading-relaxed">
             {review?.reportDetails}
           </p>
 
-          {review?.personalInfo && (
+          {/* {review?.personalInfo && (
             <div className="mt-4 space-y-2">
               <h4 className="font-medium">Reporter Information:</h4>
               <p className="text-sm text-gray-600">
@@ -96,10 +98,17 @@ export function ReviewDetailsModal({
                 width={100}
               />
             </div>
-          )}
+          )} */}
 
           <div className="mt-4 text-gray-400 text-sm">
-            {new Date(review?.createdAt).toLocaleString()}
+            {review?.createdAt ? new Date(review.createdAt).toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: true
+            }) : 'Date not available'}
           </div>
         </div>
       </div>
