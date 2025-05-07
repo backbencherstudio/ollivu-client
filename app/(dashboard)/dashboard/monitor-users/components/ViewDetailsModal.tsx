@@ -148,7 +148,7 @@ export function ViewDetailsModal({
             <div className="space-y-3">
               <h3 className="font-medium">Take Actions</h3>
               <div className="flex flex-col justify-center items-center gap-3">
-                {/* <Button
+                <Button
                   onClick={() =>
                     actionHandler({ action: "safe", id: conversation.id })
                   }
@@ -156,7 +156,7 @@ export function ViewDetailsModal({
                   className="w-1/2 text-red-500 hover:text-red-600 hover:bg-red-50"
                 >
                   Mark as safe
-                </Button> */}
+                </Button>
                 <Button
                   onClick={() =>
                     actionHandler({ action: "suspend", id: conversation.id })
