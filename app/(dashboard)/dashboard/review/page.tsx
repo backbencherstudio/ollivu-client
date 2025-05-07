@@ -150,11 +150,14 @@ export default function AdminReviewsPage() {
                 <span className="text-gray-500">({review?.rating})</span>
                 <button
                   onClick={() => {
-                    setSelectedReview(review); // Store the full review object
+                    setSelectedReview(review);
                     setIsReportModalOpen(true);
                   }}
-                  className={`text-[#1D1F2C] hover:text-gray-600 ml-10 cursor-pointer flex items-center gap-2 ${
-                    review?.report ? "text-red-500" : ""
+                  disabled={review?.report}
+                  className={`text-[#1D1F2C] hover:text-gray-600 ml-10 flex items-center gap-2 ${
+                    review?.report 
+                      ? "text-red-500 opacity-50 cursor-not-allowed" 
+                      : "cursor-pointer"
                   }`}
                 >
                   <FlagIcon />

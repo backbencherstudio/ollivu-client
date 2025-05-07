@@ -53,11 +53,13 @@ export default function SignupPage() {
         password: form.password,
       }).unwrap();
       console.log("signup response", response?.data);
-      
+
+      // if (response.success) {
+      //   toast.success(
+      //     "Your account has been created successfully! Please check your email to verify your account."
+      //   );
       if (response.success) {
-        toast.success(
-          "Your account has been created successfully! Please check your email to verify your account."
-        );
+        toast.success(response.message);
         router.push(`/auth/verify-otp?email=${encodeURIComponent(form.email)}`);
       }
     } catch (error: any) {
@@ -123,6 +125,7 @@ export default function SignupPage() {
                 <input
                   type="password"
                   name="password"
+                  placeholder="Input your password"
                   className="w-full px-4 py-2 rounded-[8px] border border-[#20B894] bg-transparent text-black focus:outline-none"
                   value={form.password}
                   onChange={handleChange}
@@ -134,6 +137,7 @@ export default function SignupPage() {
                 </label>
                 <input
                   type="password"
+                  placeholder="Input your confirm password"
                   name="confirmPassword"
                   className="w-full px-4 py-2 rounded-[8px] border border-[#20B894] bg-transparent text-black focus:outline-none"
                   value={form.confirmPassword}
@@ -214,7 +218,7 @@ export default function SignupPage() {
           </div>
 
           {/* Social Buttons */}
-          <div className="flex flex-col md:flex-row gap-4">
+          {/* <div className="flex flex-col md:flex-row gap-4">
             <button className="flex-1 border border-[#20B894] rounded-full py-2 text-sm flex items-center justify-center gap-2 hover:bg-[#20B894]/10 transition">
               <img src="/google.svg" alt="Google" className="h-5 w-5" />
               Register with Google
@@ -223,7 +227,7 @@ export default function SignupPage() {
               <img src="/facebook.svg" alt="Facebook" className="h-5 w-5" />
               Register with Facebook
             </button>
-          </div>
+          </div> */}
 
           {/* Already have account */}
           <p className="mt-6 text-center text-sm text-gray-400">

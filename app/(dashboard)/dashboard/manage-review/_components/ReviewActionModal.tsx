@@ -1,5 +1,5 @@
-import { X, Star } from 'lucide-react';
-import { Review } from '../_types';
+import { X, Star } from "lucide-react";
+import { Review } from "../_types";
 
 interface ReviewActionModalProps {
   isOpen: boolean;
@@ -7,19 +7,24 @@ interface ReviewActionModalProps {
   review: Review | null;
 }
 
-export function ReviewActionModal({ isOpen, onClose, review }: ReviewActionModalProps) {
+export function ReviewActionModal({
+  isOpen,
+  onClose,
+  review,
+}: ReviewActionModalProps) {
   if (!isOpen || !review) return null;
+  console.log("review modal", review);
 
   return (
-    <div 
+    <div
       className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
       onClick={onClose}
     >
-      <div 
+      <div
         className="bg-white rounded-lg w-[450px]"
-        onClick={e => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
       >
-        <button 
+        <button
           onClick={onClose}
           className="absolute right-4 top-4 text-gray-400"
         >
@@ -32,7 +37,7 @@ export function ReviewActionModal({ isOpen, onClose, review }: ReviewActionModal
               <div className="text-gray-600">Reviewed By:</div>
               <div className="font-medium">{review?.reviewer?.name}</div>
             </div>
-            
+
             <div className="flex items-center justify-between">
               <div className="text-gray-600">Flagged By:</div>
               <div className="font-medium">{review?.flaggedBy?.name}</div>
@@ -40,7 +45,18 @@ export function ReviewActionModal({ isOpen, onClose, review }: ReviewActionModal
 
             <div className="flex items-center justify-between">
               <div className="text-gray-600">Date:</div>
-              <div className="font-medium">03-07-24</div>
+              <div className="font-medium">
+                {review?.createdAt
+                  ? new Date(review.createdAt).toLocaleString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: true,
+                    })
+                  : "Date not available"}
+              </div>
             </div>
           </div>
         </div>
@@ -59,9 +75,22 @@ export function ReviewActionModal({ isOpen, onClose, review }: ReviewActionModal
               />
             ))}
           </div> */}
-          <p className="text-gray-600 text-sm leading-relaxed">{review?.reviewText}</p>
+          <p className="text-gray-600 text-sm leading-relaxed">
+            <p className="text-gray-600 text-sm leading-relaxed">
+              {review?.reportDetails}
+            </p>
+          </p>
           <div className="text-gray-400 text-sm mt-4">
-            July 2, 2024 03:29 PM
+            {review?.createdAt
+              ? new Date(review.createdAt).toLocaleString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                })
+              : "Date not available"}
           </div>
         </div>
       </div>

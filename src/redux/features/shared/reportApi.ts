@@ -50,6 +50,14 @@ export const reportApi = baseApi.injectEndpoints({
         };
       },
     }),
+
+    actionReviewReport: builder.mutation({
+      query: ({ id, status }) => ({
+        url: `/shared/reportAcceptOrRejectByAdmin/${id}?status=${status}`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["Report"],
+    }),
   }),
 });
 
@@ -59,4 +67,5 @@ export const {
   useGetAllReviewReportQuery,
   useGetAllProfileReportQuery,
   useGetAllReportedProfileQuery,
+  useActionReviewReportMutation,
 } = reportApi;

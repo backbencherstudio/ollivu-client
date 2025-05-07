@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { ReviewRow } from './ReviewRow';
-import { Review, ReviewStatus } from '../_types';
+import React from "react";
+import { ReviewRow } from "./ReviewRow";
+import { Review, ReviewStatus } from "../_types";
 
 interface ReviewTableProps {
   reviews: Review[];
@@ -12,15 +12,15 @@ interface ReviewTableProps {
   onReject: (id: string) => void;
 }
 
-export function ReviewTable({ 
-  reviews, 
-  onStatusChange, 
-  onDelete, 
-  onApprove, 
-  onReject 
+export function ReviewTable({
+  reviews,
+  onStatusChange,
+  onDelete,
+  onApprove,
+  onReject,
 }: ReviewTableProps) {
   console.log("ReviewTable", reviews);
-  
+
   return (
     <div className="w-full overflow-auto">
       <table className="w-full">

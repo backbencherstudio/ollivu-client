@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import ReviewList from "./_components/review-list";
@@ -25,7 +25,10 @@ import {
 import { verifiedUser } from "@/src/utils/token-varify";
 import { toast } from "sonner";
 import ReportProfileModal from "./_components/report-profile-modal";
-import { useCreateProfileReportMutation } from "@/src/redux/features/shared/reportApi";
+import {
+  useCreateProfileReportMutation,
+  useGetAllProfileReportQuery,
+} from "@/src/redux/features/shared/reportApi";
 import MessageRequestModal from "./_components/message-request-modal";
 import { useCreateExchangeMutation } from "@/src/redux/features/admin/exchangeApi";
 
@@ -49,8 +52,10 @@ const ServiceDetails = () => {
 
   const { data: currentUserData } = useGetCurrentUserQuery(currentUser?.userId);
   const currentUsreInfo = currentUserData?.data;
+  // console.log("current user info", currentUsreInfo);
 
   const singleUser = instructor?.data;
+  // console.log("current user", currentUser?.userId);
 
   const { data: getSingleReview } = useGetSingleReviewQuery(singleUser?._id);
   const [createProfileReport] = useCreateProfileReportMutation();
@@ -58,6 +63,11 @@ const ServiceDetails = () => {
   const [createReview] = useCreateReviewMutation();
 
   const [createExchange] = useCreateExchangeMutation();
+  const { data: allProfileReport, refetch } = useGetAllProfileReportQuery({});
+  const filteredProfileReport = allProfileReport?.data?.filter(
+    (report) => report.reporterId._id === currentUser?.userId
+  );
+  console.log("filteredProfileReport", filteredProfileReport);
 
   // Pagination logic
   const reviews = getSingleReview?.data || [];
@@ -65,6 +75,10 @@ const ServiceDetails = () => {
   const indexOfLastReview = currentPage * itemsPerPage;
   const indexOfFirstReview = indexOfLastReview - itemsPerPage;
   const currentReviews = reviews.slice(indexOfFirstReview, indexOfLastReview);
+
+  useEffect(() => {
+    refetch();
+  }, []);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -126,7 +140,7 @@ const ServiceDetails = () => {
       const formData = new FormData();
       formData.append("reporterId", currentUser?.userId);
       formData.append("reportedId", singleUser?._id);
-      formData.append("reportType", reason); // This will be the description if "Other" was selected
+      formData.append("reportType", reason);
       if (file) {
         formData.append("supportingFile", file);
       }
@@ -137,6 +151,7 @@ const ServiceDetails = () => {
       if (response?.success) {
         toast.success("Report submitted successfully");
         setIsReportProfileModalOpen(false);
+        refetch();
       }
     } catch (error) {
       console.error("Error submitting report:", error);
@@ -146,15 +161,16 @@ const ServiceDetails = () => {
 
   const handleMessageRequest = async (selectedService: string) => {
     try {
-      const exchangeData = [{
-        senderUserId: currentUser?.userId,
-        reciverUserId: singleUser?._id,
-        email: currentUser?.email,
-        senderService: selectedService,
-        my_service: currentUsreInfo?.my_service,
-      }];
+      const exchangeData = [
+        {
+          senderUserId: currentUser?.userId,
+          reciverUserId: singleUser?._id,
+          email: currentUser?.email,
+          senderService: selectedService,
+          my_service: currentUsreInfo?.my_service,
+        },
+      ];
       console.log("exchange Data", exchangeData);
-      
 
       const response = await createExchange(exchangeData).unwrap();
       console.log("send exchange response", response);
@@ -167,6 +183,14 @@ const ServiceDetails = () => {
       console.error("Error sending message request:", error);
       toast.error("Failed to send message request");
     }
+  };
+
+  const isProfileReported = () => {
+    return filteredProfileReport?.some(
+      (report) =>
+        report.reporterId._id === currentUser?.userId &&
+        report.reportedId._id === params?.id
+    );
   };
 
   return (
@@ -254,7 +278,9 @@ const ServiceDetails = () => {
                 Portfolio
               </h2>
               <div className="relative h-[410px] rounded-xl overflow-hidden bg-gray-100">
-                {formattedInstructor?.portfolioImage && formattedInstructor.portfolioImage !== "/default-portfolio.jpg" ? (
+                {formattedInstructor?.portfolioImage &&
+                formattedInstructor.portfolioImage !==
+                  "/default-portfolio.jpg" ? (
                   <Image
                     src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${formattedInstructor.portfolioImage}`}
                     alt="Portfolio"
@@ -357,7 +383,8 @@ const ServiceDetails = () => {
           <div className="bg-white rounded-xl shadow-sm p-6">
             <div className="flex flex-col items-center text-center">
               <div className="w-20 h-20 rounded-full relative overflow-hidden mb-3 bg-gray-100">
-                {formattedInstructor?.profileImage && formattedInstructor.profileImage !== "/default-avatar.jpg" ? (
+                {formattedInstructor?.profileImage &&
+                formattedInstructor.profileImage !== "/default-avatar.jpg" ? (
                   <Image
                     src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${formattedInstructor.profileImage}`}
                     alt={formattedInstructor.first_name || "User"}
@@ -369,7 +396,11 @@ const ServiceDetails = () => {
                         parent.innerHTML = `
                           <div class="w-full h-full flex items-center justify-center">
                             <span class="text-2xl font-medium text-gray-400">
-                              ${formattedInstructor?.first_name?.charAt(0)?.toUpperCase() || 'U'}
+                              ${
+                                formattedInstructor?.first_name
+                                  ?.charAt(0)
+                                  ?.toUpperCase() || "U"
+                              }
                             </span>
                           </div>
                         `;
@@ -379,7 +410,9 @@ const ServiceDetails = () => {
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
                     <span className="text-2xl font-medium text-gray-400">
-                      {formattedInstructor?.first_name?.charAt(0)?.toUpperCase() || 'U'}
+                      {formattedInstructor?.first_name
+                        ?.charAt(0)
+                        ?.toUpperCase() || "U"}
                     </span>
                   </div>
                 )}
@@ -407,11 +440,42 @@ const ServiceDetails = () => {
                   <path d="M5 12h14m-7-7l7 7-7 7" />
                 </svg>
               </button>
+              {/* <button
+                onClick={() => setIsReportProfileModalOpen(true)}
+                disabled={filteredProfileReport?.some(
+                  (report) =>
+                    report.reporterId._id === currentUser?.userId &&
+                    report.reportedId._id === params?.id
+                )}
+                className={`w-full py-2.5 border rounded-lg text-base font-medium transition-colors flex items-center justify-center gap-2 ${
+                  filteredProfileReport?.some(
+                    (report) =>
+                      report.reporterId._id === currentUser?.userId &&
+                      report.reportedId._id === params?.id
+                  )
+                    ? "text-gray-400 border-gray-300 cursor-not-allowed bg-gray-50"
+                    : "text-[#FE5050] border-[#FE5050] hover:bg-red-50 cursor-pointer"
+                }`}
+              >
+                {filteredProfileReport?.some(
+                  (report) =>
+                    report.reporterId._id === currentUser?.userId &&
+                    report.reportedId._id === params?.id
+                )
+                  ? "Reported Profile"
+                  : "Report Profile"}
+                <FlagIcon className="w-4 h-4 stroke-current" />
+              </button> */}
               <button
                 onClick={() => setIsReportProfileModalOpen(true)}
-                className="w-full py-2.5 text-[#FE5050] border border-[#FE5050] rounded-lg text-base font-medium hover:bg-red-50 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                disabled={isProfileReported()}
+                className={`w-full py-2.5 border rounded-lg text-base font-medium transition-colors flex items-center justify-center gap-2 ${
+                  isProfileReported()
+                    ? "text-gray-400 border-gray-300 cursor-not-allowed bg-gray-50"
+                    : "text-[#FE5050] border-[#FE5050] hover:bg-red-50 cursor-pointer"
+                }`}
               >
-                Report Profile
+                {isProfileReported() ? "Reported Profile" : "Report Profile"}
                 <FlagIcon className="w-4 h-4 stroke-current" />
               </button>
 

@@ -133,14 +133,14 @@ export default function ReportModal({ isOpen, onClose, onSubmit }: ReportModalPr
         <div className="flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 py-2.5 border border-gray-200 text-gray-600 rounded-lg font-medium hover:bg-gray-50"
+            className="flex-1 py-2.5 border border-gray-200 text-gray-600 rounded-lg font-medium hover:bg-gray-50 cursor-pointer"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
             disabled={isSubmitting || !description.trim()}
-            className="flex-1 py-2.5 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            className="flex-1 py-2.5 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 disabled:bg-gray-400 disabled:cursor-not-allowed cursor-pointer"
           >
             {isSubmitting ? 'Submitting...' : 'Report'}
           </button>

@@ -19,13 +19,13 @@ export function useReviews() {
     setReviews(reviews.filter((review) => review.id !== id));
   };
 
-  const approveReview = (id: string) => {
-    updateReviewStatus(id, 'Accepted');
-  };
+  // const approveReview = (id: string) => {
+  //   updateReviewStatus(id, 'Accepted');
+  // };
 
-  const rejectReview = (id: string) => {
-    updateReviewStatus(id, 'Cancelled');
-  };
+  // const rejectReview = (id: string) => {
+  //   updateReviewStatus(id, 'Cancelled');
+  // };
 
   const sortedReviews = [...reviews].sort((a, b) => {
     switch (sortBy) {
@@ -45,8 +45,6 @@ export function useReviews() {
     reviews: sortedReviews,
     updateReviewStatus,
     deleteReview,
-    approveReview,
-    rejectReview,
     sortBy,
     setSortBy,
     setReviews
