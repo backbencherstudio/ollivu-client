@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import loginImg from '@/public/login.png'
+import loginImg from "@/public/login.png";
 import Image from "next/image";
 
 export default function LoginPage() {
@@ -18,24 +18,23 @@ export default function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     try {
       const response = await loginUser({
         email,
-        password
+        password,
       }).unwrap();
       // console.log("res", response);
-      
-      
+
       if (response.success) {
-        toast.success(response.message || 'Login successful!');
+        toast.success(response.message || "Login successful!");
         router.push("/");
       } else {
-        toast.error(response.message || 'Login failed');
+        toast.error(response.message || "Login failed");
       }
     } catch (error: any) {
-      console.error('Login error:', error);
-      const errorMessage = error?.data?.message || 'Login failed';
+      console.error("Login error:", error);
+      const errorMessage = error?.data?.message || "Login failed";
       toast.error(errorMessage);
     }
   };
@@ -88,8 +87,8 @@ export default function LoginPage() {
             </div>
 
             {/* Remember Me & Forgot Password */}
-            <div className="flex justify-between items-center text-sm text-gray-300">
-              <label className="flex items-center gap-2 cursor-pointer">
+            <div className="flex justify-end items-center text-sm text-gray-500">
+              {/* <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
                   className="accent-[#20B894] cursor-pointer"
@@ -97,9 +96,12 @@ export default function LoginPage() {
                   onChange={(e) => setRememberMe(e.target.checked)}
                 />
                 Remember Me
-              </label>
+              </label> */}
               <Link href="/auth/forgot-password">
-                <button type="button" className="hover:underline cursor-pointer">
+                <button
+                  type="button"
+                  className="hover:underline cursor-pointer"
+                >
                   Forgot Password
                 </button>
               </Link>
@@ -115,14 +117,14 @@ export default function LoginPage() {
           </form>
 
           {/* Divider */}
-          <div className="flex items-center gap-4 my-6">
+          {/* <div className="flex items-center gap-4 my-6">
             <div className="flex-1 h-px bg-gray-600" />
             <span className="text-gray-400 text-sm">Or</span>
             <div className="flex-1 h-px bg-gray-600" />
-          </div>
+          </div> */}
 
           {/* Social Buttons */}
-          <div className="flex flex-col md:flex-row gap-4">
+          {/* <div className="flex flex-col md:flex-row gap-4">
             <button className="flex-1 border border-[#20B894] rounded-full py-2 text-sm flex items-center justify-center gap-2 hover:bg-[#20B894]/10 transition">
               <img src="/google.svg" alt="Google" className="h-5 w-5" />
               Login with Google
@@ -131,7 +133,7 @@ export default function LoginPage() {
               <img src="/facebook.svg" alt="Facebook" className="h-5 w-5" />
               Login with Facebook
             </button>
-          </div>
+          </div> */}
 
           {/* Sign Up Link */}
           <p className="mt-6 text-center text-sm text-gray-400">
