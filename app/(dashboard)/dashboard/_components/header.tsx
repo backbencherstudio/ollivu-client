@@ -119,17 +119,16 @@ export default function Header({ user }) {
       <div className="flex items-center justify-end">
         <div className="flex items-center gap-6">
           {/* Message Icon */}
-          {
-            singleUserData?.role === "user" && (
-          <Link href="/dashboard/messages">
-            <button className="relative cursor-pointer">
-              <MessageCircle className="w-6 h-6 text-gray-600" />
-            {/* <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#20B894] text-white text-xs rounded-full flex items-center justify-center">
-              {2}
-            </span> */}
-            </button>
-          </Link>
-          )}
+          {/* {singleUserData?.role === "user" && (
+            <Link href="/dashboard/messages">
+              <button className="relative cursor-pointer">
+                <MessageCircle className="w-6 h-6 text-gray-600" />
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#20B894] text-white text-xs rounded-full flex items-center justify-center">
+                  {2}
+                </span>
+              </button>
+            </Link>
+          )} */}
 
           {/* Notification Bell */}
           {/* <div ref={notificationRef} className="relative">

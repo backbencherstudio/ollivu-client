@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Review, ReviewStatus } from '../_types';
+import { useState } from "react";
+import { Review, ReviewStatus } from "../_types";
 
 export function useReviews() {
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [sortBy, setSortBy] = useState<string>('Most Recent');
+  const [sortBy, setSortBy] = useState<string>("Most Recent");
 
   const updateReviewStatus = (id: string, status: ReviewStatus) => {
     setReviews(
-      reviews.map((review) => 
+      reviews.map((review) =>
         review.id === id ? { ...review, status } : review
       )
     );
@@ -29,15 +29,19 @@ export function useReviews() {
 
   const sortedReviews = [...reviews].sort((a, b) => {
     switch (sortBy) {
-      case 'Oldest':
-        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-      case 'Highest Rating':
+      case "Oldest":
+        return (
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        );
+      case "Highest Rating":
         return b.rating - a.rating;
-      case 'Lowest Rating':
+      case "Lowest Rating":
         return a.rating - b.rating;
-      case 'Most Recent':
+      case "Most Recent":
       default:
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        return (
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
     }
   });
 
@@ -47,6 +51,6 @@ export function useReviews() {
     deleteReview,
     sortBy,
     setSortBy,
-    setReviews
+    setReviews,
   };
 }
