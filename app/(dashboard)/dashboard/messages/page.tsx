@@ -317,7 +317,7 @@ const Messages = () => {
     }
     setIsConfirmModalOpen(true);
   };
-  console.log("currentChat", currentChat);
+  // console.log("currentChat", currentChat);
 
   return (
     <div className="h-screen flex flex-col">
