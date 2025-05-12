@@ -419,9 +419,7 @@ export default function Navbar() {
                         {category.subCategories.map((item) => (
                           <li key={item._id}>
                             <Link
-                              href={`/service-result?category=${encodeURIComponent(
-                                category.category_name
-                              )}&service=${encodeURIComponent(
+                              href={`/service-result?my_service=${encodeURIComponent(
                                 item.subCategory
                               )}`}
                               className="text-sm text-gray-600 hover:text-teal-600 flex items-center group-hover/item:translate-x-1 transition-transform"
