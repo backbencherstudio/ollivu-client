@@ -79,10 +79,10 @@ export default function AdminReviewsPage() {
   };
 
   return (
-    <div className="bg-white text-[#1D1F2C] min-h-screen p-6 md:p-10 space-y-6">
+    <div className="bg-white text-[#1D1F2C] min-h-screen p-4 sm:p-6 md:p-10 space-y-4 sm:space-y-6">
       {/* Stats Section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="md:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+        <div className="col-span-1 sm:col-span-2 md:col-span-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
           <StatCard
             title="Total Reviews"
             value={review || 0}
@@ -107,34 +107,33 @@ export default function AdminReviewsPage() {
         </div> */}
       </div>
       {/* Sort + Header */}
-      <div className="flex items-center justify-between mt-8 border-b pb-3">
-        <h2 className="text-base font-semibold">All reviews</h2>
+      <div className="flex items-center justify-between mt-4 sm:mt-8 border-b pb-2 sm:pb-3">
+        <h2 className="text-sm sm:text-base font-semibold">All reviews</h2>
       </div>
 
       {/* Reviews */}
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {paginatedReviews.map((review) => (
-          <div key={review._id} className="flex items-start gap-4">
+          <div key={review._id} className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 border rounded-lg sm:rounded-xl">
             {review?.reviewerId?.profileImage ? (
               <Image
                 src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${review?.reviewerId?.profileImage}`}
                 alt={review?.reviewerId?.first_name || "User"}
-                width={48}
-                height={48}
-                className="rounded-full object-cover"
+                width={40}
+                height={40}
+                className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover"
               />
             ) : (
-              <div className="w-12 h-12 rounded-full bg-[#20B894] text-white flex items-center justify-center text-lg font-semibold">
-                {review?.reviewerId?.first_name?.charAt(0)?.toUpperCase() ||
-                  "U"}
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#20B894] text-white flex items-center justify-center text-base sm:text-lg font-semibold">
+                {review?.reviewerId?.first_name?.charAt(0)?.toUpperCase() || "U"}
               </div>
             )}
-            <div className="flex-1">
-              <div className="flex justify-between items-center">
-                <h4 className="font-medium">
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0">
+                <h4 className="font-medium text-sm sm:text-base truncate">
                   {review?.reviewerId?.first_name}
                 </h4>
-                <span className="text-xs text-gray-400">
+                <span className="text-[10px] sm:text-xs text-gray-400">
                   {new Date(review?.createdAt).toLocaleDateString("en-US", {
                     year: "numeric",
                     month: "short",
@@ -144,8 +143,8 @@ export default function AdminReviewsPage() {
                   })}
                 </span>
               </div>
-              <p className="text-sm mt-1 text-[#4A4C56]">{review?.review}</p>
-              <div className="flex items-center gap-2 mt-2 text-sm">
+              <p className="text-xs sm:text-sm mt-1 text-[#4A4C56] line-clamp-3">{review?.review}</p>
+              <div className="flex flex-wrap items-center gap-2 mt-2 text-xs sm:text-sm">
                 <StarRating rating={review?.rating} />
                 <span className="text-gray-500">({review?.rating})</span>
                 <button
@@ -154,14 +153,16 @@ export default function AdminReviewsPage() {
                     setIsReportModalOpen(true);
                   }}
                   disabled={review?.report}
-                  className={`text-[#1D1F2C] hover:text-gray-600 ml-10 flex items-center gap-2 ${
+                  className={`text-[#1D1F2C] hover:text-gray-600 ml-0 sm:ml-10 flex items-center gap-1 sm:gap-2 ${
                     review?.report 
                       ? "text-red-500 opacity-50 cursor-not-allowed" 
                       : "cursor-pointer"
                   }`}
                 >
-                  <FlagIcon />
-                  {review?.report ? "Reported" : "Report"}
+                  <FlagIcon className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="text-xs sm:text-sm">
+                    {review?.report ? "Reported" : "Report"}
+                  </span>
                 </button>
               </div>
             </div>
@@ -169,8 +170,8 @@ export default function AdminReviewsPage() {
         ))}
 
         {filteredReviews.length === 0 && (
-          <div className="text-center py-10">
-            <p className="text-gray-500">No reviews found</p>
+          <div className="text-center py-8 sm:py-10">
+            <p className="text-gray-500 text-sm sm:text-base">No reviews found</p>
           </div>
         )}
       </div>
@@ -187,7 +188,7 @@ export default function AdminReviewsPage() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="mt-8">
+        <div className="mt-6 sm:mt-8">
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
