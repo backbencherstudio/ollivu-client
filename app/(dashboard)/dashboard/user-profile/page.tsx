@@ -40,7 +40,6 @@ export default function UserProfile() {
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const validUser = verifiedUser();
-  // console.log("user", validUser);
 
   // Update the mutation hook
   const [updateUser] = useUpdateUserMutation();
@@ -69,9 +68,7 @@ export default function UserProfile() {
     },
     aboutMe: "",
   });
-  // console.log("formData", formData);
 
-  // Add this handler function
   const handleInputChange = (section: string, field: string, value: string) => {
     setFormData((prev) => {
       if (section === "aboutMe") {
@@ -88,7 +85,6 @@ export default function UserProfile() {
   };
 
   // Update the handleEditSave function
-  // Add useEffect to set initial form data when singleUser is loaded
   useEffect(() => {
     if (singleUserData) {
       setFormData({
@@ -110,7 +106,7 @@ export default function UserProfile() {
             singleUserData.addressInfo?.state_province_country_region || "",
           zipCode: singleUserData.addressInfo?.zipCode || "",
         },
-        aboutMe: singleUserData.about_me || "",
+        aboutMe: singleUserData?.about_me || "",
       });
     }
   }, [singleUserData]);
@@ -128,7 +124,6 @@ export default function UserProfile() {
 
         // Add personal info
         formDataToSend.append("first_name", formData.personalInfo.firstName);
-        // formDataToSend.append("email", formData.personalInfo.email);
         formDataToSend.append("userId", validUser?.userId);
 
         // Add nested personal info
@@ -179,9 +174,7 @@ export default function UserProfile() {
           "addressInfo[zipCode]",
           formData.addressInfo.zipCode
         );
-
-    
-
+        formDataToSend.append("about_me", formData.aboutMe);
         const formDataObject = Object.fromEntries(formDataToSend.entries());
         console.log("formDataObject", formDataObject);
 

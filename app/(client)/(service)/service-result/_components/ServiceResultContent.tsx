@@ -40,14 +40,14 @@ interface Category {
 
 export default function ServiceResultContent() {
   const searchParams = useSearchParams();
-  
+
   // State for selected filters and pagination
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
-  
+
   // Animation and transition state
   const [isTransitioning, setIsTransitioning] = useState(false);
   const transitionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -67,20 +67,19 @@ export default function ServiceResultContent() {
   };
 
   // Fetch all users with filter params
-  const { 
-    data: users, 
-    isLoading, 
-    isFetching 
+  const {
+    data: users,
+    isLoading,
+    isFetching,
   } = useGetAllUsersQuery(queryParams, {
-    refetchOnMountOrArgChange: true
+    refetchOnMountOrArgChange: true,
   });
   console.log("users", users?.data);
-  
 
   // Handle content transitions
   const startTransition = useCallback(() => {
     setIsTransitioning(true);
-    
+
     // Clear any existing timeouts
     if (transitionTimeoutRef.current) {
       clearTimeout(transitionTimeoutRef.current);
@@ -91,7 +90,7 @@ export default function ServiceResultContent() {
     transitionTimeoutRef.current = setTimeout(() => {
       setIsTransitioning(false);
     }, 300);
-    
+
     return () => {
       if (transitionTimeoutRef.current) {
         clearTimeout(transitionTimeoutRef.current);
@@ -144,13 +143,16 @@ export default function ServiceResultContent() {
   }, [users, isLoading, isFetching, startTransition, endTransition]);
 
   // Handle category selection
-  const handleCategorySelect = useCallback((category: string | null) => {
-    setSelectedCategory(category);
-    // When selecting a category, clear any selected item if category changes
-    if (category !== selectedCategory) {
-      setSelectedItem(null);
-    }
-  }, [selectedCategory]);
+  const handleCategorySelect = useCallback(
+    (category: string | null) => {
+      setSelectedCategory(category);
+      // When selecting a category, clear any selected item if category changes
+      if (category !== selectedCategory) {
+        setSelectedItem(null);
+      }
+    },
+    [selectedCategory]
+  );
 
   // Handle item selection
   const handleItemSelect = useCallback((item: string | null) => {
@@ -158,12 +160,15 @@ export default function ServiceResultContent() {
   }, []);
 
   // Handle service filtering
-  const handleServiceFilter = useCallback((filteredData: any[]) => {
-    startTransition();
-    setFilteredUsers(filteredData);
-    setCurrentPage(1);
-    endTransition();
-  }, [startTransition, endTransition]);
+  const handleServiceFilter = useCallback(
+    (filteredData: any[]) => {
+      startTransition();
+      setFilteredUsers(filteredData);
+      setCurrentPage(1);
+      endTransition();
+    },
+    [startTransition, endTransition]
+  );
 
   // Calculate pagination values
   const totalItems = filteredUsers.length;
@@ -174,16 +179,19 @@ export default function ServiceResultContent() {
   );
 
   // Handle page change with smooth transition
-  const handlePageChange = useCallback((page: number) => {
-    startTransition();
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    endTransition();
-  }, [startTransition, endTransition]);
+  const handlePageChange = useCallback(
+    (page: number) => {
+      startTransition();
+      setCurrentPage(page);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      endTransition();
+    },
+    [startTransition, endTransition]
+  );
 
   // Handle sidebar toggle for mobile
   const toggleSidebar = useCallback(() => {
-    setIsSidebarOpen(prev => !prev);
+    setIsSidebarOpen((prev) => !prev);
   }, []);
 
   // Render loading state
@@ -215,7 +223,7 @@ export default function ServiceResultContent() {
           pointer-events: none;
         }
       `}</style>
-      
+
       {/* Mobile Filter Button */}
       <div className="lg:hidden mb-4 mt-5">
         <button
@@ -267,17 +275,20 @@ export default function ServiceResultContent() {
         )}
 
         {/* Main Content with transition */}
-        <div className={`lg:w-3/4 w-full content-transition ${isTransitioning || isFetching ? "loading" : ""}`}>
+        <div
+          className={`lg:w-3/4 w-full content-transition ${
+            isTransitioning || isFetching ? "loading" : ""
+          }`}
+        >
           {/* Page header with service count */}
           <div className="mb-6 flex justify-between items-center">
             <h1 className="text-xl md:text-2xl font-bold text-gray-900">
               {!selectedCategory && !selectedItem
                 ? "All Services"
-                : selectedItem || selectedCategory || "All Services"}
-              {" "}
+                : selectedItem || selectedCategory || "All Services"}{" "}
               <span className="text-gray-500">({validServiceCount})</span>
             </h1>
-            
+
             {/* Loading indicator next to title */}
             {(isFetching || isTransitioning) && (
               <LoaderCircle className="animate-spin text-teal-500 h-5 w-5" />
