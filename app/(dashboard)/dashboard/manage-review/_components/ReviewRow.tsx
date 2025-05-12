@@ -23,10 +23,10 @@ export function ReviewRow({ review, onApprove, onReject }: ReviewRowProps) {
 
   return (
     <>
-      <tr className="border-b">
-        <td className="py-4">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
+      <tr className="border-b hover:bg-gray-50">
+        <td className="py-4 sm:py-5 px-4 sm:px-6">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
               {review?.reviewer?.avatar ? (
                 <Image
                   src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${review?.reviewer?.avatar}`}
@@ -36,20 +36,20 @@ export function ReviewRow({ review, onApprove, onReject }: ReviewRowProps) {
                   width={100}
                 />
               ) : (
-                <span className="text-sm font-medium text-gray-600">
+                <span className="text-sm sm:text-base font-medium text-gray-600">
                   {review?.reviewer?.name?.charAt(0).toUpperCase() || "U"}
                 </span>
               )}
             </div>
-            <span className="font-medium text-sm">
+            <span className="font-medium text-sm sm:text-base truncate max-w-[120px] sm:max-w-[180px]">
               {review?.reviewer?.name}
             </span>
           </div>
         </td>
-        {/* <td className="py-4 text-sm">{review?.serviceType}</td> */}
-        <td className="py-4">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
+
+        <td className="py-4 sm:py-5 px-4 sm:px-6">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
               {review?.flaggedBy?.avatar ? (
                 <Image
                   src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${review?.flaggedBy?.avatar}`}
@@ -59,33 +59,25 @@ export function ReviewRow({ review, onApprove, onReject }: ReviewRowProps) {
                   width={100}
                 />
               ) : (
-                <span className="text-sm font-medium text-gray-600">
+                <span className="text-sm sm:text-base font-medium text-gray-600">
                   {review?.flaggedBy?.name?.charAt(0).toUpperCase() || "U"}
                 </span>
               )}
             </div>
-            <span className="font-medium text-sm">
+            <span className="font-medium text-sm sm:text-base truncate max-w-[120px] sm:max-w-[180px]">
               {review?.flaggedBy?.name}
             </span>
           </div>
         </td>
-        <td
-          className="py-4 text-sm max-w-xs cursor-pointer hover:text-gray-600"
-          onClick={() => setIsReviewModalOpen(true)}
-        >
-          {review?.reportDetails &&
-            (review.reportDetails.length > 50
-              ? `${review.reportDetails.substring(0, 50)}...`
-              : review.reportDetails)}
-        </td>
-        {/* <td className="py-4">
-          <div className="flex items-center">
-            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-            <span className="ml-1 text-sm">{review?.rating?.toFixed(1)}</span>
+
+        <td className="py-4 sm:py-5 px-4 sm:px-6 text-sm sm:text-base max-w-[180px] sm:max-w-[250px] cursor-pointer hover:text-gray-600">
+          <div className="truncate" onClick={() => setIsReviewModalOpen(true)}>
+            {review?.reportDetails}
           </div>
-        </td> */}
-        <td className={`py-4 uppercase `}>
-          <span className={`px-3 py-1 rounded-full text-xs font-medium uppercase ${
+        </td>
+
+        <td className="py-4 sm:py-5 px-4 sm:px-6">
+          <span className={`px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium uppercase ${
             review?.status === 'accept' 
               ? 'bg-green-100 text-green-700' 
               : review?.status === 'reject' 
@@ -99,91 +91,15 @@ export function ReviewRow({ review, onApprove, onReject }: ReviewRowProps) {
                 : 'Pending'}
           </span>
         </td>
-        <td className="py-4">
-          {/* Show only Reject button if status is accept */}
-          {review?.status === 'accept' && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-red-500"
-              onClick={() => onReject(review.id)}
-            >
-              <span className="sr-only">Reject</span>
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M18 6L6 18M6 6L18 18"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </Button>
-          )}
 
-          {/* Show only Accept button if status is reject */}
-          {review?.status === 'reject' && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-green-500"
-              onClick={() => onApprove(review.id)}
-            >
-              <span className="sr-only">Approve</span>
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M5 12L10 17L20 7"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </Button>
-          )}
-
-          {/* Show both buttons if status is neither accept nor reject */}
-          {review?.status !== 'accept' && review?.status !== 'reject' && (
-            <>
+        <td className="py-4 sm:py-5 px-4 sm:px-6">
+          <div className="flex gap-2 sm:gap-3">
+            {/* Action buttons with responsive sizing */}
+            {review?.status === 'accept' && (
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-green-500"
-                onClick={() => onApprove(review.id)}
-              >
-                <span className="sr-only">Approve</span>
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M5 12L10 17L20 7"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-red-500"
+                className="h-6 w-6 sm:h-8 sm:w-8 text-red-500"
                 onClick={() => onReject(review.id)}
               >
                 <span className="sr-only">Reject</span>
@@ -203,15 +119,91 @@ export function ReviewRow({ review, onApprove, onReject }: ReviewRowProps) {
                   />
                 </svg>
               </Button>
-            </>
-          )}
-        </td>
+            )}
 
-        <td>
+            {review?.status === 'reject' && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 sm:h-8 sm:w-8 text-green-500"
+                onClick={() => onApprove(review.id)}
+              >
+                <span className="sr-only">Approve</span>
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M5 12L10 17L20 7"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </Button>
+            )}
+
+            {review?.status !== 'accept' && review?.status !== 'reject' && (
+              <>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 sm:h-8 sm:w-8 text-green-500"
+                  onClick={() => onApprove(review.id)}
+                >
+                  <span className="sr-only">Approve</span>
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M5 12L10 17L20 7"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 sm:h-8 sm:w-8 text-red-500"
+                  onClick={() => onReject(review.id)}
+                >
+                  <span className="sr-only">Reject</span>
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M18 6L6 18M6 6L18 18"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </Button>
+              </>
+            )}
+          </div>
+        </td>
+        <td className="py-4 sm:py-5 px-4 sm:px-6">
           <Button
             variant="ghost"
             size="sm"
-            className="text-blue-500 p-0 ml-5"
+            className="text-blue-500 p-0 text-sm sm:text-base hover:bg-transparent font-medium"
             onClick={() => setIsActionModalOpen(true)}
           >
             View details
@@ -219,14 +211,12 @@ export function ReviewRow({ review, onApprove, onReject }: ReviewRowProps) {
         </td>
       </tr>
 
-      {/* Modal for Review column click */}
+      {/* Existing modals */}
       <ReviewDetailsModal
         isOpen={isReviewModalOpen}
         onClose={() => setIsReviewModalOpen(false)}
         review={review}
       />
-
-      {/* Modal for Action column View Details click */}
       <ReviewActionModal
         isOpen={isActionModalOpen}
         onClose={() => setIsActionModalOpen(false)}
