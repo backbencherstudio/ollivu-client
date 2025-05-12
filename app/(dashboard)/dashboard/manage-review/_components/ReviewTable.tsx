@@ -25,12 +25,24 @@ export function ReviewTable({
         <table className="w-full min-w-[800px]">
           <thead>
             <tr className="text-left text-xs sm:text-sm text-gray-500 border-b">
-              <th className="py-3 sm:py-4 px-3 sm:px-4 font-medium whitespace-nowrap">Reviewer</th>
-              <th className="py-3 sm:py-4 px-3 sm:px-4 font-medium whitespace-nowrap">Flagged By</th>
-              <th className="py-3 sm:py-4 px-3 sm:px-4 font-medium whitespace-nowrap">Review</th>
-              <th className="py-3 sm:py-4 px-3 sm:px-4 font-medium whitespace-nowrap">Status</th>
-              <th className="py-3 sm:py-4 px-3 sm:px-4 font-medium whitespace-nowrap">Action</th>
-              <th className="py-3 sm:py-4 px-3 sm:px-4 font-medium whitespace-nowrap">Details</th>
+              <th className="py-3 sm:py-4 px-3 sm:px-4 font-medium whitespace-nowrap">
+                Reviewer
+              </th>
+              <th className="py-3 sm:py-4 px-3 sm:px-4 font-medium whitespace-nowrap">
+                Flagged By
+              </th>
+              <th className="py-3 sm:py-4 px-3 sm:px-4 font-medium whitespace-nowrap">
+                Review
+              </th>
+              <th className="py-3 sm:py-4 px-3 sm:px-4 font-medium whitespace-nowrap">
+                Status
+              </th>
+              <th className="py-3 sm:py-4 px-3 sm:px-4 font-medium whitespace-nowrap">
+                Action
+              </th>
+              <th className="py-3 sm:py-4 px-3 sm:px-4 font-medium whitespace-nowrap">
+                Details
+              </th>
             </tr>
           </thead>
           <tbody>
