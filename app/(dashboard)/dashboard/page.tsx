@@ -179,12 +179,14 @@ export default function UserDashboardHome() {
       </div>
 
       {/* Connection Requests & Active Chats */}
-      <div className="grid grid-cols-1 ">
+      <div className="grid grid-cols-1">
         <div className="border rounded-xl bg-white shadow-sm">
-          <div className="flex justify-between items-center p-4 border-b">
-            <h3 className="font-semibold">Connection Request</h3>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 border-b gap-3 sm:gap-0">
+            <h3 className="font-semibold text-base sm:text-lg">
+              Connection Request
+            </h3>
             <select
-              className="text-sm text-gray-600 border rounded px-2 py-1"
+              className="text-sm text-gray-600 border rounded px-2 py-1.5 w-full sm:w-auto"
               value={timeFilter}
               onChange={(e) => setTimeFilter(e.target.value)}
             >
@@ -197,20 +199,26 @@ export default function UserDashboardHome() {
             <table className="min-w-full text-sm">
               <thead className="bg-gray-50 text-left">
                 <tr>
-                  <th className="p-3">Request To</th>
-                  <th className="p-3">Service Requested</th>
-                  <th className="p-3">Status</th>
-                  <th className="p-3">Action</th>
+                  <th className="p-3 whitespace-nowrap">Request To</th>
+                  <th className="p-3 whitespace-nowrap">Service Requested</th>
+                  <th className="p-3 whitespace-nowrap">Status</th>
+                  <th className="p-3 whitespace-nowrap">Action</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredExchangeDashboardData?.map((req, i) => (
-                  <tr key={i} className="border-b">
-                    <td className="p-3">{req?.senderUserId?.first_name}</td>
-                    <td className="p-3">{req?.senderService}</td>
-                    <td className="p-3">
+                  <tr key={i} className="border-b hover:bg-gray-50">
+                    <td className="p-3 whitespace-nowrap">
+                      {req?.senderUserId?.first_name}
+                    </td>
+                    <td className="p-3 whitespace-nowrap">
+                      <div className="max-w-[200px] truncate">
+                        {req?.senderService}
+                      </div>
+                    </td>
+                    <td className="p-3 whitespace-nowrap">
                       <span
-                        className={`text-xs px-2 py-1 rounded-full font-medium ${
+                        className={`inline-block text-xs px-2 py-1 rounded-full font-medium ${
                           req?.isAccepted === "true"
                             ? "bg-green-100 text-green-600"
                             : "bg-yellow-100 text-yellow-600"
@@ -219,13 +227,13 @@ export default function UserDashboardHome() {
                         {req?.isAccepted === "true" ? "Accepted" : "Pending"}
                       </span>
                     </td>
-                    <td className="p-3">
+                    <td className="p-3 whitespace-nowrap">
                       <button
                         onClick={() => {
                           setSelectedRequest(req);
                           setIsModalOpen(true);
                         }}
-                        className="text-[#20B894] hover:text-[#1a9677] cursor-pointer"
+                        className="text-[#20B894] hover:text-[#1a9677] cursor-pointer text-sm font-medium"
                       >
                         View details
                       </button>
@@ -468,7 +476,7 @@ export default function UserDashboardHome() {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 bg-opacity-50 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black/50 bg-opacity-50 z-50 flex items-center justify-center px-2">
           <div className="bg-white rounded-lg w-[500px] max-h-[90vh] overflow-y-auto relative">
             {/* Modal Header */}
             <div className="flex justify-between items-center p-6 border-b">

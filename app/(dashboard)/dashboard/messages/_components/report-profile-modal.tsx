@@ -11,7 +11,7 @@ interface ReportProfileModalProps {
 export default function ReportProfileModal({
   isOpen,
   onClose,
-  userName
+  userName,
 }: ReportProfileModalProps) {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [otherReason, setOtherReason] = useState("");
@@ -23,23 +23,25 @@ export default function ReportProfileModal({
     "Inappropriate Content",
     "Spam / Scam",
     "Fraudulent Behavior",
-    "Other"
+    "Other",
   ];
 
-  const isReportEnabled = selectedOption && (selectedOption !== "Other" || otherReason.trim().length > 0);
+  const isReportEnabled =
+    selectedOption &&
+    (selectedOption !== "Other" || otherReason.trim().length > 0);
 
   return (
-    <div 
+    <div
       className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
       onClick={onClose}
     >
-      <div 
+      <div
         className="bg-white rounded-lg w-[400px] p-6"
-        onClick={e => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Report Profile</h2>
-          <button 
+          <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700"
           >
@@ -48,17 +50,18 @@ export default function ReportProfileModal({
         </div>
 
         <p className="text-sm text-gray-600 mb-4">
-          We're sorry to hear that something's wrong. Please select a problem to continue.
+          We're sorry to hear that something's wrong. Please select a problem to
+          continue.
         </p>
 
         <div className="space-y-2">
           {reportOptions.map((option) => (
-            <div 
+            <div
               key={option}
               className={`p-2 border rounded-md cursor-pointer flex items-center ${
-                selectedOption === option 
-                  ? 'bg-red-50 border-red-500' 
-                  : 'hover:bg-gray-50'
+                selectedOption === option
+                  ? "bg-red-50 border-red-500"
+                  : "hover:bg-gray-50"
               }`}
               onClick={() => {
                 setSelectedOption(option);
@@ -74,7 +77,9 @@ export default function ReportProfileModal({
 
         {selectedOption === "Other" && (
           <div className="mt-4">
-            <p className="text-sm text-gray-600 mb-2">Describe your other issues</p>
+            <p className="text-sm text-gray-600 mb-2">
+              Describe your other issues
+            </p>
             <textarea
               className="w-full h-24 p-2 text-sm border rounded-md focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500"
               placeholder="Please describe the issue..."
@@ -85,7 +90,7 @@ export default function ReportProfileModal({
         )}
 
         <div className="flex gap-2 mt-6">
-          <Button 
+          <Button
             className="flex-1 bg-red-500 hover:bg-red-600 text-white disabled:bg-gray-300 disabled:cursor-not-allowed"
             onClick={() => {
               // Handle report submission
@@ -96,7 +101,7 @@ export default function ReportProfileModal({
           >
             Report
           </Button>
-          <Button 
+          <Button
             className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700"
             onClick={onClose}
           >

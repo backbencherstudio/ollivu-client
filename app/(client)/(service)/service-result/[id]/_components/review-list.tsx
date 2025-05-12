@@ -207,15 +207,15 @@ const ReviewList = ({ review }: ReviewListProps) => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="border-b pb-6 my-8">
+    <div className="space-y-4 sm:space-y-6 px-2">
+      <div className="border-b pb-4 sm:pb-6 my-4 sm:my-8">
         {/* Rating and Report Header */}
-        <div className="flex items-center gap-2 mb-3">
+        <div className="flex flex-wrap items-center gap-2 mb-2 sm:mb-3">
           <div className="flex items-center">
             {[1, 2, 3, 4, 5].map((star) => (
               <Star
                 key={star}
-                className={`w-5 h-5 ${
+                className={`w-4 h-4 sm:w-5 sm:h-5 ${
                   star <= review.rating
                     ? "fill-amber-400 text-amber-400"
                     : "fill-gray-200 text-gray-200"
@@ -223,33 +223,33 @@ const ReviewList = ({ review }: ReviewListProps) => {
               />
             ))}
           </div>
-          <span className="text-base text-[#1D1F2C]">({review.rating})</span>
+          <span className="text-sm sm:text-base text-[#1D1F2C]">({review.rating})</span>
 
           {/* Show report button only if user is logged in and viewing their own profile's review */}
           {currentUser?.userId && review.reciverId === currentUser.userId && (
-            <div className="text-gray-500 ml-10 flex items-center gap-2">
+            <div className="text-gray-500 ml-2 sm:ml-10 flex items-center gap-2">
               <button
                 onClick={() => setIsReportModalOpen(true)}
                 disabled={review?.report}
-                className={`text-[#1D1F2C] hover:text-gray-600 ml-10 flex items-center gap-2 ${
+                className={`text-[#1D1F2C] hover:text-gray-600 flex items-center gap-1 sm:gap-2 ${
                   review?.report 
                     ? "text-red-500 cursor-not-allowed opacity-50" 
                     : "cursor-pointer"
                 }`}
               >
-                <FlagIcon />
-                <p>{review.report ? "Reported" : "Report"}</p>
+                <FlagIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                <p className="text-sm sm:text-base">{review.report ? "Reported" : "Report"}</p>
               </button>
             </div>
           )}
         </div>
 
         {/* Review Text */}
-        <div className="mb-5">
-          <p className="text-[#4A4C56] text-lg font-normal mb-1">
+        <div className="mb-3 sm:mb-5">
+          <p className="text-[#4A4C56] text-base sm:text-lg font-normal mb-1">
             {review.review}
           </p>
-          <span className="text-base text-[#A5A5AB]">
+          <span className="text-sm sm:text-base text-[#A5A5AB]">
             {new Date(review.createdAt).toLocaleDateString("en-US", {
               year: "numeric",
               month: "short",
@@ -262,7 +262,7 @@ const ReviewList = ({ review }: ReviewListProps) => {
 
         {/* Reviewer Info */}
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-gray-200 relative overflow-hidden flex items-center justify-center">
+          <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gray-200 relative overflow-hidden flex items-center justify-center">
             {review?.reviewerId?.profileImage ? (
               <Image
                 src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${review.reviewerId.profileImage}`}
@@ -273,7 +273,7 @@ const ReviewList = ({ review }: ReviewListProps) => {
                   const parent = e.currentTarget.parentElement;
                   if (parent) {
                     parent.innerHTML = `
-                      <span class="text-lg font-medium text-gray-500">
+                      <span class="text-base sm:text-lg font-medium text-gray-500">
                         ${
                           review.reviewerId?.first_name
                             ?.charAt(0)
@@ -285,24 +285,24 @@ const ReviewList = ({ review }: ReviewListProps) => {
                 }}
               />
             ) : (
-              <span className="text-lg font-medium text-gray-500">
+              <span className="text-base sm:text-lg font-medium text-gray-500">
                 {review.reviewerId?.first_name?.charAt(0)?.toUpperCase() || "U"}
               </span>
             )}
           </div>
           <div className="flex flex-col">
-            <span className="text-lg font-semibold text-[#1D1F2C]">
+            <span className="text-base sm:text-lg font-semibold text-[#1D1F2C]">
               {review.reviewerId?.first_name || "Anonymous"}
             </span>
           </div>
         </div>
 
-        {/* Like/Dislike Section with improved UI */}
-        <div className="flex items-center gap-4 mt-4">
+        {/* Like/Dislike Section */}
+        <div className="flex items-center gap-3 sm:gap-4 mt-3 sm:mt-4">
           <button
             onClick={handleLike}
             disabled={isLiked || isDisliked}
-            className={`flex items-center gap-1.5 transition-colors ${
+            className={`flex items-center gap-1 sm:gap-1.5 transition-colors ${
               isLiked
                 ? "text-[#20B894] cursor-not-allowed"
                 : isDisliked
@@ -317,9 +317,9 @@ const ReviewList = ({ review }: ReviewListProps) => {
                 : "Like this review"
             }
           >
-            <span className="text-sm">{likes}</span>
+            <span className="text-xs sm:text-sm">{likes}</span>
             <svg
-              className="w-4 h-4"
+              className="w-3 h-3 sm:w-4 sm:h-4"
               viewBox="0 0 24 24"
               fill={isLiked ? "currentColor" : "none"}
               stroke="currentColor"
@@ -335,7 +335,7 @@ const ReviewList = ({ review }: ReviewListProps) => {
           <button
             onClick={handleDislike}
             disabled={isLiked || isDisliked}
-            className={`flex items-center gap-1.5 transition-colors ${
+            className={`flex items-center gap-1 sm:gap-1.5 transition-colors ${
               isDisliked
                 ? "text-red-500 cursor-not-allowed"
                 : isLiked
@@ -350,9 +350,9 @@ const ReviewList = ({ review }: ReviewListProps) => {
                 : "Dislike this review"
             }
           >
-            {dislikes > 0 && <span className="text-sm">{dislikes}</span>}
+            {dislikes > 0 && <span className="text-xs sm:text-sm">{dislikes}</span>}
             <svg
-              className="w-4 h-4 rotate-180"
+              className="w-3 h-3 sm:w-4 sm:h-4 rotate-180"
               viewBox="0 0 24 24"
               fill={isDisliked ? "currentColor" : "none"}
               stroke="currentColor"
@@ -368,7 +368,7 @@ const ReviewList = ({ review }: ReviewListProps) => {
         </div>
       </div>
 
-      {/* Report Modal - only render for logged in user viewing their own profile's review */}
+      {/* Report Modal remains unchanged */}
       {currentUser?.userId && review.reciverId === currentUser.userId && (
         <ReportModal
           isOpen={isReportModalOpen}

@@ -111,27 +111,35 @@ export default function ServiceList() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-center items-center gap-10 mb-12">
-       <div>
-       <h2 className="text-[40px] font-medium font-inter">
-          Explore & Exchange: Your Marketplace <br /> for Services
-        </h2>
-       </div>
-       <div>
-        <Image src={exchange} alt="Exchange" width={400} height={400} />
-       </div>
+      {/* Hero Section */}
+      <div className="flex flex-col md:flex-row justify-center items-center gap-6 md:gap-10 mb-8 md:mb-12">
+        <div className="text-center md:text-left mt-5 md:mt-0">
+          <h2 className="text-3xl md:text-[40px] font-medium font-inter leading-tight">
+            Explore & Exchange: Your Marketplace{" "}
+            <br className="hidden md:block" /> for Services
+          </h2>
+        </div>
+        <div className="w-full md:w-auto">
+          <Image
+            src={exchange}
+            alt="Exchange"
+            width={400}
+            height={400}
+            className="w-full max-w-[300px] md:max-w-[400px] mx-auto"
+          />
+        </div>
       </div>
 
-      <div className="mt-12">
-        <div className="flex justify-center items-center mb-8">
-          <h3 className="text-[48px] font-medium font-inter text-[#070707]">
+      <div className="mt-8 md:mt-12">
+        <div className="flex justify-center items-center mb-6 md:mb-8">
+          <h3 className="text-3xl sm:text-4xl md:text-[48px] font-medium font-inter text-[#070707]">
             Service Categories
           </h3>
         </div>
 
         {/* Category Tabs */}
-        <div className="container mx-auto mb-8">
-          <div className="flex items-center justify-center flex-wrap gap-3 p-2 bg-[#F9F9F9] rounded-xl">
+        <div className="container mx-auto mb-6 md:mb-8">
+          <div className="flex items-center justify-center flex-wrap gap-2 md:gap-3 p-2 bg-[#F9F9F9] rounded-xl">
             <button
               onClick={() => setActiveCategory("All")}
               className={cn(
@@ -161,7 +169,7 @@ export default function ServiceList() {
         </div>
 
         {/* Service Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 mt-6 md:mt-10 mb-10">
           {filteredSubCategories.map((subCategory) => (
             <div
               key={subCategory._id}
@@ -206,7 +214,7 @@ export default function ServiceList() {
         {/* Exchange Modal */}
         {modalStep !== "none" && (
           <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl w-full p-10 max-w-[70%] relative">
+            <div className="bg-white rounded-2xl w-full p-4 md:p-10 max-w-[95%] md:max-w-[70%] relative">
               <button
                 className="absolute top-4 right-4 text-[#20B894] text-xl cursor-pointer"
                 onClick={() => {

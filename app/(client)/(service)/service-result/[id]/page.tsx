@@ -112,7 +112,7 @@ const ServiceDetails = () => {
     portfolioImage: singleUser?.portfolio || "/default-portfolio.jpg",
     about: singleUser?.about_me,
     location: `${singleUser?.addressInfo?.city}, ${singleUser?.addressInfo?.country}`,
-    languages: ["English", "Bengali"], // Add default languages
+    // languages: ["English", "Bengali"], // Add default languages
   };
 
   const handleReviewSubmit = async (rating: number, review: string) => {
@@ -194,69 +194,70 @@ const ServiceDetails = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto md:px-2 py-8">
       <button
         onClick={() => router.back()}
-        className="mb-6 text-gray-600 hover:text-gray-900 flex items-center gap-2"
+        className="mb-4 sm:mb-6 text-white bg-[#20B894] px-4 py-2 my-2 rounded-full hover:bg-[#62c5ac] cursor-pointer ease-in duration-200 font-semibold hover:text-gray-900 flex items-center gap-2 text-sm sm:text-base"
       >
         ← Back
       </button>
 
-      <div className="w-full  flex  gap-6">
-        <div className="w-[70%] flex justify-center gap-6">
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <ProfileHeader formattedInstructor={formattedInstructor} />
+      <div className="w-full flex gap-6">
+        <div className="md:flex justify-center w-full md:gap-10">
+          <div className="w-full md:w-[70%]  justify-center gap-6">
+            <div className="bg-white rounded-xl shadow-sm md:px-4">
+              <ProfileHeader formattedInstructor={formattedInstructor} />
 
-            {/* About Me Section */}
-            <About
-              instructor={formattedInstructor}
-              isExpanded={isExpanded}
-              setIsExpanded={setIsExpanded}
-            />
+              {/* About Me Section */}
+              <About
+                instructor={formattedInstructor}
+                isExpanded={isExpanded}
+                setIsExpanded={setIsExpanded}
+              />
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 my-8">
-              {[
-                {
-                  label: "Years of expertise",
-                  value: "3 years",
-                  icon: <BagIcon />,
-                },
-                {
-                  label: "Customer Satisfaction",
-                  value: "100%",
-                  icon: <SuccessIcon />,
-                },
-                {
-                  label: "Quality Service Ensured",
-                  value: "Yes",
-                  icon: <EnsuredIcon />,
-                },
-                {
-                  label: "Verified Trainer",
-                  value: "Verified",
-                  icon: <VerifiedIcon />,
-                },
-              ].map((stat, index) => (
-                <div
-                  key={index}
-                  className="bg-white p-6 rounded-xl border flex flex-col items-center text-center gap-2"
-                >
-                  <div className="w-12 h-12 flex items-center justify-center">
-                    {stat.icon}
-                  </div>
-                  {/* <div className="text-[#4A4C56] font-medium text-lg">
+              {/* Stats Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 my-8">
+                {[
+                  {
+                    label: "Years of expertise",
+                    value: "3 years",
+                    icon: <BagIcon />,
+                  },
+                  {
+                    label: "Customer Satisfaction",
+                    value: "100%",
+                    icon: <SuccessIcon />,
+                  },
+                  {
+                    label: "Quality Service Ensured",
+                    value: "Yes",
+                    icon: <EnsuredIcon />,
+                  },
+                  {
+                    label: "Verified Trainer",
+                    value: "Verified",
+                    icon: <VerifiedIcon />,
+                  },
+                ].map((stat, index) => (
+                  <div
+                    key={index}
+                    className="bg-white p-6 rounded-xl border flex flex-col items-center text-center gap-2"
+                  >
+                    <div className="w-12 h-12 flex items-center justify-center">
+                      {stat.icon}
+                    </div>
+                    {/* <div className="text-[#4A4C56] font-medium text-lg">
                     {stat.value}
                   </div> */}
-                  <div className="text-[#4A4C56] text-base font-normal">
-                    {stat.label}
+                    <div className="text-[#4A4C56] text-base font-normal">
+                      {stat.label}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
 
-            {/* Skills Section */}
-            {/* <div className="mb-8">
+              {/* Skills Section */}
+              {/* <div className="mb-8">
               <h2 className="text-2xl font-medium text-[#070707] mb-4">
                 Skills
               </h2>
@@ -272,128 +273,130 @@ const ServiceDetails = () => {
               </div>
             </div> */}
 
-            {/* Portfolio Section */}
-            <div className="mb-8">
-              <h2 className="text-xl font-semibold text-[#070707] mb-4">
-                Portfolio
-              </h2>
-              <div className="relative h-[410px] rounded-xl overflow-hidden bg-gray-100">
-                {formattedInstructor?.portfolioImage &&
-                formattedInstructor.portfolioImage !==
-                  "/default-portfolio.jpg" ? (
-                  <Image
-                    src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${formattedInstructor.portfolioImage}`}
-                    alt="Portfolio"
-                    fill
-                    className="object-cover"
-                    onError={(e: any) => {
-                      const parent = e.currentTarget.parentElement;
-                      if (parent) {
-                        parent.innerHTML = `
+              {/* Portfolio Section */}
+              <div className="mb-8">
+                <h2 className="text-xl font-semibold text-[#070707] mb-4">
+                  Portfolio
+                </h2>
+                <div className="relative h-[200px] md:h-[410px] rounded-xl overflow-hidden bg-gray-100">
+                  {formattedInstructor?.portfolioImage &&
+                  formattedInstructor.portfolioImage !==
+                    "/default-portfolio.jpg" ? (
+                    <Image
+                      src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${formattedInstructor.portfolioImage}`}
+                      alt="Portfolio"
+                      fill
+                      className="object-cover"
+                      onError={(e: any) => {
+                        const parent = e.currentTarget.parentElement;
+                        if (parent) {
+                          parent.innerHTML = `
                           <div class="w-full h-full flex items-center justify-center">
                             <span class="text-4xl font-medium text-gray-400">
                               Portfolio
                             </span>
                           </div>
                         `;
-                      }
-                    }}
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <span className="text-4xl font-medium text-gray-400">
-                      Portfolio
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* added review section */}
-            <div className="mb-8">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-medium text-[#070707]">Reviews</h2>
-
-                <button
-                  onClick={() => setIsReviewModalOpen(true)}
-                  className="flex items-center gap-2 text-emerald-500 hover:text-emerald-600 cursor-pointer"
-                >
-                  Write Review
-                </button>
-
-                <ReviewModal
-                  isOpen={isReviewModalOpen}
-                  onClose={() => setIsReviewModalOpen(false)}
-                  onSubmit={handleReviewSubmit}
-                />
-              </div>
-
-              {/* Rating Overview */}
-              <RatingOverview formattedInstructor={formattedInstructor} />
-
-              {/* Review Tabs */}
-              <div className="border-b mb-6">
-                <h2 className="text-2xl font-medium text-[#070707] my-5">
-                  Review Lists
-                </h2>
-                <div className="flex gap-6">
-                  <button
-                    // onClick={() => setActiveTab("all")}
-                    className={`pb-2 text-sm"text-[#20B894] border-b-2 border-[#20B894] font-normal text-xl"
-                        `}
-                  >
-                    All reviews
-                  </button>
+                        }
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <span className="text-4xl font-medium text-gray-400">
+                        Portfolio
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Review List */}
-              <div id="reviews-section">
-                {reviews.length > 0 ? (
-                  <>
-                    <div>
-                      {currentReviews?.map((singleReview: any) => (
-                        <ReviewList
-                          key={singleReview._id}
-                          review={singleReview}
-                          instructor={formattedInstructor}
-                        />
-                      ))}
-                    </div>
-                    {totalPages > 1 && (
-                      <Pagination
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        onPageChange={handlePageChange}
-                      />
-                    )}
-                  </>
-                ) : (
-                  <div className="text-center text-gray-500 py-8">
-                    No reviews yet
+              {/* added review section */}
+              <div className="mb-8">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mb-6 px-4 sm:px-0">
+                  <h2 className="text-xl sm:text-2xl font-medium text-[#070707]">
+                    Reviews
+                  </h2>
+
+                  <button
+                    onClick={() => setIsReviewModalOpen(true)}
+                    className="flex items-center gap-2 text-sm sm:text-base text-emerald-500 hover:text-emerald-600 cursor-pointer"
+                  >
+                    Write Review
+                  </button>
+
+                  <ReviewModal
+                    isOpen={isReviewModalOpen}
+                    onClose={() => setIsReviewModalOpen(false)}
+                    onSubmit={handleReviewSubmit}
+                  />
+                </div>
+
+                {/* Rating Overview */}
+                <RatingOverview formattedInstructor={formattedInstructor} />
+
+                {/* Review Tabs */}
+                <div className="border-b mb-6">
+                  <h2 className="text-2xl font-medium text-[#070707] my-5">
+                    Review Lists
+                  </h2>
+                  <div className="flex gap-6">
+                    <button
+                      // onClick={() => setActiveTab("all")}
+                      className={`pb-2 text-sm"text-[#20B894] border-b-2 border-[#20B894] font-normal text-xl"
+                        `}
+                    >
+                      All reviews
+                    </button>
                   </div>
-                )}
+                </div>
+
+                {/* Review List */}
+                <div id="reviews-section">
+                  {reviews.length > 0 ? (
+                    <>
+                      <div>
+                        {currentReviews?.map((singleReview: any) => (
+                          <ReviewList
+                            key={singleReview._id}
+                            review={singleReview}
+                            instructor={formattedInstructor}
+                          />
+                        ))}
+                      </div>
+                      {totalPages > 1 && (
+                        <Pagination
+                          currentPage={currentPage}
+                          totalPages={totalPages}
+                          onPageChange={handlePageChange}
+                        />
+                      )}
+                    </>
+                  ) : (
+                    <div className="text-center text-gray-500 py-8">
+                      No reviews yet
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* added user profile */}
-        <div className="w-[30%]">
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <div className="flex flex-col items-center text-center">
-              <div className="w-20 h-20 rounded-full relative overflow-hidden mb-3 bg-gray-100">
-                {formattedInstructor?.profileImage &&
-                formattedInstructor.profileImage !== "/default-avatar.jpg" ? (
-                  <Image
-                    src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${formattedInstructor.profileImage}`}
-                    alt={formattedInstructor.first_name || "User"}
-                    fill
-                    className="object-cover"
-                    onError={(e: any) => {
-                      const parent = e.currentTarget.parentElement;
-                      if (parent) {
-                        parent.innerHTML = `
+          {/* added user profile */}
+          <div className="w-full md:w-[30%] my-10 md:my-0">
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <div className="flex flex-col items-center text-center">
+                <div className="w-20 h-20 rounded-full relative overflow-hidden mb-3 bg-gray-100">
+                  {formattedInstructor?.profileImage &&
+                  formattedInstructor.profileImage !== "/default-avatar.jpg" ? (
+                    <Image
+                      src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${formattedInstructor.profileImage}`}
+                      alt={formattedInstructor.first_name || "User"}
+                      fill
+                      className="object-cover"
+                      onError={(e: any) => {
+                        const parent = e.currentTarget.parentElement;
+                        if (parent) {
+                          parent.innerHTML = `
                           <div class="w-full h-full flex items-center justify-center">
                             <span class="text-2xl font-medium text-gray-400">
                               ${
@@ -404,43 +407,45 @@ const ServiceDetails = () => {
                             </span>
                           </div>
                         `;
-                      }
-                    }}
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <span className="text-2xl font-medium text-gray-400">
-                      {formattedInstructor?.first_name
-                        ?.charAt(0)
-                        ?.toUpperCase() || "U"}
-                    </span>
-                  </div>
-                )}
+                        }
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <span className="text-2xl font-medium text-gray-400">
+                        {formattedInstructor?.first_name
+                          ?.charAt(0)
+                          ?.toUpperCase() || "U"}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <h3 className="font-medium text-[#070707]">
+                  {formattedInstructor.first_name}
+                </h3>
+                <p className="text-gray-500 text-sm">Online</p>
+                {/* <p className="text-xs text-gray-500 mt-1">
+                  10:05 PM local time
+                </p> */}
               </div>
-              <h3 className="font-medium text-[#070707]">
-                {formattedInstructor.first_name}
-              </h3>
-              <p className="text-gray-500 text-sm">Offline</p>
-              <p className="text-xs text-gray-500 mt-1">10:05 PM local time</p>
-            </div>
 
-            <div className="mt-6 space-y-3">
-              <button
-                onClick={() => setIsMessageModalOpen(true)}
-                className="w-full py-2.5 bg-[#20B894] text-white rounded-lg text-base font-medium hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2 cursor-pointer"
-              >
-                Send Message Request
-                <svg
-                  className="w-4 h-4"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
+              <div className="mt-6 space-y-3">
+                <button
+                  onClick={() => setIsMessageModalOpen(true)}
+                  className="w-full py-2.5 bg-[#20B894] text-white rounded-lg text-sm md:text-base font-medium hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <path d="M5 12h14m-7-7l7 7-7 7" />
-                </svg>
-              </button>
-              {/* <button
+                  Send Message Request
+                  <svg
+                    className="w-4 h-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M5 12h14m-7-7l7 7-7 7" />
+                  </svg>
+                </button>
+                {/* <button
                 onClick={() => setIsReportProfileModalOpen(true)}
                 disabled={filteredProfileReport?.some(
                   (report) =>
@@ -466,39 +471,40 @@ const ServiceDetails = () => {
                   : "Report Profile"}
                 <FlagIcon className="w-4 h-4 stroke-current" />
               </button> */}
-              <button
-                onClick={() => setIsReportProfileModalOpen(true)}
-                disabled={isProfileReported()}
-                className={`w-full py-2.5 border rounded-lg text-base font-medium transition-colors flex items-center justify-center gap-2 ${
-                  isProfileReported()
-                    ? "text-gray-400 border-gray-300 cursor-not-allowed bg-gray-50"
-                    : "text-[#FE5050] border-[#FE5050] hover:bg-red-50 cursor-pointer"
-                }`}
-              >
-                {isProfileReported() ? "Reported Profile" : "Report Profile"}
-                <FlagIcon className="w-4 h-4 stroke-current" />
-              </button>
+                <button
+                  onClick={() => setIsReportProfileModalOpen(true)}
+                  disabled={isProfileReported()}
+                  className={`w-full py-2.5 border rounded-lg text-sm md:text-base font-medium transition-colors flex items-center justify-center gap-2 ${
+                    isProfileReported()
+                      ? "text-gray-400 border-gray-300 cursor-not-allowed bg-gray-50"
+                      : "text-[#FE5050] border-[#FE5050] hover:bg-red-50 cursor-pointer"
+                  }`}
+                >
+                  {isProfileReported() ? "Reported Profile" : "Report Profile"}
+                  <FlagIcon className="w-4 h-4 stroke-current" />
+                </button>
 
-              {/* Add the modal component */}
-              <ReportProfileModal
-                isOpen={isReportProfileModalOpen}
-                onClose={() => setIsReportProfileModalOpen(false)}
-                onSubmit={handleProfileReport}
-              />
+                {/* Add the modal component */}
+                <ReportProfileModal
+                  isOpen={isReportProfileModalOpen}
+                  onClose={() => setIsReportProfileModalOpen(false)}
+                  onSubmit={handleProfileReport}
+                />
 
-              <MessageRequestModal
-                isOpen={isMessageModalOpen}
-                onClose={() => setIsMessageModalOpen(false)}
-                onSubmit={handleMessageRequest}
-                instructor={formattedInstructor}
-                singleUser={singleUser}
-              />
-            </div>
+                <MessageRequestModal
+                  isOpen={isMessageModalOpen}
+                  onClose={() => setIsMessageModalOpen(false)}
+                  onSubmit={handleMessageRequest}
+                  instructor={formattedInstructor}
+                  singleUser={singleUser}
+                />
+              </div>
 
-            <div className="mt-4 text-center">
-              <p className="text-sm  text-gray-500">
-                Average response time: 5 hours
-              </p>
+              {/* <div className="mt-4 text-center">
+                <p className="text-sm  text-gray-500">
+                  Average response time: 5 hours
+                </p>
+              </div> */}
             </div>
           </div>
         </div>

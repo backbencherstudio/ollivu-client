@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import Link from 'next/link';
+import Image from "next/image";
+import Link from "next/link";
 
 export default function Community() {
   return (
@@ -10,14 +10,14 @@ export default function Community() {
         {/* Left Text Content */}
         <div className="w-full md:w-1/2 text-center md:text-left">
           <h1 className="text-4xl md:text-5xl font-bold text-[#070707] leading-tight mb-6">
-            Exchange Your Services. Build Your Community. 
+            Exchange Your Services. Build Your Community.
           </h1>
           <p className="text-gray-600 text-base md:text-lg mb-8">
-            Join Ollivu today and discover a world where everyone has
-            something valuable to offer.
+            Join Ollivu today and discover a world where everyone has something
+            valuable to offer.
           </p>
           <Link
-            href="/signup"
+            href="/"
             className="inline-flex items-center gap-2 bg-[#20B894] text-white text-sm md:text-base font-medium px-6 py-3 rounded-full hover:opacity-90 transition"
           >
             Start Trading Skills Now! ↗

@@ -12,7 +12,7 @@ interface TabHeaderProps {
 export default function TabHeader({ activeTab, onTabChange }: TabHeaderProps) {
   return (
     <div className="flex items-center justify-between flex-wrap gap-4 border-b pb-4 mb-6">
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center text-nowrap space-x-4">
         <TabButton
           isActive={activeTab === "terms"}
           onClick={() => onTabChange("terms")}
