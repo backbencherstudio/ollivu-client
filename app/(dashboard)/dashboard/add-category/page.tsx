@@ -260,46 +260,50 @@ export default function AddCategory() {
     }
   };
 
-  // Update the Subcategory Input Section JSX
   return (
-    <div className="p-6 max-w-5xl mx-auto">
+    <div className="p-3 sm:p-6 max-w-5xl mx-auto">
       <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl font-semibold text-[#20B894]">
+        <CardHeader className="space-y-1 sm:space-y-2">
+          <CardTitle className="text-xl sm:text-2xl font-semibold text-[#20B894]">
             Categories Management
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4 sm:space-y-6">
           {/* Category Input Section */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium flex items-center gap-2">
-              <Plus className="h-5 w-5 text-[#20B894]" />
+          <div className="space-y-3 sm:space-y-4">
+            <h3 className="text-base sm:text-lg font-medium flex items-center gap-2">
+              <Plus className="h-4 w-4 sm:h-5 sm:w-5 text-[#20B894]" />
               Add New Category
             </h3>
-            <div className="flex gap-3">
-              <div className="relative flex-1 max-w-md">
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="relative flex-1 max-w-full sm:max-w-md">
                 <Input
                   placeholder="Enter category name"
                   value={newCategory}
                   onChange={(e) => setNewCategory(e.target.value)}
-                  className="pr-8"
+                  className="pr-8 text-sm sm:text-base"
                 />
                 <Popover
                   open={openCategoryPopover}
                   onOpenChange={setOpenCategoryPopover}
                 >
                   <PopoverTrigger asChild>
-                    <button
+                    {/* <button
                       className="absolute right-2 top-2 p-1 hover:bg-gray-100 rounded-full"
                       onClick={(e) => e.preventDefault()}
                     >
                       <Search className="h-4 w-4 text-gray-400" />
-                    </button>
+                    </button> */}
                   </PopoverTrigger>
-                  <PopoverContent className="w-[400px] p-0">
+                  <PopoverContent className="w-[300px] sm:w-[400px] p-0">
                     <Command>
-                      <CommandInput placeholder="Search existing categories..." />
-                      <CommandEmpty>No matching categories found</CommandEmpty>
+                      <CommandInput
+                        placeholder="Search existing categories..."
+                        className="text-sm"
+                      />
+                      <CommandEmpty className="text-sm">
+                        No matching categories found
+                      </CommandEmpty>
                       <CommandGroup heading="Existing Categories">
                         {getFilteredCategories().map((category) => (
                           <CommandItem
@@ -309,6 +313,7 @@ export default function AddCategory() {
                               setSearchSelectedCategory(category._id);
                               setOpenCategoryPopover(false);
                             }}
+                            className="text-sm"
                           >
                             {category.category_name}
                           </CommandItem>
@@ -320,7 +325,7 @@ export default function AddCategory() {
               </div>
               <Button
                 onClick={handleAddCategory}
-                className="bg-[#20B894] text-white hover:bg-[#1ca883] cursor-pointer"
+                className="bg-[#20B894] text-white hover:bg-[#1ca883] cursor-pointer w-full sm:w-auto text-sm sm:text-base"
                 disabled={isLoading}
               >
                 {isLoading ? "Adding..." : "Add Category"}
@@ -392,13 +397,13 @@ export default function AddCategory() {
           </div> */}
 
           {/* Categories List */}
-          <div className="space-y-4 pt-6 border-t">
-            <h3 className="text-lg font-medium flex items-center gap-2">
-              <ChevronDown className="h-5 w-5 text-[#20B894]" />
+          <div className="space-y-3 sm:space-y-4 pt-4 sm:pt-6 border-t">
+            <h3 className="text-base sm:text-lg font-medium flex items-center gap-2">
+              <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5 text-[#20B894]" />
               Existing Categories
             </h3>
             {categories.length === 0 ? (
-              <p className="text-gray-500 text-center py-8">
+              <p className="text-sm sm:text-base text-gray-500 text-center py-6 sm:py-8">
                 No categories added yet
               </p>
             ) : (
@@ -406,58 +411,59 @@ export default function AddCategory() {
                 {categories.map((category) => (
                   <Card key={category._id} className="overflow-hidden">
                     <div
-                      className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50"
+                      className="flex items-center justify-between p-3 sm:p-4 cursor-pointer hover:bg-gray-50"
                       onClick={() => toggleCategory(category._id)}
                     >
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2 sm:gap-3">
                         {expandedCategories.includes(category._id) ? (
-                          <ChevronDown className="h-5 w-5 text-[#20B894]" />
+                          <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5 text-[#20B894]" />
                         ) : (
-                          <ChevronRight className="h-5 w-5 text-[#20B894]" />
+                          <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 text-[#20B894]" />
                         )}
                         {editingCategoryId === category._id ? (
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
                             <Input
                               value={editedCategoryName}
                               onChange={(e) =>
                                 setEditedCategoryName(e.target.value)
                               }
-                              className="w-48"
+                              className="w-full sm:w-48 text-sm sm:text-base"
                               autoFocus
                               onKeyDown={(e) => {
-                                if (e.key === "Enter") {
+                                if (e.key === "Enter")
                                   handleSaveEdit(category._id);
-                                }
                                 if (e.key === "Escape") {
                                   setEditingCategoryId(null);
                                   setEditedCategoryName("");
                                 }
                               }}
                             />
-                            <Button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleSaveEdit(category._id);
-                              }}
-                              className="bg-[#20B894] text-white hover:bg-[#1ca883] h-8 px-3 cursor-pointer"
-                            >
-                              Save
-                            </Button>
-                            <Button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setEditingCategoryId(null);
-                                setEditedCategoryName("");
-                              }}
-                              variant="ghost"
-                              className="h-8 px-3 cursor-pointer"
-                            >
-                              Cancel
-                            </Button>
+                            <div className="flex gap-2">
+                              <Button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleSaveEdit(category._id);
+                                }}
+                                className="bg-[#20B894] text-white hover:bg-[#1ca883] h-8 px-2 sm:px-3 text-xs sm:text-sm cursor-pointer"
+                              >
+                                Save
+                              </Button>
+                              <Button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setEditingCategoryId(null);
+                                  setEditedCategoryName("");
+                                }}
+                                variant="ghost"
+                                className="h-8 px-2 sm:px-3 text-xs sm:text-sm cursor-pointer"
+                              >
+                                Cancel
+                              </Button>
+                            </div>
                           </div>
                         ) : (
-                          <div className="flex items-center gap-3">
-                            <span className="font-medium">
+                          <div className="flex items-center gap-2 sm:gap-3">
+                            <span className="font-medium text-sm sm:text-base">
                               {category.category_name}
                             </span>
                             <button
@@ -468,24 +474,22 @@ export default function AddCategory() {
                                   category.category_name
                                 );
                               }}
-                              className="p-1.5 hover:bg-[#20B89410] rounded-md transition-all duration-300 ease-in-out cursor-pointer"
+                              className="p-1 sm:p-1.5 hover:bg-[#20B89410] rounded-md transition-all duration-300 ease-in-out cursor-pointer"
                             >
-                              <SquarePen 
-                                className="w-4 h-4 text-[#20B894]" 
-                              />
+                              <SquarePen className="w-3 h-3 sm:w-4 sm:h-4 text-[#20B894]" />
                             </button>
                           </div>
                         )}
                       </div>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-xs sm:text-sm text-gray-500">
                         ({category.subCategories?.length || 0} subcategories)
                       </span>
                     </div>
+
                     {expandedCategories.includes(category._id) && (
-                      <div className="p-4 bg-gray-50 border-t">
-                        {/* Add Subcategory Input Section within each category */}
-                        <div className="mb-4 space-y-3">
-                          <div className="flex gap-3">
+                      <div className="p-3 sm:p-4 bg-gray-50 border-t">
+                        <div className="mb-3 sm:mb-4 space-y-3">
+                          <div className="flex flex-col sm:flex-row gap-3">
                             <Input
                               placeholder="Enter subcategory name"
                               value={
@@ -497,17 +501,17 @@ export default function AddCategory() {
                                 setSelectedCategoryId(category._id);
                                 setNewSubCategory(e.target.value);
                               }}
-                              className="flex-1"
+                              className="flex-1 text-sm sm:text-base"
                             />
                             <Input
                               type="file"
                               accept="image/*"
                               onChange={handleImageChange}
-                              className="flex-1 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#20B89410] file:text-[#20B894] hover:file:bg-[#20B89420]"
+                              className="flex-1 text-sm sm:text-base file:mr-3 sm:file:mr-4 file:py-1.5 sm:file:py-2 file:px-3 sm:file:px-4 file:rounded-full file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-[#20B89410] file:text-[#20B894] hover:file:bg-[#20B89420]"
                             />
                             <Button
                               onClick={handleAddSubCategory}
-                              className="bg-[#20B894] text-white hover:bg-[#1ca883] cursor-pointer"
+                              className="bg-[#20B894] text-white hover:bg-[#1ca883] cursor-pointer w-full sm:w-auto text-sm sm:text-base"
                               disabled={
                                 !newSubCategory ||
                                 !subCategoryImage ||
@@ -519,7 +523,7 @@ export default function AddCategory() {
                           </div>
                           {imagePreview &&
                             selectedCategoryId === category._id && (
-                              <div className="relative w-20 h-20">
+                              <div className="relative w-16 h-16 sm:w-20 sm:h-20">
                                 <Image
                                   src={imagePreview}
                                   alt="Preview"
@@ -535,37 +539,37 @@ export default function AddCategory() {
                                   }}
                                   className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"
                                 >
-                                  <X className="h-4 w-4" />
+                                  <X className="h-3 w-3 sm:h-4 sm:w-4" />
                                 </button>
                               </div>
                             )}
                         </div>
 
-                        {/* Existing Subcategories */}
+                        {/* Subcategories Grid */}
                         {category.subCategories?.length > 0 ? (
-                          <div className="grid grid-cols-2 gap-3">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             {category.subCategories?.map((sub: any) => (
                               <div
                                 key={sub._id}
-                                className="p-3 bg-white rounded-lg shadow-sm flex items-center justify-between gap-3"
+                                className="p-2 sm:p-3 bg-white rounded-lg shadow-sm flex items-center justify-between gap-2 sm:gap-3"
                               >
-                                <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-2 sm:gap-3">
                                   {sub?.categoryImage ? (
                                     <Image
                                       src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${sub?.categoryImage}`}
                                       alt={sub.subCategory}
                                       width={48}
                                       height={48}
-                                      className="w-12 h-12 rounded object-cover"
+                                      className="w-10 h-10 sm:w-12 sm:h-12 rounded object-cover"
                                     />
                                   ) : (
-                                    <div className="w-12 h-12 rounded-full bg-[#20B89410] flex items-center justify-center text-[#20B894] font-semibold text-lg">
+                                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#20B89410] flex items-center justify-center text-[#20B894] font-semibold text-base sm:text-lg">
                                       {sub?.subCategory
                                         ?.charAt(0)
                                         .toUpperCase()}
                                     </div>
                                   )}
-                                  <span className="font-medium">
+                                  <span className="font-medium text-sm sm:text-base truncate text-wrap">
                                     {sub?.subCategory}
                                   </span>
                                 </div>
@@ -576,13 +580,13 @@ export default function AddCategory() {
                                   }
                                   className="text-red-500 hover:text-red-600 p-1 rounded-full hover:bg-red-50 transition-colors cursor-pointer"
                                 >
-                                  <X className="h-4 w-4" />
+                                  <X className="h-3 w-3 sm:h-4 sm:w-4" />
                                 </button>
                               </div>
                             ))}
                           </div>
                         ) : (
-                          <p className="text-gray-500 text-center py-4">
+                          <p className="text-sm sm:text-base text-gray-500 text-center py-3 sm:py-4">
                             No subcategories added yet
                           </p>
                         )}
@@ -596,12 +600,14 @@ export default function AddCategory() {
         </CardContent>
       </Card>
 
-      {/* Delete Confirmation Modal */}
+      {/* Alert Dialog - Made responsive */}
       <AlertDialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="max-w-[90%] sm:max-w-lg">
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Subcategory</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="text-lg sm:text-xl">
+              Delete Subcategory
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-sm sm:text-base">
               Are you sure you want to delete this subcategory? This action
               cannot be undone.
             </AlertDialogDescription>
@@ -612,12 +618,13 @@ export default function AddCategory() {
                 setDeleteModalOpen(false);
                 setSelectedSubCategory(null);
               }}
+              className="text-sm sm:text-base"
             >
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmDelete}
-              className="bg-red-500 hover:bg-red-600"
+              className="bg-red-500 hover:bg-red-600 text-sm sm:text-base"
             >
               Delete
             </AlertDialogAction>
