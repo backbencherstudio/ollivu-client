@@ -18,7 +18,10 @@ import { StatCard } from "./components/StatCard";
 import { ConversationTable } from "./components/ConversationTable";
 import ProtectedRoute from "@/src/components/auth/ProtectedRoute";
 import { useGetAllExchangeQuery } from "@/src/redux/features/admin/exchangeApi";
-import { useGetProfileReportQuery, useGetSuspendedDataQuery } from "@/src/redux/features/admin/profileReportApi";
+import {
+  useGetProfileReportQuery,
+  useGetSuspendedDataQuery,
+} from "@/src/redux/features/admin/profileReportApi";
 import { BanIcon } from "lucide-react";
 
 interface ExchangeUser {
@@ -83,35 +86,34 @@ export default function MonitorMessaging() {
     })) || [];
   console.log("transformedConversations", transformedConversations);
 
-  const reportedProfile = getProfileReport?.data?.map((report) => ({
-    id: report._id || '',
-    user: report.reportedId?.first_name || 'Unknown',
-    email: report.reportedId?.email || '',
-    reason: report.reportType || '',
-    status : report.action || '',
-    description: report.description || '',
-    createdAt: new Date(report.createdAt).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    }),
-    reporterId: report.reporterId || {},
-    reportedId: report.reportedId || {},
-    supportingFile: report.supportingFile || '',
-    reportType: report.reportType || ''
-  })) || [];
+  const reportedProfile =
+    getProfileReport?.data?.map((report) => ({
+      id: report._id || "",
+      user: report.reportedId?.first_name || "Unknown",
+      email: report.reportedId?.email || "",
+      reason: report.reportType || "",
+      status: report.action || "",
+      description: report.description || "",
+      createdAt: new Date(report.createdAt).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      }),
+      reporterId: report.reporterId || {},
+      reportedId: report.reportedId || {},
+      supportingFile: report.supportingFile || "",
+      reportType: report.reportType || "",
+    })) || [];
 
   console.log("reportedProfile", reportedProfile);
 
-  const {data} = useGetSuspendedDataQuery({})
-  const suspendData = data?.data
+  const { data } = useGetSuspendedDataQuery({});
+  const suspendData = data?.data;
 
   // console.log(107, data?.data);
-  
 
   // Add suspended profiles transformation
   const suspendedProfiles = data?.data;
-
 
   const handleStatusChange = (convId: string, status: string) => {
     setOpen({ ...open, [convId]: false });
@@ -124,7 +126,6 @@ export default function MonitorMessaging() {
     return conv.status === "Pending";
   });
   console.log("filteredConversations", filteredConversations);
-  
 
   // Update STAT_CARDS with suspended profiles count
   const updatedStatCards = [
@@ -136,7 +137,7 @@ export default function MonitorMessaging() {
     },
     {
       title: "Pending Exchanges",
-        value: reportedProfile?.length,
+      value: reportedProfile?.length,
       subtitle: "Awaiting Completion",
       icon: PendingIcon,
     },
@@ -156,15 +157,16 @@ export default function MonitorMessaging() {
 
   return (
     <ProtectedRoute allowedRoles={["admin"]}>
-      <div className="p-6 space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {updatedStatCards.map((stat, i) => (
             <StatCard key={i} {...stat} />
           ))}
         </div>
 
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold">
+        <div className="space-y-3 sm:space-y-4">
+          <h2 className="text-base sm:text-lg font-semibold">
             {filter === "Completed Exchange"
               ? "Exchange Tracking"
               : filter === "Reported Profile"
@@ -174,30 +176,37 @@ export default function MonitorMessaging() {
 
           <Tabs defaultValue="Completed Exchange" onValueChange={setFilter}>
             <TabsList>
-              <TabsTrigger value="Completed Exchange" className="cursor-pointer">
+              <TabsTrigger
+                value="Completed Exchange"
+                className="cursor-pointer"
+              >
                 Completed Exchange
               </TabsTrigger>
               <TabsTrigger value="Reported Profile" className="cursor-pointer">
                 Reported Profile
               </TabsTrigger>
-              <TabsTrigger value="Suspended Profiles" className="cursor-pointer">
+              <TabsTrigger
+                value="Suspended Profiles"
+                className="cursor-pointer"
+              >
                 Suspended Profiles
               </TabsTrigger>
             </TabsList>
           </Tabs>
 
+          {/* Search and Filter */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <Input
+            {/* <Input
               placeholder="Search by user name or id"
               className="w-full sm:w-1/3"
-            />
-            <DropdownMenu>
+            /> */}
+            {/* <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full sm:w-auto gap-1 text-sm"
+                  className="w-full sm:w-auto gap-1 text-xs sm:text-sm"
                 >
-                  {dateFilter} <ChevronDown className="w-4 h-4" />
+                  {dateFilter} <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-[160px]">
@@ -206,17 +215,18 @@ export default function MonitorMessaging() {
                     <DropdownMenuItem
                       key={option}
                       onClick={() => setDateFilter(option)}
-                      className="cursor-pointer"
+                      className="cursor-pointer text-xs sm:text-sm"
                     >
                       {option}
                     </DropdownMenuItem>
                   )
                 )}
               </DropdownMenuContent>
-            </DropdownMenu>
+            </DropdownMenu> */}
           </div>
 
-          <div className="max-w-[calc(100vw-3rem)]">
+          {/* Table */}
+          <div className="w-full -mx-3 sm:mx-0">
             <ConversationTable
               conversations={displayData}
               isReportedView={filter === "Reported Profile"}
