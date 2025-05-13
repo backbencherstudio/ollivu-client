@@ -85,10 +85,11 @@ export default function UserDashboardHome() {
     return 100; // Full progress when both conditions are met
   };
 
+  // Update the badges array with proper status handling
   const badges = [
     {
       label: "Years Expertise",
-      status: hasCompletedOneYear ? "claim-green" : "claim",
+      status: hasCompletedOneYear ? "unlock" : "locked",
       icon: "/badges/icon.png",
       progress: hasCompletedOneYear
         ? 100
@@ -96,13 +97,13 @@ export default function UserDashboardHome() {
     },
     {
       label: "Quality Service Ensured",
-      status: hasQualityService ? "claim-green" : "claim",
+      status: hasQualityService ? "unlock" : "locked",
       icon: "/badges/icon (2).png",
       progress: qualityServiceProgress(),
     },
     {
       label: "Verified Trainer",
-      status: singleUserData?.cartificate ? "claim-green" : "locked",
+      status: singleUserData?.cartificate ? "unlock" : "locked",
       icon: (
         <VerifiedIcons
           className={
@@ -379,13 +380,13 @@ export default function UserDashboardHome() {
                   <button className="bg-gray-300 text-white text-sm px-4 py-2 rounded-full w-full">
                     Locked
                   </button>
-                ) : badge.status === "claim-green" ? (
+                ) : badge.status === "unlock" ? (
                   <button className="bg-[#20B894] text-white text-sm px-4 py-2 rounded-full w-full">
-                    Claim
+                    Unlock
                   </button>
                 ) : (
-                  <button className="bg-[#C5C7CD] text-white text-sm px-4 py-2 rounded-full w-full">
-                    Claim
+                  <button className="bg-[#C5C7CD] text-white text-sm px-4 py-2 rounded-full w-full cursor-not-allowed">
+                    Locked
                   </button>
                 )}
 
@@ -592,4 +593,3 @@ export default function UserDashboardHome() {
     </div>
     // </ProtectedRoute>
   );
-}
