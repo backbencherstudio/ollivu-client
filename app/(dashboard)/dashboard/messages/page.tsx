@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { useAcceptExchangeMutation } from "@/src/redux/features/shared/exchangeApi";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { X } from "lucide-react";
 const socket = io("http://localhost:5000");
 
 const Messages = () => {
@@ -21,6 +22,8 @@ const Messages = () => {
   const [message, setMessage] = useState("");
   const [currentChat, setCurrentChat] = useState(null);
   const [user, setUser] = useState(null); // Updated to null initially
+  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+
   const currentUser = verifiedUser();
   const router = useRouter();
   const [recipient, setRecipient] = useState(currentUser?.email);
@@ -543,11 +546,12 @@ const Messages = () => {
         <div className="flex-1 flex flex-col bg-white">
           {currentChat ? (
             <>
-              <div className="p-4 flex items-center justify-between border-b border-gray-100">
-                <div className="flex items-center gap-3">
+              <div className="fixed top-[60px] left-0 right-0 z-50 bg-white">
+                <div className="p-4 flex items-center justify-between border-b border-gray-100">
+                  {/* <div className="flex items-center gap-3"> */}
                   <button
-                    onClick={() => setIsProfileOpen(!isProfileOpen)}
-                    className="flex items-center gap-3"
+                    onClick={() => setIsInfoModalOpen(true)}
+                    className="flex items-center gap-3 w-full"
                   >
                     {currentChat?.senderUserId?.profileImage ? (
                       <Image
@@ -589,6 +593,7 @@ const Messages = () => {
                       </span>
                     </div>
                   </button>
+                  {/* </div> */}
                 </div>
               </div>
 
@@ -757,6 +762,99 @@ const Messages = () => {
           acceptedService={currentChat?.service || "No service selected"}
         />
       )}
+
+      <div>
+        {/* Info Modal */}
+        {isInfoModalOpen && (
+          <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4">
+            <div className="bg-white w-full max-w-md rounded-2xl overflow-hidden">
+              <div className="p-4 border-b border-gray-100 flex justify-between items-center">
+                <h3 className="font-semibold">Profile Details</h3>
+                <button
+                  onClick={() => setIsInfoModalOpen(false)}
+                  className="p-2 hover:bg-gray-100 rounded-full"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="p-6">
+                <div className="bg-gray-50 p-6 rounded-xl text-center flex flex-col items-center gap-4">
+                  {/* Reuse your existing profile content */}
+                  <div className="w-20 h-20 rounded-full relative">
+                    {currentChat?.senderUserId?.profileImage ? (
+                      <Image
+                        src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.senderUserId?.profileImage}`}
+                        alt={currentChat?.senderUserId?.name
+                          ?.slice(0, 2)
+                          .toUpperCase()}
+                        fill
+                        className="rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full rounded-full bg-[#20b894] flex items-center justify-center">
+                        <span className="text-white text-2xl font-semibold">
+                          {currentChat?.email === currentUser.email
+                            ? currentChat?.reciverUserId?.first_name
+                                ?.slice(0, 2)
+                                .toUpperCase()
+                            : currentChat?.senderUserId?.first_name
+                                ?.slice(0, 2)
+                                .toUpperCase() || "UN"}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-1">
+                    <h3 className="font-semibold text-lg">
+                      {getOtherUserName(currentChat)}
+                    </h3>
+                    <p className="text-gray-500 text-sm">
+                      {getOtherUserEmail(currentChat)}
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col gap-3 w-full mt-4">
+                    <button
+                      className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                        currentChat?.senderUserAccepted &&
+                        currentChat?.reciverUserAccepted
+                          ? "bg-gray-200 text-gray-600"
+                          : "bg-[#20b894] text-white active:bg-[#1a9677]"
+                      }`}
+                      onClick={() => {
+                        modalHandler(currentChat);
+                        setIsInfoModalOpen(false);
+                      }}
+                      disabled={
+                        currentChat?.senderUserAccepted &&
+                        currentChat?.reciverUserAccepted
+                      }
+                    >
+                      {currentChat?.senderUserAccepted &&
+                      currentChat?.reciverUserAccepted
+                        ? "Exchange Confirmed"
+                        : "Confirm Exchange Service"}
+                    </button>
+
+                    <button
+                      className="px-4 py-2.5 rounded-xl text-sm font-medium border border-[#b19c87] text-[#b19c87] 
+                      hover:bg-[#b19c87] hover:text-white transition-colors"
+                      onClick={() => {
+                        handleReviewClick(currentChat);
+                        setIsInfoModalOpen(false);
+                      }}
+                    >
+                      Give Review
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
