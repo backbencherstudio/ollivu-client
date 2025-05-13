@@ -22,7 +22,6 @@ import { useGetAllExchangeQuery } from "@/src/redux/features/admin/exchangeApi";
 import { useGetAllExchangeDataQuery } from "@/src/redux/features/auth/authApi";
 import { differenceInDays } from "date-fns";
 import { useGetExchangeDashboardQuery } from "@/src/redux/features/shared/exchangeDashboardApi";
-import { Dialog } from "@/components/ui/dialog";
 
 export default function UserDashboardHome() {
   const [filter, setFilter] = useState("Month");
