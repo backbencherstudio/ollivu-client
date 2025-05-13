@@ -1,60 +1,91 @@
 import { Star } from 'lucide-react'
 import React from 'react'
+import { verifiedUser } from "@/src/utils/token-varify";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface RatingOverviewProps {
   formattedInstructor: {
     rating: number;
     totalReview: number;
   };
+  setIsReviewModalOpen: (isOpen: boolean) => void;
+  currentUserId?: string;
+  instructorId?: string;
+  reviews?: any[];
 }
 
-export default function RatingOverview({ formattedInstructor }: RatingOverviewProps) {
-  // console.log("formattedInstructor", formattedInstructor);
+export default function RatingOverview({ 
+  formattedInstructor, 
+  setIsReviewModalOpen,
+  currentUserId,
+  instructorId,
+  reviews 
+}: RatingOverviewProps) {
+  const router = useRouter();
+  const currentUser = verifiedUser();
+
+  const handleWriteReview = () => {
+    if (!currentUser) {
+      toast.error("Please login to write a review");
+      router.push("/auth/login");
+      return;
+    }
+
+    // Check if user has already reviewed
+    const hasReviewed = reviews?.some(
+      (review) => review.userId === currentUserId
+    );
+
+    if (hasReviewed) {
+      toast.error("You have already reviewed this instructor");
+      return;
+    }
+
+    // Check if reviewing self
+    if (currentUserId === instructorId) {
+      toast.error("You cannot review yourself");
+      return;
+    }
+
+    setIsReviewModalOpen(true);
+  };
+
   return (
     <div>
-      <div className="bg-[#F9F9F9] p-6 rounded-xl border mb-6">
-        <div className="flex items-start gap-8">
-          <div className="text-center">
-            <div className="text-4xl font-bold text-[#070707]">{formattedInstructor.rating}</div>
-            <div className="flex items-center gap-1 justify-center my-2">
+      <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm mb-6 hover:shadow-md transition-shadow duration-300">
+        <div className="flex items-center justify-between gap-8">
+          <div className="text-center bg-[#F9F9F9] px-8 py-6 rounded-xl">
+            <div className="text-5xl font-bold text-[#070707] mb-2">
+              {formattedInstructor.rating}
+            </div>
+            <div className="flex items-center gap-1.5 justify-center my-3">
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star
                   key={star}
-                  className={`w-4 h-4 ${
-                    star <= formattedInstructor.rating ? 'fill-amber-400 text-amber-400' : 'fill-gray-200 text-gray-200'
-                  }`}
+                  className={`w-5 h-5 ${
+                    star <= formattedInstructor.rating 
+                      ? 'fill-amber-400 text-amber-400' 
+                      : 'fill-gray-200 text-gray-200'
+                  } transition-colors duration-200`}
                 />
               ))}
             </div>
-            <p className="text-sm text-[#777980]">From {formattedInstructor.totalReview} reviews</p>
+            <p className="text-sm font-medium text-[#777980]">
+              Based on {formattedInstructor.totalReview} reviews
+            </p>
           </div>
 
-          {/* Rating Bars */}
-          <div className="flex-1">
-            {[
-              { stars: 5, count: 1, width: "w-[33%]" },
-              { stars: 4, count: 2, width: "w-[67%]" },
-              { stars: 3, count: 0, width: "w-[20%]" },
-              { stars: 2, count: 0, width: "w-[50%]" },
-              { stars: 1, count: 0, width: "w-[0%]" },
-            ].map((rating) => (
-              <div
-                key={rating.stars}
-                className="flex items-center gap-2 mb-2"
-              >
-                <span className="text-sm text-[#777980] w-6">
-                  {rating.stars}.0
-                </span>
-                <div className="flex-1 h-2 bg-gray-200 rounded-full">
-                  <div
-                    className={`h-full bg-[#20B894] rounded-full ${rating.width}`}
-                  />
-                </div>
-                <span className="text-sm text-[#777980] w-8">
-                  {rating.count}
-                </span>
-              </div>
-            ))}
+          <div className="flex-1 flex items-center justify-end">
+            <button
+              onClick={handleWriteReview}
+              className="px-8 py-4 bg-[#20B894] text-white rounded-xl text-sm font-medium 
+                hover:bg-[#1a9678] active:scale-[0.98] transition-all duration-200 
+                flex items-center gap-3 shadow-sm hover:shadow-md cursor-pointer"
+            >
+              <span>Write Review</span>
+              <Star className="w-4 h-4 stroke-[2.5]" />
+            </button>
           </div>
         </div>
       </div>

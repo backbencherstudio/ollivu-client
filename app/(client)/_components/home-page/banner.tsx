@@ -1,9 +1,11 @@
 "use client";
 
+import { verifiedUser } from "@/src/utils/token-varify";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function BannerSection() {
+  const currentUser = verifiedUser()
   return (
     <section className="bg-[#F1FCF9] py-20 px-6 md:px-16">
       <div className="max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center justify-between gap-10">
@@ -18,7 +20,7 @@ export default function BannerSection() {
             get what you need all without spending a dime!
           </p>
           <Link
-            href="/"
+            href={currentUser ? "/service-result" : "/auth/login"}
             className="inline-flex items-center gap-2 bg-[#20B894] text-white text-sm md:text-base font-medium px-6 py-3 rounded-full hover:opacity-90 transition"
           >
             Start Trading Skills Now! ↗

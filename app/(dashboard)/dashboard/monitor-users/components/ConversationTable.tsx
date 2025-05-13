@@ -214,7 +214,7 @@ export function ConversationTable({
 
       <ViewDetailsModal
         isOpen={viewDetailsModal.isOpen}
-        suspendData={suspendData}
+        suspendData={[viewDetailsModal?.conversation]} // Only pass the selected user's data
         setViewDetailsModal={setViewDetailsModal}
         onClose={() => setViewDetailsModal({ isOpen: false, conversation: null })}
         conversation={viewDetailsModal?.conversation}

@@ -439,7 +439,7 @@ const ServiceDetails = () => {
                   {singleUser?.my_service?.map((service, index) => (
                     <span
                       key={index}
-                      className="bg-[#F9F9F9] border border-[#777980] text-[#777980] px-4 py-2 rounded-full text-base"
+                      className="bg-[#F9F9F9] border border-[#777980] text-[#777980] px-4 py-2 rounded-full text-sm md:text-base"
                     >
                       {service}
                     </span>
@@ -486,27 +486,20 @@ const ServiceDetails = () => {
 
               {/* added review section */}
               <div className="mb-8">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mb-6 px-4 sm:px-0">
+                <div className="flex items-start mb-6 px-4 sm:px-0">
                   <h2 className="text-xl sm:text-2xl font-medium text-[#070707]">
                     Reviews
                   </h2>
-
-                  <button
-                    onClick={() => setIsReviewModalOpen(true)}
-                    className="flex items-center gap-2 text-sm sm:text-base text-emerald-500 hover:text-emerald-600 cursor-pointer"
-                  >
-                    Write Review
-                  </button>
-
-                  <ReviewModal
-                    isOpen={isReviewModalOpen}
-                    onClose={() => setIsReviewModalOpen(false)}
-                    onSubmit={handleReviewSubmit}
-                  />
                 </div>
 
                 {/* Rating Overview */}
-                <RatingOverview formattedInstructor={formattedInstructor} />
+                <RatingOverview
+                  formattedInstructor={formattedInstructor}
+                  setIsReviewModalOpen={setIsReviewModalOpen}
+                  currentUserId={currentUser?.userId}
+                  instructorId={singleUser?._id}
+                  reviews={reviews}
+                />
 
                 {/* Review Tabs */}
                 <div className="border-b mb-6">
@@ -630,7 +623,9 @@ const ServiceDetails = () => {
                           : "text-[#FE5050] border-[#FE5050] hover:bg-red-50 cursor-pointer"
                       }`}
                     >
-                      {isProfileReported() ? "Reported Profile" : "Report Profile"}
+                      {isProfileReported()
+                        ? "Reported Profile"
+                        : "Report Profile"}
                       <FlagIcon className="w-4 h-4 stroke-current" />
                     </button>
                   </>

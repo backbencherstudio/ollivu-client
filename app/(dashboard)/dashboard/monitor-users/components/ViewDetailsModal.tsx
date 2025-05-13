@@ -185,14 +185,14 @@ export function ViewDetailsModal({
                 </h3>
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-sm">Report by:</span>
+                    <span className="text-sm">Reported User:</span>
                     <span className="text-sm font-medium">
                       {suspend?.reporterId?.first_name}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm">Report reason:</span>
-                    <span className="text-sm font-medium">
+                    <span className="text-sm font-medium text-red-500">
                       {suspend?.reportType}
                     </span>
                   </div>

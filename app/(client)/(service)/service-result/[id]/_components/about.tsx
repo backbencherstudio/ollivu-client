@@ -17,7 +17,7 @@ export default function About({ instructor, isExpanded, setIsExpanded }) {
         </h2>
         <div className="relative">
           <p
-            className={`text-[#4A4C56] text-xl font-normal ${
+            className={`text-[#4A4C56] md:text-xl font-normal ${
               !isExpanded && showReadMore && "line-clamp-3"
             }`}
           >
