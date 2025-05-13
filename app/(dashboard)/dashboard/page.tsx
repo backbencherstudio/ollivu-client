@@ -26,18 +26,22 @@ import { useGetExchangeDashboardQuery } from "@/src/redux/features/shared/exchan
 export default function UserDashboardHome() {
   const [filter, setFilter] = useState("Month");
   const [timeFilter, setTimeFilter] = useState("7"); // Default 7 days
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const validUser = verifiedUser();
   const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
   const singleUserData = singleUser?.data;
-  console.log("singleUserData user", singleUserData);
-  const { data: getExchangeHistory } = useGetExchangeHistoryQuery(
-    validUser?.userId
-  );
+  // Update the API call with year parameter
+  const { data: getExchangeHistory } = useGetExchangeHistoryQuery({
+    userId: validUser?.userId,
+    year: selectedYear
+  });
   const getExchangeHistoryData = getExchangeHistory?.data;
+
   const { data: getAllOverviewDataByUser } = useGetAllOverviewDataByUserQuery(
     validUser?.userId
   );
   const getAllOverviewDataByUserData = getAllOverviewDataByUser?.data;
+  // console.log("getAllOverviewDataByUserData", getAllOverviewDataByUserData);
 
   const { data: allExchangeData } = useGetAllExchangeQuery({});
   const allExchangeDataData = allExchangeData?.data;
@@ -52,7 +56,6 @@ export default function UserDashboardHome() {
   const { data: exchangeDashboard } = useGetExchangeDashboardQuery(userId);
   const exchangeDashboardData = exchangeDashboard?.data;
   console.log("exchangeDashboardData", exchangeDashboardData);
-  // console.log("requestList", requestListData);
 
   // console.log("getExchangeHistoryData", allExchangeDataData);
 
@@ -136,6 +139,73 @@ export default function UserDashboardHome() {
         return true;
     }
   });
+
+  // / Add this function to get available years
+  const getAvailableYears = () => {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let year = currentYear; year >= currentYear - 4; year--) {
+      years.push(year);
+    }
+    return years;
+  };
+
+  // Filter exchange history data by year
+  const filteredExchangeHistory = getExchangeHistoryData?.filter((data) => {
+    return data.year === selectedYear;
+  });
+
+  // Chart section update
+  <ResponsiveContainer width="100%" height={300}>
+    <AreaChart
+      data={filteredExchangeHistory}
+      margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+    >
+      <defs>
+        <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="5%" stopColor="#20B894" stopOpacity={0.3} />
+          <stop offset="95%" stopColor="#20B894" stopOpacity={0} />
+        </linearGradient>
+      </defs>
+      <CartesianGrid
+        strokeDasharray="3 3"
+        vertical={false}
+        stroke="#F3F4F6"
+      />
+      <XAxis
+        dataKey="month"
+        stroke="#6B7280"
+        fontSize={12}
+        axisLine={false}
+        tickLine={false}
+      />
+      <YAxis
+        stroke="#6B7280"
+        fontSize={12}
+        axisLine={false}
+        tickLine={false}
+        domain={[0, 'auto']}  // Changed to auto for dynamic scaling
+      />
+      <Tooltip
+        contentStyle={{
+          backgroundColor: "#fff",
+          borderRadius: "10px",
+          borderColor: "#E5E7EB",
+        }}
+        labelStyle={{ color: "#20B894", fontWeight: "bold" }}
+        formatter={(value: number) => ["Exchange request", value]}
+      />
+      <Area
+        type="monotone"
+        dataKey="count"
+        stroke="#20B894"
+        fillOpacity={1}
+        fill="url(#colorCount)"
+        strokeWidth={2}
+        activeDot={{ r: 5 }}
+      />
+    </AreaChart>
+  </ResponsiveContainer>
 
   // Calculate counts from exchangeDashboardData
   const confirmedExchanges =
@@ -412,20 +482,23 @@ export default function UserDashboardHome() {
               Exchange Request History
             </h3>
             <select
-              className="text-sm border border-gray-300 rounded px-3 py-1 text-gray-600"
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-            >
-              <option>Month</option>
-              <option>Week</option>
-            </select>
-          </div>
+        className="text-sm border border-gray-300 rounded px-3 py-1 text-gray-600"
+        value={selectedYear}
+        onChange={(e) => setSelectedYear(Number(e.target.value))}
+      >
+        {getAvailableYears().map((year) => (
+          <option key={year} value={year}>
+            {year}
+          </option>
+        ))}
+      </select>
+    </div>
 
-          <ResponsiveContainer width="100%" height={300}>
-            <AreaChart
-              data={getExchangeHistoryData}
-              margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-            >
+    <ResponsiveContainer width="100%" height={300}>
+      <AreaChart
+        data={getExchangeHistoryData}
+        margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+      >
               <defs>
                 <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#20B894" stopOpacity={0.3} />
@@ -449,7 +522,7 @@ export default function UserDashboardHome() {
                 fontSize={12}
                 axisLine={false}
                 tickLine={false}
-                domain={[0, 30]}
+                domain={[0, 'auto']}  // Changed to auto for dynamic scaling
               />
               <Tooltip
                 contentStyle={{

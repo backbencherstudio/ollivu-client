@@ -138,8 +138,8 @@ export const usersApi = baseApi.injectEndpoints({
     }),
 
     getExchangeHistory: builder.query({
-      query: (userId) => ({
-        url: `/auth/exchangeHistorybyUser/${userId}`,
+      query: ({ userId, year }) => ({
+        url: `/auth/exchangeHistorybyUser/${userId}${year ? `?date=${year}` : ''}`,
         method: "GET",
       }),
       providesTags: ["User"],
