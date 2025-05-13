@@ -137,7 +137,10 @@ export default function ServiceResultContent() {
       startTransition();
     } else if (users?.data) {
       startTransition();
-      setFilteredUsers(users.data);
+      const usersWithServices = users.data.filter(
+        (user: any) => user.my_service && user.my_service.length > 0
+      );
+      setFilteredUsers(usersWithServices);
       endTransition();
     }
   }, [users, isLoading, isFetching, startTransition, endTransition]);
@@ -170,10 +173,14 @@ export default function ServiceResultContent() {
     [startTransition, endTransition]
   );
 
+  const validUsers = filteredUsers.filter(
+    (user: any) => user.my_service && user.my_service.length > 0
+  );
+
   // Calculate pagination values
-  const totalItems = filteredUsers.length;
+  const totalItems = validUsers.length;
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
-  const paginatedUsers = filteredUsers.slice(
+  const paginatedUsers = validUsers.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
@@ -298,11 +305,9 @@ export default function ServiceResultContent() {
           {/* Service Cards Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {paginatedUsers.length > 0 ? (
-              paginatedUsers
-                .filter(
-                  (user: any) => user.my_service && user.my_service.length > 0
-                )
-                .map((user: any) => <ServiceCard key={user._id} user={user} />)
+              paginatedUsers.map((user: any) => (
+                <ServiceCard key={user._id} user={user} />
+              ))
             ) : (
               <div className="col-span-3 text-center py-10">
                 <p className="text-gray-500">No services found</p>
