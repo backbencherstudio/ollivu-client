@@ -37,7 +37,7 @@ export default function Navbar() {
   const validUser = verifiedUser();
   const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
   const singleUserData = singleUser?.data;
-  console.log("singleUserData", singleUserData);
+  // console.log("singleUserData", singleUserData);
 
   // Update the authentication check
   useEffect(() => {

@@ -31,12 +31,15 @@ import {
 } from "@/src/redux/features/shared/reportApi";
 import MessageRequestModal from "./_components/message-request-modal";
 import { useCreateExchangeMutation } from "@/src/redux/features/admin/exchangeApi";
+import { differenceInDays } from "date-fns";
+import VerifiedIcons from "@/public/icons/verified-icons";
 
 const ServiceDetails = () => {
   const params = useParams();
   const router = useRouter();
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [isReviewModalOpen, setIsReviewModalOpen] =
+    useState(false);
   const [isReportProfileModalOpen, setIsReportProfileModalOpen] =
     useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -49,13 +52,16 @@ const ServiceDetails = () => {
   const { data: instructor, isLoading } = useGetSingleUserQuery(
     params.id as string
   );
+  const singleUserData = instructor?.data;
+  console.log("singleUserData", singleUserData);
+  
 
   const { data: currentUserData } = useGetCurrentUserQuery(currentUser?.userId);
   const currentUsreInfo = currentUserData?.data;
   // console.log("current user info", currentUsreInfo);
 
   const singleUser = instructor?.data;
-  // console.log("current user", currentUser?.userId);
+  // console.log("current user", singleUser);
 
   const { data: getSingleReview } = useGetSingleReviewQuery(singleUser?._id);
   const [createProfileReport] = useCreateProfileReportMutation();
@@ -67,7 +73,8 @@ const ServiceDetails = () => {
   const filteredProfileReport = allProfileReport?.data?.filter(
     (report) => report.reporterId._id === currentUser?.userId
   );
-  console.log("filteredProfileReport", filteredProfileReport);
+  
+  
 
   // Pagination logic
   const reviews = getSingleReview?.data || [];
@@ -193,6 +200,82 @@ const ServiceDetails = () => {
     );
   };
 
+  // Calculate years of experience
+  const daysSinceCreation = singleUserData?.createdAt
+      ? differenceInDays(new Date(), new Date(singleUserData.createdAt))
+      : 0;
+    
+    // Calculate years and remaining days
+    const yearsOfExperience = Math.floor(daysSinceCreation / 365);
+    const remainingDays = daysSinceCreation % 365;
+  
+    // Format the experience label
+    const getExperienceLabel = () => {
+      if (yearsOfExperience >= 1) {
+        return `${yearsOfExperience} Year${yearsOfExperience > 1 ? 's' : ''} Experience`;
+      }
+      return `${remainingDays} Day${remainingDays !== 1 ? 's' : ''} Experience`;
+    };
+
+    const averageRating = singleUserData?.rating || 0;
+  
+    const badges = [
+      {
+        label: getExperienceLabel(),
+        icon: "/badges/icon.png",
+        progress: Math.min(Math.round((daysSinceCreation / 365) * 100), 100),
+        show: true,
+      },
+    averageRating >= 4.5 && {
+      label: "Quality Service Ensured",
+      icon: "/badges/icon (2).png",
+      progress: 100,
+      show: true,
+    },
+    {
+      label: singleUserData?.cartificate ? "Verified Trainer" : "Not Verified",
+      icon: (
+        <VerifiedIcons
+          className={
+            singleUserData?.cartificate ? "text-[#20B894]" : "text-gray-400"
+          }
+        />
+      ),
+      progress: singleUserData?.cartificate ? 100 : 0,
+      show: singleUserData?.cartificate,
+    },
+  ].filter(Boolean);
+
+  // Remove the filteredBadges mapping since we're handling it directly in the badges array
+  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 my-10">
+    {badges
+      .filter(badge => badge.show)
+      .map((badge, i) => (
+        <div
+          key={i}
+          className="relative border rounded-xl px-3 py-4 flex flex-col items-center text-center shadow-sm bg-white"
+        >
+          <div className="relative w-20 h-20 mb-3">
+            <div className="absolute inset-0 flex items-center justify-center">
+              {typeof badge.icon === "string" ? (
+                <Image
+                  src={badge.icon}
+                  alt={badge.label}
+                  width={50}
+                  height={50}
+                  className="object-contain"
+                />
+              ) : (
+                badge.icon
+              )}
+            </div>
+          </div>
+
+          <p className="text-sm text-[#4A4C56] mb-2">{badge.label}</p>
+        </div>
+      ))}
+</div>
+
   return (
     <div className="container mx-auto md:px-2 py-8">
       <button
@@ -216,27 +299,34 @@ const ServiceDetails = () => {
               />
 
               {/* Stats Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 my-8">
+              {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-4 my-8">
                 {[
                   {
-                    label: "Years of expertise",
-                    value: "3 years",
-                    icon: <BagIcon />,
-                  },
-                  {
-                    label: "Customer Satisfaction",
-                    value: "100%",
-                    icon: <SuccessIcon />,
+                    label: "Years Expertise",
+                    status: hasCompletedOneYear ? "claim-green" : "claim",
+                    icon: "/badges/icon.png",
+                    progress: hasCompletedOneYear
+                      ? 100
+                      : Math.min(Math.round((daysSinceCreation / 365) * 100), 99),
                   },
                   {
                     label: "Quality Service Ensured",
-                    value: "Yes",
-                    icon: <EnsuredIcon />,
+                    status: hasQualityService ? "claim-green" : "claim",
+                    icon: "/badges/icon (2).png",
+                    progress: qualityServiceProgress(),
                   },
                   {
                     label: "Verified Trainer",
-                    value: "Verified",
-                    icon: <VerifiedIcon />,
+                    status: singleUser?.cartificate ? "claim-green" : "locked",
+                    icon: (
+                      <VerifiedIcons
+                        className={
+                          singleUser?.cartificate ? "text-[#20B894]" : "text-gray-400"
+                        }
+                      />
+                    ),
+                    progress: singleUser?.cartificate ? 100 : 0,
+                    verified: singleUser?.cartificate,
                   },
                 ].map((stat, index) => (
                   <div
@@ -246,15 +336,105 @@ const ServiceDetails = () => {
                     <div className="w-12 h-12 flex items-center justify-center">
                       {stat.icon}
                     </div>
-                    {/* <div className="text-[#4A4C56] font-medium text-lg">
-                    {stat.value}
-                  </div> */}
                     <div className="text-[#4A4C56] text-base font-normal">
                       {stat.label}
                     </div>
                   </div>
                 ))}
+              </div> */}
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 my-10">
+            {badges.map((badge, i) => (
+              <div
+                key={i}
+                className="relative border rounded-xl px-3 py-4 flex flex-col items-center text-center shadow-sm bg-white"
+              >
+                {/* <div className="absolute top-2 right-2 text-gray-400">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-4 h-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="16" x2="12" y2="12" />
+                    <line x1="12" y1="8" x2="12.01" y2="8" />
+                  </svg>
+                </div> */}
+
+                <div className="relative w-20 h-20 mb-3">
+                  {/* <svg
+                    className="w-20 h-20 transform -rotate-90"
+                    viewBox="0 0 36 36"
+                  >
+                    <path
+                      className="text-gray-200"
+                      strokeWidth="4"
+                      stroke="currentColor"
+                      fill="none"
+                      d="M18 2.0845
+                    a 15.9155 15.9155 0 0 1 0 31.831
+                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                    />
+                    <path
+                      className="text-[#FACC15]"
+                      strokeWidth="4"
+                      strokeDasharray={`${badge.progress}, 100`}
+                      strokeLinecap="round"
+                      stroke="currentColor"
+                      fill="none"
+                      d="M18 2.0845
+                    a 15.9155 15.9155 0 0 1 0 31.831
+                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                    />
+                  </svg> */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    {typeof badge.icon === "string" ? (
+                      <Image
+                        src={badge.icon}
+                        alt={badge.label}
+                        width={50}
+                        height={50}
+                        className="object-contain"
+                      />
+                    ) : (
+                      badge.icon
+                    )}
+                  </div>
+                </div>
+
+                <p className="text-sm text-[#4A4C56] mb-2">{badge.label}</p>
+
+                {/* {badge.status === "locked" ? (
+                  <button className="bg-gray-300 text-white text-sm px-4 py-2 rounded-full w-full">
+                    Locked
+                  </button>
+                ) : badge.status === "claim-green" ? (
+                  <button className="bg-[#20B894] text-white text-sm px-4 py-2 rounded-full w-full">
+                    Claim
+                  </button>
+                ) : (
+                  <button className="bg-[#C5C7CD] text-white text-sm px-4 py-2 rounded-full w-full">
+                    Claim
+                  </button>
+                )} */}
+
+                {/* {badge.verified && (
+                  <div className="absolute bottom-14 right-10 w-5 h-5 rounded-full bg-white shadow flex items-center justify-center">
+                    <Image
+                      src="/badges/check.png"
+                      alt="check"
+                      width={14}
+                      height={14}
+                    />
+                  </div>
+                )} */}
               </div>
+            ))}
+          </div>
 
               {/* Skills Section */}
               <div className="mb-8">
