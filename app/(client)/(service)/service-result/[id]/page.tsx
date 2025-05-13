@@ -271,7 +271,7 @@ const ServiceDetails = () => {
   </div>;
 
   return (
-    <div className="container mx-auto md:px-2 py-8">
+    <div className="container mx-auto md:px-2 py-8 overflow-hidden px-4">
       <button
         onClick={() => router.back()}
         className="mb-4 sm:mb-6 text-white bg-[#20B894] px-4 py-2 my-2 rounded-full hover:bg-[#62c5ac] cursor-pointer ease-in duration-200 font-semibold hover:text-gray-900 flex items-center gap-2 text-sm sm:text-base"
