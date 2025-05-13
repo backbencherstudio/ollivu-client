@@ -491,17 +491,33 @@ export default function Navbar() {
             </Link>
 
             {/* Mobile Menu Auth Section */}
-            <div className="flex items-center justify-center w-full gap-4 pt-4 pb-3 border-t border-gray-200">
+            <div className="flex flex-col items-center justify-center w-full gap-4 pt-4 pb-3 border-t border-gray-200">
               {isAuthenticated ? (
-                <button
-                  onClick={() => {
-                    handleLogout();
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="block px-8 py-2 rounded-full text-sm font-medium bg-red-500 text-white hover:bg-red-600"
-                >
-                  Logout
-                </button>
+                <>
+                  <Link
+                    href={user?.role === "admin" ? "/dashboard/user-management" : "/dashboard"}
+                    className="block w-full px-3 py-2 rounded-md text-base font-medium text-[#777980] hover:text-teal-600"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Dashboard
+                  </Link>
+                  <Link
+                    href={singleUserData?.role === "user" ? "/dashboard/user-profile" : "/dashboard/admin-profile"}
+                    className="block w-full px-3 py-2 rounded-md text-base font-medium text-[#777980] hover:text-teal-600"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Profile
+                  </Link>
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="block px-8 py-2 rounded-full text-sm font-medium bg-red-500 text-white hover:bg-red-600"
+                  >
+                    Logout
+                  </button>
+                </>
               ) : (
                 <>
                   <Link

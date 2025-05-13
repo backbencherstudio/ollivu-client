@@ -29,17 +29,17 @@ export default function Footer() {
             <div className="flex items-center space-x-2">
               <span className="text-[#1D1F2C]">•</span>
               <a
-                href="/privacy-policy"
+                href="/terms-and-conditions"
                 className="text-[#070707] text-sm md:text-base font-normal hover:underline"
               >
                 Privacy Policy
               </a>
               <span className="text-[#1D1F2C]">•</span>
               <a
-                href="/terms-of-service"
+                href="/terms-and-conditions"
                 className="text-[#070707] text-sm md:text-base font-normal hover:underline"
               >
-                Terms of Service
+                Terms and Policy
               </a>
             </div>
           </div>
@@ -61,12 +61,12 @@ export default function Footer() {
 
           {/* Links */}
           <div className="flex items-center justify-center space-x-4 text-sm sm:text-base font-normal text-[#070707]">
-            <a href="/privacy-policy" className="hover:underline">
+            <a href="/terms-and-conditions" className="hover:underline">
               Privacy Policy
             </a>
             <span className="text-[#1D1F2C]">•</span>
-            <a href="/terms-of-service" className="hover:underline">
-              Terms of Service
+            <a href="/terms-and-conditions" className="hover:underline">
+              Terms and Policy
             </a>
           </div>
 

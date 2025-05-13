@@ -152,6 +152,8 @@ export default function ServiceResultContent() {
       // When selecting a category, clear any selected item if category changes
       if (category !== selectedCategory) {
         setSelectedItem(null);
+        // Don't close sidebar when selecting main category
+        // This allows users to see subcategories on mobile
       }
     },
     [selectedCategory]
@@ -160,6 +162,8 @@ export default function ServiceResultContent() {
   // Handle item selection
   const handleItemSelect = useCallback((item: string | null) => {
     setSelectedItem(item);
+    // Close sidebar on mobile when subcategory is selected
+    setIsSidebarOpen(false);
   }, []);
 
   // Handle service filtering
