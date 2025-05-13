@@ -257,21 +257,21 @@ const ServiceDetails = () => {
               </div>
 
               {/* Skills Section */}
-              {/* <div className="mb-8">
-              <h2 className="text-2xl font-medium text-[#070707] mb-4">
-                Skills
-              </h2>
-              <div className="flex flex-wrap gap-2">
-                {formattedInstructor.skills.map((skill, index) => (
-                  <span
-                    key={index}
-                    className="bg-[#F9F9F9] border border-[#777980] text-[#777980] px-4 py-2 rounded-full text-base"
-                  >
-                    {skill}
-                  </span>
-                ))}
+              <div className="mb-8">
+                <h2 className="text-2xl font-medium text-[#070707] mb-4">
+                  Services
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                  {singleUser?.my_service?.map((service, index) => (
+                    <span
+                      key={index}
+                      className="bg-[#F9F9F9] border border-[#777980] text-[#777980] px-4 py-2 rounded-full text-base"
+                    >
+                      {service}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div> */}
 
               {/* Portfolio Section */}
               <div className="mb-8">
