@@ -24,11 +24,18 @@ export default function LoginPage() {
         email,
         password,
       }).unwrap();
-      // console.log("res", response);
 
       if (response.success) {
         toast.success(response.message || "Login successful!");
-        router.push("/");
+        
+        // Check for stored redirect ID
+        const redirectUserId = localStorage.getItem('redirectUserId');
+        if (redirectUserId) {
+          localStorage.removeItem('redirectUserId'); // Clean up
+          router.push(`/service-result/${redirectUserId}`);
+        } else {
+          router.push("/");
+        }
       } else {
         toast.error(response.message || "Login failed");
       }

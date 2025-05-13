@@ -88,13 +88,13 @@ const MessageRequestModal = ({
         <div className="flex gap-3">
           <button
             onClick={handleSubmit}
-            className="flex-1 bg-[#20B894] text-white py-2.5 rounded-lg hover:bg-emerald-700 transition-colors"
+            className="flex-1 bg-[#20B894] text-white py-2.5 rounded-lg hover:bg-emerald-700 transition-colors cursor-pointer"
           >
             Send Request
           </button>
           <button
             onClick={onClose}
-            className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-lg hover:bg-gray-50 transition-colors"
+            className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
           >
             Cancel
           </button>

@@ -12,10 +12,6 @@ import {
   useGetCurrentUserQuery,
   useGetSingleUserQuery,
 } from "@/src/redux/features/users/userApi";
-import BagIcon from "@/public/icons/bag-icon";
-import SuccessIcon from "@/public/icons/success-icon";
-import EnsuredIcon from "@/public/icons/ensured-icon";
-import VerifiedIcon from "@/public/icons/verified-icon";
 import { Pagination } from "@/components/reusable/pagination";
 import FlagIcon from "@/public/icons/flag-icon";
 import {
@@ -47,7 +43,7 @@ const ServiceDetails = () => {
 
   const currentUser = verifiedUser();
 
-  const itemsPerPage = 3;
+  const itemsPerPage = 10;
 
   const { data: instructor, isLoading } = useGetSingleUserQuery(
     params.id as string

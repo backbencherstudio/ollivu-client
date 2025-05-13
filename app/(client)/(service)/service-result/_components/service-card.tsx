@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Star } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { User } from "@/src/redux/types/authInterface";
+import { verifiedUser } from "@/src/utils/token-varify";
 
 interface ServiceCardProps {
   user: User;
@@ -15,6 +16,15 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ user }) => {
   const router = useRouter();
 
   const handleCardClick = () => {
+    const currentUser = verifiedUser();
+
+    if (!currentUser) {
+      // Store the target user ID before redirecting to login
+      localStorage.setItem('redirectUserId', user?._id || '');
+      router.push("/auth/login");
+      return;
+    }
+
     if (user?._id) {
       router.push(`/service-result/${user._id}`);
     }
@@ -88,7 +98,9 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ user }) => {
         <div className="bg-[#F9F9F9] p-4 rounded-xl mb-6">
           {/* Services List */}
           <div className="mb-4">
-            <h5 className="text-sm font-medium text-[#777980] mb-2">Services:</h5>
+            <h5 className="text-sm font-medium text-[#777980] mb-2">
+              Services:
+            </h5>
             <div className="flex flex-wrap gap-2">
               {user?.my_service?.slice(0, 3).map((service, index) => (
                 <span
@@ -112,14 +124,18 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ user }) => {
           {/* Stats */}
           <div className="flex items-center justify-between pt-4 border-t border-gray-200">
             <div className="text-center">
-              <span className="block text-[#777980] text-sm">Total Services</span>
+              <span className="block text-[#777980] text-sm">
+                Total Services
+              </span>
               <span className="font-semibold text-[#4A4C56]">
                 {user?.my_service?.length || 0}
               </span>
             </div>
             <div className="text-center">
               <span className="block text-[#777980] text-sm">Reviews</span>
-              <span className="font-semibold text-[#4A4C56]">{user?.review || 0}</span>
+              <span className="font-semibold text-[#4A4C56]">
+                {user?.review || 0}
+              </span>
             </div>
           </div>
         </div>

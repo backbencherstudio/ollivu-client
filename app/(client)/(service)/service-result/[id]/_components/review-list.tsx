@@ -302,7 +302,7 @@ const ReviewList = ({ review }: ReviewListProps) => {
           <button
             onClick={handleLike}
             disabled={isLiked || isDisliked}
-            className={`flex items-center gap-1 sm:gap-1.5 transition-colors ${
+            className={`flex items-center gap-1 sm:gap-1.5 transition-colors cursor-pointer ${
               isLiked
                 ? "text-[#20B894] cursor-not-allowed"
                 : isDisliked
@@ -335,7 +335,7 @@ const ReviewList = ({ review }: ReviewListProps) => {
           <button
             onClick={handleDislike}
             disabled={isLiked || isDisliked}
-            className={`flex items-center gap-1 sm:gap-1.5 transition-colors ${
+            className={`flex items-center gap-1 sm:gap-1.5 transition-colors cursor-pointer ${
               isDisliked
                 ? "text-red-500 cursor-not-allowed"
                 : isLiked
