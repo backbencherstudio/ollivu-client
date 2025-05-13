@@ -14,6 +14,7 @@ import UserList from "../_components/home-page/service-categories/UserList";
 import SkillExchange from "../_components/home-page/service-categories/SkillExchange";
 import SuccessMessage from "../_components/home-page/service-categories/SuccessMessage";
 import exchange from "@/public/service-list.png";
+import { useRouter } from "next/navigation";
 
 export default function ServiceList() {
   const { data: categories } = useGetAllCategoriesQuery({});
@@ -79,7 +80,25 @@ export default function ServiceList() {
   };
 
   // Handle send request
+  // Add useRouter at the top with other imports
+  const router = useRouter();
+  
+  // Modify handleSendRequest function
   const handleSendRequest = async () => {
+    if (!currentUser) {
+      // Store selected users and service info before redirecting
+      localStorage.setItem('selectedUsers', JSON.stringify(selectedUsers));
+      localStorage.setItem('selectedService', JSON.stringify({
+        skill: selectedService?.subCategory,
+        subCategory: selectedService?.subCategory,
+        serviceData: selectedService,
+        activeCategory: activeCategory // Store active category to restore tab state
+      }));
+      localStorage.setItem('redirectPath', '/service-list'); // Add this line
+      router.push('/auth/login');
+      return;
+    }
+
     try {
       const exchangeRequests = selectedUsers.map((userId) => ({
         senderUserId: currentUser?.userId,
@@ -90,13 +109,11 @@ export default function ServiceList() {
       }));
 
       const response = await createExchange(exchangeRequests).unwrap();
-      // console.log("response", response?.data);
 
       if (response?.success) {
         setModalStep("success");
         toast.success("Exchange request sent successfully");
 
-        // Reset after success
         setTimeout(() => {
           setModalStep("none");
           setSelectedUsers([]);
@@ -108,7 +125,29 @@ export default function ServiceList() {
       toast.error("Failed to send exchange request");
     }
   };
-
+  
+  // Add useEffect to restore state after login
+  useEffect(() => {
+    if (currentUser) {
+      const storedUsers = localStorage.getItem('selectedUsers');
+      const storedService = localStorage.getItem('selectedService');
+      
+      if (storedUsers && storedService) {
+        const parsedUsers = JSON.parse(storedUsers);
+        const parsedService = JSON.parse(storedService);
+        
+        // Restore all states
+        setSelectedUsers(parsedUsers);
+        setSelectedService(parsedService.serviceData);
+        setActiveCategory(parsedService.activeCategory || "All");
+        setModalStep("users");
+        
+        // Clean up storage
+        localStorage.removeItem('selectedUsers');
+        localStorage.removeItem('selectedService');
+      }
+    }
+  }, [currentUser]);
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Hero Section */}

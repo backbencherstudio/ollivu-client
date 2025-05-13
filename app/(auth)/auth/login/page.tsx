@@ -11,7 +11,6 @@ import Image from "next/image";
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
 
   const router = useRouter();
   const [loginUser, { isLoading }] = useLoginUserMutation();
@@ -28,10 +27,22 @@ export default function LoginPage() {
       if (response.success) {
         toast.success(response.message || "Login successful!");
         
-        // Check for stored redirect ID
+        // Check for stored selections
+        const storedUsers = localStorage.getItem('selectedUsers');
+        const storedService = localStorage.getItem('selectedService');
         const redirectUserId = localStorage.getItem('redirectUserId');
-        if (redirectUserId) {
-          localStorage.removeItem('redirectUserId'); // Clean up
+        const redirectPath = localStorage.getItem('redirectPath');
+        
+        if (storedUsers && storedService) {
+          // Check if redirect path exists (for service-list)
+          if (redirectPath) {
+            localStorage.removeItem('redirectPath');
+            router.push(redirectPath);
+          } else {
+            router.push('/#service-categories');
+          }
+        } else if (redirectUserId) {
+          localStorage.removeItem('redirectUserId');
           router.push(`/service-result/${redirectUserId}`);
         } else {
           router.push("/");
