@@ -56,7 +56,7 @@ const ReviewList = ({ review }: ReviewListProps) => {
   const currentUser = verifiedUser();
   const [createLike] = useCreateLikeMutation();
   const [createDislike] = useCreateDislikeMutation();
-  console.log("review", review);
+  // console.log("review", review);
   
 
   // Track if the current user has already liked or disliked this review

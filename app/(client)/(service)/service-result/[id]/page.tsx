@@ -34,8 +34,7 @@ const ServiceDetails = () => {
   const params = useParams();
   const router = useRouter();
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isReviewModalOpen, setIsReviewModalOpen] =
-    useState(false);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [isReportProfileModalOpen, setIsReportProfileModalOpen] =
     useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -49,8 +48,7 @@ const ServiceDetails = () => {
     params.id as string
   );
   const singleUserData = instructor?.data;
-  console.log("singleUserData", singleUserData);
-  
+  console.log("singleUserData", singleUserData?._id);
 
   const { data: currentUserData } = useGetCurrentUserQuery(currentUser?.userId);
   const currentUsreInfo = currentUserData?.data;
@@ -69,8 +67,6 @@ const ServiceDetails = () => {
   const filteredProfileReport = allProfileReport?.data?.filter(
     (report) => report.reporterId._id === currentUser?.userId
   );
-  
-  
 
   // Pagination logic
   const reviews = getSingleReview?.data || [];
@@ -198,30 +194,32 @@ const ServiceDetails = () => {
 
   // Calculate years of experience
   const daysSinceCreation = singleUserData?.createdAt
-      ? differenceInDays(new Date(), new Date(singleUserData.createdAt))
-      : 0;
-    
-    // Calculate years and remaining days
-    const yearsOfExperience = Math.floor(daysSinceCreation / 365);
-    const remainingDays = daysSinceCreation % 365;
-  
-    // Format the experience label
-    const getExperienceLabel = () => {
-      if (yearsOfExperience >= 1) {
-        return `${yearsOfExperience} Year${yearsOfExperience > 1 ? 's' : ''} Experience`;
-      }
-      return `${remainingDays} Day${remainingDays !== 1 ? 's' : ''} Experience`;
-    };
+    ? differenceInDays(new Date(), new Date(singleUserData.createdAt))
+    : 0;
 
-    const averageRating = singleUserData?.rating || 0;
-  
-    const badges = [
-      {
-        label: getExperienceLabel(),
-        icon: "/badges/icon.png",
-        progress: Math.min(Math.round((daysSinceCreation / 365) * 100), 100),
-        show: true,
-      },
+  // Calculate years and remaining days
+  const yearsOfExperience = Math.floor(daysSinceCreation / 365);
+  const remainingDays = daysSinceCreation % 365;
+
+  // Format the experience label
+  const getExperienceLabel = () => {
+    if (yearsOfExperience >= 1) {
+      return `${yearsOfExperience} Year${
+        yearsOfExperience > 1 ? "s" : ""
+      } Experience`;
+    }
+    return `${remainingDays} Day${remainingDays !== 1 ? "s" : ""} Experience`;
+  };
+
+  const averageRating = singleUserData?.rating || 0;
+
+  const badges = [
+    {
+      label: getExperienceLabel(),
+      icon: "/badges/icon.png",
+      progress: Math.min(Math.round((daysSinceCreation / 365) * 100), 100),
+      show: true,
+    },
     averageRating >= 4.5 && {
       label: "Quality Service Ensured",
       icon: "/badges/icon (2).png",
@@ -245,7 +243,7 @@ const ServiceDetails = () => {
   // Remove the filteredBadges mapping since we're handling it directly in the badges array
   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 my-10">
     {badges
-      .filter(badge => badge.show)
+      .filter((badge) => badge.show)
       .map((badge, i) => (
         <div
           key={i}
@@ -270,7 +268,7 @@ const ServiceDetails = () => {
           <p className="text-sm text-[#4A4C56] mb-2">{badge.label}</p>
         </div>
       ))}
-</div>
+  </div>;
 
   return (
     <div className="container mx-auto md:px-2 py-8">
@@ -339,12 +337,12 @@ const ServiceDetails = () => {
                 ))}
               </div> */}
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 my-10">
-            {badges.map((badge, i) => (
-              <div
-                key={i}
-                className="relative border rounded-xl px-3 py-4 flex flex-col items-center text-center shadow-sm bg-white"
-              >
-                {/* <div className="absolute top-2 right-2 text-gray-400">
+                {badges.map((badge, i) => (
+                  <div
+                    key={i}
+                    className="relative border rounded-xl px-3 py-4 flex flex-col items-center text-center shadow-sm bg-white"
+                  >
+                    {/* <div className="absolute top-2 right-2 text-gray-400">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="w-4 h-4"
@@ -361,8 +359,8 @@ const ServiceDetails = () => {
                   </svg>
                 </div> */}
 
-                <div className="relative w-20 h-20 mb-3">
-                  {/* <svg
+                    <div className="relative w-20 h-20 mb-3">
+                      {/* <svg
                     className="w-20 h-20 transform -rotate-90"
                     viewBox="0 0 36 36"
                   >
@@ -387,24 +385,24 @@ const ServiceDetails = () => {
                     a 15.9155 15.9155 0 0 1 0 -31.831"
                     />
                   </svg> */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    {typeof badge.icon === "string" ? (
-                      <Image
-                        src={badge.icon}
-                        alt={badge.label}
-                        width={50}
-                        height={50}
-                        className="object-contain"
-                      />
-                    ) : (
-                      badge.icon
-                    )}
-                  </div>
-                </div>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        {typeof badge.icon === "string" ? (
+                          <Image
+                            src={badge.icon}
+                            alt={badge.label}
+                            width={50}
+                            height={50}
+                            className="object-contain"
+                          />
+                        ) : (
+                          badge.icon
+                        )}
+                      </div>
+                    </div>
 
-                <p className="text-sm text-[#4A4C56] mb-2">{badge.label}</p>
+                    <p className="text-sm text-[#4A4C56] mb-2">{badge.label}</p>
 
-                {/* {badge.status === "locked" ? (
+                    {/* {badge.status === "locked" ? (
                   <button className="bg-gray-300 text-white text-sm px-4 py-2 rounded-full w-full">
                     Locked
                   </button>
@@ -418,7 +416,7 @@ const ServiceDetails = () => {
                   </button>
                 )} */}
 
-                {/* {badge.verified && (
+                    {/* {badge.verified && (
                   <div className="absolute bottom-14 right-10 w-5 h-5 rounded-full bg-white shadow flex items-center justify-center">
                     <Image
                       src="/badges/check.png"
@@ -428,9 +426,9 @@ const ServiceDetails = () => {
                     />
                   </div>
                 )} */}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
 
               {/* Skills Section */}
               <div className="mb-8">
@@ -606,59 +604,37 @@ const ServiceDetails = () => {
               </div>
 
               <div className="mt-6 space-y-3">
-                <button
-                  onClick={() => setIsMessageModalOpen(true)}
-                  className="w-full py-2.5 bg-[#20B894] text-white rounded-lg text-sm md:text-base font-medium hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  Send Message Request
-                  <svg
-                    className="w-4 h-4"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path d="M5 12h14m-7-7l7 7-7 7" />
-                  </svg>
-                </button>
-                {/* <button
-                onClick={() => setIsReportProfileModalOpen(true)}
-                disabled={filteredProfileReport?.some(
-                  (report) =>
-                    report.reporterId._id === currentUser?.userId &&
-                    report.reportedId._id === params?.id
+                {singleUserData?._id !== currentUser?.userId && (
+                  <>
+                    <button
+                      onClick={() => setIsMessageModalOpen(true)}
+                      className="w-full py-2.5 bg-[#20B894] text-white rounded-lg text-sm md:text-base font-medium hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      Send Message Request
+                      <svg
+                        className="w-4 h-4"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <path d="M5 12h14m-7-7l7 7-7 7" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => setIsReportProfileModalOpen(true)}
+                      disabled={isProfileReported()}
+                      className={`w-full py-2.5 border rounded-lg text-sm md:text-base font-medium transition-colors flex items-center justify-center gap-2 ${
+                        isProfileReported()
+                          ? "text-gray-400 border-gray-300 cursor-not-allowed bg-gray-50"
+                          : "text-[#FE5050] border-[#FE5050] hover:bg-red-50 cursor-pointer"
+                      }`}
+                    >
+                      {isProfileReported() ? "Reported Profile" : "Report Profile"}
+                      <FlagIcon className="w-4 h-4 stroke-current" />
+                    </button>
+                  </>
                 )}
-                className={`w-full py-2.5 border rounded-lg text-base font-medium transition-colors flex items-center justify-center gap-2 ${
-                  filteredProfileReport?.some(
-                    (report) =>
-                      report.reporterId._id === currentUser?.userId &&
-                      report.reportedId._id === params?.id
-                  )
-                    ? "text-gray-400 border-gray-300 cursor-not-allowed bg-gray-50"
-                    : "text-[#FE5050] border-[#FE5050] hover:bg-red-50 cursor-pointer"
-                }`}
-              >
-                {filteredProfileReport?.some(
-                  (report) =>
-                    report.reporterId._id === currentUser?.userId &&
-                    report.reportedId._id === params?.id
-                )
-                  ? "Reported Profile"
-                  : "Report Profile"}
-                <FlagIcon className="w-4 h-4 stroke-current" />
-              </button> */}
-                <button
-                  onClick={() => setIsReportProfileModalOpen(true)}
-                  disabled={isProfileReported()}
-                  className={`w-full py-2.5 border rounded-lg text-sm md:text-base font-medium transition-colors flex items-center justify-center gap-2 ${
-                    isProfileReported()
-                      ? "text-gray-400 border-gray-300 cursor-not-allowed bg-gray-50"
-                      : "text-[#FE5050] border-[#FE5050] hover:bg-red-50 cursor-pointer"
-                  }`}
-                >
-                  {isProfileReported() ? "Reported Profile" : "Report Profile"}
-                  <FlagIcon className="w-4 h-4 stroke-current" />
-                </button>
 
                 {/* Add the modal component */}
                 <ReportProfileModal
