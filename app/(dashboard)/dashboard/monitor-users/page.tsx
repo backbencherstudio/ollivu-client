@@ -84,7 +84,7 @@ export default function MonitorMessaging() {
       senderDetails: exchange.senderUserId || {},
       receiverDetails: exchange.reciverUserId || {},
     })) || [];
-  console.log("transformedConversations", transformedConversations);
+  // console.log("transformedConversations", transformedConversations);
 
   const reportedProfile =
     getProfileReport?.data?.map((report) => ({
@@ -125,7 +125,7 @@ export default function MonitorMessaging() {
     }
     return conv.status === "Pending";
   });
-  console.log("filteredConversations", filteredConversations);
+  // console.log("filteredConversations", filteredConversations);
 
   // Update STAT_CARDS with suspended profiles count
   const updatedStatCards = [
