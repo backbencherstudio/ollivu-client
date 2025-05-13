@@ -96,6 +96,23 @@ export default function Navbar() {
   const user = verifiedUser();
   // console.log("user", user);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      // Check if click is outside the mobile menu and services dropdown
+      if (
+        !target.closest(".mobile-menu-container") &&
+        !target.closest(".mobile-menu-button")
+      ) {
+        setIsMobileMenuOpen(false);
+        setIsServicesOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
     <nav
       className={`secondary_color shadow-sm sticky top-0 z-50 transition-transform duration-300 ${
@@ -364,7 +381,7 @@ export default function Navbar() {
           <div className="md:hidden flex items-center">
             <button
               onClick={toggleMobileMenu}
-              className="text-gray-600 hover:text-teal-600"
+              className="text-gray-600 hover:text-teal-600 mobile-menu-button"
             >
               {isMobileMenuOpen ? (
                 <X className="h-6 w-6" />
@@ -378,13 +395,14 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden absolute top-16 left-0 right-0 bg-white shadow-lg z-50">
+        <div className="md:hidden absolute top-16 left-0 right-0 bg-white shadow-lg z-50 mobile-menu-container">
           <div className="px-4 pt-2 pb-3 space-y-1">
             <Link
               href="/"
               className={`block px-3 py-2 rounded-md text-base font-medium ${
                 pathname === "/" ? "text-[#070707]" : "text-[#777980]"
               } hover:text-teal-600`}
+              onClick={() => setIsMobileMenuOpen(false)}
             >
               Home
             </Link>
@@ -463,10 +481,11 @@ export default function Navbar() {
             </Link>
 
             <Link
-              href="/terms"
+              href="/terms-and-conditions"
               className={`block px-3 py-2 rounded-md text-base font-medium ${
                 pathname === "/terms" ? "text-[#070707]" : "text-[#777980]"
               } hover:text-teal-600`}
+              onClick={() => setIsMobileMenuOpen(false)}
             >
               Terms & Policy
             </Link>
@@ -475,8 +494,11 @@ export default function Navbar() {
             <div className="flex items-center justify-center w-full gap-4 pt-4 pb-3 border-t border-gray-200">
               {isAuthenticated ? (
                 <button
-                  onClick={handleLogout}
-                  className="block px-12 py-3 rounded-full text-base font-medium bg-red-500 text-white hover:bg-red-600"
+                  onClick={() => {
+                    handleLogout();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="block px-8 py-2 rounded-full text-sm font-medium bg-red-500 text-white hover:bg-red-600"
                 >
                   Logout
                 </button>
@@ -484,13 +506,15 @@ export default function Navbar() {
                 <>
                   <Link
                     href="/auth/login"
-                    className="block px-12 py-3 rounded-full text-base font-medium hover:text-teal-600 border border-[#D2B9A1] text-[#D2B9A1]"
+                    className="block px-8 py-2 rounded-full text-sm font-medium hover:text-teal-600 border border-[#D2B9A1] text-[#D2B9A1]"
+                    onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Login
                   </Link>
                   <Link
                     href="/auth/signup"
-                    className="block px-12 py-3 rounded-full text-base font-medium bg-teal-500 text-white hover:bg-teal-600"
+                    className="block px-8 py-2 rounded-full text-sm font-medium bg-teal-500 text-white hover:bg-teal-600"
+                    onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Sign Up
                   </Link>
