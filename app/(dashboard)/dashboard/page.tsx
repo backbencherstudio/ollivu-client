@@ -22,18 +22,22 @@ import { useGetAllExchangeQuery } from "@/src/redux/features/admin/exchangeApi";
 import { useGetAllExchangeDataQuery } from "@/src/redux/features/auth/authApi";
 import { differenceInDays } from "date-fns";
 import { useGetExchangeDashboardQuery } from "@/src/redux/features/shared/exchangeDashboardApi";
+import { Pagination } from "@/components/reusable/pagination";
 
 export default function UserDashboardHome() {
   const [filter, setFilter] = useState("Month");
   const [timeFilter, setTimeFilter] = useState("7"); // Default 7 days
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedDate, setSelectedDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
   const validUser = verifiedUser();
   const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
   const singleUserData = singleUser?.data;
   // Update the API call with year parameter
   const { data: getExchangeHistory } = useGetExchangeHistoryQuery({
     userId: validUser?.userId,
-    year: selectedYear
+    year: selectedYear,
   });
   const getExchangeHistoryData = getExchangeHistory?.data;
 
@@ -41,7 +45,6 @@ export default function UserDashboardHome() {
     validUser?.userId
   );
   const getAllOverviewDataByUserData = getAllOverviewDataByUser?.data;
-  // console.log("getAllOverviewDataByUserData", getAllOverviewDataByUserData);
 
   const { data: allExchangeData } = useGetAllExchangeQuery({});
   const allExchangeDataData = allExchangeData?.data;
@@ -55,7 +58,6 @@ export default function UserDashboardHome() {
 
   const { data: exchangeDashboard } = useGetExchangeDashboardQuery(userId);
   const exchangeDashboardData = exchangeDashboard?.data;
-  console.log("exchangeDashboardData", exchangeDashboardData);
 
   // console.log("getExchangeHistoryData", allExchangeDataData);
 
@@ -121,24 +123,50 @@ export default function UserDashboardHome() {
 
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  console.log("selectedRequest", selectedRequest);
 
   // Filter data based on selected time period
-  const filteredExchangeDashboardData = exchangeDashboardData?.filter((req) => {
-    const requestDate = new Date(req.createdAt);
-    const today = new Date();
-    const daysDifference = differenceInDays(today, requestDate);
+  // const filteredExchangeDashboardData = exchangeDashboardData?.filter((req) => {
+  //   const requestDate = new Date(req.createdAt);
+  //   const today = new Date();
+  //   const daysDifference = differenceInDays(today, requestDate);
 
-    switch (timeFilter) {
-      case "7":
-        return daysDifference <= 7;
-      case "15":
-        return daysDifference <= 15;
-      case "30":
-        return daysDifference <= 30;
-      default:
-        return true;
-    }
+  //   switch (timeFilter) {
+  //     case "7":
+  //       return daysDifference <= 7;
+  //     case "15":
+  //       return daysDifference <= 15;
+  //     case "30":
+  //       return daysDifference <= 30;
+  //     default:
+  //       return true;
+  //   }
+  // });
+
+  // pagination section update
+  const filteredExchangeDashboardData = exchangeDashboardData?.filter((req) => {
+    const requestDate = new Date(req.createdAt).toISOString().split("T")[0];
+    return requestDate === selectedDate;
   });
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  // Update the filtered data with pagination
+  const paginatedData = filteredExchangeDashboardData?.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Calculate total pages
+  const totalPages = Math.ceil(
+    (filteredExchangeDashboardData?.length || 0) / itemsPerPage
+  );
+
+  // Handle page change
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   // / Add this function to get available years
   const getAvailableYears = () => {
@@ -167,11 +195,7 @@ export default function UserDashboardHome() {
           <stop offset="95%" stopColor="#20B894" stopOpacity={0} />
         </linearGradient>
       </defs>
-      <CartesianGrid
-        strokeDasharray="3 3"
-        vertical={false}
-        stroke="#F3F4F6"
-      />
+      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F3F4F6" />
       <XAxis
         dataKey="month"
         stroke="#6B7280"
@@ -184,7 +208,7 @@ export default function UserDashboardHome() {
         fontSize={12}
         axisLine={false}
         tickLine={false}
-        domain={[0, 'auto']}  // Changed to auto for dynamic scaling
+        domain={[0, "auto"]} // Changed to auto for dynamic scaling
       />
       <Tooltip
         contentStyle={{
@@ -205,7 +229,7 @@ export default function UserDashboardHome() {
         activeDot={{ r: 5 }}
       />
     </AreaChart>
-  </ResponsiveContainer>
+  </ResponsiveContainer>;
 
   // Calculate counts from exchangeDashboardData
   const confirmedExchanges =
@@ -276,7 +300,7 @@ export default function UserDashboardHome() {
                 </tr>
               </thead>
               <tbody>
-                {filteredExchangeDashboardData?.map((req, i) => (
+                {paginatedData?.map((req, i) => (
                   <tr key={i} className="border-b hover:bg-gray-50">
                     <td className="p-3 whitespace-nowrap">
                       {req?.senderUserId?.first_name}
@@ -312,67 +336,15 @@ export default function UserDashboardHome() {
                 ))}
               </tbody>
             </table>
+            {filteredExchangeDashboardData?.length > 10 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+            )}
           </div>
         </div>
-
-        {/* Active Chats */}
-        {/* <div className="border rounded-xl bg-white shadow-sm p-4">
-          <h3 className="font-semibold mb-4">Active Chats</h3>
-          <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-[#D0A07A]">
-            {[
-              {
-                name: 'Corina McCoy',
-                message:
-                  'Hey! 👋 I saw your post about Marketing & Social Media...',
-                time: '8:24 PM',
-                avatar: '/badges/Ellipse 6451.png'
-              },
-              {
-                name: 'Patricia Sanders',
-                message:
-                  'Hello! The experience looks amazing. May I know what is the...',
-                time: '8:24 PM',
-                avatar: '/badges/Ellipse 6452.png',
-              },
-              {
-                name: 'Lorri Warf',
-                message:
-                  'May I know what is the process of your service exchanging? Is it d...',
-                time: '8:24 PM',
-                avatar: '/badges/Ellipse 6452 (1).png',
-              },
-            ].map((chat, idx) => (
-              <div
-                key={idx}
-                className="flex justify-between items-center p-4 bg-[#F9FAFB] rounded-lg"
-              >
-                <div className="flex items-start gap-3">
-                  <Image
-                    src={chat.avatar}
-                    alt={chat.name}
-                    width={40}
-                    height={40}
-                    className="rounded-full object-cover"
-                  />
-                  <div>
-                    <p className="font-semibold text-sm text-[#1D1F2C]">
-                      {chat.name}
-                    </p>
-                    <p className="text-xs text-[#6B7280] truncate w-[180px]">
-                      {chat.message}
-                    </p>
-                    <span className="text-[10px] text-gray-400">
-                      {chat.time}
-                    </span>
-                  </div>
-                </div>
-                <button className="text-[#20B894] border border-[#20B894] px-4 py-1 text-xs rounded-full font-medium hover:bg-[#20B894]/10">
-                  Open Chat
-                </button>
-              </div>
-            ))}
-          </div>
-        </div> */}
       </div>
 
       {/* Badges & Graph */}
@@ -482,23 +454,23 @@ export default function UserDashboardHome() {
               Exchange Request History
             </h3>
             <select
-        className="text-sm border border-gray-300 rounded px-3 py-1 text-gray-600"
-        value={selectedYear}
-        onChange={(e) => setSelectedYear(Number(e.target.value))}
-      >
-        {getAvailableYears().map((year) => (
-          <option key={year} value={year}>
-            {year}
-          </option>
-        ))}
-      </select>
-    </div>
+              className="text-sm border border-gray-300 rounded px-3 py-1 text-gray-600"
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(Number(e.target.value))}
+            >
+              {getAvailableYears().map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+          </div>
 
-    <ResponsiveContainer width="100%" height={300}>
-      <AreaChart
-        data={getExchangeHistoryData}
-        margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-      >
+          <ResponsiveContainer width="100%" height={300}>
+            <AreaChart
+              data={getExchangeHistoryData}
+              margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+            >
               <defs>
                 <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#20B894" stopOpacity={0.3} />
@@ -522,7 +494,7 @@ export default function UserDashboardHome() {
                 fontSize={12}
                 axisLine={false}
                 tickLine={false}
-                domain={[0, 'auto']}  // Changed to auto for dynamic scaling
+                domain={[0, "auto"]} // Changed to auto for dynamic scaling
               />
               <Tooltip
                 contentStyle={{
@@ -611,18 +583,50 @@ export default function UserDashboardHome() {
                   </div>
                 </div>
 
+                {/* Receiver Info */}
+                <div className="space-y-2">
+                  <h4 className="font-medium text-gray-700">
+                    Receiver Information
+                  </h4>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-100">
+                      {selectedRequest?.reciverUserId?.profileImage ? (
+                        <Image
+                          src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${selectedRequest?.reciverUserId?.profileImage}`}
+                          alt={selectedRequest?.reciverUserId?.first_name}
+                          width={40}
+                          height={40}
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-600">
+                          {selectedRequest?.reciverUserId?.first_name[0]}
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <p className="font-medium">
+                        {selectedRequest?.reciverUserId?.first_name}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        {selectedRequest?.reciverUserId?.email}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Service Details */}
                 <div className="space-y-2">
                   <h4 className="font-medium text-gray-700">Service Details</h4>
-                  <div className="bg-gray-50 p-3 rounded">
+                  <div className="bg-gray-50 p-3 rounded space-y-2">
                     <p className="text-sm">
                       <span className="font-medium">Sender Service:</span>{" "}
                       {selectedRequest?.senderService}
                     </p>
-                    {/* <p className="text-sm">
+                    <p className="text-sm">
                       <span className="font-medium">Receiver Service:</span>{" "}
-                      {selectedRequest.receiverService}
-                    </p> */}
+                      {selectedRequest?.reciverService}
+                    </p>
                   </div>
                 </div>
 
@@ -666,3 +670,4 @@ export default function UserDashboardHome() {
     </div>
     // </ProtectedRoute>
   );
+}
