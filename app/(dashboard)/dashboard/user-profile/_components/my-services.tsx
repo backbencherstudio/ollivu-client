@@ -175,13 +175,13 @@ export default function MyService({ singleUser }: MyServiceProps) {
   // Update the services display section
   return (
     <>
-      <Card className="p-6">
+      <Card className="p-2 md:p-6">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-medium">My Services</h2>
+          <h2 className="text-base lg:text-lg font-medium">My Services</h2>
           {services.length > 0 && (
             <button
               onClick={() => setShowBulkDeleteAlert(true)}
-              className="px-3 py-1.5 text-sm text-red-500 border border-red-500 rounded-md hover:bg-red-50"
+              className="px-3 py-1.5 text-xs md:text-sm text-red-500 border border-red-500 rounded-md hover:bg-red-50"
             >
               Remove All Services
             </button>
@@ -193,7 +193,7 @@ export default function MyService({ singleUser }: MyServiceProps) {
           {services.map((service, index) => (
             <div
               key={index}
-              className="px-3 py-1.5 bg-[#F5F5F5] rounded-full border border-gray-200"
+              className="px-3 py-1.5 text-sm md:text-base bg-[#F5F5F5] rounded-full border border-gray-200"
             >
               <span>{service}</span>
             </div>
