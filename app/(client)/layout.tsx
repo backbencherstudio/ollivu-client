@@ -4,11 +4,9 @@ import Footer from "./_components/footer";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div>
+    <div className="overflow-hidden">
       <Navbar />
-      <div className="">       
-      {children}
-      </div>
+      <div className="">{children}</div>
       <Footer />
     </div>
   );

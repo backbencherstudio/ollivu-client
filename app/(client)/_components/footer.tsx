@@ -5,9 +5,9 @@ import logo from "@/public/logo/logo.png";
 export default function Footer() {
   return (
     <>
-      <footer className="bg-[#F9FAFB] md:block hidden py-6">
+      <footer className="bg-[#F9FAFB] md:block hidden py-6 ">
         <div className="w-full bg-white py-6 px-4">
-          <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
+          <div className="mx-auto flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
             {/* Left Text */}
             <p className="text-[#070707] text-sm md:text-base font-normal">
               ©2025 Ollivu. All rights reserved.

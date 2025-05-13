@@ -28,8 +28,64 @@ export default function SignupPage() {
     }));
   };
 
+  // Add error state
+  const [errors, setErrors] = useState({
+    firstName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  // Update handleSubmit function
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    // Reset errors
+    setErrors({
+      firstName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    });
+
+    // Validate fields
+    let hasError = false;
+    const newErrors = {
+      firstName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    };
+
+    if (!form.firstName.trim()) {
+      newErrors.firstName = "First name is required";
+      hasError = true;
+    }
+
+    if (!form.email.trim()) {
+      newErrors.email = "Email is required";
+      hasError = true;
+    }
+
+    if (!form.password) {
+      newErrors.password = "Password is required";
+      hasError = true;
+    }
+
+    if (!form.confirmPassword) {
+      newErrors.confirmPassword = "Confirm password is required";
+      hasError = true;
+    }
+
+    if (form.password !== form.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+      hasError = true;
+    }
+
+    if (hasError) {
+      setErrors(newErrors);
+      return;
+    }
 
     if (!form.agreeTerms) {
       toast.error("Please accept the Terms and Conditions");
@@ -95,10 +151,15 @@ export default function SignupPage() {
                 type="text"
                 name="firstName"
                 placeholder="Input your first name"
-                className="w-full px-4 py-2 rounded-[8px] border border-[#20B894] bg-transparent text-black focus:outline-none"
+                className={`w-full px-4 py-2 rounded-[8px] border ${
+                  errors.firstName ? "border-red-500" : "border-[#20B894]"
+                } bg-transparent text-black focus:outline-none`}
                 value={form.firstName}
                 onChange={handleChange}
               />
+              {errors.firstName && (
+                <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>
+              )}
             </div>
 
             {/* Email Field */}
@@ -110,15 +171,20 @@ export default function SignupPage() {
                 type="email"
                 name="email"
                 placeholder="Input your email"
-                className="w-full px-4 py-2 rounded-[8px] border border-[#20B894] bg-transparent text-black focus:outline-none"
+                className={`w-full px-4 py-2 rounded-[8px] border ${
+                  errors.email ? "border-red-500" : "border-[#20B894]"
+                } bg-transparent text-black focus:outline-none`}
                 value={form.email}
                 onChange={handleChange}
               />
+              {errors.email && (
+                <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+              )}
             </div>
 
             {/* Password Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="">
+              <div>
                 <label className="text-sm text-black block mb-2">
                   Password<span className="text-red-500">*</span>
                 </label>
@@ -126,23 +192,33 @@ export default function SignupPage() {
                   type="password"
                   name="password"
                   placeholder="Input your password"
-                  className="w-full px-4 py-2 rounded-[8px] border border-[#20B894] bg-transparent text-black focus:outline-none"
+                  className={`w-full px-4 py-2 rounded-[8px] border ${
+                    errors.password ? "border-red-500" : "border-[#20B894]"
+                  } bg-transparent text-black focus:outline-none`}
                   value={form.password}
                   onChange={handleChange}
                 />
+                {errors.password && (
+                  <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+                )}
               </div>
-              <div className="">
+              <div>
                 <label className="text-sm text-black block mb-2">
                   Confirm Password<span className="text-red-500">*</span>
                 </label>
                 <input
                   type="password"
-                  placeholder="Input your confirm password"
                   name="confirmPassword"
-                  className="w-full px-4 py-2 rounded-[8px] border border-[#20B894] bg-transparent text-black focus:outline-none"
+                  placeholder="Input your confirm password"
+                  className={`w-full px-4 py-2 rounded-[8px] border ${
+                    errors.confirmPassword ? "border-red-500" : "border-[#20B894]"
+                  } bg-transparent text-black focus:outline-none`}
                   value={form.confirmPassword}
                   onChange={handleChange}
                 />
+                {errors.confirmPassword && (
+                  <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>
+                )}
               </div>
             </div>
 

@@ -17,31 +17,31 @@ export default function HowWorks() {
         id: 1,
         title: "Sign Up & Create a Profile",
         description:
-          "Join the platform, set up your profile, and list the services you can offer along with the ones you're looking for.",
+          "Create your professional profile by highlighting your skills, expertise, and services you can offer. Specify the services you're seeking, ensuring a perfect match for skill exchange.",
       },
       {
         id: 2,
         title: "Browse & Find Matches",
         description:
-          "Join the platform, set up your profile, and list the services you can offer along with the ones you're looking for.",
+          "Explore our diverse community of skilled professionals. Use our advanced matching system to find members whose skills you need and who might benefit from your expertise. Filter by category, location, and expertise level.",
       },
       {
         id: 3,
         title: "Connect & Arrange",
         description:
-          "Join the platform, set up your profile, and list the services you can offer along with the ones you're looking for.",
+          "Initiate conversations with potential exchange partners through our secure messaging system. Discuss the scope of services, timeline, and establish clear expectations for the skill exchange.",
       },
       {
         id: 4,
         title: "Exchange Services",
         description:
-          "Join the platform, set up your profile, and list the services you can offer along with the ones you're looking for.",
+          "Execute the service exchange professionally and efficiently. Follow our platform's guidelines to ensure a smooth transaction. Document the exchange process and maintain clear communication throughout.",
       },
       {
         id: 5,
         title: "Rate Your Service",
         description:
-          "Join the platform, set up your profile, and list the services you can offer along with the ones you're looking for.",
+          "Complete the exchange by providing detailed feedback and ratings. Share your experience to help build trust in our community. Your reviews contribute to maintaining high-quality service standards across the platform.",
       },
     ],
     []

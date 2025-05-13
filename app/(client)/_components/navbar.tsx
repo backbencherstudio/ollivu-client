@@ -37,7 +37,7 @@ export default function Navbar() {
   const validUser = verifiedUser();
   const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
   const singleUserData = singleUser?.data;
-  console.log("singleUserData", singleUserData);
+  // console.log("singleUserData", singleUserData);
 
   // Update the authentication check
   useEffect(() => {
@@ -311,8 +311,7 @@ export default function Navbar() {
                         Profile
                       </DropdownMenuItem>
                     </Link>
-                  ):
-                  (
+                  ) : (
                     <Link href="/dashboard/admin-profile">
                       <DropdownMenuItem className="cursor-pointer">
                         <User className="mr-2 h-4 w-4" />
@@ -320,7 +319,7 @@ export default function Navbar() {
                       </DropdownMenuItem>
                     </Link>
                   )}
-                  
+
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     className="cursor-pointer text-red-600 focus:text-red-600"

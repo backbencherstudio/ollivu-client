@@ -35,7 +35,7 @@ const MessageRequestModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-10 md:px-0">
       <div className="bg-white rounded-xl p-6 w-[480px] relative">
         <button
           onClick={onClose}
@@ -88,13 +88,13 @@ const MessageRequestModal = ({
         <div className="flex gap-3">
           <button
             onClick={handleSubmit}
-            className="flex-1 bg-[#20B894] text-white py-2.5 rounded-lg hover:bg-emerald-700 transition-colors"
+            className="flex-1 bg-[#20B894] text-white py-2.5 rounded-lg hover:bg-emerald-700 transition-colors cursor-pointer"
           >
             Send Request
           </button>
           <button
             onClick={onClose}
-            className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-lg hover:bg-gray-50 transition-colors"
+            className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
           >
             Cancel
           </button>
