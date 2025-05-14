@@ -4,7 +4,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Toaster } from "sonner";
 import { ReduxProvider } from "@/src/redux/provider";
-
+ 
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
@@ -15,6 +15,10 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: AppConfig().app.name,
   description: AppConfig().app.slogan,
+  icons: {
+    icon: '/favicon.png',
+    apple: '/favicon.png',
+  },
 };
 
 export default function RootLayout({
