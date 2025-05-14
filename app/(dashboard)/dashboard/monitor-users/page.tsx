@@ -44,6 +44,7 @@ interface Exchange {
   reciverUserId: ExchangeUser;
   email: string;
   senderService: string;
+  reciverService: string;
   isAccepted: string;
   reciverUserAccepted: boolean;
   senderUserAccepted: boolean;
@@ -58,6 +59,8 @@ export default function MonitorMessaging() {
   const [open, setOpen] = useState<{ [key: string]: boolean }>({});
 
   const { data: getAllExchange } = useGetAllExchangeQuery({});
+  console.log("getAllExchange", getAllExchange);
+
   const { data: getProfileReport } = useGetProfileReportQuery({});
   // Add suspended profiles data fetch if available
   // const { data: getSuspendedProfiles } = useGetSuspendedProfilesQuery({});
@@ -78,13 +81,13 @@ export default function MonitorMessaging() {
           ? "Completed"
           : "Pending",
       senderService: exchange.senderService || "No service",
-      receiverServices: exchange.my_service || [],
+      receiverServices: exchange.reciverService || [],
       senderEmail: exchange.senderUserId?.email || "",
       receiverEmail: exchange.reciverUserId?.email || "",
       senderDetails: exchange.senderUserId || {},
       receiverDetails: exchange.reciverUserId || {},
     })) || [];
-  // console.log("transformedConversations", transformedConversations);
+  console.log("transformedConversations", transformedConversations);
 
   const reportedProfile =
     getProfileReport?.data?.map((report) => ({

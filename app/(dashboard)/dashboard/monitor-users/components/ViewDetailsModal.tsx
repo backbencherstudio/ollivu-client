@@ -46,7 +46,7 @@ export function ViewDetailsModal({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold">Review Report</h2>
+          <h2 className="text-xl font-semibold">Details View</h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 cursor-pointer"
@@ -56,6 +56,7 @@ export function ViewDetailsModal({
         </div>
 
         {isReportedView ? (
+          <div className="h-[calc(100vh-200px)] overflow-y-auto pr-4 custom-scrollbar">
           <div className="space-y-6">
             <div className="bg-gray-50 p-4 rounded-lg space-y-4">
               <h3 className="font-medium">Report Information</h3>
@@ -176,6 +177,7 @@ export function ViewDetailsModal({
               </div>
             </div>
           </div>
+          </div>
         ) : isSuspendedView ? (
           <div className="space-y-6">
             {suspendData.map((suspend) => (
@@ -292,6 +294,9 @@ export function ViewDetailsModal({
                     <div className="text-right">
                       <p className="text-sm font-medium">
                         {conversation.user2}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {conversation?.receiverServices}
                       </p>
                     </div>
                   </div>

@@ -31,9 +31,10 @@ export default function ServiceExchangeFlow() {
     categoryImage: "",
     _id: "",
     my_service: [],
+    email: "",
   });
-  // console.log("selectedService", selectedService);
-  const router = useRouter()
+  console.log("selectedService", selectedService);
+  const router = useRouter();
 
   const { data: getAllCategory } = useGetAllCategoryQuery([]);
   const allCategories = getAllCategory?.data || [];
@@ -56,10 +57,12 @@ export default function ServiceExchangeFlow() {
   const currentUser = verifiedUser();
   const { data: currentUserData } = useGetCurrentUserQuery(currentUser?.userId);
   const currentUserInfo = currentUserData?.data;
-  // console.log("currentUserInfo", currentUserInfo);
+  console.log("currentUserInfo", currentUserInfo);
 
   // Update the handleExchangeClick function
   const handleExchangeClick = (service: any) => {
+    console.log("service", service);
+
     setSelectedService(service);
     setModalStep("users");
     setSelectedUsers([]);
@@ -79,27 +82,35 @@ export default function ServiceExchangeFlow() {
 
   const handleSendRequest = async () => {
     if (!currentUser) {
-      // Store selected users and service info before redirecting
-      localStorage.setItem('selectedUsers', JSON.stringify(selectedUsers));
-      localStorage.setItem('selectedService', JSON.stringify({
-        skill: selectedSkill,
-        subCategory: selectedService.subCategory,
-        serviceData: selectedService // Store the complete service data
-      }));
-      router.push('/auth/login');
+      localStorage.setItem("selectedUsers", JSON.stringify(selectedUsers));
+      localStorage.setItem(
+        "selectedService",
+        JSON.stringify({
+          skill: selectedSkill,
+          subCategory: selectedService.subCategory,
+          serviceData: selectedService,
+        })
+      );
+      router.push("/auth/login");
       return;
     }
 
     try {
+      // Find the selected user from allUsers array
+      const selectedUserDetails = allUsers.find(
+        (user) => user._id === selectedUsers[0]
+      );
+
       const exchangeRequests = selectedUsers.map((userId) => ({
-        senderUserId: currentUser?.userId,
-        reciverUserId: userId,
-        email: currentUser?.email,
+        senderUserId: currentUserInfo?._id,
+        reciverUserId: selectedService?._id,
+        email: selectedUserDetails?.email || "",
         senderService: selectedSkill,
         my_service: currentUserInfo?.my_service,
       }));
 
       const response = await createExchange(exchangeRequests).unwrap();
+      console.log("response", response);
 
       if (response?.success) {
         setModalStep("success");
@@ -114,22 +125,22 @@ export default function ServiceExchangeFlow() {
   // Update useEffect to properly restore the state
   useEffect(() => {
     if (currentUser) {
-      const storedUsers = localStorage.getItem('selectedUsers');
-      const storedService = localStorage.getItem('selectedService');
-      
+      const storedUsers = localStorage.getItem("selectedUsers");
+      const storedService = localStorage.getItem("selectedService");
+
       if (storedUsers && storedService) {
         const parsedUsers = JSON.parse(storedUsers);
         const parsedService = JSON.parse(storedService);
-        
+
         // Restore all necessary states
         setSelectedUsers(parsedUsers);
         setSelectedSkill(parsedService.skill);
         setSelectedService(parsedService.serviceData);
         setModalStep("users");
-        
+
         // Clean up storage
-        localStorage.removeItem('selectedUsers');
-        localStorage.removeItem('selectedService');
+        localStorage.removeItem("selectedUsers");
+        localStorage.removeItem("selectedService");
       }
     }
   }, [currentUser]);
