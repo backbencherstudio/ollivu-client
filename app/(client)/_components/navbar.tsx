@@ -20,6 +20,7 @@ import { useRouter } from "next/navigation";
 import { verifiedUser } from "@/src/utils/token-varify";
 import { useGetAllCategoriesQuery } from "@/src/redux/features/categories/categoriesApi";
 import { useGetSingleUserQuery } from "@/src/redux/features/users/userApi";
+import NotificationBadge from "./NotificationBadge/NotificationBadge";
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -37,6 +38,8 @@ export default function Navbar() {
   const validUser = verifiedUser();
   const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
   const singleUserData = singleUser?.data;
+
+  
   // console.log("singleUserData", singleUserData);
 
   // Update the authentication check
@@ -267,8 +270,9 @@ export default function Navbar() {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            
-            <p>notification</p>
+
+            <NotificationBadge currentUser={validUser?.email} />
+
 
             {isAuthenticated ? (
               <DropdownMenu>
