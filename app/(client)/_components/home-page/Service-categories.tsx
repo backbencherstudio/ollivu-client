@@ -33,7 +33,7 @@ export default function ServiceExchangeFlow() {
     my_service: [],
     email: "",
   });
-  console.log("selectedService", selectedService);
+  // console.log("selectedService", selectedService);
   const router = useRouter();
 
   const { data: getAllCategory } = useGetAllCategoryQuery([]);
@@ -42,7 +42,7 @@ export default function ServiceExchangeFlow() {
 
   const { data: categories } = useGetAllCategoriesQuery({});
   const categoriesData = categories?.data;
-  console.log("categoriesData", categoriesData);
+  // console.log("categoriesData", categoriesData);
 
   const { data: getAllUserBaseOnSubCategory, isLoading: isLoadingUsers } =
     useGetAllUserBaseOnSubCategoryQuery(selectedService.subCategory, {
@@ -57,11 +57,11 @@ export default function ServiceExchangeFlow() {
   const currentUser = verifiedUser();
   const { data: currentUserData } = useGetCurrentUserQuery(currentUser?.userId);
   const currentUserInfo = currentUserData?.data;
-  console.log("currentUserInfo", currentUserInfo);
+  // console.log("currentUserInfo", currentUserInfo);
 
   // Update the handleExchangeClick function
   const handleExchangeClick = (service: any) => {
-    console.log("service", service);
+    // console.log("service", service);
 
     setSelectedService(service);
     setModalStep("users");
@@ -96,21 +96,29 @@ export default function ServiceExchangeFlow() {
     }
 
     try {
-      // Find the selected user from allUsers array
+      // Get the selected user's details - fixing the comparison
       const selectedUserDetails = allUsers.find(
         (user) => user._id === selectedUsers[0]
       );
-
-      const exchangeRequests = selectedUsers.map((userId) => ({
-        senderUserId: currentUserInfo?._id,
-        reciverUserId: selectedService?._id,
-        email: selectedUserDetails?.email || "",
-        senderService: selectedSkill,
-        my_service: currentUserInfo?.my_service,
-      }));
+      
+      const exchangeRequests = selectedUsers.map((userId) => {
+        // Find user details for each selected user
+        const userDetails = allUsers.find((user) => user._id === userId);
+        console.log("userDetails", userDetails);
+        
+        
+        return {
+          senderUserId: currentUserInfo?._id,
+          reciverUserId: userId, // Use the actual selected user ID
+          email: userDetails?.email, // Use the found user's email
+          senderService: selectedSkill,
+          my_service: currentUserInfo?.my_service,
+        };
+      });
 
       const response = await createExchange(exchangeRequests).unwrap();
       console.log("response", response);
+      
 
       if (response?.success) {
         setModalStep("success");
