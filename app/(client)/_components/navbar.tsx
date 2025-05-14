@@ -267,6 +267,9 @@ export default function Navbar() {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
+            
+            <p>notification</p>
+
             {isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger className="focus:outline-none cursor-pointer">
