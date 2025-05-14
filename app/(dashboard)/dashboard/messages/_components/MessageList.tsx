@@ -112,7 +112,7 @@ export const MessageList = ({
               <button
                 key={user._id}
                 onClick={() => onChatSelect(user)}
-                className={`w-full text-left hover:bg-gray-50 p-3 sm:p-4 border-b border-gray-100 ${
+                className={`w-full text-left hover:bg-gray-50 p-3 sm:p-4 border-b border-red-500 ${
                   user.hasUnread ? "bg-blue-50" : ""
                 }`}
               >
