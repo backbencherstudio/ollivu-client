@@ -116,9 +116,9 @@ export default function ServiceExchangeFlow() {
         senderUserId: currentUser?.userId,
         reciverUserId: userId,
         email: currentUser?.email,
+        selectedEmail: userDetails?.email,
         senderService: selectedSkill,
         my_service: currentUserInfo?.my_service
-
         };
       });
 
