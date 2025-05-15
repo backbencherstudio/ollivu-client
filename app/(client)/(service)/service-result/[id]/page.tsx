@@ -48,7 +48,7 @@ const ServiceDetails = () => {
     params.id as string
   );
   const singleUserData = instructor?.data;
-  console.log("singleUserData", singleUserData?._id);
+  // console.log("singleUserData", singleUserData?._id);
 
   const { data: currentUserData } = useGetCurrentUserQuery(currentUser?.userId);
   const currentUsreInfo = currentUserData?.data;
@@ -58,6 +58,10 @@ const ServiceDetails = () => {
   // console.log("current user", singleUser);
 
   const { data: getSingleReview } = useGetSingleReviewQuery(singleUser?._id);
+  const singleReview = getSingleReview?.data;
+  
+  console.log("get single review", getSingleReview?.data);
+  
   const [createProfileReport] = useCreateProfileReportMutation();
 
   const [createReview] = useCreateReviewMutation();
@@ -95,9 +99,10 @@ const ServiceDetails = () => {
     return <div>User not found</div>;
   }
 
+  // Modify the location formatting in formattedInstructor
   const formattedInstructor = {
     id: singleUser._id,
-    name: singleUser?.personalInfo?.display_name,
+    name: singleUser?.first_name,
     first_name: singleUser.personalInfo?.first_name,
     last_name: singleUser.personalInfo?.last_name,
     email: singleUser?.email,
@@ -110,7 +115,9 @@ const ServiceDetails = () => {
     isVerified: true,
     portfolioImage: singleUser?.portfolio || "/default-portfolio.jpg",
     about: singleUser?.about_me,
-    location: `${singleUser?.addressInfo?.city}, ${singleUser?.addressInfo?.country}`,
+    location: singleUser?.addressInfo?.city && singleUser?.addressInfo?.country
+      ? `${singleUser.addressInfo.city}, ${singleUser.addressInfo.country}`
+      : "",
     // languages: ["English", "Bengali"], // Add default languages
   };
 
@@ -213,14 +220,21 @@ const ServiceDetails = () => {
 
   const averageRating = singleUserData?.rating || 0;
 
+  // Calculate quality service badge eligibility
+  const hasQualityService = () => {
+    if (!singleReview || singleReview.length < 10) return false;
+    const highRatingReviews = singleReview.filter(review => review.rating >= 4.5);
+    return highRatingReviews.length >= 10;
+  };
+
   const badges = [
-    {
+    yearsOfExperience >= 1 && {
       label: getExperienceLabel(),
       icon: "/badges/icon.png",
       progress: Math.min(Math.round((daysSinceCreation / 365) * 100), 100),
       show: true,
     },
-    averageRating >= 4.5 && {
+    hasQualityService() && {
       label: "Quality Service Ensured",
       icon: "/badges/icon (2).png",
       progress: 100,
@@ -292,50 +306,7 @@ const ServiceDetails = () => {
                 setIsExpanded={setIsExpanded}
               />
 
-              {/* Stats Grid */}
-              {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-4 my-8">
-                {[
-                  {
-                    label: "Years Expertise",
-                    status: hasCompletedOneYear ? "claim-green" : "claim",
-                    icon: "/badges/icon.png",
-                    progress: hasCompletedOneYear
-                      ? 100
-                      : Math.min(Math.round((daysSinceCreation / 365) * 100), 99),
-                  },
-                  {
-                    label: "Quality Service Ensured",
-                    status: hasQualityService ? "claim-green" : "claim",
-                    icon: "/badges/icon (2).png",
-                    progress: qualityServiceProgress(),
-                  },
-                  {
-                    label: "Verified Trainer",
-                    status: singleUser?.cartificate ? "claim-green" : "locked",
-                    icon: (
-                      <VerifiedIcons
-                        className={
-                          singleUser?.cartificate ? "text-[#20B894]" : "text-gray-400"
-                        }
-                      />
-                    ),
-                    progress: singleUser?.cartificate ? 100 : 0,
-                    verified: singleUser?.cartificate,
-                  },
-                ].map((stat, index) => (
-                  <div
-                    key={index}
-                    className="bg-white p-6 rounded-xl border flex flex-col items-center text-center gap-2"
-                  >
-                    <div className="w-12 h-12 flex items-center justify-center">
-                      {stat.icon}
-                    </div>
-                    <div className="text-[#4A4C56] text-base font-normal">
-                      {stat.label}
-                    </div>
-                  </div>
-                ))}
-              </div> */}
+              {/* Rating Overview Section */}
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 my-10">
                 {badges.map((badge, i) => (
                   <div

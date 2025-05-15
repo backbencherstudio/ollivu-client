@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { Star } from "lucide-react";
-import profileImg from "@/public/avatars/john.png";
 
 interface ProfileHeaderProps {
   formattedInstructor: {
@@ -48,7 +47,7 @@ export default function ProfileHeader({
           <div className="flex flex-col gap-1 sm:gap-2">
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-medium text-[#070707]">
-                {formattedInstructor.first_name}
+                {formattedInstructor?.name}
               </h1>
               {formattedInstructor.isVerified && (
                 <span className="bg-emerald-50 text-[#20B894] text-xs sm:text-sm font-medium px-2 py-0.5 rounded-full flex items-center gap-1 whitespace-nowrap">
@@ -71,30 +70,32 @@ export default function ProfileHeader({
             </p>
 
             <div className="flex items-center gap-2 sm:gap-4 text-sm text-gray-600">
-              <div className="flex items-center gap-1">
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                </svg>
-                <p className="font-normal text-sm sm:text-base lg:text-lg text-[#4A4C56]">
-                  {formattedInstructor?.location}
-                </p>
-              </div>
+              {formattedInstructor?.location && (
+                <div className="flex items-center gap-1">
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                  <p className="font-normal text-sm sm:text-base lg:text-lg text-[#4A4C56]">
+                    {formattedInstructor.location}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
