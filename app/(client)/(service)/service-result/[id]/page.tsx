@@ -240,17 +240,11 @@ const ServiceDetails = () => {
       progress: 100,
       show: true,
     },
-    {
-      label: singleUserData?.cartificate ? "Verified Trainer" : "Not Verified",
-      icon: (
-        <VerifiedIcons
-          className={
-            singleUserData?.cartificate ? "text-[#20B894]" : "text-gray-400"
-          }
-        />
-      ),
-      progress: singleUserData?.cartificate ? 100 : 0,
-      show: singleUserData?.cartificate,
+    singleUserData?.cartificate && {
+      label: "Verified Trainer",
+      icon: <VerifiedIcons className="text-[#20B894]" />,
+      progress: 100,
+      show: true,
     },
   ].filter(Boolean);
 
