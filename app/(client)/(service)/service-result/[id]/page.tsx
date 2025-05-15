@@ -545,7 +545,7 @@ const ServiceDetails = () => {
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
                       <span className="text-2xl font-medium text-gray-400">
-                        {formattedInstructor?.first_name
+                        {formattedInstructor?.name
                           ?.charAt(0)
                           ?.toUpperCase() || "U"}
                       </span>
@@ -553,7 +553,7 @@ const ServiceDetails = () => {
                   )}
                 </div>
                 <h3 className="font-medium text-[#070707]">
-                  {formattedInstructor.first_name}
+                  {formattedInstructor.name}
                 </h3>
                 <p className="text-gray-500 text-sm">Online</p>
                 {/* <p className="text-xs text-gray-500 mt-1">
