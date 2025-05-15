@@ -271,7 +271,7 @@ export default function Navbar() {
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
 
-            <NotificationBadge currentUser={validUser?.email} />
+            {/* <NotificationBadge currentUser={validUser?.email} /> */}
 
 
             {isAuthenticated ? (
