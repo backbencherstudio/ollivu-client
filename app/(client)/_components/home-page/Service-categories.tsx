@@ -80,6 +80,10 @@ export default function ServiceExchangeFlow() {
     ? allCategories
     : allCategories.slice(0, 8);
 
+  // Add this state near your other state declarations
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Modify the handleSendRequest function
   const handleSendRequest = async () => {
     if (!currentUser) {
       localStorage.setItem("selectedUsers", JSON.stringify(selectedUsers));
@@ -95,30 +99,35 @@ export default function ServiceExchangeFlow() {
       return;
     }
 
+    setIsLoading(true);
     try {
       // Get the selected user's details - fixing the comparison
       const selectedUserDetails = allUsers.find(
         (user) => user._id === selectedUsers[0]
       );
-      
+
       const exchangeRequests = selectedUsers.map((userId) => {
         // Find user details for each selected user
         const userDetails = allUsers.find((user) => user._id === userId);
         console.log("userDetails", userDetails);
-        
-        
+
+
         return {
-          senderUserId: currentUserInfo?._id,
-          reciverUserId: userId, // Use the actual selected user ID
-          email: userDetails?.email, // Use the found user's email
+          // senderUserId: currentUserInfo?._id,
+          // reciverUserId: userId, // Use the actual selected user ID
+          // email: userDetails?.email, // Use the found user's email
+          // senderService: selectedSkill,
+          // my_service: currentUserInfo?.my_service,
+          senderUserId: currentUser?.userId,
+          reciverUserId: userId,
+          email: currentUser?.email,
+          selectedEmail: userDetails?.email,
           senderService: selectedSkill,
-          my_service: currentUserInfo?.my_service,
+          my_service: currentUserInfo?.my_service
         };
       });
 
       const response = await createExchange(exchangeRequests).unwrap();
-      console.log("response", response);
-      
 
       if (response?.success) {
         setModalStep("success");
@@ -127,6 +136,8 @@ export default function ServiceExchangeFlow() {
     } catch (error) {
       console.error("Error sending exchange request:", error);
       toast.error("Failed to send exchange request");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -197,16 +208,16 @@ export default function ServiceExchangeFlow() {
                     isLoading={isLoadingUsers}
                   />
                   <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-4 mt-4">
+
                     <button
                       onClick={handleSendRequest}
-                      disabled={selectedUsers.length === 0}
-                      className={`text-sm sm:text-base bg-[#20B894] text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-full cursor-pointer order-2 sm:order-1 ${
-                        selectedUsers.length === 0
-                          ? "opacity-50 cursor-not-allowed"
-                          : "hover:bg-[#1a9677] ease-in-out duration-300"
-                      }`}
+                      disabled={selectedUsers.length === 0 || isLoading}
+                      className={`text-sm sm:text-base bg-[#20B894] text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-full cursor-pointer order-2 sm:order-1 ${selectedUsers.length === 0 || isLoading
+                        ? "opacity-50 cursor-not-allowed"
+                        : "hover:bg-[#1a9677] ease-in-out duration-300"
+                        }`}
                     >
-                      Send Request
+                      {isLoading ? "Sending..." : "Send Request"}
                     </button>
                     <button
                       onClick={() => setModalStep("none")}
