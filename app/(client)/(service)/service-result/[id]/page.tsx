@@ -59,9 +59,9 @@ const ServiceDetails = () => {
 
   const { data: getSingleReview } = useGetSingleReviewQuery(singleUser?._id);
   const singleReview = getSingleReview?.data;
-  
+
   console.log("get single review", getSingleReview?.data);
-  
+
   const [createProfileReport] = useCreateProfileReportMutation();
 
   const [createReview] = useCreateReviewMutation();
@@ -211,9 +211,8 @@ const ServiceDetails = () => {
   // Format the experience label
   const getExperienceLabel = () => {
     if (yearsOfExperience >= 1) {
-      return `${yearsOfExperience} Year${
-        yearsOfExperience > 1 ? "s" : ""
-      } Experience`;
+      return `${yearsOfExperience} Year${yearsOfExperience > 1 ? "s" : ""
+        } Experience`;
     }
     return `${remainingDays} Day${remainingDays !== 1 ? "s" : ""} Experience`;
   };
@@ -419,7 +418,7 @@ const ServiceDetails = () => {
                 </h2>
                 <div className="relative h-[200px] md:h-[410px] rounded-xl overflow-hidden bg-gray-100">
                   {formattedInstructor?.portfolioImage &&
-                  formattedInstructor.portfolioImage !==
+                    formattedInstructor.portfolioImage !==
                     "/default-portfolio.jpg" ? (
                     <Image
                       src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${formattedInstructor.portfolioImage}`}
@@ -519,7 +518,7 @@ const ServiceDetails = () => {
               <div className="flex flex-col items-center text-center">
                 <div className="w-20 h-20 rounded-full relative overflow-hidden mb-3 bg-gray-100">
                   {formattedInstructor?.profileImage &&
-                  formattedInstructor.profileImage !== "/default-avatar.jpg" ? (
+                    formattedInstructor.profileImage !== "/default-avatar.jpg" ? (
                     <Image
                       src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${formattedInstructor.profileImage}`}
                       alt={formattedInstructor.first_name || "User"}
@@ -531,11 +530,10 @@ const ServiceDetails = () => {
                           parent.innerHTML = `
                           <div class="w-full h-full flex items-center justify-center">
                             <span class="text-2xl font-medium text-gray-400">
-                              ${
-                                formattedInstructor?.first_name
-                                  ?.charAt(0)
-                                  ?.toUpperCase() || "U"
-                              }
+                              ${formattedInstructor?.first_name
+                              ?.charAt(0)
+                              ?.toUpperCase() || "U"
+                            }
                             </span>
                           </div>
                         `;
@@ -582,11 +580,10 @@ const ServiceDetails = () => {
                     <button
                       onClick={() => setIsReportProfileModalOpen(true)}
                       disabled={isProfileReported()}
-                      className={`w-full py-2.5 border rounded-lg text-sm md:text-base font-medium transition-colors flex items-center justify-center gap-2 ${
-                        isProfileReported()
-                          ? "text-gray-400 border-gray-300 cursor-not-allowed bg-gray-50"
-                          : "text-[#FE5050] border-[#FE5050] hover:bg-red-50 cursor-pointer"
-                      }`}
+                      className={`w-full py-2.5 border rounded-lg text-sm md:text-base font-medium transition-colors flex items-center justify-center gap-2 ${isProfileReported()
+                        ? "text-gray-400 border-gray-300 cursor-not-allowed bg-gray-50"
+                        : "text-[#FE5050] border-[#FE5050] hover:bg-red-50 cursor-pointer"
+                        }`}
                     >
                       {isProfileReported()
                         ? "Reported Profile"
