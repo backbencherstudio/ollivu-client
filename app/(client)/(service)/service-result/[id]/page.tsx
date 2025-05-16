@@ -172,6 +172,7 @@ const ServiceDetails = () => {
           senderUserId: currentUser?.userId,
           reciverUserId: singleUser?._id,
           email: currentUser?.email,
+          selectedEmail: singleUser?.email,
           senderService: selectedService,
           my_service: currentUsreInfo?.my_service,
         },

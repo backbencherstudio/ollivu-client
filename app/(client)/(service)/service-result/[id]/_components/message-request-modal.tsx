@@ -28,6 +28,8 @@ const MessageRequestModal = ({
       return;
     }
     onSubmit(selectedService);
+    console.log("selectedService", selectedService);
+    
     setSelectedService("");
     setError("");
   };
