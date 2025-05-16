@@ -19,20 +19,36 @@ const MessageRequestModal = ({
 }: MessageRequestModalProps) => {
   const [selectedService, setSelectedService] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const skilles = singleUser?.my_service || [];
-
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!selectedService) {
       setError("Please select a service to continue");
       return;
     }
-    onSubmit(selectedService);
-    console.log("selectedService", selectedService);
-    
-    setSelectedService("");
-    setError("");
+    setIsLoading(true);
+    try {
+      await onSubmit(selectedService);
+      setSelectedService("");
+      setError("");
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  const skilles = singleUser?.my_service || [];
+
+  // const handleSubmit = () => {
+  //   if (!selectedService) {
+  //     setError("Please select a service to continue");
+  //     return;
+  //   }
+  //   onSubmit(selectedService);
+  //   console.log("selectedService", selectedService);
+    
+  //   setSelectedService("");
+  //   setError("");
+  // };
 
   if (!isOpen) return null;
 
@@ -90,9 +106,12 @@ const MessageRequestModal = ({
         <div className="flex gap-3">
           <button
             onClick={handleSubmit}
-            className="flex-1 bg-[#20B894] text-white py-2.5 rounded-lg hover:bg-emerald-700 transition-colors cursor-pointer"
+            disabled={isLoading}
+            className={`flex-1 bg-[#20B894] text-white py-2.5 rounded-lg ${
+              !isLoading && "hover:bg-emerald-700"
+            } transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed`}
           >
-            Send Request
+            {isLoading ? "Sending..." : "Send Request"}
           </button>
           <button
             onClick={onClose}
