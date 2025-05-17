@@ -29,10 +29,10 @@ export const MessageList = ({
     userId: userId,
     isAccepted: false,
   });
-  // console.log("requestList", requestList);
+  console.log("requestList", requestList);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  // console.log("userData", userData);
+  console.log("userData", userData);
   const filteredUsers = userData
     ?.filter((user) =>
       (user?.email || "")
@@ -45,7 +45,7 @@ export const MessageList = ({
 
       return new Date(timeB).getTime() - new Date(timeA).getTime(); // Most recent first
     });
-  // console.log("filteredUsers", filteredUsers);
+  console.log("filteredUsers", filteredUsers);
 
   if (!isLoading) {
     return (

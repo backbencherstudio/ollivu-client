@@ -92,7 +92,7 @@ const Messages = () => {
             if (
               !lastMessagesMap[otherUser] ||
               new Date(msg.timestamp) >
-                new Date(lastMessagesMap[otherUser].timestamp)
+              new Date(lastMessagesMap[otherUser].timestamp)
             ) {
               lastMessagesMap[otherUser] = {
                 content: msg.content,
@@ -106,71 +106,206 @@ const Messages = () => {
     }
   }, []);
 
+  // Remove the nested useEffect and combine socket logic
+  //  useEffect(() => {
+  //   if (!currentUser?.email) return;
+
+  //   socket.emit("join", currentUser?.email);
+
+  //   socket.on("connect", () => {
+  //     socket.emit("user_online", currentUser?.email);
+  //   });
+
+  //   socket.on("online_users", (users) => {
+  //     setOnlineUsers(users);
+  //   });
+
+  //   socket.on("user_connected", (email) => {
+  //     setOnlineUsers((prev) => ({
+  //       ...prev,
+  //       [email]: true,
+  //     }));
+  //   });
+
+  //   socket.on("user_disconnected", (email) => {
+  //     setOnlineUsers((prev) => ({
+  //       ...prev,
+  //       [email]: false,
+  //     }));
+  //   });
+
+  //   socket.on("message", (message) => {
+  //     setMessages((prevMessages) => [...prevMessages, message]);
+
+  //     // Update unread count for both sender and recipient
+  //     if (
+  //       (!currentChat || 
+  //       (message.sender !== getOtherUserEmail(currentChat) && 
+  //        message.recipient !== getOtherUserEmail(currentChat)))
+  //     ) {
+  //       const otherUser = message.sender === currentUser?.email 
+  //         ? message.recipient 
+  //         : message.sender;
+
+  //       setUnreadMessages((prev) => {
+  //         const newUnreadMessages = {
+  //           ...prev,
+  //           [otherUser]: (prev[otherUser] || 0) + 1,
+  //         };
+  //         localStorage.setItem("unreadMessages", JSON.stringify(newUnreadMessages));
+  //         return newUnreadMessages;
+  //       });
+  //     }
+
+
+
+  //     // Update last messages
+  //     const otherUser = message.sender === currentUser?.email 
+  //       ? message.recipient 
+  //       : message.sender;
+
+  //     setLastMessages((prev) => {
+  //       const newLastMessages = {
+  //         ...prev,
+  //         [otherUser]: {
+  //           content: message.content,
+  //           timestamp: message.timestamp,
+  //         },
+  //       };
+  //       localStorage.setItem("lastMessages", JSON.stringify(newLastMessages));
+  //       return newLastMessages;
+  //     });
+  //   });
+
+  //   socket.on("message history", (history) => {
+  //     setMessages(history);
+  //   });
+
+  //   socket.on("user list", (userList) => {
+  //     // console.log("User list updated:", userList);
+  //   });
+
+  //   // Fetch initial unread messages when component mounts
+  //   const fetchInitialUnreadMessages = async () => {
+  //     try {
+  //       // Get unread messages count directly from the server
+  //       const response = await fetch(
+  //         `${process.env.NEXT_PUBLIC_API_URL}/messages/unread/${currentUser?.email}`
+  //       );
+  //       const unreadCounts = await response.json();
+  //       // console.log("Initial unread counts:", unreadCounts); // Debug log
+  //       // Update unread messages state and localStorage
+  //       setUnreadMessages(unreadCounts);
+  //       localStorage.setItem("unreadMessages", JSON.stringify(unreadCounts));
+  //     } catch (error) {
+  //       console.error("Error fetching initial unread messages:", error);
+  //     }
+  //   };
+
+  //   fetchInitialUnreadMessages();
+
+  //   return () => {
+  //     socket.emit("user_offline", currentUser?.email);
+  //     socket.off("online_users");
+  //     socket.off("user_connected");
+  //     socket.off("user_disconnected");
+  //     socket.off("message");
+  //     socket.off("message history");
+  //     socket.off("user list");
+  //   };
+  // }, [currentUser?.email, currentChat, getOtherUserEmail]);
+
+
+  // Remove duplicate useEffect and combine socket logic
+  // Remove all other useEffects related to socket and keep only this one
   useEffect(() => {
+    if (!currentUser?.email) return;
+
+    // Initialize socket connection once
     socket.emit("join", currentUser?.email);
+    socket.emit("user_online", currentUser?.email);
 
-    socket.on("connect", () => {
-      socket.emit("user_online", currentUser?.email);
-    });
+    // Setup event listeners
+    const socketHandlers = {
+      online_users: (users) => setOnlineUsers(users),
+      user_connected: (email) => setOnlineUsers(prev => ({ ...prev, [email]: true })),
+      user_disconnected: (email) => setOnlineUsers(prev => ({ ...prev, [email]: false })),
+      message: (message) => {
+        setMessages(prev => [...prev, message]);
 
-    socket.on("online_users", (users) => {
-      setOnlineUsers(users);
-    });
+        if (!currentChat ||
+          (message.sender !== getOtherUserEmail(currentChat) &&
+            message.recipient !== getOtherUserEmail(currentChat))
+        ) {
+          const otherUser = message.sender === currentUser?.email
+            ? message.recipient
+            : message.sender;
 
-    socket.on("user_connected", (email) => {
-      setOnlineUsers((prev) => ({
-        ...prev,
-        [email]: true,
-      }));
-    });
+          setUnreadMessages(prev => {
+            const newUnreadMessages = {
+              ...prev,
+              [otherUser]: (prev[otherUser] || 0) + 1,
+            };
+            localStorage.setItem("unreadMessages", JSON.stringify(newUnreadMessages));
+            return newUnreadMessages;
+          });
+        }
 
-    socket.on("user_disconnected", (email) => {
-      setOnlineUsers((prev) => ({
-        ...prev,
-        [email]: false,
-      }));
-    });
-
-    socket.on("message", (message) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
-
-      // Only update unread count for incoming messages not from current chat
-      if (
-        message.recipient === currentUser?.email &&
-        message.sender !== currentUser?.email &&
-        (!currentChat || message.sender !== currentChat.email)
-      ) {
-        setUnreadMessages((prev) => {
-          const newUnreadMessages = {
-            ...prev,
-            [message.sender]: (prev[message.sender] || 0) + 1,
-          };
-          localStorage.setItem(
-            "unreadMessages",
-            JSON.stringify(newUnreadMessages)
-          );
-          return newUnreadMessages;
-        });
-      }
-
-      // Update last messages
-      const otherUser =
-        message.sender === currentUser?.email
+        const otherUser = message.sender === currentUser?.email
           ? message.recipient
           : message.sender;
-      setLastMessages((prev) => {
-        const newLastMessages = {
-          ...prev,
-          [otherUser]: {
-            content: message.content,
-            timestamp: message.timestamp,
-          },
-        };
-        localStorage.setItem("lastMessages", JSON.stringify(newLastMessages));
-        return newLastMessages;
-      });
+
+        setLastMessages(prev => {
+          const newLastMessages = {
+            ...prev,
+            [otherUser]: {
+              content: message.content,
+              timestamp: message.timestamp,
+            },
+          };
+          localStorage.setItem("lastMessages", JSON.stringify(newLastMessages));
+          return newLastMessages;
+        });
+      },
+      message_history: (history) => setMessages(history),
+      message_deleted: (messageId) => {
+        setMessages(prev => prev.filter(msg => msg._id !== messageId));
+      }
+    };
+
+    // Register all event listeners
+    Object.entries(socketHandlers).forEach(([event, handler]) => {
+      socket.on(event, handler);
     });
 
+    // Fetch initial unread messages only once when component mounts
+    const fetchInitialUnreadMessages = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/messages/unread/${currentUser?.email}`
+        );
+        const unreadCounts = await response.json();
+        setUnreadMessages(unreadCounts);
+        localStorage.setItem("unreadMessages", JSON.stringify(unreadCounts));
+      } catch (error) {
+        console.error("Error fetching initial unread messages:", error);
+      }
+    };
+
+    fetchInitialUnreadMessages();
+
+    // Cleanup function
+    return () => {
+      socket.emit("user_offline", currentUser?.email);
+      Object.keys(socketHandlers).forEach(event => {
+        socket.off(event);
+      });
+    };
+  }, [currentUser?.email]); // Remove currentChat and getOtherUserEmail from dependencies
+  // Remove other duplicate useEffects related to socket events
+
+
+  useEffect(() => {
     socket.on("message history", (history) => {
       setMessages(history);
     });
@@ -224,20 +359,72 @@ const Messages = () => {
       setMessage("");
     }
   };
+  // const handleChatSelect = async (user) => {
+  //   console.log("selected user", user);
+  //   setCurrentChat(user);
+  //   try {
+  //     // Fetch messages for the selected chat
+  //     const messagesResponse = await fetch(
+  //       `${process.env.NEXT_PUBLIC_API_URL}/chats?email=${
+  //         currentUser?.email
+  //       }&recipient=${getOtherUserEmail(user)}`
+  //     );
+  //     const messagesData = await messagesResponse.json();
+  //     setMessages(messagesData);
+
+  //     // Mark messages as read in the backend
+  //     const response = await fetch(
+  //       `${process.env.NEXT_PUBLIC_API_URL}/messages/mark-read`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({
+  //           sender: user.email,
+  //           recipient: currentUser?.email,
+  //         }),
+  //       }
+  //     );
+
+  //     if (response.ok) {
+  //       // Update local messages state
+  //       setMessages((prevMessages) =>
+  //         prevMessages.map((msg) =>
+  //           msg.sender === user.email && msg.recipient === currentUser?.email
+  //             ? { ...msg, read: true }
+  //             : msg
+  //         )
+  //       );
+
+  //       // Clear unread count for this user
+  //       setUnreadMessages((prev) => {
+  //         const newUnreadMessages = { ...prev };
+  //         delete newUnreadMessages[user.email];
+  //         localStorage.setItem(
+  //           "unreadMessages",
+  //           JSON.stringify(newUnreadMessages)
+  //         );
+  //         return newUnreadMessages;
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error("Error handling chat selection:", error);
+  //   }
+  // };
+
   const handleChatSelect = async (user) => {
     console.log("selected user", user);
     setCurrentChat(user);
     try {
-      // Fetch messages for the selected chat
       const messagesResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/chats?email=${
-          currentUser?.email
+        `${process.env.NEXT_PUBLIC_API_URL}/chats?email=${currentUser?.email
         }&recipient=${getOtherUserEmail(user)}`
       );
       const messagesData = await messagesResponse.json();
       setMessages(messagesData);
 
-      // Mark messages as read in the backend
+      // Mark messages as read for both users
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/messages/mark-read`,
         {
@@ -246,7 +433,7 @@ const Messages = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            sender: user.email,
+            sender: getOtherUserEmail(user),
             recipient: currentUser?.email,
           }),
         }
@@ -255,17 +442,13 @@ const Messages = () => {
       if (response.ok) {
         // Update local messages state
         setMessages((prevMessages) =>
-          prevMessages.map((msg) =>
-            msg.sender === user.email && msg.recipient === currentUser?.email
-              ? { ...msg, read: true }
-              : msg
-          )
+          prevMessages.map((msg) => ({ ...msg, read: true }))
         );
 
-        // Clear unread count for this user
+        // Clear unread count for this conversation
         setUnreadMessages((prev) => {
           const newUnreadMessages = { ...prev };
-          delete newUnreadMessages[user.email];
+          delete newUnreadMessages[getOtherUserEmail(user)];
           localStorage.setItem(
             "unreadMessages",
             JSON.stringify(newUnreadMessages)
@@ -375,35 +558,34 @@ const Messages = () => {
                       </div>
                     )
                   ) : // Show sender's image if current user is receiver
-                  currentChat?.senderUserId?.profileImage ? (
-                    <Image
-                      src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.senderUserId?.profileImage}`}
-                      alt={currentChat?.senderUserId?.first_name
-                        ?.slice(0, 2)
-                        .toUpperCase()}
-                      width={30}
-                      height={30}
-                      className="w-10 h-10 rounded-full"
-                    />
-                  ) : (
-                    <div className="w-10 h-10 rounded-full bg-[#20b894] flex items-center justify-center">
-                      <span className="text-white text-lg font-semibold">
-                        {currentChat?.senderUserId?.first_name
+                    currentChat?.senderUserId?.profileImage ? (
+                      <Image
+                        src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.senderUserId?.profileImage}`}
+                        alt={currentChat?.senderUserId?.first_name
                           ?.slice(0, 2)
-                          .toUpperCase() || "UN"}
-                      </span>
-                    </div>
-                  )}
+                          .toUpperCase()}
+                        width={30}
+                        height={30}
+                        className="w-10 h-10 rounded-full"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-[#20b894] flex items-center justify-center">
+                        <span className="text-white text-lg font-semibold">
+                          {currentChat?.senderUserId?.first_name
+                            ?.slice(0, 2)
+                            .toUpperCase() || "UN"}
+                        </span>
+                      </div>
+                    )}
                   <div>
                     <h3 className="font-semibold">
                       {getOtherUserName(currentChat)}
                     </h3>
                     <span
-                      className={`text-sm ${
-                        onlineUsers[getOtherUserEmail(currentChat)]
-                          ? "text-green-500"
-                          : "text-gray-500"
-                      }`}
+                      className={`text-sm ${onlineUsers[getOtherUserEmail(currentChat)]
+                        ? "text-green-500"
+                        : "text-gray-500"
+                        }`}
                     >
                       {onlineUsers[getOtherUserEmail(currentChat)]
                         ? "Online"
@@ -452,25 +634,25 @@ const Messages = () => {
                       </div>
                     )
                   ) : // Show sender's image if current user is receiver
-                  currentChat?.senderUserId?.profileImage ? (
-                    <Image
-                      src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.senderUserId?.profileImage}`}
-                      alt={currentChat?.senderUserId?.first_name
-                        ?.slice(0, 2)
-                        .toUpperCase()}
-                      width={30}
-                      height={30}
-                      className="w-20 h-20 rounded-full"
-                    />
-                  ) : (
-                    <div className="w-20 h-20 rounded-full bg-[#20b894] flex items-center justify-center">
-                      <span className="text-white text-2xl font-semibold">
-                        {currentChat?.senderUserId?.first_name
+                    currentChat?.senderUserId?.profileImage ? (
+                      <Image
+                        src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.senderUserId?.profileImage}`}
+                        alt={currentChat?.senderUserId?.first_name
                           ?.slice(0, 2)
-                          .toUpperCase() || "UN"}
-                      </span>
-                    </div>
-                  )}
+                          .toUpperCase()}
+                        width={30}
+                        height={30}
+                        className="w-20 h-20 rounded-full"
+                      />
+                    ) : (
+                      <div className="w-20 h-20 rounded-full bg-[#20b894] flex items-center justify-center">
+                        <span className="text-white text-2xl font-semibold">
+                          {currentChat?.senderUserId?.first_name
+                            ?.slice(0, 2)
+                            .toUpperCase() || "UN"}
+                        </span>
+                      </div>
+                    )}
                   <div>
                     <h3 className="font-semibold text-[18px]">
                       {getOtherUserName(currentChat)}
@@ -481,12 +663,11 @@ const Messages = () => {
                   </div>
                   <div className="flex flex-col gap-2 mt-6 w-full">
                     <button
-                      className={`px-3 py-2 rounded-full flex-1 text-sm whitespace-nowrap transition-colors ${
-                        currentChat?.senderUserAccepted &&
+                      className={`px-3 py-2 rounded-full flex-1 text-sm whitespace-nowrap transition-colors ${currentChat?.senderUserAccepted &&
                         currentChat?.reciverUserAccepted
-                          ? "bg-gray-400 cursor-not-allowed"
-                          : "bg-[#20b894] text-white hover:bg-[#1a9677]"
-                      }`}
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : "bg-[#20b894] text-white hover:bg-[#1a9677]"
+                        }`}
                       onClick={() => {
                         modalHandler(currentChat);
                         setIsProfileOpen(false);
@@ -497,7 +678,7 @@ const Messages = () => {
                       }
                     >
                       {currentChat?.senderUserAccepted &&
-                      currentChat?.reciverUserAccepted
+                        currentChat?.reciverUserAccepted
                         ? "Exchange Confirmed"
                         : "Confirm Exchange Service"}
                     </button>
@@ -568,11 +749,11 @@ const Messages = () => {
                         <span className="text-white text-lg font-semibold">
                           {currentChat?.email === currentUser.email
                             ? currentChat?.reciverUserId?.first_name
-                                .slice(0, 2)
-                                .toUpperCase()
+                              .slice(0, 2)
+                              .toUpperCase()
                             : currentChat?.senderUserId?.first_name
-                                .slice(0, 2)
-                                .toUpperCase() || "UN"}
+                              .slice(0, 2)
+                              .toUpperCase() || "UN"}
                         </span>
                       </div>
                     )}
@@ -581,11 +762,10 @@ const Messages = () => {
                         {getOtherUserName(currentChat)}
                       </h3>
                       <span
-                        className={`text-sm ${
-                          onlineUsers[getOtherUserEmail(currentChat)]
-                            ? "text-green-500"
-                            : "text-gray-500"
-                        }`}
+                        className={`text-sm ${onlineUsers[getOtherUserEmail(currentChat)]
+                          ? "text-green-500"
+                          : "text-gray-500"
+                          }`}
                       >
                         {onlineUsers[getOtherUserEmail(currentChat)]
                           ? "Online"
@@ -618,11 +798,11 @@ const Messages = () => {
                             {currentChat?.name?.slice(0, 2).toUpperCase()}
                             {currentChat?.email === currentUser.email
                               ? currentChat?.reciverUserId?.first_name
-                                  .slice(0, 2)
-                                  .toUpperCase()
+                                .slice(0, 2)
+                                .toUpperCase()
                               : currentChat?.senderUserId?.first_name
-                                  .slice(0, 2)
-                                  .toUpperCase() || "UN"}
+                                .slice(0, 2)
+                                .toUpperCase() || "UN"}
                           </span>
                         </div>
                       )}
@@ -631,11 +811,10 @@ const Messages = () => {
                           {getOtherUserName(currentChat) || "Select a chat"}
                         </h3>
                         <span
-                          className={`text-sm ${
-                            onlineUsers[getOtherUserEmail(currentChat)]
-                              ? "text-green-500"
-                              : "text-gray-500"
-                          }`}
+                          className={`text-sm ${onlineUsers[getOtherUserEmail(currentChat)]
+                            ? "text-green-500"
+                            : "text-gray-500"
+                            }`}
                         >
                           {onlineUsers[getOtherUserEmail(currentChat)]
                             ? "Online"
@@ -653,12 +832,11 @@ const Messages = () => {
                     </div>
                     <div className="flex flex-col gap-2 mt-4 w-full">
                       <button
-                        className={`px-3 py-2 rounded-full flex-1 text-sm whitespace-nowrap transition-colors ${
-                          currentChat?.senderUserAccepted &&
+                        className={`px-3 py-2 rounded-full flex-1 text-sm whitespace-nowrap transition-colors ${currentChat?.senderUserAccepted &&
                           currentChat?.reciverUserAccepted
-                            ? "bg-gray-400 cursor-not-allowed"
-                            : "bg-[#20b894] text-white hover:bg-[#1a9677]"
-                        }`}
+                          ? "bg-gray-400 cursor-not-allowed"
+                          : "bg-[#20b894] text-white hover:bg-[#1a9677]"
+                          }`}
                         onClick={() => {
                           modalHandler(currentChat);
                           setIsProfileOpen(false);
@@ -669,7 +847,7 @@ const Messages = () => {
                         }
                       >
                         {currentChat?.senderUserAccepted &&
-                        currentChat?.reciverUserAccepted
+                          currentChat?.reciverUserAccepted
                           ? "Exchange Confirmed"
                           : "Confirm Exchange Service"}
                       </button>
@@ -709,9 +887,8 @@ const Messages = () => {
 
       {/* Mobile Sidebar */}
       <div
-        className={`md:hidden fixed inset-y-0 left-0 w-3/4 bg-white z-50 transform transition-transform duration-300 ease-in-out ${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`md:hidden fixed inset-y-0 left-0 w-3/4 bg-white z-50 transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
         <div className="flex justify-between items-center p-4 border-b border-gray-100">
           <h3 className="font-bold">Messages</h3>
@@ -796,11 +973,11 @@ const Messages = () => {
                         <span className="text-white text-2xl font-semibold">
                           {currentChat?.email === currentUser.email
                             ? currentChat?.reciverUserId?.first_name
-                                ?.slice(0, 2)
-                                .toUpperCase()
+                              ?.slice(0, 2)
+                              .toUpperCase()
                             : currentChat?.senderUserId?.first_name
-                                ?.slice(0, 2)
-                                .toUpperCase() || "UN"}
+                              ?.slice(0, 2)
+                              .toUpperCase() || "UN"}
                         </span>
                       </div>
                     )}
@@ -817,12 +994,11 @@ const Messages = () => {
 
                   <div className="flex flex-col gap-3 w-full mt-4">
                     <button
-                      className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                        currentChat?.senderUserAccepted &&
+                      className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${currentChat?.senderUserAccepted &&
                         currentChat?.reciverUserAccepted
-                          ? "bg-gray-200 text-gray-600"
-                          : "bg-[#20b894] text-white active:bg-[#1a9677]"
-                      }`}
+                        ? "bg-gray-200 text-gray-600"
+                        : "bg-[#20b894] text-white active:bg-[#1a9677]"
+                        }`}
                       onClick={() => {
                         modalHandler(currentChat);
                         setIsInfoModalOpen(false);
@@ -833,7 +1009,7 @@ const Messages = () => {
                       }
                     >
                       {currentChat?.senderUserAccepted &&
-                      currentChat?.reciverUserAccepted
+                        currentChat?.reciverUserAccepted
                         ? "Exchange Confirmed"
                         : "Confirm Exchange Service"}
                     </button>
