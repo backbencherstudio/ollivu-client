@@ -22,7 +22,7 @@ function VerifyOTPContent() {
   const router = useRouter();
   const [verifyOTP, { isLoading }] = useVerifyOTPMutation();
   const email = searchParams.get("email") || "";
-  console.log("email", email);
+  // console.log("email", email);
 
   const handleCodeChange = (index: number, value: string) => {
     if (value.length > 1) {
@@ -84,7 +84,7 @@ function VerifyOTPContent() {
         email,
         otp: Number(otp),
       }).unwrap();
-      console.log("res", response);
+      // console.log("res", response);
 
       if (response.success) {
         toast.success(response.message || "Verification successful!");

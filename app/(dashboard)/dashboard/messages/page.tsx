@@ -231,6 +231,8 @@ const Messages = () => {
       user_connected: (email) => setOnlineUsers(prev => ({ ...prev, [email]: true })),
       user_disconnected: (email) => setOnlineUsers(prev => ({ ...prev, [email]: false })),
       message: (message) => {
+        console.log("Sojeb received message:", message);
+
         setMessages(prev => [...prev, message]);
 
         if (!currentChat ||
@@ -241,14 +243,22 @@ const Messages = () => {
             ? message.recipient
             : message.sender;
 
-          setUnreadMessages(prev => {
-            const newUnreadMessages = {
-              ...prev,
-              [otherUser]: (prev[otherUser] || 0) + 1,
-            };
-            localStorage.setItem("unreadMessages", JSON.stringify(newUnreadMessages));
-            return newUnreadMessages;
-          });
+          console.log("sojeb me", currentUser?.email);
+          console.log("sojeb sender", message.sender);
+
+
+
+          if (currentUser?.email != message.sender) {
+            setUnreadMessages(prev => {
+              const newUnreadMessages = {
+                ...prev,
+                [otherUser]: (prev[otherUser] || 0) + 1,
+              };
+              localStorage.setItem("unreadMessages", JSON.stringify(newUnreadMessages));
+              return newUnreadMessages;
+            });
+            console.log("sojeb unread", unreadMessages);
+          }
         }
 
         const otherUser = message.sender === currentUser?.email
@@ -345,6 +355,7 @@ const Messages = () => {
       socket.off("user list");
     };
   }, [currentUser?.email]);
+
   const sendMessage = (e) => {
     e.preventDefault();
     if (message && currentChat) {
@@ -355,6 +366,8 @@ const Messages = () => {
         timestamp: new Date().toISOString(),
         read: false,
       };
+      console.log("sojeb send message", messageData);
+
       socket.emit("message", messageData);
       setMessage("");
     }
@@ -414,7 +427,7 @@ const Messages = () => {
   // };
 
   const handleChatSelect = async (user) => {
-    console.log("selected user", user);
+    // console.log("selected user", user);
     setCurrentChat(user);
     try {
       const messagesResponse = await fetch(
@@ -496,10 +509,10 @@ const Messages = () => {
         userId: currentUser?.userId,
         exchangeId: currentChat?._id,
       });
-      console.log("result", result?.data?.message);
+      // console.log("result", result?.data?.message);
 
       toast.success(result?.data?.message);
-      return console.log("result", result); // show confirmation alart
+      // return console.log("result", result); // show confirmation alart
     }
     setIsConfirmModalOpen(true);
   };

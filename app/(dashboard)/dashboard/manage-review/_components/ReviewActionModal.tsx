@@ -13,7 +13,7 @@ export function ReviewActionModal({
   review,
 }: ReviewActionModalProps) {
   if (!isOpen || !review) return null;
-  console.log("review modal", review);
+  // console.log("review modal", review);
 
   return (
     <div

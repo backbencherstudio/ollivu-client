@@ -60,7 +60,7 @@ const ServiceDetails = () => {
   const { data: getSingleReview } = useGetSingleReviewQuery(singleUser?._id);
   const singleReview = getSingleReview?.data;
 
-  console.log("get single review", getSingleReview?.data);
+  // console.log("get single review", getSingleReview?.data);
 
   const [createProfileReport] = useCreateProfileReportMutation();
 
@@ -132,10 +132,10 @@ const ServiceDetails = () => {
     // console.log(reviewCreate);
     try {
       const response = await createReview(reviewCreate).unwrap();
-      console.log("res", response);
+      // console.log("res", response);
       toast.success("Review submitted successfully");
     } catch (err) {
-      console.log(err);
+      // console.log(err);
       toast.error("Something went wrong");
     }
 
@@ -177,10 +177,10 @@ const ServiceDetails = () => {
           my_service: currentUsreInfo?.my_service,
         },
       ];
-      console.log("exchange Data", exchangeData);
+      // console.log("exchange Data", exchangeData);
 
       const response = await createExchange(exchangeData).unwrap();
-      console.log("send exchange response", response);
+      // console.log("send exchange response", response);
 
       if (response?.success) {
         toast.success("Message request sent successfully");

@@ -74,7 +74,7 @@ export default function ServiceResultContent() {
   } = useGetAllUsersQuery(queryParams, {
     refetchOnMountOrArgChange: true,
   });
-  console.log("users", users?.data);
+  // console.log("users", users?.data);
 
   // Handle content transitions
   const startTransition = useCallback(() => {

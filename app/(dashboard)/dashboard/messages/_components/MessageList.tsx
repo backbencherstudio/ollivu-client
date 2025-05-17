@@ -14,6 +14,8 @@ export const MessageList = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRole, setSelectedRole] = useState("all");
+  // console.log("userId", userId);
+
 
   const [exchangeChatRequest, { isLoading: exchangeChatIsLoading }] =
     useExchangeChatRequestMutation();
@@ -29,23 +31,26 @@ export const MessageList = ({
     userId: userId,
     isAccepted: false,
   });
-  console.log("requestList", requestList);
+  // console.log("requestList", requestList);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  console.log("userData", userData);
+
   const filteredUsers = userData
     ?.filter((user) =>
       (user?.email || "")
         .toLowerCase()
         .includes((searchTerm || "").toLowerCase())
     )
+    .map(user => ({
+      ...user,
+      unreadCount: user.hasUnread ? (user.unreadCount || 0) : 0
+    }))
     .sort((a, b) => {
       const timeA = a.lastMessage?.timestamp || a.lastMessageTime || 0;
       const timeB = b.lastMessage?.timestamp || b.lastMessageTime || 0;
 
       return new Date(timeB).getTime() - new Date(timeA).getTime(); // Most recent first
     });
-  console.log("filteredUsers", filteredUsers);
 
   if (!isLoading) {
     return (
@@ -112,9 +117,8 @@ export const MessageList = ({
               <button
                 key={user._id}
                 onClick={() => onChatSelect(user)}
-                className={`w-full text-left hover:bg-gray-50 p-3 sm:p-4 border-b border-gray-100 ${
-                  user.hasUnread ? "bg-blue-50" : ""
-                }`}
+                className={`w-full text-left hover:bg-gray-50 p-3 sm:p-4 border-b border-gray-100 ${user.hasUnread ? "bg-blue-50" : ""
+                  }`}
               >
                 <div className="flex items-center gap-2 sm:gap-4">
                   {/* User Avatar */}
@@ -140,36 +144,35 @@ export const MessageList = ({
                           </div>
                         )
                       ) : // If userId doesn't match senderUserId, show senderUserId's image
-                      user?.senderUserId?.profileImage ? (
-                        <Image
-                          src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${user?.senderUserId?.profileImage}`}
-                          alt="Profile"
-                          width={48}
-                          height={48}
-                          className="object-cover w-full h-full"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-[#20b894] flex items-center justify-center">
-                          <span className="text-white text-lg font-medium">
-                            {user?.senderUserId?.first_name
-                              ?.charAt(0)
-                              .toUpperCase() || "U"}
-                          </span>
-                        </div>
-                      )}
+                        user?.senderUserId?.profileImage ? (
+                          <Image
+                            src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${user?.senderUserId?.profileImage}`}
+                            alt="Profile"
+                            width={48}
+                            height={48}
+                            className="object-cover w-full h-full"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-[#20b894] flex items-center justify-center">
+                            <span className="text-white text-lg font-medium">
+                              {user?.senderUserId?.first_name
+                                ?.charAt(0)
+                                .toUpperCase() || "U"}
+                            </span>
+                          </div>
+                        )}
                     </div>
                     {/* Online Status Indicator */}
                     <div
-                      className={`absolute bottom-0 right-0 w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full border-2 border-white ${
-                        user.isOnline ? "bg-green-500" : "bg-gray-400"
-                      }`}
+                      className={`absolute bottom-0 right-0 w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full border-2 border-white ${user.isOnline ? "bg-green-500" : "bg-gray-400"
+                        }`}
                     />
                   </div>
 
                   {/* User Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-center">
-                      <h3 className="text-xs sm:text-sm font-medium text-gray-900 truncate">
+                      <h3 className={`text-xs sm:text-sm ${user.unreadCount > 0 ? 'font-bold' : 'font-medium'} text-gray-900 truncate`}>
                         {(user?.email === currentUser
                           ? user?.reciverUserId?.first_name
                           : user?.senderUserId?.first_name) || "Unknown"}{" "}
@@ -191,7 +194,7 @@ export const MessageList = ({
                           })}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-500 truncate mt-1">
+                    <p className={`text-sm text-gray-500 truncate mt-1 ${user.unreadCount > 0 ? 'font-bold' : 'font-normal'}`}>
                       {user?.email === currentUser
                         ? user?.reciverUserId?.email
                         : user?.email || "No messages yet"}
@@ -207,7 +210,7 @@ export const MessageList = ({
                           minute: "2-digit",
                         })}
                     </span>
-                    {user.unreadCount > 0 && (
+                    {user?.unreadCount > 0 && userId !== user?.senderId?._id && (
                       <span className="bg-blue-500 text-white text-xs font-medium px-2 py-1 rounded-full mt-1">
                         {user.unreadCount}
                       </span>
@@ -245,8 +248,8 @@ export const MessageList = ({
                       <div className="w-full h-full bg-[#20B894] flex items-center justify-center text-white font-semibold">
                         {request?.senderUserId?.first_name
                           ? request?.senderUserId.first_name
-                              .slice(0, 2)
-                              .toUpperCase()
+                            .slice(0, 2)
+                            .toUpperCase()
                           : "UN"}
                       </div>
                     )}

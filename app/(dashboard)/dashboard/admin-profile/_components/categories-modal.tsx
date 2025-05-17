@@ -62,7 +62,7 @@ export function CategoriesModal({
   const [removeSubCategory] = useRemoveSubCategoryMutation();
   const {data: getAllCategories} = useGetAllCategoriesQuery({})
   const allCategories = getAllCategories?.data
-  console.log("all category fetch", allCategories);
+  // console.log("all category fetch", allCategories);
   
 
   const handleAddCategory = async () => {

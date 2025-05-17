@@ -77,7 +77,7 @@ export default function AddCategory() {
   const [updateCategory] = useUpdateCategoryMutation();
 
   const categories = getAllCategories?.data || [];
-  console.log("categories", categories);
+  // console.log("categories", categories);
 
   // Add getFilteredCategories function here
   const getFilteredCategories = () => {
