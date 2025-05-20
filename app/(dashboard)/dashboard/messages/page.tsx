@@ -92,7 +92,7 @@ const Messages = () => {
             if (
               !lastMessagesMap[otherUser] ||
               new Date(msg.timestamp) >
-              new Date(lastMessagesMap[otherUser].timestamp)
+                new Date(lastMessagesMap[otherUser].timestamp)
             ) {
               lastMessagesMap[otherUser] = {
                 content: msg.content,
@@ -139,12 +139,12 @@ const Messages = () => {
 
   //     // Update unread count for both sender and recipient
   //     if (
-  //       (!currentChat || 
-  //       (message.sender !== getOtherUserEmail(currentChat) && 
+  //       (!currentChat ||
+  //       (message.sender !== getOtherUserEmail(currentChat) &&
   //        message.recipient !== getOtherUserEmail(currentChat)))
   //     ) {
-  //       const otherUser = message.sender === currentUser?.email 
-  //         ? message.recipient 
+  //       const otherUser = message.sender === currentUser?.email
+  //         ? message.recipient
   //         : message.sender;
 
   //       setUnreadMessages((prev) => {
@@ -157,11 +157,9 @@ const Messages = () => {
   //       });
   //     }
 
-
-
   //     // Update last messages
-  //     const otherUser = message.sender === currentUser?.email 
-  //       ? message.recipient 
+  //     const otherUser = message.sender === currentUser?.email
+  //       ? message.recipient
   //       : message.sender;
 
   //     setLastMessages((prev) => {
@@ -215,7 +213,6 @@ const Messages = () => {
   //   };
   // }, [currentUser?.email, currentChat, getOtherUserEmail]);
 
-
   // Remove duplicate useEffect and combine socket logic
   // Remove all other useEffects related to socket and keep only this one
   useEffect(() => {
@@ -228,44 +225,46 @@ const Messages = () => {
     // Setup event listeners
     const socketHandlers = {
       online_users: (users) => setOnlineUsers(users),
-      user_connected: (email) => setOnlineUsers(prev => ({ ...prev, [email]: true })),
-      user_disconnected: (email) => setOnlineUsers(prev => ({ ...prev, [email]: false })),
+      user_connected: (email) =>
+        setOnlineUsers((prev) => ({ ...prev, [email]: true })),
+      user_disconnected: (email) =>
+        setOnlineUsers((prev) => ({ ...prev, [email]: false })),
       message: (message) => {
-        console.log("Sojeb received message:", message);
+        setMessages((prev) => [...prev, message]);
 
-        setMessages(prev => [...prev, message]);
-
-        if (!currentChat ||
+        if (
+          !currentChat ||
           (message.sender !== getOtherUserEmail(currentChat) &&
             message.recipient !== getOtherUserEmail(currentChat))
         ) {
-          const otherUser = message.sender === currentUser?.email
-            ? message.recipient
-            : message.sender;
+          const otherUser =
+            message.sender === currentUser?.email
+              ? message.recipient
+              : message.sender;
 
-          console.log("sojeb me", currentUser?.email);
-          console.log("sojeb sender", message.sender);
-
-
-
+          // TODO check 1
           if (currentUser?.email != message.sender) {
-            setUnreadMessages(prev => {
+            console.log("sojeb 1", currentUser?.email, message.sender);
+            setUnreadMessages((prev) => {
               const newUnreadMessages = {
                 ...prev,
                 [otherUser]: (prev[otherUser] || 0) + 1,
               };
-              localStorage.setItem("unreadMessages", JSON.stringify(newUnreadMessages));
+              localStorage.setItem(
+                "unreadMessages",
+                JSON.stringify(newUnreadMessages)
+              );
               return newUnreadMessages;
             });
-            console.log("sojeb unread", unreadMessages);
           }
         }
 
-        const otherUser = message.sender === currentUser?.email
-          ? message.recipient
-          : message.sender;
+        const otherUser =
+          message.sender === currentUser?.email
+            ? message.recipient
+            : message.sender;
 
-        setLastMessages(prev => {
+        setLastMessages((prev) => {
           const newLastMessages = {
             ...prev,
             [otherUser]: {
@@ -279,8 +278,8 @@ const Messages = () => {
       },
       message_history: (history) => setMessages(history),
       message_deleted: (messageId) => {
-        setMessages(prev => prev.filter(msg => msg._id !== messageId));
-      }
+        setMessages((prev) => prev.filter((msg) => msg._id !== messageId));
+      },
     };
 
     // Register all event listeners
@@ -307,13 +306,12 @@ const Messages = () => {
     // Cleanup function
     return () => {
       socket.emit("user_offline", currentUser?.email);
-      Object.keys(socketHandlers).forEach(event => {
+      Object.keys(socketHandlers).forEach((event) => {
         socket.off(event);
       });
     };
   }, [currentUser?.email]); // Remove currentChat and getOtherUserEmail from dependencies
   // Remove other duplicate useEffects related to socket events
-
 
   useEffect(() => {
     socket.on("message history", (history) => {
@@ -324,6 +322,7 @@ const Messages = () => {
       // console.log("User list updated:", userList);
     });
 
+    // TODO check 2
     // Fetch initial unread messages when component mounts
     const fetchInitialUnreadMessages = async () => {
       try {
@@ -366,7 +365,6 @@ const Messages = () => {
         timestamp: new Date().toISOString(),
         read: false,
       };
-      console.log("sojeb send message", messageData);
 
       socket.emit("message", messageData);
       setMessage("");
@@ -431,7 +429,8 @@ const Messages = () => {
     setCurrentChat(user);
     try {
       const messagesResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/chats?email=${currentUser?.email
+        `${process.env.NEXT_PUBLIC_API_URL}/chats?email=${
+          currentUser?.email
         }&recipient=${getOtherUserEmail(user)}`
       );
       const messagesData = await messagesResponse.json();
@@ -527,13 +526,22 @@ const Messages = () => {
           <div className="h-full flex flex-col">
             <MessageList
               onChatSelect={handleChatSelect}
-              userData={userList?.data?.map((user) => ({
-                ...user,
-                hasUnread: Boolean(unreadMessages[user.email]),
-                lastMessage: lastMessages[user.email],
-                isOnline: onlineUsers[user.email] || false,
-                unreadCount: unreadMessages[user.email] || 0,
-              }))}
+              userData={userList?.data?.map((user) => {
+                let receiverEmail = "";
+                if (user.senderUserId?.email === currentUser?.email) {
+                  receiverEmail = user.reciverUserId?.email;
+                } else {
+                  receiverEmail = user.senderUserId?.email;
+                }
+
+                return {
+                  ...user,
+                  hasUnread: Boolean(unreadMessages[receiverEmail]),
+                  lastMessage: lastMessages[receiverEmail],
+                  isOnline: onlineUsers[receiverEmail] || false,
+                  unreadCount: unreadMessages[receiverEmail] || 0,
+                };
+              })}
               currentUser={currentUser?.email}
               userId={currentUser?.userId}
               userImage={undefined}
@@ -571,34 +579,35 @@ const Messages = () => {
                       </div>
                     )
                   ) : // Show sender's image if current user is receiver
-                    currentChat?.senderUserId?.profileImage ? (
-                      <Image
-                        src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.senderUserId?.profileImage}`}
-                        alt={currentChat?.senderUserId?.first_name
+                  currentChat?.senderUserId?.profileImage ? (
+                    <Image
+                      src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.senderUserId?.profileImage}`}
+                      alt={currentChat?.senderUserId?.first_name
+                        ?.slice(0, 2)
+                        .toUpperCase()}
+                      width={30}
+                      height={30}
+                      className="w-10 h-10 rounded-full"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-[#20b894] flex items-center justify-center">
+                      <span className="text-white text-lg font-semibold">
+                        {currentChat?.senderUserId?.first_name
                           ?.slice(0, 2)
-                          .toUpperCase()}
-                        width={30}
-                        height={30}
-                        className="w-10 h-10 rounded-full"
-                      />
-                    ) : (
-                      <div className="w-10 h-10 rounded-full bg-[#20b894] flex items-center justify-center">
-                        <span className="text-white text-lg font-semibold">
-                          {currentChat?.senderUserId?.first_name
-                            ?.slice(0, 2)
-                            .toUpperCase() || "UN"}
-                        </span>
-                      </div>
-                    )}
+                          .toUpperCase() || "UN"}
+                      </span>
+                    </div>
+                  )}
                   <div>
                     <h3 className="font-semibold">
                       {getOtherUserName(currentChat)}
                     </h3>
                     <span
-                      className={`text-sm ${onlineUsers[getOtherUserEmail(currentChat)]
-                        ? "text-green-500"
-                        : "text-gray-500"
-                        }`}
+                      className={`text-sm ${
+                        onlineUsers[getOtherUserEmail(currentChat)]
+                          ? "text-green-500"
+                          : "text-gray-500"
+                      }`}
                     >
                       {onlineUsers[getOtherUserEmail(currentChat)]
                         ? "Online"
@@ -647,25 +656,25 @@ const Messages = () => {
                       </div>
                     )
                   ) : // Show sender's image if current user is receiver
-                    currentChat?.senderUserId?.profileImage ? (
-                      <Image
-                        src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.senderUserId?.profileImage}`}
-                        alt={currentChat?.senderUserId?.first_name
+                  currentChat?.senderUserId?.profileImage ? (
+                    <Image
+                      src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.senderUserId?.profileImage}`}
+                      alt={currentChat?.senderUserId?.first_name
+                        ?.slice(0, 2)
+                        .toUpperCase()}
+                      width={30}
+                      height={30}
+                      className="w-20 h-20 rounded-full"
+                    />
+                  ) : (
+                    <div className="w-20 h-20 rounded-full bg-[#20b894] flex items-center justify-center">
+                      <span className="text-white text-2xl font-semibold">
+                        {currentChat?.senderUserId?.first_name
                           ?.slice(0, 2)
-                          .toUpperCase()}
-                        width={30}
-                        height={30}
-                        className="w-20 h-20 rounded-full"
-                      />
-                    ) : (
-                      <div className="w-20 h-20 rounded-full bg-[#20b894] flex items-center justify-center">
-                        <span className="text-white text-2xl font-semibold">
-                          {currentChat?.senderUserId?.first_name
-                            ?.slice(0, 2)
-                            .toUpperCase() || "UN"}
-                        </span>
-                      </div>
-                    )}
+                          .toUpperCase() || "UN"}
+                      </span>
+                    </div>
+                  )}
                   <div>
                     <h3 className="font-semibold text-[18px]">
                       {getOtherUserName(currentChat)}
@@ -676,11 +685,12 @@ const Messages = () => {
                   </div>
                   <div className="flex flex-col gap-2 mt-6 w-full">
                     <button
-                      className={`px-3 py-2 rounded-full flex-1 text-sm whitespace-nowrap transition-colors ${currentChat?.senderUserAccepted &&
+                      className={`px-3 py-2 rounded-full flex-1 text-sm whitespace-nowrap transition-colors ${
+                        currentChat?.senderUserAccepted &&
                         currentChat?.reciverUserAccepted
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-[#20b894] text-white hover:bg-[#1a9677]"
-                        }`}
+                          ? "bg-gray-400 cursor-not-allowed"
+                          : "bg-[#20b894] text-white hover:bg-[#1a9677]"
+                      }`}
                       onClick={() => {
                         modalHandler(currentChat);
                         setIsProfileOpen(false);
@@ -691,7 +701,7 @@ const Messages = () => {
                       }
                     >
                       {currentChat?.senderUserAccepted &&
-                        currentChat?.reciverUserAccepted
+                      currentChat?.reciverUserAccepted
                         ? "Exchange Confirmed"
                         : "Confirm Exchange Service"}
                     </button>
@@ -762,11 +772,11 @@ const Messages = () => {
                         <span className="text-white text-lg font-semibold">
                           {currentChat?.email === currentUser.email
                             ? currentChat?.reciverUserId?.first_name
-                              .slice(0, 2)
-                              .toUpperCase()
+                                .slice(0, 2)
+                                .toUpperCase()
                             : currentChat?.senderUserId?.first_name
-                              .slice(0, 2)
-                              .toUpperCase() || "UN"}
+                                .slice(0, 2)
+                                .toUpperCase() || "UN"}
                         </span>
                       </div>
                     )}
@@ -775,10 +785,11 @@ const Messages = () => {
                         {getOtherUserName(currentChat)}
                       </h3>
                       <span
-                        className={`text-sm ${onlineUsers[getOtherUserEmail(currentChat)]
-                          ? "text-green-500"
-                          : "text-gray-500"
-                          }`}
+                        className={`text-sm ${
+                          onlineUsers[getOtherUserEmail(currentChat)]
+                            ? "text-green-500"
+                            : "text-gray-500"
+                        }`}
                       >
                         {onlineUsers[getOtherUserEmail(currentChat)]
                           ? "Online"
@@ -811,11 +822,11 @@ const Messages = () => {
                             {currentChat?.name?.slice(0, 2).toUpperCase()}
                             {currentChat?.email === currentUser.email
                               ? currentChat?.reciverUserId?.first_name
-                                .slice(0, 2)
-                                .toUpperCase()
+                                  .slice(0, 2)
+                                  .toUpperCase()
                               : currentChat?.senderUserId?.first_name
-                                .slice(0, 2)
-                                .toUpperCase() || "UN"}
+                                  .slice(0, 2)
+                                  .toUpperCase() || "UN"}
                           </span>
                         </div>
                       )}
@@ -824,10 +835,11 @@ const Messages = () => {
                           {getOtherUserName(currentChat) || "Select a chat"}
                         </h3>
                         <span
-                          className={`text-sm ${onlineUsers[getOtherUserEmail(currentChat)]
-                            ? "text-green-500"
-                            : "text-gray-500"
-                            }`}
+                          className={`text-sm ${
+                            onlineUsers[getOtherUserEmail(currentChat)]
+                              ? "text-green-500"
+                              : "text-gray-500"
+                          }`}
                         >
                           {onlineUsers[getOtherUserEmail(currentChat)]
                             ? "Online"
@@ -845,11 +857,12 @@ const Messages = () => {
                     </div>
                     <div className="flex flex-col gap-2 mt-4 w-full">
                       <button
-                        className={`px-3 py-2 rounded-full flex-1 text-sm whitespace-nowrap transition-colors ${currentChat?.senderUserAccepted &&
+                        className={`px-3 py-2 rounded-full flex-1 text-sm whitespace-nowrap transition-colors ${
+                          currentChat?.senderUserAccepted &&
                           currentChat?.reciverUserAccepted
-                          ? "bg-gray-400 cursor-not-allowed"
-                          : "bg-[#20b894] text-white hover:bg-[#1a9677]"
-                          }`}
+                            ? "bg-gray-400 cursor-not-allowed"
+                            : "bg-[#20b894] text-white hover:bg-[#1a9677]"
+                        }`}
                         onClick={() => {
                           modalHandler(currentChat);
                           setIsProfileOpen(false);
@@ -860,7 +873,7 @@ const Messages = () => {
                         }
                       >
                         {currentChat?.senderUserAccepted &&
-                          currentChat?.reciverUserAccepted
+                        currentChat?.reciverUserAccepted
                           ? "Exchange Confirmed"
                           : "Confirm Exchange Service"}
                       </button>
@@ -900,8 +913,9 @@ const Messages = () => {
 
       {/* Mobile Sidebar */}
       <div
-        className={`md:hidden fixed inset-y-0 left-0 w-3/4 bg-white z-50 transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
+        className={`md:hidden fixed inset-y-0 left-0 w-3/4 bg-white z-50 transform transition-transform duration-300 ease-in-out ${
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
       >
         <div className="flex justify-between items-center p-4 border-b border-gray-100">
           <h3 className="font-bold">Messages</h3>
@@ -986,11 +1000,11 @@ const Messages = () => {
                         <span className="text-white text-2xl font-semibold">
                           {currentChat?.email === currentUser.email
                             ? currentChat?.reciverUserId?.first_name
-                              ?.slice(0, 2)
-                              .toUpperCase()
+                                ?.slice(0, 2)
+                                .toUpperCase()
                             : currentChat?.senderUserId?.first_name
-                              ?.slice(0, 2)
-                              .toUpperCase() || "UN"}
+                                ?.slice(0, 2)
+                                .toUpperCase() || "UN"}
                         </span>
                       </div>
                     )}
@@ -1007,11 +1021,12 @@ const Messages = () => {
 
                   <div className="flex flex-col gap-3 w-full mt-4">
                     <button
-                      className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${currentChat?.senderUserAccepted &&
+                      className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                        currentChat?.senderUserAccepted &&
                         currentChat?.reciverUserAccepted
-                        ? "bg-gray-200 text-gray-600"
-                        : "bg-[#20b894] text-white active:bg-[#1a9677]"
-                        }`}
+                          ? "bg-gray-200 text-gray-600"
+                          : "bg-[#20b894] text-white active:bg-[#1a9677]"
+                      }`}
                       onClick={() => {
                         modalHandler(currentChat);
                         setIsInfoModalOpen(false);
@@ -1022,7 +1037,7 @@ const Messages = () => {
                       }
                     >
                       {currentChat?.senderUserAccepted &&
-                        currentChat?.reciverUserAccepted
+                      currentChat?.reciverUserAccepted
                         ? "Exchange Confirmed"
                         : "Confirm Exchange Service"}
                     </button>
