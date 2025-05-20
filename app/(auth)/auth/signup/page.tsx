@@ -108,7 +108,7 @@ export default function SignupPage() {
         email: form.email,
         password: form.password,
       }).unwrap();
-      console.log("signup response", response?.data);
+      // console.log("signup response", response?.data);
 
       // if (response.success) {
       //   toast.success(

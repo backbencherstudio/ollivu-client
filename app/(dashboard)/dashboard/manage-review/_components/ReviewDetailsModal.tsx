@@ -14,7 +14,7 @@ export function ReviewDetailsModal({
   review,
 }: ReviewDetailsModalProps) {
   if (!isOpen || !review) return null;
-  console.log("review details modal", review);
+  // console.log("review details modal", review);
   
 
   return (
