@@ -45,9 +45,9 @@ const NotificationBadge = ({ currentUser }: { currentUser: string }) => {
             onClick={() => router.push('/dashboard/messages')}
         >
             <div className="relative">
-                <FaRegCommentDots className="text-[26px] text-[#00BBA7]" /> {/* Message Icon */}
+                <FaRegCommentDots className="text-[20px] md:text-[26px] text-[#00BBA7]" /> {/* Message Icon */}
                 {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">
+                    <span className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full w-4 h-4 md:w-5 md:h-5 text-xs flex items-center justify-center">
                         {unreadCount}
                     </span>
                 )}

@@ -272,8 +272,6 @@ export default function Navbar() {
           <div className="hidden md:flex items-center space-x-4">
 
             <NotificationBadge currentUser={validUser?.email} />
-
-
             {isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger className="focus:outline-none cursor-pointer">
@@ -386,6 +384,9 @@ export default function Navbar() {
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center">
+            <div className="mr-4 ">
+              <NotificationBadge currentUser={validUser?.email} />
+            </div>
             <button
               onClick={toggleMobileMenu}
               className="text-gray-600 hover:text-teal-600 mobile-menu-button"

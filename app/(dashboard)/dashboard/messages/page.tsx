@@ -510,275 +510,114 @@ const Messages = () => {
         userId: currentUser?.userId,
         exchangeId: currentChat?._id,
       });
-      // console.log("result", result?.data?.message);
-
       toast.success(result?.data?.message);
-      // return console.log("result", result); // show confirmation alart
+    } else {
+      setIsConfirmModalOpen(true);
     }
-    setIsConfirmModalOpen(true);
   };
   // console.log("currentChat", currentChat);
 
   return (
-    <div className="h-screen flex flex-col">
-      {/* Main Content */}
-      <div className="bg-white rounded-lg h-full hidden md:grid md:grid-cols-4 shadow-sm">
-        {/* Left Sidebar - Always visible */}
-        <div className="col-span-1 border-r border-gray-100">
+    <div className="h-screen flex flex-col bg-white">
+      {/* Main Container - Responsive Grid Layout */}
+      <div className="h-full grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12">
+        {/* Left Sidebar - Messages List */}
+        <div className={`
+          ${currentChat ? 'hidden' : 'block'} 
+          md:block 
+          md:col-span-4 
+          lg:col-span-3 
+          border-r 
+          border-gray-100
+          h-full
+          ${isSidebarOpen ? 'fixed inset-0 z-50 bg-white md:relative md:z-auto' : ''}
+        `}>
           <div className="h-full flex flex-col">
-            <MessageList
-              onChatSelect={handleChatSelect}
-              userData={userList?.data?.map((user) => {
-                let receiverEmail = "";
-                if (user.senderUserId?.email === currentUser?.email) {
-                  receiverEmail = user.reciverUserId?.email;
-                } else {
-                  receiverEmail = user.senderUserId?.email;
-                }
+            {/* Mobile Header - Only visible on mobile when no chat is selected */}
+            <div className="flex md:hidden items-center justify-between p-4 border-b border-gray-100">
+              <h3 className="font-bold text-lg">Messages</h3>
+              {isSidebarOpen && (
+                <button 
+                  onClick={() => setIsSidebarOpen(false)}
+                  className="p-2 hover:bg-gray-100 rounded-full"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              )}
+            </div>
 
-                return {
-                  ...user,
-                  hasUnread: Boolean(unreadMessages[receiverEmail]),
-                  lastMessage: lastMessages[receiverEmail],
-                  isOnline: onlineUsers[receiverEmail] || false,
-                  unreadCount: unreadMessages[receiverEmail] || 0,
-                };
-              })}
-              currentUser={currentUser?.email}
-              userId={currentUser?.userId}
-              userImage={undefined}
-            />
+            {/* Messages List */}
+            <div className="flex-1 overflow-y-auto">
+              <MessageList
+                onChatSelect={(user) => {
+                  handleChatSelect(user);
+                  setIsSidebarOpen(false);
+                }}
+                userData={userList?.data?.map((user) => {
+                  let receiverEmail = "";
+                  if (user.senderUserId?.email === currentUser?.email) {
+                    receiverEmail = user.reciverUserId?.email;
+                  } else {
+                    receiverEmail = user.senderUserId?.email;
+                  }
+
+                  return {
+                    ...user,
+                    hasUnread: Boolean(unreadMessages[receiverEmail]),
+                    lastMessage: lastMessages[receiverEmail],
+                    isOnline: onlineUsers[receiverEmail] || false,
+                    unreadCount: unreadMessages[receiverEmail] || 0,
+                  };
+                })}
+                currentUser={currentUser?.email}
+                userId={currentUser?.userId}
+                userImage={undefined}
+              />
+            </div>
           </div>
         </div>
 
-        {/* Chat Area and Right Sidebar - Only visible when chat is selected */}
-        {currentChat ? (
-          <>
-            {/* Chat Area */}
-            <div className="col-span-2 flex flex-col bg-white relative">
-              {/* Chat Area Header */}
-              <div className="p-4 flex items-center justify-between border-b border-gray-100">
-                <div className="flex items-center gap-3">
-                  {currentUser?.userId === currentChat?.senderUserId?._id ? (
-                    // Show receiver's image if current user is sender
-                    currentChat?.reciverUserId?.profileImage ? (
-                      <Image
-                        src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.reciverUserId?.profileImage}`}
-                        alt={currentChat?.reciverUserId?.first_name
-                          ?.slice(0, 2)
-                          .toUpperCase()}
-                        width={30}
-                        height={30}
-                        className="w-10 h-10 rounded-full"
-                      />
-                    ) : (
-                      <div className="w-10 h-10 rounded-full bg-[#20b894] flex items-center justify-center">
-                        <span className="text-white text-lg font-semibold">
-                          {currentChat?.reciverUserId?.first_name
-                            ?.slice(0, 2)
-                            .toUpperCase() || "UN"}
-                        </span>
-                      </div>
-                    )
-                  ) : // Show sender's image if current user is receiver
-                  currentChat?.senderUserId?.profileImage ? (
-                    <Image
-                      src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.senderUserId?.profileImage}`}
-                      alt={currentChat?.senderUserId?.first_name
-                        ?.slice(0, 2)
-                        .toUpperCase()}
-                      width={30}
-                      height={30}
-                      className="w-10 h-10 rounded-full"
-                    />
-                  ) : (
-                    <div className="w-10 h-10 rounded-full bg-[#20b894] flex items-center justify-center">
-                      <span className="text-white text-lg font-semibold">
-                        {currentChat?.senderUserId?.first_name
-                          ?.slice(0, 2)
-                          .toUpperCase() || "UN"}
-                      </span>
-                    </div>
-                  )}
-                  <div>
-                    <h3 className="font-semibold">
-                      {getOtherUserName(currentChat)}
-                    </h3>
-                    <span
-                      className={`text-sm ${
-                        onlineUsers[getOtherUserEmail(currentChat)]
-                          ? "text-green-500"
-                          : "text-gray-500"
-                      }`}
-                    >
-                      {onlineUsers[getOtherUserEmail(currentChat)]
-                        ? "Online"
-                        : "Offline"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <MessageContent
-                messages={messages}
-                currentUser={currentUser}
-                currentChat={currentChat}
-                deleteMessage={deleteMessage}
-              />
-              <MessageInput
-                message={message}
-                setMessage={setMessage}
-                sendMessage={sendMessage}
-              />
-            </div>
-
-            {/* Right Sidebar */}
-            <div className="col-span-1 p-5 border-l border-gray-100">
-              <div className="h-full flex flex-col">
-                <h3 className="text-gray-500">Details</h3>
-                <div className="bg-gray-100 p-6 rounded-lg mt-5 text-center flex items-center gap-3 justify-center flex-col">
-                  {currentUser?.userId === currentChat?.senderUserId?._id ? (
-                    // Show receiver's image if current user is sender
-                    currentChat?.reciverUserId?.profileImage ? (
-                      <Image
-                        src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.reciverUserId?.profileImage}`}
-                        alt={currentChat?.reciverUserId?.first_name
-                          ?.slice(0, 2)
-                          .toUpperCase()}
-                        width={30}
-                        height={30}
-                        className="w-20 h-20 rounded-full"
-                      />
-                    ) : (
-                      <div className="w-20 h-20 rounded-full bg-[#20b894] flex items-center justify-center">
-                        <span className="text-white text-2xl font-semibold">
-                          {currentChat?.reciverUserId?.first_name
-                            ?.slice(0, 2)
-                            .toUpperCase() || "UN"}
-                        </span>
-                      </div>
-                    )
-                  ) : // Show sender's image if current user is receiver
-                  currentChat?.senderUserId?.profileImage ? (
-                    <Image
-                      src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.senderUserId?.profileImage}`}
-                      alt={currentChat?.senderUserId?.first_name
-                        ?.slice(0, 2)
-                        .toUpperCase()}
-                      width={30}
-                      height={30}
-                      className="w-20 h-20 rounded-full"
-                    />
-                  ) : (
-                    <div className="w-20 h-20 rounded-full bg-[#20b894] flex items-center justify-center">
-                      <span className="text-white text-2xl font-semibold">
-                        {currentChat?.senderUserId?.first_name
-                          ?.slice(0, 2)
-                          .toUpperCase() || "UN"}
-                      </span>
-                    </div>
-                  )}
-                  <div>
-                    <h3 className="font-semibold text-[18px]">
-                      {getOtherUserName(currentChat)}
-                    </h3>
-                    <p className="text-gray-500">
-                      {getOtherUserEmail(currentChat)}
-                    </p>
-                  </div>
-                  <div className="flex flex-col gap-2 mt-6 w-full">
-                    <button
-                      className={`px-3 py-2 rounded-full flex-1 text-sm whitespace-nowrap transition-colors ${
-                        currentChat?.senderUserAccepted &&
-                        currentChat?.reciverUserAccepted
-                          ? "bg-gray-400 cursor-not-allowed"
-                          : "bg-[#20b894] text-white hover:bg-[#1a9677]"
-                      }`}
-                      onClick={() => {
-                        modalHandler(currentChat);
-                        setIsProfileOpen(false);
-                      }}
-                      disabled={
-                        currentChat?.senderUserAccepted &&
-                        currentChat?.reciverUserAccepted
-                      }
-                    >
-                      {currentChat?.senderUserAccepted &&
-                      currentChat?.reciverUserAccepted
-                        ? "Exchange Confirmed"
-                        : "Confirm Exchange Service"}
-                    </button>
-                    <button
-                      className="border border-[#b19c87] text-[#b19c87] px-3 py-2 rounded-full flex-1 text-sm whitespace-nowrap hover:bg-[#b19c87] hover:text-white transition-colors cursor-pointer"
-                      onClick={() => handleReviewClick(currentChat)}
-                    >
-                      Give Review
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </>
-        ) : (
-          // Placeholder when no chat is selected
-          <div className="col-span-3 flex items-center justify-center text-gray-500">
-            Select a conversation to start messaging
-          </div>
-        )}
-      </div>
-
-      {/* Mobile View - Similar conditional rendering */}
-      <div className="md:hidden h-full flex flex-col">
-        {/* Mobile Header */}
-        <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
-          <div className="p-4 flex items-center justify-between">
-            <h3 className="font-bold text-lg">Messages</h3>
-            {currentChat ? (
-              <button onClick={() => setCurrentChat(null)} className="p-2">
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M15 19l-7-7 7-7"
-                  />
-                </svg>
-              </button>
-            ) : (
-              <button onClick={() => setIsSidebarOpen(true)} className="p-2">
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M4 6h16M4 12h16m-7 6h7"
-                  />
-                </svg>
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Mobile Chat Area */}
-        <div className="flex-1 flex flex-col bg-white pt-[60px]">
+        {/* Main Chat Area */}
+        <div className={`
+          ${!currentChat ? 'hidden' : 'flex'} 
+          md:flex 
+          flex-col 
+          md:col-span-8 
+          lg:col-span-6
+          h-full
+          relative
+        `}>
           {currentChat ? (
             <>
-              <div className="fixed top-[60px] left-0 right-0 z-40 bg-white">
-                <div className="p-4 flex items-center justify-between border-b border-gray-100">
-                  <button
-                    onClick={() => setIsInfoModalOpen(true)}
-                    className="flex items-center gap-3 w-full"
+              {/* Chat Header */}
+              <div className="sticky top-0 z-10 bg-white border-b border-gray-100">
+                <div className="flex items-center p-4">
+                  {/* Back Button - Mobile Only */}
+                  <button 
+                    onClick={() => setCurrentChat(null)} 
+                    className="mr-3 md:hidden p-2 hover:bg-gray-100 rounded-full"
                   >
-                    <div className="w-10 h-10 rounded-full overflow-hidden">
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M15 19l-7-7 7-7"
+                      />
+                    </svg>
+                  </button>
+
+                  {/* User Info */}
+                  <div 
+                    onClick={() => setIsInfoModalOpen(true)}
+                    className="flex items-center flex-1 cursor-pointer"
+                  >
+                    <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
                       {currentUser?.userId === currentChat?.senderUserId?._id ? (
                         currentChat?.reciverUserId?.profileImage ? (
                           <Image
@@ -813,17 +652,18 @@ const Messages = () => {
                         )
                       )}
                     </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-left">{getOtherUserName(currentChat)}</h3>
-                      <span className={`text-sm ${onlineUsers[getOtherUserEmail(currentChat)] ? "text-green-500" : "text-gray-500"}`}>
+                    <div className="ml-3">
+                      <h3 className="font-semibold text-sm md:text-base">{getOtherUserName(currentChat)}</h3>
+                      <span className={`text-xs md:text-sm ${onlineUsers[getOtherUserEmail(currentChat)] ? "text-green-500" : "text-gray-500"}`}>
                         {onlineUsers[getOtherUserEmail(currentChat)] ? "Online" : "Offline"}
                       </span>
                     </div>
-                  </button>
+                  </div>
                 </div>
               </div>
 
-              <div className="flex-1 flex flex-col pt-[60px] pb-[80px]">
+              {/* Messages Content */}
+              <div className="flex-1 overflow-hidden">
                 <MessageContent
                   messages={messages}
                   currentUser={currentUser}
@@ -832,7 +672,8 @@ const Messages = () => {
                 />
               </div>
 
-              <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100">
+              {/* Message Input */}
+              <div className="sticky bottom-0 bg-white border-t border-gray-100">
                 <MessageInput
                   message={message}
                   setMessage={setMessage}
@@ -841,124 +682,32 @@ const Messages = () => {
               </div>
             </>
           ) : (
-            <div className="flex-1 flex items-center justify-center text-gray-500 text-center px-4">
+            <div className="flex items-center justify-center h-full text-gray-500">
               Select a conversation to start messaging
             </div>
           )}
         </div>
-      </div>
 
-      {/* Mobile Sidebar */}
-      <div
-        className={`md:hidden fixed inset-y-0 left-0 w-full sm:w-3/4 bg-white z-50 transform transition-transform duration-300 ease-in-out ${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <div className="flex flex-col h-full">
-          <div className="flex justify-between items-center p-4 border-b border-gray-100">
-            <h3 className="font-bold text-lg">Messages</h3>
-            <button 
-              onClick={() => setIsSidebarOpen(false)} 
-              className="p-2 hover:bg-gray-100 rounded-full"
-            >
-              <X className="w-6 h-6" />
-            </button>
-          </div>
-          <div className="flex-1 overflow-y-auto">
-            {/* <MessageList
-              onChatSelect={(user) => {
-                handleChatSelect(user);
-                setIsSidebarOpen(false);
-              }}
-              userData={userList?.data?.map((user) => ({
-                ...user,
-                hasUnread: Boolean(unreadMessages[user.email]),
-                lastMessage: lastMessages[user.email],
-                isOnline: onlineUsers[user.email] || false,
-                unreadCount: unreadMessages[user.email] || 0,
-                userImage: user?.senderUserId?.profileImage,
-              }))}
-              currentUser={currentUser?.email}
-              userId={currentUser?.userId}
-              userImage={undefined}
-            /> */}
-            <MessageList
-              onChatSelect={(user) => {
-                handleChatSelect(user);
-                setIsSidebarOpen(false);
-              }}
-              
-              userData={userList?.data?.map((user) => {
-                let receiverEmail = "";
-                if (user.senderUserId?.email === currentUser?.email) {
-                  receiverEmail = user.reciverUserId?.email;
-                } else {
-                  receiverEmail = user.senderUserId?.email;
-                }
-
-                return {
-                  ...user,
-                  hasUnread: Boolean(unreadMessages[receiverEmail]),
-                  lastMessage: lastMessages[receiverEmail],
-                  isOnline: onlineUsers[receiverEmail] || false,
-                  unreadCount: unreadMessages[receiverEmail] || 0,
-                };
-              })}
-              currentUser={currentUser?.email}
-              userId={currentUser?.userId}
-              userImage={undefined}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Backdrop for mobile sidebar */}
-      {isSidebarOpen && (
-        <div
-          className="md:hidden fixed inset-0 bg-black/50 z-40"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
-
-      {currentChat && (
-        <ConfirmServiceModal
-          isOpen={isConfirmModalOpen}
-          onClose={() => setIsConfirmModalOpen(false)}
-          id={currentChat?._id}
-          myServices={currentChat?.my_service || []}
-          senderService={currentChat?.senderService || "No service selected"}
-          acceptedService={currentChat?.service || "No service selected"}
-        />
-      )}
-
-      <div>
-        {/* Info Modal */}
-        {isInfoModalOpen && (
-          <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4">
-            <div className="bg-white w-full max-w-md rounded-2xl overflow-hidden">
-              <div className="p-4 border-b border-gray-100 flex justify-between items-center">
-                <h3 className="font-semibold text-lg">Profile Details</h3>
-                <button
-                  onClick={() => setIsInfoModalOpen(false)}
-                  className="p-2 hover:bg-gray-100 rounded-full"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="p-6">
-                <div className="bg-gray-50 p-6 rounded-xl text-center flex flex-col items-center gap-4">
-                  <div className="w-20 h-20 rounded-full relative">
+        {/* Right Sidebar - Details Panel */}
+        <div className="hidden lg:block lg:col-span-3 border-l border-gray-100">
+          <div className="h-full p-4">
+            <h3 className="text-gray-500 mb-4">Details</h3>
+            {currentChat && (
+              <div className="bg-gray-50 p-6 rounded-xl">
+                {/* Profile Content */}
+                <div className="flex flex-col items-center">
+                  <div className="w-20 h-20 rounded-full overflow-hidden mb-4">
                     {currentUser?.userId === currentChat?.senderUserId?._id ? (
                       currentChat?.reciverUserId?.profileImage ? (
                         <Image
                           src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.reciverUserId?.profileImage}`}
                           alt={currentChat?.reciverUserId?.first_name?.slice(0, 2).toUpperCase()}
-                          fill
-                          className="rounded-full object-cover"
+                          width={80}
+                          height={80}
+                          className="w-full h-full object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full rounded-full bg-[#20b894] flex items-center justify-center">
+                        <div className="w-full h-full bg-[#20b894] flex items-center justify-center">
                           <span className="text-white text-2xl font-semibold">
                             {currentChat?.reciverUserId?.first_name?.slice(0, 2).toUpperCase() || "UN"}
                           </span>
@@ -969,11 +718,12 @@ const Messages = () => {
                         <Image
                           src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.senderUserId?.profileImage}`}
                           alt={currentChat?.senderUserId?.first_name?.slice(0, 2).toUpperCase()}
-                          fill
-                          className="rounded-full object-cover"
+                          width={80}
+                          height={80}
+                          className="w-full h-full object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full rounded-full bg-[#20b894] flex items-center justify-center">
+                        <div className="w-full h-full bg-[#20b894] flex items-center justify-center">
                           <span className="text-white text-2xl font-semibold">
                             {currentChat?.senderUserId?.first_name?.slice(0, 2).toUpperCase() || "UN"}
                           </span>
@@ -981,13 +731,121 @@ const Messages = () => {
                       )
                     )}
                   </div>
-
-                  <div className="space-y-1">
-                    <h3 className="font-semibold text-lg">{getOtherUserName(currentChat)}</h3>
-                    <p className="text-gray-500 text-sm">{getOtherUserEmail(currentChat)}</p>
+                  <h3 className="font-semibold text-lg mb-1">{getOtherUserName(currentChat)}</h3>
+                  <p className="text-gray-500 text-sm mb-6">{getOtherUserEmail(currentChat)}</p>
+                  
+                  {/* Action Buttons */}
+                  <div className="w-full space-y-3">
+                    <button
+                      className={`
+                        w-full px-4 py-2.5 rounded-xl text-sm font-medium transition-colors
+                        ${currentChat?.senderUserAccepted && currentChat?.reciverUserAccepted
+                          ? "bg-gray-200 text-gray-600"
+                          : "bg-[#20b894] text-white hover:bg-[#1a9677]"
+                        }
+                      `}
+                      onClick={() => modalHandler(currentChat)}
+                      disabled={currentChat?.senderUserAccepted && currentChat?.reciverUserAccepted}
+                    >
+                      {currentChat?.senderUserAccepted && currentChat?.reciverUserAccepted
+                        ? "Exchange Confirmed"
+                        : currentUser?.email === currentChat?.reciverUserId?.email 
+                          ? "Confirm Exchange Service"
+                          : "Accept Exchange Service"
+                      }
+                    </button>
+                    <button
+                      className="w-full px-4 py-2.5 rounded-xl text-sm font-medium border border-[#b19c87] 
+                        text-[#b19c87] hover:bg-[#b19c87] hover:text-white transition-colors"
+                      onClick={() => handleReviewClick(currentChat)}
+                    >
+                      Give Review
+                    </button>
                   </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
 
-                  <div className="flex flex-col gap-3 w-full mt-4">
+      {/* Mobile Backdrop */}
+      {isSidebarOpen && (
+        <div 
+          className="md:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      {/* Modals */}
+      {currentChat && isConfirmModalOpen && currentUser?.email === currentChat?.reciverUserId?.email && (
+        <ConfirmServiceModal
+          isOpen={isConfirmModalOpen}
+          onClose={() => setIsConfirmModalOpen(false)}
+          id={currentChat?._id}
+          myServices={currentChat?.my_service || []}
+          senderService={currentChat?.senderService || "No service selected"}
+          acceptedService={currentChat?.service || "No service selected"}
+        />
+      )}
+
+      {/* Info Modal - Mobile Only */}
+      {isInfoModalOpen && (
+        <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-md rounded-2xl overflow-hidden">
+            <div className="p-4 border-b border-gray-100 flex justify-between items-center">
+              <h3 className="font-semibold text-lg">Profile Details</h3>
+              <button
+                onClick={() => setIsInfoModalOpen(false)}
+                className="p-2 hover:bg-gray-100 rounded-full"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6">
+              <div className="bg-gray-50 p-6 rounded-xl text-center flex flex-col items-center gap-4">
+                <div className="w-20 h-20 rounded-full relative overflow-hidden">
+                  {currentUser?.userId === currentChat?.senderUserId?._id ? (
+                    currentChat?.reciverUserId?.profileImage ? (
+                      <Image
+                        src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.reciverUserId?.profileImage}`}
+                        alt={currentChat?.reciverUserId?.first_name?.slice(0, 2).toUpperCase()}
+                        fill
+                        className="rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full rounded-full bg-[#20b894] flex items-center justify-center">
+                        <span className="text-white text-2xl font-semibold">
+                          {currentChat?.reciverUserId?.first_name?.slice(0, 2).toUpperCase() || "UN"}
+                        </span>
+                      </div>
+                    )
+                  ) : (
+                    currentChat?.senderUserId?.profileImage ? (
+                      <Image
+                        src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.senderUserId?.profileImage}`}
+                        alt={currentChat?.senderUserId?.first_name?.slice(0, 2).toUpperCase()}
+                        fill
+                        className="rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full rounded-full bg-[#20b894] flex items-center justify-center">
+                        <span className="text-white text-2xl font-semibold">
+                          {currentChat?.senderUserId?.first_name?.slice(0, 2).toUpperCase() || "UN"}
+                        </span>
+                      </div>
+                    )
+                  )}
+                </div>
+
+                <div className="space-y-1">
+                  <h3 className="font-semibold text-lg">{getOtherUserName(currentChat)}</h3>
+                  <p className="text-gray-500 text-sm">{getOtherUserEmail(currentChat)}</p>
+                </div>
+
+                <div className="flex flex-col gap-3 w-full mt-4">
+                  {currentUser?.email === currentChat?.reciverUserId?.email && (
                     <button
                       className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                         currentChat?.senderUserAccepted && currentChat?.reciverUserAccepted
@@ -1004,24 +862,24 @@ const Messages = () => {
                         ? "Exchange Confirmed"
                         : "Confirm Exchange Service"}
                     </button>
+                  )}
 
-                    <button
-                      className="px-4 py-2.5 rounded-xl text-sm font-medium border border-[#b19c87] text-[#b19c87] 
-                      hover:bg-[#b19c87] hover:text-white transition-colors"
-                      onClick={() => {
-                        handleReviewClick(currentChat);
-                        setIsInfoModalOpen(false);
-                      }}
-                    >
-                      Give Review
-                    </button>
-                  </div>
+                  <button
+                    className="px-4 py-2.5 rounded-xl text-sm font-medium border border-[#b19c87] text-[#b19c87] 
+                    hover:bg-[#b19c87] hover:text-white transition-colors"
+                    onClick={() => {
+                      handleReviewClick(currentChat);
+                      setIsInfoModalOpen(false);
+                    }}
+                  >
+                    Give Review
+                  </button>
                 </div>
               </div>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
