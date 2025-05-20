@@ -425,8 +425,10 @@ const Messages = () => {
   // };
 
   const handleChatSelect = async (user) => {
-    // console.log("selected user", user);
+    console.log("selected user", user);
     setCurrentChat(user);
+    console.log("currentChat", currentChat);
+    
     try {
       const messagesResponse = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/chats?email=${
@@ -727,185 +729,120 @@ const Messages = () => {
       {/* Mobile View - Similar conditional rendering */}
       <div className="md:hidden h-full flex flex-col">
         {/* Mobile Header */}
-        <div className="p-4 flex items-center justify-between bg-white border-b border-gray-100">
-          <h3 className="font-bold">Messages</h3>
-          <button onClick={() => setIsSidebarOpen(true)} className="p-2">
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 6h16M4 12h16m-7 6h7"
-              />
-            </svg>
-          </button>
+        <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
+          <div className="p-4 flex items-center justify-between">
+            <h3 className="font-bold text-lg">Messages</h3>
+            {currentChat ? (
+              <button onClick={() => setCurrentChat(null)} className="p-2">
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+              </button>
+            ) : (
+              <button onClick={() => setIsSidebarOpen(true)} className="p-2">
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4 6h16M4 12h16m-7 6h7"
+                  />
+                </svg>
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Mobile Chat Area */}
-        <div className="flex-1 flex flex-col bg-white">
+        <div className="flex-1 flex flex-col bg-white pt-[60px]">
           {currentChat ? (
             <>
-              <div className="fixed top-[60px] left-0 right-0 z-50 bg-white">
+              <div className="fixed top-[60px] left-0 right-0 z-40 bg-white">
                 <div className="p-4 flex items-center justify-between border-b border-gray-100">
-                  {/* <div className="flex items-center gap-3"> */}
                   <button
                     onClick={() => setIsInfoModalOpen(true)}
                     className="flex items-center gap-3 w-full"
                   >
-                    {currentChat?.senderUserId?.profileImage ? (
-                      <Image
-                        src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.senderUserId?.profileImage}`}
-                        alt={currentChat?.senderUserId?.name
-                          ?.slice(0, 2)
-                          .toUpperCase()}
-                        width={30}
-                        height={30}
-                        className="w-14 h-14 rounded-full"
-                      />
-                    ) : (
-                      <div className="w-10 h-10 rounded-full bg-[#20b894] flex items-center justify-center">
-                        <span className="text-white text-lg font-semibold">
-                          {currentChat?.email === currentUser.email
-                            ? currentChat?.reciverUserId?.first_name
-                                .slice(0, 2)
-                                .toUpperCase()
-                            : currentChat?.senderUserId?.first_name
-                                .slice(0, 2)
-                                .toUpperCase() || "UN"}
-                        </span>
-                      </div>
-                    )}
-                    <div>
-                      <h3 className="font-semibold">
-                        {getOtherUserName(currentChat)}
-                      </h3>
-                      <span
-                        className={`text-sm ${
-                          onlineUsers[getOtherUserEmail(currentChat)]
-                            ? "text-green-500"
-                            : "text-gray-500"
-                        }`}
-                      >
-                        {onlineUsers[getOtherUserEmail(currentChat)]
-                          ? "Online"
-                          : "Offline"}
+                    <div className="w-10 h-10 rounded-full overflow-hidden">
+                      {currentUser?.userId === currentChat?.senderUserId?._id ? (
+                        currentChat?.reciverUserId?.profileImage ? (
+                          <Image
+                            src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.reciverUserId?.profileImage}`}
+                            alt={currentChat?.reciverUserId?.first_name?.slice(0, 2).toUpperCase()}
+                            width={40}
+                            height={40}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-[#20b894] flex items-center justify-center">
+                            <span className="text-white text-lg font-semibold">
+                              {currentChat?.reciverUserId?.first_name?.slice(0, 2).toUpperCase() || "UN"}
+                            </span>
+                          </div>
+                        )
+                      ) : (
+                        currentChat?.senderUserId?.profileImage ? (
+                          <Image
+                            src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.senderUserId?.profileImage}`}
+                            alt={currentChat?.senderUserId?.first_name?.slice(0, 2).toUpperCase()}
+                            width={40}
+                            height={40}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-[#20b894] flex items-center justify-center">
+                            <span className="text-white text-lg font-semibold">
+                              {currentChat?.senderUserId?.first_name?.slice(0, 2).toUpperCase() || "UN"}
+                            </span>
+                          </div>
+                        )
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-left">{getOtherUserName(currentChat)}</h3>
+                      <span className={`text-sm ${onlineUsers[getOtherUserEmail(currentChat)] ? "text-green-500" : "text-gray-500"}`}>
+                        {onlineUsers[getOtherUserEmail(currentChat)] ? "Online" : "Offline"}
                       </span>
                     </div>
                   </button>
-                  {/* </div> */}
                 </div>
               </div>
 
-              {/* Mobile Profile Details */}
-              {isProfileOpen && (
-                <div className="bg-white border-b border-gray-100 p-4">
-                  <div className="bg-gray-100 p-4 rounded-lg text-center flex items-center gap-3 justify-center flex-col">
-                    <div className="flex items-center gap-3">
-                      {currentChat?.senderUserId?.profileImage ? (
-                        <Image
-                          src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.senderUserId?.profileImage}`}
-                          alt={currentChat?.senderUserId?.name
-                            ?.slice(0, 2)
-                            .toUpperCase()}
-                          width={30}
-                          height={30}
-                          className="w-10 h-10 rounded-full"
-                        />
-                      ) : (
-                        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                          <span className="text-gray-500">
-                            {currentChat?.name?.slice(0, 2).toUpperCase()}
-                            {currentChat?.email === currentUser.email
-                              ? currentChat?.reciverUserId?.first_name
-                                  .slice(0, 2)
-                                  .toUpperCase()
-                              : currentChat?.senderUserId?.first_name
-                                  .slice(0, 2)
-                                  .toUpperCase() || "UN"}
-                          </span>
-                        </div>
-                      )}
-                      <div>
-                        <h3 className="font-semibold">
-                          {getOtherUserName(currentChat) || "Select a chat"}
-                        </h3>
-                        <span
-                          className={`text-sm ${
-                            onlineUsers[getOtherUserEmail(currentChat)]
-                              ? "text-green-500"
-                              : "text-gray-500"
-                          }`}
-                        >
-                          {onlineUsers[getOtherUserEmail(currentChat)]
-                            ? "Online"
-                            : "Offline"}
-                        </span>
-                      </div>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-[16px]">
-                        {getOtherUserName(currentChat)}
-                      </h3>
-                      <p className="text-gray-500 text-sm">
-                        {getOtherUserEmail(currentChat)}
-                      </p>
-                    </div>
-                    <div className="flex flex-col gap-2 mt-4 w-full">
-                      <button
-                        className={`px-3 py-2 rounded-full flex-1 text-sm whitespace-nowrap transition-colors ${
-                          currentChat?.senderUserAccepted &&
-                          currentChat?.reciverUserAccepted
-                            ? "bg-gray-400 cursor-not-allowed"
-                            : "bg-[#20b894] text-white hover:bg-[#1a9677]"
-                        }`}
-                        onClick={() => {
-                          modalHandler(currentChat);
-                          setIsProfileOpen(false);
-                        }}
-                        disabled={
-                          currentChat?.senderUserAccepted &&
-                          currentChat?.reciverUserAccepted
-                        }
-                      >
-                        {currentChat?.senderUserAccepted &&
-                        currentChat?.reciverUserAccepted
-                          ? "Exchange Confirmed"
-                          : "Confirm Exchange Service"}
-                      </button>
-                      <button
-                        className="border border-[#b19c87] text-[#b19c87] px-3 py-2 rounded-full flex-1 text-sm whitespace-nowrap hover:bg-[#b19c87] hover:text-white transition-colors cursor-pointer"
-                        onClick={() => {
-                          handleReviewClick(currentChat);
-                          setIsProfileOpen(false);
-                        }}
-                      >
-                        Give Review
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
+              <div className="flex-1 flex flex-col pt-[60px] pb-[80px]">
+                <MessageContent
+                  messages={messages}
+                  currentUser={currentUser}
+                  currentChat={currentChat}
+                  deleteMessage={deleteMessage}
+                />
+              </div>
 
-              <MessageContent
-                messages={messages}
-                currentUser={currentUser}
-                currentChat={currentChat}
-                deleteMessage={deleteMessage}
-              />
-              <MessageInput
-                message={message}
-                setMessage={setMessage}
-                sendMessage={sendMessage}
-              />
+              <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100">
+                <MessageInput
+                  message={message}
+                  setMessage={setMessage}
+                  sendMessage={sendMessage}
+                />
+              </div>
             </>
           ) : (
-            <div className="flex-1 flex items-center justify-center text-gray-500">
-              Select a chat to start messaging
+            <div className="flex-1 flex items-center justify-center text-gray-500 text-center px-4">
+              Select a conversation to start messaging
             </div>
           )}
         </div>
@@ -913,48 +850,75 @@ const Messages = () => {
 
       {/* Mobile Sidebar */}
       <div
-        className={`md:hidden fixed inset-y-0 left-0 w-3/4 bg-white z-50 transform transition-transform duration-300 ease-in-out ${
+        className={`md:hidden fixed inset-y-0 left-0 w-full sm:w-3/4 bg-white z-50 transform transition-transform duration-300 ease-in-out ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex justify-between items-center p-4 border-b border-gray-100">
-          <h3 className="font-bold">Messages</h3>
-          <button onClick={() => setIsSidebarOpen(false)} className="p-2">
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+        <div className="flex flex-col h-full">
+          <div className="flex justify-between items-center p-4 border-b border-gray-100">
+            <h3 className="font-bold text-lg">Messages</h3>
+            <button 
+              onClick={() => setIsSidebarOpen(false)} 
+              className="p-2 hover:bg-gray-100 rounded-full"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-        </div>
-        <div className="h-[calc(100%-64px)]">
-          <MessageList
-            onChatSelect={(user) => {
-              handleChatSelect(user);
-              setIsSidebarOpen(false);
-            }}
-            userData={userList?.data?.map((user) => ({
-              ...user,
-              hasUnread: Boolean(unreadMessages[user.email]),
-              lastMessage: lastMessages[user.email],
-              isOnline: onlineUsers[user.email] || false,
-              unreadCount: unreadMessages[user.email] || 0,
-              userImage: user?.senderUserId?.profileImage,
-            }))}
-            currentUser={currentUser?.email}
-            userId={currentUser?.userId}
-            userImage={undefined}
-          />
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto">
+            {/* <MessageList
+              onChatSelect={(user) => {
+                handleChatSelect(user);
+                setIsSidebarOpen(false);
+              }}
+              userData={userList?.data?.map((user) => ({
+                ...user,
+                hasUnread: Boolean(unreadMessages[user.email]),
+                lastMessage: lastMessages[user.email],
+                isOnline: onlineUsers[user.email] || false,
+                unreadCount: unreadMessages[user.email] || 0,
+                userImage: user?.senderUserId?.profileImage,
+              }))}
+              currentUser={currentUser?.email}
+              userId={currentUser?.userId}
+              userImage={undefined}
+            /> */}
+            <MessageList
+              onChatSelect={(user) => {
+                handleChatSelect(user);
+                setIsSidebarOpen(false);
+              }}
+              
+              userData={userList?.data?.map((user) => {
+                let receiverEmail = "";
+                if (user.senderUserId?.email === currentUser?.email) {
+                  receiverEmail = user.reciverUserId?.email;
+                } else {
+                  receiverEmail = user.senderUserId?.email;
+                }
+
+                return {
+                  ...user,
+                  hasUnread: Boolean(unreadMessages[receiverEmail]),
+                  lastMessage: lastMessages[receiverEmail],
+                  isOnline: onlineUsers[receiverEmail] || false,
+                  unreadCount: unreadMessages[receiverEmail] || 0,
+                };
+              })}
+              currentUser={currentUser?.email}
+              userId={currentUser?.userId}
+              userImage={undefined}
+            />
+          </div>
         </div>
       </div>
+
+      {/* Backdrop for mobile sidebar */}
+      {isSidebarOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
 
       {currentChat && (
         <ConfirmServiceModal
@@ -973,7 +937,7 @@ const Messages = () => {
           <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4">
             <div className="bg-white w-full max-w-md rounded-2xl overflow-hidden">
               <div className="p-4 border-b border-gray-100 flex justify-between items-center">
-                <h3 className="font-semibold">Profile Details</h3>
+                <h3 className="font-semibold text-lg">Profile Details</h3>
                 <button
                   onClick={() => setIsInfoModalOpen(false)}
                   className="p-2 hover:bg-gray-100 rounded-full"
@@ -984,46 +948,49 @@ const Messages = () => {
 
               <div className="p-6">
                 <div className="bg-gray-50 p-6 rounded-xl text-center flex flex-col items-center gap-4">
-                  {/* Reuse your existing profile content */}
                   <div className="w-20 h-20 rounded-full relative">
-                    {currentChat?.senderUserId?.profileImage ? (
-                      <Image
-                        src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.senderUserId?.profileImage}`}
-                        alt={currentChat?.senderUserId?.name
-                          ?.slice(0, 2)
-                          .toUpperCase()}
-                        fill
-                        className="rounded-full object-cover"
-                      />
+                    {currentUser?.userId === currentChat?.senderUserId?._id ? (
+                      currentChat?.reciverUserId?.profileImage ? (
+                        <Image
+                          src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.reciverUserId?.profileImage}`}
+                          alt={currentChat?.reciverUserId?.first_name?.slice(0, 2).toUpperCase()}
+                          fill
+                          className="rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full rounded-full bg-[#20b894] flex items-center justify-center">
+                          <span className="text-white text-2xl font-semibold">
+                            {currentChat?.reciverUserId?.first_name?.slice(0, 2).toUpperCase() || "UN"}
+                          </span>
+                        </div>
+                      )
                     ) : (
-                      <div className="w-full h-full rounded-full bg-[#20b894] flex items-center justify-center">
-                        <span className="text-white text-2xl font-semibold">
-                          {currentChat?.email === currentUser.email
-                            ? currentChat?.reciverUserId?.first_name
-                                ?.slice(0, 2)
-                                .toUpperCase()
-                            : currentChat?.senderUserId?.first_name
-                                ?.slice(0, 2)
-                                .toUpperCase() || "UN"}
-                        </span>
-                      </div>
+                      currentChat?.senderUserId?.profileImage ? (
+                        <Image
+                          src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.senderUserId?.profileImage}`}
+                          alt={currentChat?.senderUserId?.first_name?.slice(0, 2).toUpperCase()}
+                          fill
+                          className="rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full rounded-full bg-[#20b894] flex items-center justify-center">
+                          <span className="text-white text-2xl font-semibold">
+                            {currentChat?.senderUserId?.first_name?.slice(0, 2).toUpperCase() || "UN"}
+                          </span>
+                        </div>
+                      )
                     )}
                   </div>
 
                   <div className="space-y-1">
-                    <h3 className="font-semibold text-lg">
-                      {getOtherUserName(currentChat)}
-                    </h3>
-                    <p className="text-gray-500 text-sm">
-                      {getOtherUserEmail(currentChat)}
-                    </p>
+                    <h3 className="font-semibold text-lg">{getOtherUserName(currentChat)}</h3>
+                    <p className="text-gray-500 text-sm">{getOtherUserEmail(currentChat)}</p>
                   </div>
 
                   <div className="flex flex-col gap-3 w-full mt-4">
                     <button
                       className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                        currentChat?.senderUserAccepted &&
-                        currentChat?.reciverUserAccepted
+                        currentChat?.senderUserAccepted && currentChat?.reciverUserAccepted
                           ? "bg-gray-200 text-gray-600"
                           : "bg-[#20b894] text-white active:bg-[#1a9677]"
                       }`}
@@ -1031,13 +998,9 @@ const Messages = () => {
                         modalHandler(currentChat);
                         setIsInfoModalOpen(false);
                       }}
-                      disabled={
-                        currentChat?.senderUserAccepted &&
-                        currentChat?.reciverUserAccepted
-                      }
+                      disabled={currentChat?.senderUserAccepted && currentChat?.reciverUserAccepted}
                     >
-                      {currentChat?.senderUserAccepted &&
-                      currentChat?.reciverUserAccepted
+                      {currentChat?.senderUserAccepted && currentChat?.reciverUserAccepted
                         ? "Exchange Confirmed"
                         : "Confirm Exchange Service"}
                     </button>
