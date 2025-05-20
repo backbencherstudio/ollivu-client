@@ -47,7 +47,7 @@ export function ManageReview() {
   useEffect(() => {
     if (getAllReviewReport?.data) {
       const formattedReviews = getAllReviewReport?.data?.map((report: any) => {
-        console.log(28, report);
+        // console.log(28, report);
 
         return {
           id: report?._id,
@@ -74,7 +74,7 @@ export function ManageReview() {
     }
   }, [getAllReviewReport?.data, setReviews]);
 
-  console.log(51, reviews);
+  // console.log(51, reviews);
 
   return (
     <div className="w-full p-6 bg-white rounded-lg">
