@@ -139,7 +139,7 @@ export default function MonitorMessaging() {
       icon: MessageIcon,
     },
     {
-      title: "Pending Exchanges",
+      title: "Reported Profile",
       value: reportedProfile?.length,
       subtitle: "Awaiting Completion",
       icon: PendingIcon,

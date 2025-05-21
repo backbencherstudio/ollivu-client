@@ -46,6 +46,9 @@ export default function UserDashboardHome() {
   );
   const getAllOverviewDataByUserData = getAllOverviewDataByUser?.data;
 
+  console.log(49, getAllOverviewDataByUserData);
+  
+
   const { data: allExchangeData } = useGetAllExchangeQuery({});
   const allExchangeDataData = allExchangeData?.data;
 
@@ -58,6 +61,9 @@ export default function UserDashboardHome() {
 
   const { data: exchangeDashboard } = useGetExchangeDashboardQuery(userId);
   const exchangeDashboardData = exchangeDashboard?.data;
+
+  console.log(65, exchangeDashboardData);
+  
 
   // console.log("getExchangeHistoryData", allExchangeDataData);
 
