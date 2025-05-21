@@ -144,6 +144,7 @@ export default function UserDashboardHome() {
   ];
 
   const [selectedRequest, setSelectedRequest] = useState(null);
+  console.log("selectedRequest", selectedRequest);
   const [isModalOpen, setIsModalOpen] = useState(false);
   // console.log("selectedRequest", selectedRequest);
 
@@ -668,7 +669,7 @@ export default function UserDashboardHome() {
                       </p>
                       <p className="text-sm">
                         <span className="font-medium">Receiver Service:</span>{" "}
-                        {selectedRequest?.reciverService}
+                        {selectedRequest?.reciverService || "N/A"}
                       </p>
                     </div>
                   </div>
@@ -678,12 +679,12 @@ export default function UserDashboardHome() {
                     <h4 className="font-medium text-gray-700">Status</h4>
                     <span
                       className={`text-xs px-2 py-1 rounded-full font-medium ${
-                        selectedRequest?.isAccepted === "true"
+                        selectedRequest?.senderUserAccepted === true && selectedRequest?.reciverUserAccepted === true
                           ? "bg-green-100 text-green-600"
                           : "bg-yellow-100 text-yellow-600"
                       }`}
                     >
-                      {selectedRequest.isAccepted === "true"
+                      {selectedRequest.senderUserAccepted === true && selectedRequest.reciverUserAccepted === true
                         ? "Accepted"
                         : "Pending"}
                     </span>
@@ -709,14 +710,14 @@ export default function UserDashboardHome() {
               )}
 
               {/* Add confirmation button if needed */}
-              <div className="p-4 border-t flex justify-end">
+              {/* <div className="p-4 border-t flex justify-end">
                 <button
                   onClick={handleExchangeConfirm}
                   className="bg-[#20B894] text-white px-4 py-2 rounded-lg hover:bg-[#1a9677] transition-colors"
                 >
                   Confirm Exchange
                 </button>
-              </div>
+              </div> */}
             </div>
           </div>
         )}

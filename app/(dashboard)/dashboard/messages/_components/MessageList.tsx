@@ -21,7 +21,7 @@ export const MessageList = ({
   // console.log("userId", userId);
   // console.log("userData", userData);
 
-  const [exchangeChatRequest, { isLoading: exchangeChatIsLoading }] =
+  const [exchangeChatRequest, isLoading ] =
     useExchangeChatRequestMutation();
 
   // console.log("user Data", userData);
@@ -36,7 +36,7 @@ export const MessageList = ({
     isAccepted: false,
   });
   // console.log("requestList", requestList);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const filteredUsers = userData
@@ -293,14 +293,16 @@ export const MessageList = ({
                 <div className="flex gap-2 mt-2">
                   <button
                     onClick={() => requestHandler("true", request._id)}
-                    className="flex-1 py-1 sm:py-1.5 px-2 sm:px-3 text-xs sm:text-sm font-medium text-white bg-emerald-500 rounded-md hover:bg-emerald-600"
+                    className="flex-1 py-1 sm:py-1.5 px-2 sm:px-3 text-xs sm:text-sm font-medium text-white bg-emerald-500 rounded-md hover:bg-emerald-600 cursor-pointer"
                   >
+                    {/* {isLoading ? "Accepting..." : "Accept"} */}
                     Accept
                   </button>
                   <button
                     onClick={() => requestHandler("false", request._id)}
-                    className="flex-1 py-1 sm:py-1.5 px-2 sm:px-3 text-xs sm:text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200"
+                    className="flex-1 py-1 sm:py-1.5 px-2 sm:px-3 text-xs sm:text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 cursor-pointer"
                   >
+                    {/* {isLoading ? "Declining..." : "Decline"} */}
                     Decline
                   </button>
                 </div>
