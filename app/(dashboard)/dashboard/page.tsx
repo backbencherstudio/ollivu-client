@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   AreaChart,
   Area,
@@ -45,12 +45,17 @@ export default function UserDashboardHome() {
   const { data: getAllOverviewDataByUser, refetch: refetchOverview } = useGetAllOverviewDataByUserQuery(
     validUser?.userId
   );
-  // console.log("getAllOverviewDataByUser", getAllOverviewDataByUser);
+  useEffect(() => {
+    refetchOverview();
+  }, []);
   
   const getAllOverviewDataByUserData = getAllOverviewDataByUser?.data;
 
-  const { data: allExchangeData } = useGetAllExchangeQuery({});
+  const { data: allExchangeData, refetch: refetchAllExchangeData } = useGetAllExchangeQuery({});
   const allExchangeDataData = allExchangeData?.data;
+  useEffect(() => {
+    refetchAllExchangeData();
+  }, []);
 
   const userId = validUser?.userId;
   const { data: requestList } = useGetAllExchangeDataQuery({
@@ -61,10 +66,16 @@ export default function UserDashboardHome() {
 
   const { data: exchangeDashboard, refetch: refetchExchangeDashboard } = useGetExchangeDashboardQuery(userId);
   const exchangeDashboardData = exchangeDashboard?.data;
+  useEffect(() => {
+    refetchExchangeDashboard();
+  }, []);
   // console.log("exchangeDashboardData", exchangeDashboardData);
   
-  const {data: allOverviewData} = useGetAllOverviewDataByUserQuery(userId)
+  const {data: allOverviewData, refetch: refetchAllOverviewData} = useGetAllOverviewDataByUserQuery(userId)
   const allOverviewDataData = allOverviewData?.data;
+  useEffect(() => {
+    refetchAllOverviewData();
+  }, []);
   console.log("allOverviewDataData", allOverviewDataData);
   const confirmedExchanges = allOverviewDataData?.confirmExchange || 0;
   const totalExchangeRequests = allOverviewDataData?.exchangeRequest || 0;
