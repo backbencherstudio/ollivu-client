@@ -80,9 +80,15 @@ export default function Sidebar({ user }) {
     <div className="bg-white h-screen shadow-sm flex flex-col sticky top-0">
       {/* Logo section */}
       <div className="p-6 border-b shrink-0">
-        <Link href="/dashboard" className="block">
-          <Image src={logo} alt="Logo" width={100} height={40} />
-        </Link>
+        {user?.role === "admin" ? (
+          <Link href="/dashboard/user-management" className="block">
+            <Image src={logo} alt="Logo" width={100} height={40} />
+          </Link>
+        ) : (
+          <Link href="/dashboard" className="block">
+            <Image src={logo} alt="Logo" width={100} height={40} />
+          </Link>
+        )}
       </div>
 
       {/* Navigation section with overflow scroll */}
