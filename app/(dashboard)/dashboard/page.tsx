@@ -36,13 +36,13 @@ export default function UserDashboardHome() {
   const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
   const singleUserData = singleUser?.data;
   // Update the API call with year parameter
-  const { data: getExchangeHistory } = useGetExchangeHistoryQuery({
+  const { data: getExchangeHistory, refetch: refetchExchangeHistory } = useGetExchangeHistoryQuery({
     userId: validUser?.userId,
     year: selectedYear,
   });
   const getExchangeHistoryData = getExchangeHistory?.data;
 
-  const { data: getAllOverviewDataByUser } = useGetAllOverviewDataByUserQuery(
+  const { data: getAllOverviewDataByUser, refetch: refetchOverview } = useGetAllOverviewDataByUserQuery(
     validUser?.userId
   );
   // console.log("getAllOverviewDataByUser", getAllOverviewDataByUser);
@@ -59,7 +59,7 @@ export default function UserDashboardHome() {
   });
   const requestListData = requestList?.data;
 
-  const { data: exchangeDashboard } = useGetExchangeDashboardQuery(userId);
+  const { data: exchangeDashboard, refetch: refetchExchangeDashboard } = useGetExchangeDashboardQuery(userId);
   const exchangeDashboardData = exchangeDashboard?.data;
   // console.log("exchangeDashboardData", exchangeDashboardData);
   
@@ -251,6 +251,21 @@ export default function UserDashboardHome() {
   // const totalExchangeRequests =
   //   exchangeDashboardData?.filter((exchange) => exchange.isAccepted === "false")
   //     .length || 0;
+
+  // Add function to handle exchange confirmation
+  const handleExchangeConfirm = async () => {
+    // After successful confirmation API call
+    try {
+      // Refetch all necessary data
+      await Promise.all([
+        refetchOverview(),
+        refetchExchangeDashboard(),
+        refetchExchangeHistory()
+      ]);
+    } catch (error) {
+      console.error("Error refetching data:", error);
+    }
+  };
 
   return (
     <ProtectedRoute allowedRoles={["user"]}>
@@ -681,6 +696,16 @@ export default function UserDashboardHome() {
                   </div>
                 </div>
               )}
+
+              {/* Add confirmation button if needed */}
+              <div className="p-4 border-t flex justify-end">
+                <button
+                  onClick={handleExchangeConfirm}
+                  className="bg-[#20B894] text-white px-4 py-2 rounded-lg hover:bg-[#1a9677] transition-colors"
+                >
+                  Confirm Exchange
+                </button>
+              </div>
             </div>
           </div>
         )}
