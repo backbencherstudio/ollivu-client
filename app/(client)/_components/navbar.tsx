@@ -21,6 +21,7 @@ import { verifiedUser } from "@/src/utils/token-varify";
 import { useGetAllCategoriesQuery } from "@/src/redux/features/categories/categoriesApi";
 import { useGetSingleUserQuery } from "@/src/redux/features/users/userApi";
 import NotificationBadge from "./NotificationBadge/NotificationBadge";
+import { Button } from "@/components/ui/button";
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -39,7 +40,6 @@ export default function Navbar() {
   const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
   const singleUserData = singleUser?.data;
 
-  
   // console.log("singleUserData", singleUserData);
 
   // Update the authentication check
@@ -270,8 +270,9 @@ export default function Navbar() {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-
-            <NotificationBadge currentUser={validUser?.email} />
+            {validUser?.role === "user" && (
+              <NotificationBadge currentUser={validUser?.email} />
+            )}
             {isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger className="focus:outline-none cursor-pointer">
@@ -503,14 +504,22 @@ export default function Navbar() {
               {isAuthenticated ? (
                 <>
                   <Link
-                    href={user?.role === "admin" ? "/dashboard/user-management" : "/dashboard"}
+                    href={
+                      user?.role === "admin"
+                        ? "/dashboard/user-management"
+                        : "/dashboard"
+                    }
                     className="block w-full px-3 py-2 rounded-md text-base font-medium text-[#777980] hover:text-teal-600"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Dashboard
                   </Link>
                   <Link
-                    href={singleUserData?.role === "user" ? "/dashboard/user-profile" : "/dashboard/admin-profile"}
+                    href={
+                      singleUserData?.role === "user"
+                        ? "/dashboard/user-profile"
+                        : "/dashboard/admin-profile"
+                    }
                     className="block w-full px-3 py-2 rounded-md text-base font-medium text-[#777980] hover:text-teal-600"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
