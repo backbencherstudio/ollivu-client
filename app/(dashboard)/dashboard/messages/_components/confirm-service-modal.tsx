@@ -13,6 +13,7 @@ import { useState } from "react";
 import { useAcceptExchangeMutation } from "@/src/redux/features/shared/exchangeApi";
 import { verifiedUser } from "@/src/utils/token-varify";
 import { toast } from "sonner";
+import { authApi } from "@/src/redux/features/auth/authApi";
 
 interface ConfirmServiceModalProps {
   id: string;
@@ -34,6 +35,8 @@ export default function ConfirmServiceModal({
   const [selectedService, setSelectedService] = useState<string>("");
   const [acceptExchange] = useAcceptExchangeMutation();
   const currentUser = verifiedUser();
+
+
 
   if (!isOpen) return null;
 

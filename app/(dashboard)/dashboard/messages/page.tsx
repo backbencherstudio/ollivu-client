@@ -23,10 +23,13 @@ const Messages = () => {
   const [currentChat, setCurrentChat] = useState(null);
   const [user, setUser] = useState(null); // Updated to null initially
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+  console.log("currentChat", currentChat);
+  
 
   const currentUser = verifiedUser();
   const router = useRouter();
   const [recipient, setRecipient] = useState(currentUser?.email);
+  // TODO: check if the user is online or not
   const [finalQuery, setFinalQuery] = useState({
     userId: currentUser?.userId,
     isAccepted: true,
@@ -44,11 +47,10 @@ const Messages = () => {
       : chat?.senderUserId?.first_name;
   };
 
-  const { data: userList } = authApi.useGetAllExchangeDataQuery(finalQuery);
+  // TODO: get all exchange data
+  const { data: userList, refetch } = authApi.useGetAllExchangeDataQuery(finalQuery);
   const [acceptExchange] = useAcceptExchangeMutation();
   const users = userList?.data;
-
-  // console.log("currentChat", currentChat);
 
   const [unreadMessages, setUnreadMessages] = useState(() => {
     if (typeof window !== "undefined") {
@@ -511,6 +513,7 @@ const Messages = () => {
         exchangeId: currentChat?._id,
       });
       toast.success(result?.data?.message);
+      refetch();
     } else {
       setIsConfirmModalOpen(true);
     }
@@ -845,7 +848,7 @@ const Messages = () => {
                 </div>
 
                 <div className="flex flex-col gap-3 w-full mt-4">
-                  {currentUser?.email === currentChat?.reciverUserId?.email && (
+                  {/* {currentUser?.email === currentChat?.reciverUserId?.email || currentChat?.senderUserAccepted && currentChat?.reciverUserAccepted && ( */}
                     <button
                       className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                         currentChat?.senderUserAccepted && currentChat?.reciverUserAccepted
@@ -862,7 +865,7 @@ const Messages = () => {
                         ? "Exchange Confirmed"
                         : "Confirm Exchange Service"}
                     </button>
-                  )}
+                  {/* )} */}
 
                   <button
                     className="px-4 py-2.5 rounded-xl text-sm font-medium border border-[#b19c87] text-[#b19c87] 

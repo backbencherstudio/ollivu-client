@@ -5,6 +5,7 @@ import {
   useGetAllExchangeDataQuery,
 } from "@/src/redux/features/auth/authApi";
 import { useExchangeChatRequestMutation } from "@/src/redux/features/shared/exchangeApi";
+import { ArrowBigDown, ArrowRightLeft } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -18,6 +19,7 @@ export const MessageList = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRole, setSelectedRole] = useState("all");
   // console.log("userId", userId);
+  // console.log("userData", userData);
 
   const [exchangeChatRequest, { isLoading: exchangeChatIsLoading }] =
     useExchangeChatRequestMutation();
@@ -211,6 +213,11 @@ export const MessageList = ({
                         ? user?.reciverUserId?.email
                         : user?.email || "No messages yet"}
                     </p>
+                    <span className="text-[11px] flex items-center gap-3 text-gray-500">
+                      <small>{user?.senderService || "No service selected"}</small>{" "}
+                      <ArrowRightLeft className="w-4 h-4" />{" "}
+                      <small>{user?.reciverService || "No service selected"}</small>
+                    </span>
                   </div>
 
                   {/* Message Status */}

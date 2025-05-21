@@ -287,11 +287,11 @@ export default function SignupPage() {
           </div>
 
           {/* Divider */}
-          <div className="flex items-center gap-4 my-6">
+          {/* <div className="flex items-center gap-4 my-6">
             <div className="flex-1 h-px bg-gray-600" />
             <span className="text-gray-400 text-sm">Or</span>
             <div className="flex-1 h-px bg-gray-600" />
-          </div>
+          </div> */}
 
           {/* Social Buttons */}
           {/* <div className="flex flex-col md:flex-row gap-4">

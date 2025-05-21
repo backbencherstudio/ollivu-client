@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -70,7 +70,10 @@ export default function AddCategory() {
   const [editedCategoryName, setEditedCategoryName] = useState("");
 
   // Fetch existing categories
-  const { data: getAllCategories } = useGetAllCategoriesQuery({});
+  const { data: getAllCategories, refetch: refetchGetAllCategories } = useGetAllCategoriesQuery({});
+  useEffect(() => {
+    refetchGetAllCategories();
+  }, []);
   const [createCategory] = useCreateCategoryMutation();
   const [createSubCategory] = useCreateSubCategoryMutation();
   const [deleteSubCategory] = useDeleteSubCategoryMutation();
