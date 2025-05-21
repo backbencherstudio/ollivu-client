@@ -126,11 +126,12 @@ export default function LoginPage() {
             </div>
 
             {/* Login Button */}
+            
             <button
               type="submit"
               className="w-full primary_color hover:opacity-90 text-white py-2 rounded-full font-medium transition-all cursor-pointer"
             >
-              Log in ↗
+              {isLoading ? "Logging in..." : "Log in ↗"}
             </button>
           </form>
 

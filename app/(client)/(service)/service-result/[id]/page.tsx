@@ -599,6 +599,7 @@ const ServiceDetails = () => {
                   isOpen={isReportProfileModalOpen}
                   onClose={() => setIsReportProfileModalOpen(false)}
                   onSubmit={handleProfileReport}
+                  isLoading={isLoading}
                 />
 
                 <MessageRequestModal
