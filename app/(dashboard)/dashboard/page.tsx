@@ -61,9 +61,16 @@ export default function UserDashboardHome() {
 
   const { data: exchangeDashboard } = useGetExchangeDashboardQuery(userId);
   const exchangeDashboardData = exchangeDashboard?.data;
-  console.log("exchangeDashboardData", exchangeDashboardData);
+  // console.log("exchangeDashboardData", exchangeDashboardData);
+  
+  const {data: allOverviewData} = useGetAllOverviewDataByUserQuery(userId)
+  const allOverviewDataData = allOverviewData?.data;
+  console.log("allOverviewDataData", allOverviewDataData);
+  const confirmedExchanges = allOverviewDataData?.confirmExchange || 0;
+  const totalExchangeRequests = allOverviewDataData?.exchangeRequest || 0;
+  console.log("totalExchangeRequests", totalExchangeRequests);
+  const totalReviews = allOverviewDataData?.totalReview || 0;
 
-  // console.log("getExchangeHistoryData", allExchangeDataData);
 
   // Calculate days since user creation
   const daysSinceCreation = singleUserData?.createdAt
@@ -74,7 +81,7 @@ export default function UserDashboardHome() {
   const hasCompletedOneYear = daysSinceCreation >= 365;
 
   // Calculate quality service status from singleUserData
-  const totalReviews = singleUserData?.reviews?.length || 0;
+  // const totalReviews = singleUserData?.reviews?.length || 0;
   const averageRating =
     singleUserData?.reviews?.reduce(
       (acc: number, review: any) => acc + review.rating,
@@ -237,13 +244,13 @@ export default function UserDashboardHome() {
   </ResponsiveContainer>;
 
   // Calculate counts from exchangeDashboardData
-  const confirmedExchanges =
-    exchangeDashboardData?.filter((exchange) => exchange.isAccepted === "true")
-      .length || 0;
+  // const confirmedExchanges =
+  //   exchangeDashboardData?.filter((exchange) => exchange.isAccepted === "true")
+  //     .length || 0;
 
-  const totalExchangeRequests =
-    exchangeDashboardData?.filter((exchange) => exchange.isAccepted === "false")
-      .length || 0;
+  // const totalExchangeRequests =
+  //   exchangeDashboardData?.filter((exchange) => exchange.isAccepted === "false")
+  //     .length || 0;
 
   return (
     <ProtectedRoute allowedRoles={["user"]}>
@@ -262,7 +269,7 @@ export default function UserDashboardHome() {
             // { title: "New Connect Requests", value: exchangeDashboardData?.length },
             {
               title: "Total Reviews",
-              value: getAllOverviewDataByUserData?.totalReview,
+              value: totalReviews,
             },
           ].map((stat, idx) => (
             <div
