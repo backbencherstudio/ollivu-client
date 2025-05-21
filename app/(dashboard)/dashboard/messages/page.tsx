@@ -848,7 +848,7 @@ const Messages = () => {
                 </div>
 
                 <div className="flex flex-col gap-3 w-full mt-4">
-                  {currentUser?.email === currentChat?.reciverUserId?.email && (
+                  {/* {currentUser?.email === currentChat?.reciverUserId?.email || currentChat?.senderUserAccepted && currentChat?.reciverUserAccepted && ( */}
                     <button
                       className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                         currentChat?.senderUserAccepted && currentChat?.reciverUserAccepted
@@ -865,7 +865,7 @@ const Messages = () => {
                         ? "Exchange Confirmed"
                         : "Confirm Exchange Service"}
                     </button>
-                  )}
+                  {/* )} */}
 
                   <button
                     className="px-4 py-2.5 rounded-xl text-sm font-medium border border-[#b19c87] text-[#b19c87] 
