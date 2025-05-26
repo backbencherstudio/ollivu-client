@@ -36,7 +36,6 @@ export const categoriesApi = baseApi.injectEndpoints({
             }),
             invalidatesTags: ["Category"]
         })
-
     })
 });
 

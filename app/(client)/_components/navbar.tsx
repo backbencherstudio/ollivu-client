@@ -295,7 +295,12 @@ export default function Navbar() {
                     ) : (
                       <div className="w-full h-full bg-[#20B894] flex items-center justify-center text-white text-xl font-semibold">
                         {singleUserData?.first_name
-                          ? singleUserData.first_name.slice(0, 2).toUpperCase()
+                          ? singleUserData?.first_name
+                              .slice(0, 2)
+                              .toUpperCase() ||
+                            singleUserData?.personalInfo?.last_name
+                              .slice(0, 2)
+                              .toUpperCase()
                           : "UN"}
                       </div>
                     )}
@@ -305,7 +310,8 @@ export default function Navbar() {
                   <DropdownMenuLabel>
                     <div className="flex flex-col space-y-1">
                       <p className="font-medium">
-                        {singleUserData?.first_name} {singleUserData?.last_name}
+                        {singleUserData?.first_name}{" "}
+                        {singleUserData?.personalInfo?.last_name}
                       </p>
                       <p className="text-sm text-gray-500">
                         {singleUserData?.email}
