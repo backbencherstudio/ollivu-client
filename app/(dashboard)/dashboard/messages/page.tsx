@@ -762,7 +762,7 @@ const Messages = () => {
                         text-[#b19c87] hover:bg-[#b19c87] hover:text-white transition-colors"
                       onClick={() => handleReviewClick(currentChat)}
                     >
-                      Give Review
+                      Post Review
                     </button>
                   </div>
                 </div>
@@ -875,7 +875,7 @@ const Messages = () => {
                       setIsInfoModalOpen(false);
                     }}
                   >
-                    Give Review
+                    Post Review
                   </button>
                 </div>
               </div>
