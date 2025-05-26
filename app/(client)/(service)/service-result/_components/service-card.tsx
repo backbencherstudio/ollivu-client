@@ -20,7 +20,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ user }) => {
 
     if (!currentUser) {
       // Store the target user ID before redirecting to login
-      localStorage.setItem('redirectUserId', user?._id || '');
+      localStorage.setItem("redirectUserId", user?._id || "");
       router.push("/auth/login");
       return;
     }
