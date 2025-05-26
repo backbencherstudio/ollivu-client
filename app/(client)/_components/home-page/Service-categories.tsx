@@ -57,7 +57,7 @@ export default function ServiceExchangeFlow() {
   const currentUser = verifiedUser();
   const { data: currentUserData } = useGetCurrentUserQuery(currentUser?.userId);
   const currentUserInfo = currentUserData?.data;
-  console.log("currentUserInfo", currentUserInfo);
+  // console.log("currentUserInfo", currentUserInfo);
 
   // Update the handleExchangeClick function
   const handleExchangeClick = (service: any) => {
@@ -115,7 +115,7 @@ export default function ServiceExchangeFlow() {
       const exchangeRequests = selectedUsers.map((userId) => {
         // Find user details for each selected user
         const userDetails = allUsers.find((user) => user._id === userId);
-        console.log("userDetails", userDetails);
+        // console.log("userDetails", userDetails);
 
 
         return {

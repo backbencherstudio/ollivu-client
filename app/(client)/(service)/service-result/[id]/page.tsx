@@ -48,7 +48,7 @@ const ServiceDetails = () => {
     params.id as string
   );
   const singleUserData = instructor?.data;
-  // console.log("singleUserData", singleUserData?._id);
+  console.log("singleUserData", singleUserData);
 
   const { data: currentUserData } = useGetCurrentUserQuery(currentUser?.userId);
   const currentUsreInfo = currentUserData?.data;
@@ -74,10 +74,11 @@ const ServiceDetails = () => {
 
   // Pagination logic
   const reviews = getSingleReview?.data || [];
-  const totalPages = Math.ceil(reviews.length / itemsPerPage);
+  const sortedReviews = [...reviews].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  const totalPages = Math.ceil(sortedReviews.length / itemsPerPage);
   const indexOfLastReview = currentPage * itemsPerPage;
   const indexOfFirstReview = indexOfLastReview - itemsPerPage;
-  const currentReviews = reviews.slice(indexOfFirstReview, indexOfLastReview);
+  const currentReviews = sortedReviews.slice(indexOfFirstReview, indexOfLastReview);
 
   useEffect(() => {
     refetch();
