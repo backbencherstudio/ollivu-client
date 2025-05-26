@@ -95,7 +95,7 @@ export default function RatingOverview({
                   key={star}
                   className={`w-5 h-5 ${
                     star <= formattedInstructor.rating 
-                      ? 'fill-amber-400 text-amber-400' 
+                      ? 'fill-amber-400 text-amber-400'
                       : 'fill-gray-200 text-gray-200'
                   } transition-colors duration-200`}
                 />

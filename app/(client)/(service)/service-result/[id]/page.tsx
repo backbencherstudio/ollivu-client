@@ -74,11 +74,16 @@ const ServiceDetails = () => {
 
   // Pagination logic
   const reviews = getSingleReview?.data || [];
-  const sortedReviews = [...reviews].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  const sortedReviews = [...reviews].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
   const totalPages = Math.ceil(sortedReviews.length / itemsPerPage);
   const indexOfLastReview = currentPage * itemsPerPage;
   const indexOfFirstReview = indexOfLastReview - itemsPerPage;
-  const currentReviews = sortedReviews.slice(indexOfFirstReview, indexOfLastReview);
+  const currentReviews = sortedReviews.slice(
+    indexOfFirstReview,
+    indexOfLastReview
+  );
 
   useEffect(() => {
     refetch();
@@ -116,9 +121,10 @@ const ServiceDetails = () => {
     isVerified: true,
     portfolioImage: singleUser?.portfolio || "/default-portfolio.jpg",
     about: singleUser?.about_me,
-    location: singleUser?.addressInfo?.city && singleUser?.addressInfo?.country
-      ? `${singleUser.addressInfo.city}, ${singleUser.addressInfo.country}`
-      : "",
+    location:
+      singleUser?.addressInfo?.city && singleUser?.addressInfo?.country
+        ? `${singleUser.addressInfo.city}, ${singleUser.addressInfo.country}`
+        : "",
     // languages: ["English", "Bengali"], // Add default languages
   };
 
@@ -213,8 +219,9 @@ const ServiceDetails = () => {
   // Format the experience label
   const getExperienceLabel = () => {
     if (yearsOfExperience >= 1) {
-      return `${yearsOfExperience} Year${yearsOfExperience > 1 ? "s" : ""
-        } Experience`;
+      return `${yearsOfExperience} Year${
+        yearsOfExperience > 1 ? "s" : ""
+      } Experience`;
     }
     return `${remainingDays} Day${remainingDays !== 1 ? "s" : ""} Experience`;
   };
@@ -224,7 +231,9 @@ const ServiceDetails = () => {
   // Calculate quality service badge eligibility
   const hasQualityService = () => {
     if (!singleReview || singleReview.length < 10) return false;
-    const highRatingReviews = singleReview.filter(review => review.rating >= 4.5);
+    const highRatingReviews = singleReview.filter(
+      (review) => review.rating >= 4.5
+    );
     return highRatingReviews.length >= 10;
   };
 
@@ -420,7 +429,7 @@ const ServiceDetails = () => {
                 </h2>
                 <div className="relative h-[200px] md:h-[410px] rounded-xl overflow-hidden bg-gray-100">
                   {formattedInstructor?.portfolioImage &&
-                    formattedInstructor.portfolioImage !==
+                  formattedInstructor.portfolioImage !==
                     "/default-portfolio.jpg" ? (
                     <Image
                       src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${formattedInstructor.portfolioImage}`}
@@ -520,7 +529,7 @@ const ServiceDetails = () => {
               <div className="flex flex-col items-center text-center">
                 <div className="w-20 h-20 rounded-full relative overflow-hidden mb-3 bg-gray-100">
                   {formattedInstructor?.profileImage &&
-                    formattedInstructor.profileImage !== "/default-avatar.jpg" ? (
+                  formattedInstructor.profileImage !== "/default-avatar.jpg" ? (
                     <Image
                       src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${formattedInstructor.profileImage}`}
                       alt={formattedInstructor.first_name || "User"}
@@ -532,10 +541,11 @@ const ServiceDetails = () => {
                           parent.innerHTML = `
                           <div class="w-full h-full flex items-center justify-center">
                             <span class="text-2xl font-medium text-gray-400">
-                              ${formattedInstructor?.first_name
-                              ?.charAt(0)
-                              ?.toUpperCase() || "U"
-                            }
+                              ${
+                                formattedInstructor?.first_name
+                                  ?.charAt(0)
+                                  ?.toUpperCase() || "U"
+                              }
                             </span>
                           </div>
                         `;
@@ -545,9 +555,8 @@ const ServiceDetails = () => {
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
                       <span className="text-2xl font-medium text-gray-400">
-                        {formattedInstructor?.name
-                          ?.charAt(0)
-                          ?.toUpperCase() || "U"}
+                        {formattedInstructor?.name?.charAt(0)?.toUpperCase() ||
+                          "U"}
                       </span>
                     </div>
                   )}
@@ -568,7 +577,7 @@ const ServiceDetails = () => {
                       onClick={() => setIsMessageModalOpen(true)}
                       className="w-full py-2.5 bg-[#20B894] text-white rounded-lg text-sm md:text-base font-medium hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2 cursor-pointer"
                     >
-                      Send Message Request
+                      Exchange Service{" "}
                       <svg
                         className="w-4 h-4"
                         viewBox="0 0 24 24"
@@ -582,10 +591,11 @@ const ServiceDetails = () => {
                     <button
                       onClick={() => setIsReportProfileModalOpen(true)}
                       disabled={isProfileReported()}
-                      className={`w-full py-2.5 border rounded-lg text-sm md:text-base font-medium transition-colors flex items-center justify-center gap-2 ${isProfileReported()
-                        ? "text-gray-400 border-gray-300 cursor-not-allowed bg-gray-50"
-                        : "text-[#FE5050] border-[#FE5050] hover:bg-red-50 cursor-pointer"
-                        }`}
+                      className={`w-full py-2.5 border rounded-lg text-sm md:text-base font-medium transition-colors flex items-center justify-center gap-2 ${
+                        isProfileReported()
+                          ? "text-gray-400 border-gray-300 cursor-not-allowed bg-gray-50"
+                          : "text-[#FE5050] border-[#FE5050] hover:bg-red-50 cursor-pointer"
+                      }`}
                     >
                       {isProfileReported()
                         ? "Reported Profile"
