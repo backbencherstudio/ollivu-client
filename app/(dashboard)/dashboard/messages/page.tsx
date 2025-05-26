@@ -521,7 +521,7 @@ const Messages = () => {
   // console.log("currentChat", currentChat);
 
   return (
-    <div className="h-screen flex flex-col bg-white">
+    <div className="flex flex-col bg-white">
       {/* Main Container - Responsive Grid Layout */}
       <div className="h-full grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12">
         {/* Left Sidebar - Messages List */}
@@ -666,7 +666,7 @@ const Messages = () => {
               </div>
 
               {/* Messages Content */}
-              <div className="flex-1 overflow-hidden">
+              <div className="">
                 <MessageContent
                   messages={messages}
                   currentUser={currentUser}

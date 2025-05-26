@@ -36,7 +36,7 @@ export const MessageContent = ({
   };
   return (
     <div
-      className="flex-grow overflow-y-auto p-4  bg-white h-[560px]"
+      className="flex-grow overflow-y-auto p-4 bg-[#F9FAFB] h-[560px] space-y-4"
       style={{ display: "flex", flexDirection: "column-reverse" }}
     >
       <div ref={messagesEndRef} />
@@ -46,23 +46,25 @@ export const MessageContent = ({
             new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
         )
         .map((msg, index) => (
-          <div key={index}>
-            <div
-              key={msg._id || index}
-              className={`mb-4 ${
-                msg.sender === currentUser?.email ? "text-right" : "text-left"
-              }`}
-            >
-              <div className="relative group inline-block">
+          <div
+            key={index}
+            className={`flex ${
+              msg.sender === currentUser?.email
+                ? "justify-end"
+                : "justify-start"
+            }`}
+          >
+            <div className="max-w-[85%] group">
+              <div className="relative">
                 {msg.sender === currentUser?.email && (
                   <button
                     onClick={() => deleteMessage(msg._id)}
-                    className="absolute -left-8 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-in-out"
+                    className="absolute -left-10 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-200 p-1.5 rounded-full hover:bg-red-50"
                     title="Delete message"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5 text-red-500 hover:text-red-700"
+                      className="h-5 w-5 text-red-500 hover:text-red-600"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -77,18 +79,22 @@ export const MessageContent = ({
                   </button>
                 )}
                 <div
-                  className={`px-3 py-2 border rounded-xl  ${
+                  className={`px-4 py-2.5 rounded-2xl shadow-sm break-words ${
                     msg.sender === currentUser?.email
-                      ? "bg-gray-100 text-black rounded-br-none"
-                      : "rounded-bl-none"
+                      ? "bg-[#20B894] text-white rounded-br-none"
+                      : "bg-white rounded-bl-none border border-gray-100"
                   }`}
                 >
-                  {/* {console.log(msg)} */}
-                  {msg.content}
+                  <p className="text-[15px] leading-relaxed">{msg.content}</p>
                 </div>
-                <div className="text-xs text-gray-500 mt-1">
-                  {/* {new Date(msg.timestamp).toLocaleTimeString()} */}
-                  {moment(msg?.timestamp).format("DD MMMM YYYY, h:mm A")}
+                <div
+                  className={`text-xs mt-1.5 ${
+                    msg.sender === currentUser?.email
+                      ? "text-right mr-2"
+                      : "text-left ml-2"
+                  } text-gray-500`}
+                >
+                  {moment(msg?.timestamp).format("DD MMM, h:mm A")}
                 </div>
               </div>
             </div>
