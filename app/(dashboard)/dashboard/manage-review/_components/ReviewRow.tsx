@@ -160,7 +160,7 @@ export function ReviewRow({ review, onApprove, onReject }: ReviewRowProps) {
           <Button
             variant="ghost"
             size="sm"
-            className="text-blue-500 p-0 text-sm sm:text-base hover:bg-transparent font-medium"
+            className="text-blue-500 p-0 text-sm sm:text-base hover:bg-transparent font-medium cursor-pointer"
             onClick={() => setIsActionModalOpen(true)}
           >
             View details
