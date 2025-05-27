@@ -84,9 +84,9 @@ export const MessageList = ({
   };
 
   return (
-    <div className="h-full flex flex-col">
-      {/* Search Bar */}
-      <div className="p-3 sm:p-4 sticky top-0 bg-white border-b border-gray-100 z-20">
+    <div className="h-[calc(90vh-64px)] flex flex-col">
+      {/* Search Bar - Fixed at top */}
+      <div className="p-3 sm:p-4 bg-white border-b border-gray-100 z-20">
         <div className="flex gap-2">
           <input
             type="text"
@@ -97,9 +97,10 @@ export const MessageList = ({
           />
         </div>
       </div>
-      {/* Tabs */}
-      <Tabs defaultValue="messages" className="flex-1 flex flex-col">
-        <TabsList className="w-full bg-white border-b rounded-none sticky top-[56px] sm:top-[72px] z-10">
+
+      {/* Tabs Container */}
+      <Tabs defaultValue="messages" className="flex-1 flex flex-col overflow-hidden">
+        <TabsList className="w-full bg-white border-b rounded-none z-10">
           <TabsTrigger
             value="messages"
             className="flex-1 py-2 sm:py-3 text-sm sm:text-base data-[state=active]:border-b-2 border-l-0 border-r-0 border-t-0 rounded-none data-[state=active]:border-[#20b894] data-[state=active]:bg-white"
@@ -113,9 +114,10 @@ export const MessageList = ({
             Requests
           </TabsTrigger>
         </TabsList>
-        {/* Messages Tab Content */}
-        <TabsContent value="messages" className="flex-1 overflow-y-auto">
-          <div className="overflow-y-auto">
+
+        {/* Messages Tab Content - Scrollable */}
+        <TabsContent value="messages" className="flex-1 overflow-auto">
+          <div className="h-full">
             {filteredUsers?.map((user) => (
               <button
                 key={user._id}
@@ -251,6 +253,7 @@ export const MessageList = ({
             )}
           </div>
         </TabsContent>
+
         {/* Requests Tab Content */}
         <TabsContent value="requests">
           <div className="flex flex-col">

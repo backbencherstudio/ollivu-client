@@ -749,17 +749,22 @@ const Messages = () => {
                     <button
                       className={`
                         w-full px-4 py-2.5 rounded-xl text-sm font-medium transition-colors
-                        ${(currentChat?.senderUserAccepted && currentChat?.reciverUserAccepted)
+                        ${(currentChat?.senderUserAccepted && currentChat?.reciverUserAccepted) || 
+                          ((currentUser?.userId === currentChat?.senderUserId?._id && currentChat?.senderUserAccepted) ||
+                           (currentUser?.userId === currentChat?.reciverUserId?._id && currentChat?.reciverUserAccepted))
                           ? "bg-gray-200 text-gray-600 cursor-not-allowed"
                           : "bg-[#20b894] text-white hover:bg-[#1a9677] cursor-pointer"
                         }
                       `}
                       onClick={() => modalHandler(currentChat)}
-                      disabled={currentChat?.senderUserAccepted && currentChat?.reciverUserAccepted}
+                      disabled={currentChat?.senderUserAccepted && currentChat?.reciverUserAccepted || 
+                        ((currentUser?.userId === currentChat?.senderUserId?._id && currentChat?.senderUserAccepted) ||
+                         (currentUser?.userId === currentChat?.reciverUserId?._id && currentChat?.reciverUserAccepted))}
                     >
                       {currentChat?.senderUserAccepted && currentChat?.reciverUserAccepted
                         ? "Exchange Confirmed"
-                        : currentChat?.reciverUserAccepted || (currentUser?.userId === currentChat?.senderUserId?._id && currentChat?.senderUserAccepted)
+                        : ((currentUser?.userId === currentChat?.senderUserId?._id && currentChat?.senderUserAccepted) ||
+                           (currentUser?.userId === currentChat?.reciverUserId?._id && currentChat?.reciverUserAccepted))
                           ? "Exchange in Progress"
                           : "Confirm Exchange Service"
                       }
