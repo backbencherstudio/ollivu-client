@@ -15,6 +15,7 @@ export const MessageList = ({
   currentUser,
   userId,
   userImage,
+  activeChat, // Add this prop
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRole, setSelectedRole] = useState("all");
@@ -122,8 +123,10 @@ export const MessageList = ({
               <button
                 key={user._id}
                 onClick={() => onChatSelect(user)}
-                className={`w-full text-left hover:bg-gray-50 p-3 sm:p-4 border-b border-gray-100 ${
-                  user.hasUnread ? "bg-blue-50" : ""
+                className={`w-full text-left hover:bg-gray-50 p-3 sm:p-4 border-b border-gray-100 cursor-pointer ${
+                  user.hasUnread ? "bg-blue-100" : ""
+                } ${
+                  activeChat?._id === user._id ? "bg-emerald-50" : ""
                 }`}
               >
                 <div className="flex items-center gap-2 sm:gap-4">

@@ -563,6 +563,7 @@ const Messages = () => {
                   handleChatSelect(user);
                   setIsSidebarOpen(false);
                 }}
+                
                 userData={userList?.data?.map((user) => {
                   let receiverEmail = "";
                   if (user.senderUserId?.email === currentUser?.email) {
@@ -582,6 +583,7 @@ const Messages = () => {
                 currentUser={currentUser?.email}
                 userId={currentUser?.userId}
                 userImage={undefined}
+                activeChat={currentChat} // Add this line
               />
             </div>
           </div>
