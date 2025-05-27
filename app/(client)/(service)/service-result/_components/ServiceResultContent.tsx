@@ -71,10 +71,14 @@ export default function ServiceResultContent() {
     data: users,
     isLoading,
     isFetching,
+    refetch,
   } = useGetAllUsersQuery(queryParams, {
     refetchOnMountOrArgChange: true,
   });
-  console.log("users", users?.data);
+  useEffect(() => {
+    refetch();
+  }, []);
+  // console.log("users", users?.data);
 
   // Handle content transitions
   const startTransition = useCallback(() => {

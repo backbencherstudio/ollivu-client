@@ -1,7 +1,11 @@
 "use client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { authApi, useGetAllExchangeDataQuery } from "@/src/redux/features/auth/authApi";
+import {
+  authApi,
+  useGetAllExchangeDataQuery,
+} from "@/src/redux/features/auth/authApi";
 import { useExchangeChatRequestMutation } from "@/src/redux/features/shared/exchangeApi";
+import { ArrowBigDown, ArrowRightLeft } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -14,8 +18,10 @@ export const MessageList = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRole, setSelectedRole] = useState("all");
+  // console.log("userId", userId);
+  // console.log("userData", userData);
 
-  const [exchangeChatRequest, { isLoading: exchangeChatIsLoading }] =
+  const [exchangeChatRequest, isLoading ] =
     useExchangeChatRequestMutation();
 
   // console.log("user Data", userData);
@@ -30,22 +36,25 @@ export const MessageList = ({
     isAccepted: false,
   });
   // console.log("requestList", requestList);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  // console.log("userData", userData);
+
   const filteredUsers = userData
     ?.filter((user) =>
       (user?.email || "")
         .toLowerCase()
         .includes((searchTerm || "").toLowerCase())
     )
+    .map((user) => ({
+      ...user,
+      unreadCount: user.hasUnread ? user.unreadCount || 0 : 0,
+    }))
     .sort((a, b) => {
       const timeA = a.lastMessage?.timestamp || a.lastMessageTime || 0;
       const timeB = b.lastMessage?.timestamp || b.lastMessageTime || 0;
 
       return new Date(timeB).getTime() - new Date(timeA).getTime(); // Most recent first
     });
-  // console.log("filteredUsers", filteredUsers);
 
   if (!isLoading) {
     return (
@@ -169,7 +178,11 @@ export const MessageList = ({
                   {/* User Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-center">
-                      <h3 className="text-xs sm:text-sm font-medium text-gray-900 truncate">
+                      <h3
+                        className={`text-xs sm:text-sm ${
+                          user.unreadCount > 0 ? "font-bold" : "font-medium"
+                        } text-gray-900 truncate`}
+                      >
                         {(user?.email === currentUser
                           ? user?.reciverUserId?.first_name
                           : user?.senderUserId?.first_name) || "Unknown"}{" "}
@@ -191,11 +204,20 @@ export const MessageList = ({
                           })}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-500 truncate mt-1">
+                    <p
+                      className={`text-sm text-gray-500 truncate mt-1 ${
+                        user.unreadCount > 0 ? "font-bold" : "font-normal"
+                      }`}
+                    >
                       {user?.email === currentUser
                         ? user?.reciverUserId?.email
                         : user?.email || "No messages yet"}
                     </p>
+                    <span className="text-[11px] flex items-center gap-3 text-gray-500">
+                      <small>{user?.senderService || "No service selected"}</small>{" "}
+                      <ArrowRightLeft className="w-4 h-4" />{" "}
+                      <small>{user?.reciverService || "No service selected"}</small>
+                    </span>
                   </div>
 
                   {/* Message Status */}
@@ -207,11 +229,13 @@ export const MessageList = ({
                           minute: "2-digit",
                         })}
                     </span>
-                    {user.unreadCount > 0 && (
-                      <span className="bg-blue-500 text-white text-xs font-medium px-2 py-1 rounded-full mt-1">
-                        {user.unreadCount}
-                      </span>
-                    )}
+
+                    {user?.unreadCount > 0 &&
+                      userId !== user?.senderId?._id && (
+                        <span className="bg-blue-500 text-white text-xs font-medium px-2 py-1 rounded-full mt-1">
+                          {user.unreadCount}
+                        </span>
+                      )}
                   </div>
                 </div>
               </button>
@@ -228,7 +252,10 @@ export const MessageList = ({
         <TabsContent value="requests">
           <div className="flex flex-col">
             {requestList?.data?.map((request) => (
-              <div key={request._id} className="p-3 sm:p-4 border-b border-gray-100">
+              <div
+                key={request._id}
+                className="p-3 sm:p-4 border-b border-gray-100"
+              >
                 <div className="flex items-center gap-2 sm:gap-3">
                   <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full relative overflow-hidden">
                     {request?.senderUserId?.profileImage ? (
@@ -266,14 +293,16 @@ export const MessageList = ({
                 <div className="flex gap-2 mt-2">
                   <button
                     onClick={() => requestHandler("true", request._id)}
-                    className="flex-1 py-1 sm:py-1.5 px-2 sm:px-3 text-xs sm:text-sm font-medium text-white bg-emerald-500 rounded-md hover:bg-emerald-600"
+                    className="flex-1 py-1 sm:py-1.5 px-2 sm:px-3 text-xs sm:text-sm font-medium text-white bg-emerald-500 rounded-md hover:bg-emerald-600 cursor-pointer"
                   >
+                    {/* {isLoading ? "Accepting..." : "Accept"} */}
                     Accept
                   </button>
                   <button
                     onClick={() => requestHandler("false", request._id)}
-                    className="flex-1 py-1 sm:py-1.5 px-2 sm:px-3 text-xs sm:text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200"
+                    className="flex-1 py-1 sm:py-1.5 px-2 sm:px-3 text-xs sm:text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 cursor-pointer"
                   >
+                    {/* {isLoading ? "Declining..." : "Decline"} */}
                     Decline
                   </button>
                 </div>

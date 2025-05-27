@@ -100,7 +100,7 @@ export default function AdminProfile() {
 
         // Log formData for debugging
         for (const pair of formDataToSend.entries()) {
-          console.log(pair[0], pair[1]);
+          // console.log(pair[0], pair[1]);
         }
 
         const response = await updateUser(formDataToSend).unwrap();

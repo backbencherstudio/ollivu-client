@@ -5,12 +5,14 @@ interface ReportProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (reason: string, file: File | null) => void; 
+  isLoading: boolean;
 }
 
 const ReportProfileModal = ({
   isOpen,
   onClose,
   onSubmit,
+  isLoading,
 }: ReportProfileModalProps) => {
   const [selectedReason, setSelectedReason] = useState("");
   const [description, setDescription] = useState("");
@@ -122,7 +124,7 @@ const ReportProfileModal = ({
             onClick={handleSubmit}
             className="flex-1 bg-[#FE5050] text-white py-2.5 rounded-lg hover:bg-red-600 transition-colors cursor-pointer"
           >
-            Report
+            {isLoading ? "Reporting..." : "Report"}
           </button>
           <button
             onClick={onClose}

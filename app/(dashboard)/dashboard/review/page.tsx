@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useGetSingleReviewQuery } from "@/src/redux/features/shared/reviewApi";
 import { verifiedUser } from "@/src/utils/token-varify";
@@ -19,16 +19,22 @@ export default function AdminReviewsPage() {
   const [createReviewReport] = useCreateReviewReportMutation();
 
   const currentUser = verifiedUser();
-  const { data: singleUser } = useGetSingleUserQuery(currentUser?.userId);
+  const { data: singleUser, refetch: refetchSingleUser } = useGetSingleUserQuery(currentUser?.userId);
   const singleUserData = singleUser?.data;
-  console.log("singleUserData", singleUserData);
+  useEffect(() => {
+    refetchSingleUser();
+  }, []);
+  // console.log("singleUserData", singleUserData);
 
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10;
 
-  const { data: getSingleReview, refetch } = useGetSingleReviewQuery(
+  const { data: getSingleReview, refetch: refetchGetSingleReview } = useGetSingleReviewQuery(
     currentUser?.userId
   );
+  useEffect(() => {
+    refetchGetSingleReview();
+  }, []);
 
   const singleUserAllReview = getSingleReview?.data;
   console.log("singleUserAllReview", singleUserAllReview);
@@ -68,7 +74,7 @@ export default function AdminReviewsPage() {
         toast.success("Report submitted successfully");
         setIsReportModalOpen(false);
         setSelectedReview(null);
-        refetch();
+        refetchGetSingleReview();
       } else {
         toast.error("Failed to submit report");
       }

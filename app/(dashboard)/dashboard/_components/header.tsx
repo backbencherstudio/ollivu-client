@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Bell, MessageCircle } from "lucide-react";
+import { Bell, MessageCircle, Settings, HelpCircle, User, LogOut, Home } from "lucide-react";
 import profile from "@/public/avatars/emily.png";
 import {
   AiFillMessage,
@@ -86,24 +86,17 @@ export default function Header({ user }) {
     setShowProfile(false);
   };
 
-  // Close dropdowns when clicking outside
-  // useEffect(() => {
-  //   function handleClickOutside(event) {
-  //     if (profileRef.current && !profileRef.current.contains(event.target)) {
-  //       setShowProfile(false);
-  //     }
-  //     if (
-  //       notificationRef.current &&
-  //       !notificationRef.current.contains(event.target)
-  //     ) {
-  //       setShowNotifications(false);
-  //     }
-  //   }
-  //   document.addEventListener("mousedown", handleClickOutside);
-  //   return () => {
-  //     document.removeEventListener("mousedown", handleClickOutside);
-  //   };
-  // }, []);
+  // Add click outside handler
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setShowProfile(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Add logout handler
   const handleLogout = () => {
@@ -113,6 +106,19 @@ export default function Header({ user }) {
     setIsAuthenticated(false);
     router.push("/auth/login");
   };
+
+  const profileMenuItems = [
+    {
+      label: 'Profile',
+      icon: User,
+      href: '/dashboard/user-profile',
+    },
+    {
+      label: 'Back to Home',
+      icon: Home,
+      href: '/',
+    },
+  ];
 
   return (
     <div className="bg-white shadow-sm py-[21px] px-6 sticky top-0 z-50">
@@ -193,9 +199,9 @@ export default function Header({ user }) {
 
           {/* Profile Dropdown */}
           <div ref={profileRef} className="relative">
-            <div
+            <button
               onClick={handleProfileClick}
-              className="flex items-center gap-3 cursor-pointer"
+              className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 rounded-full p-1 transition-colors duration-200"
             >
               <div className="w-10 h-10 rounded-full relative overflow-hidden">
                 {singleUserData?.profileImage ? (
@@ -215,52 +221,49 @@ export default function Header({ user }) {
                   </div>
                 )}
               </div>
-              <div>
-                <p className="text-sm font-medium text-[#070707]">
+              <div className="hidden md:block">
+                <p className="text-sm font-medium text-[#070707] text-left">
                   {singleUserData?.first_name}
                 </p>
                 <p className="text-xs text-gray-500">{user.role}</p>
               </div>
-            </div>
+            </button>
 
             {showProfile && (
-              <div className="absolute top-12 right-0 bg-white shadow-md rounded-md p-4">
-                <div className="flex flex-col gap-4">
-                  {/* User Info Section */}
-                  <div className="border-b pb-3">
-                    <p className="text-base font-medium text-[#070707]">
-                      {singleUserData?.first_name} {singleUserData?.last_name}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {singleUserData?.email}
-                    </p>
-                  </div>
+              <div className="absolute top-14 right-0 w-64 bg-white rounded-lg shadow-lg py-2 border border-gray-100 transition-all duration-200 ease-in-out">
+                {/* User Info Header */}
+                <div className="px-4 py-3 border-b border-gray-100">
+                  <p className="text-sm font-medium text-gray-900">
+                    {singleUserData?.first_name} {singleUserData?.last_name}
+                  </p>
+                  <p className="text-xs text-gray-500 truncate">
+                    {singleUserData?.email}
+                  </p>
+                </div>
 
-                  {/* Back to Home Button */}
-                  <div className="flex items-center gap-3 cursor-pointer">
-                    <AiOutlineHome className="w-6 h-6 p-1 bg-[#EDFCF6] text-[#20B894] rounded-full" />
+                {/* Menu Items */}
+                <div className="py-2">
+                  {profileMenuItems.map((item) => (
                     <Link
-                      href="/"
-                      className="text-base font-normal text-[#070707]"
+                      key={item.label}
+                      href={item.href}
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
                     >
-                      Back to Home
+                      <item.icon className="w-4 h-4 mr-3 text-gray-500" />
+                      {item.label}
                     </Link>
-                  </div>
-                  <div className="flex items-center gap-3 cursor-pointer">
-                    <AiOutlineUser className="w-6 h-6 p-1 bg-[#EDFCF6] text-[#20B894] rounded-full" />
-                    <p className="text-base font-normal text-[#070707]">
-                      {validUser?.email}
-                    </p>
-                  </div>
-                  <div
+                  ))}
+                </div>
+
+                {/* Logout Button */}
+                <div className="border-t border-gray-100">
+                  <button
                     onClick={handleLogout}
-                    className="flex items-center gap-3 cursor-pointer"
+                    className="flex w-full items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-150"
                   >
-                    <AiOutlineLogout className="w-6 h-6 p-1 bg-[#EDFCF6] text-[#20B894] rounded-full" />
-                    <p className="text-base font-normal text-[#070707]">
-                      Log out
-                    </p>
-                  </div>
+                    <LogOut className="w-4 h-4 mr-3" />
+                    Log out
+                  </button>
                 </div>
               </div>
             )}

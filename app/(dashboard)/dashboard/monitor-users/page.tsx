@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { PendingIcon } from "../../../../icons/PendingIcon";
 import { MessageIcon } from "../../../../icons/MessageIcon";
@@ -58,10 +58,16 @@ export default function MonitorMessaging() {
   const [dateFilter, setDateFilter] = useState("Last 30 days");
   const [open, setOpen] = useState<{ [key: string]: boolean }>({});
 
-  const { data: getAllExchange } = useGetAllExchangeQuery({});
-  console.log("getAllExchange", getAllExchange);
+  const { data: getAllExchange, refetch: refetchAllExchange } = useGetAllExchangeQuery({});
+  useEffect(() => {
+    refetchAllExchange();
+  }, []);
+  // console.log("getAllExchange", getAllExchange);
 
-  const { data: getProfileReport } = useGetProfileReportQuery({});
+  const { data: getProfileReport, refetch: refetchGetProfileReport } = useGetProfileReportQuery({});
+  useEffect(() => {
+    refetchGetProfileReport();
+  }, []);
   // Add suspended profiles data fetch if available
   // const { data: getSuspendedProfiles } = useGetSuspendedProfilesQuery({});
 
@@ -110,13 +116,16 @@ export default function MonitorMessaging() {
 
   console.log("reportedProfile", reportedProfile);
 
-  const { data } = useGetSuspendedDataQuery({});
-  const suspendData = data?.data;
+  const { data: getSuspendedData, refetch: refetchGetSuspendedData } = useGetSuspendedDataQuery({});
+  useEffect(() => {
+    refetchGetSuspendedData();
+  }, []);
+  const suspendData = getSuspendedData?.data;
 
   // console.log(107, data?.data);
 
   // Add suspended profiles transformation
-  const suspendedProfiles = data?.data;
+  const suspendedProfiles = getSuspendedData?.data;
 
   const handleStatusChange = (convId: string, status: string) => {
     setOpen({ ...open, [convId]: false });
@@ -139,7 +148,7 @@ export default function MonitorMessaging() {
       icon: MessageIcon,
     },
     {
-      title: "Pending Exchanges",
+      title: "Reported Profile",
       value: reportedProfile?.length,
       subtitle: "Awaiting Completion",
       icon: PendingIcon,

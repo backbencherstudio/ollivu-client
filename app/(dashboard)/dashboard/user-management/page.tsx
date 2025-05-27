@@ -4,13 +4,16 @@ import ProtectedRoute from "@/src/components/auth/ProtectedRoute";
 import { useGetAllUsersQuery } from "@/src/redux/features/users/userApi";
 import { X } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pagination } from "@/components/reusable/pagination";
 import { verifiedUser } from "@/src/utils/token-varify";
 
 export default function UserManagement() {
-  const { data: users, isLoading, error } = useGetAllUsersQuery({});
+  const { data: users, isLoading, error, refetch: refetchUsers } = useGetAllUsersQuery({});
   const currentUser = verifiedUser();
+  useEffect(() => {
+    refetchUsers();
+  }, []);
 
   // Filter out the current user from the users list
   const filteredUsers =
