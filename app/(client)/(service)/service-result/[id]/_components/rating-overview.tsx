@@ -1,8 +1,9 @@
 import { Star } from 'lucide-react'
-import React from 'react'
+import React, { useMemo } from 'react'
 import { verifiedUser } from "@/src/utils/token-varify";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { authApi } from '@/src/redux/features/auth/authApi';
 
 interface RatingOverviewProps {
   formattedInstructor: {
@@ -25,6 +26,29 @@ export default function RatingOverview({
   const router = useRouter();
   const currentUser = verifiedUser();
 
+  const { data: userList } = authApi.useGetAllExchangeDataQuery({
+    userId: currentUserId,
+    isAccepted: true,
+  });
+  console.log("userList", userList);
+  // Check if users have exchanged services and both accepted
+  const canWriteReview = useMemo(() => {
+    if (!userList?.data || !currentUserId || !instructorId) return false;
+
+    return userList.data.some(exchange => {
+      // Check if the current user and instructor are involved in this exchange
+      const isValidExchange = (
+        (exchange.senderUserId?._id === currentUserId && exchange.reciverUserId?._id === instructorId) ||
+        (exchange.senderUserId?._id === instructorId && exchange.reciverUserId?._id === currentUserId)
+      );
+
+      // Check if both users have accepted the exchange
+      const bothAccepted = exchange.senderUserAccepted && exchange.reciverUserAccepted;
+
+      return isValidExchange && bothAccepted;
+    });
+  }, [userList?.data, currentUserId, instructorId]);
+
   const handleWriteReview = () => {
     if (!currentUser) {
       toast.error("Please login to write a review");
@@ -34,7 +58,7 @@ export default function RatingOverview({
 
     // Check if user has already reviewed
     const hasReviewed = reviews?.some(
-      (review) => review.userId === currentUserId
+      (review) => review.reviewerId?._id === currentUserId
     );
 
     if (hasReviewed) {
@@ -45,6 +69,12 @@ export default function RatingOverview({
     // Check if reviewing self
     if (currentUserId === instructorId) {
       toast.error("You cannot review yourself");
+      return;
+    }
+
+    // Check if service exchange is completed
+    if (!canWriteReview) {
+      toast.error("You can only review after completing a service exchange");
       return;
     }
 
@@ -65,7 +95,7 @@ export default function RatingOverview({
                   key={star}
                   className={`w-5 h-5 ${
                     star <= formattedInstructor.rating 
-                      ? 'fill-amber-400 text-amber-400' 
+                      ? 'fill-amber-400 text-amber-400'
                       : 'fill-gray-200 text-gray-200'
                   } transition-colors duration-200`}
                 />
@@ -77,15 +107,17 @@ export default function RatingOverview({
           </div>
 
           <div className="flex-1 flex items-center justify-end">
-            <button
-              onClick={handleWriteReview}
-              className="px-8 py-4 bg-[#20B894] text-white rounded-xl text-sm font-medium 
-                hover:bg-[#1a9678] active:scale-[0.98] transition-all duration-200 
-                flex items-center gap-3 shadow-sm hover:shadow-md cursor-pointer"
-            >
-              <span>Write Review</span>
-              <Star className="w-4 h-4 stroke-[2.5]" />
-            </button>
+            {canWriteReview && (
+              <button
+                onClick={handleWriteReview}
+                className="px-8 py-4 bg-[#20B894] text-white rounded-xl text-sm font-medium 
+                  hover:bg-[#1a9678] active:scale-[0.98] transition-all duration-200 
+                  flex items-center gap-3 shadow-sm hover:shadow-md cursor-pointer"
+              >
+                <span>Write Review</span>
+                <Star className="w-4 h-4 stroke-[2.5]" />
+              </button>
+            )}
           </div>
         </div>
       </div>

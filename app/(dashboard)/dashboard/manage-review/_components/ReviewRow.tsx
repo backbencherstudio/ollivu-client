@@ -7,6 +7,8 @@ import { ReviewDetailsModal } from "./ReviewDetailsModal";
 import { ReviewActionModal } from "./ReviewActionModal";
 import Image from "next/image";
 import { useActionReviewReportMutation } from "@/src/redux/features/shared/reportApi";
+import { ApproveIcon } from "@/public/icons/approve-icon";
+import { CircleCheck, CircleX } from "lucide-react";
 
 interface ReviewRowProps {
   review: Review;
@@ -77,59 +79,43 @@ export function ReviewRow({ review, onApprove, onReject }: ReviewRowProps) {
         </td>
 
         <td className="py-4 sm:py-5 px-4 sm:px-6">
-          <span className={`px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium uppercase ${
-            review?.status === 'accept' 
-              ? 'bg-green-100 text-green-700' 
-              : review?.status === 'reject' 
-                ? 'bg-red-100 text-red-700'
-                : 'bg-yellow-100 text-yellow-700'
-          }`}>
-            {review?.status === 'accept' 
-              ? 'Accepted' 
-              : review?.status === 'reject' 
-                ? 'Rejected' 
-                : 'Pending'}
+          <span
+            className={`px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium uppercase ${
+              review?.status === "accept"
+                ? "bg-green-100 text-green-700"
+                : review?.status === "reject"
+                ? "bg-red-100 text-red-700"
+                : "bg-yellow-100 text-yellow-700"
+            }`}
+          >
+            {review?.status === "accept"
+              ? "Accepted"
+              : review?.status === "reject"
+              ? "Rejected"
+              : "Pending"}
           </span>
         </td>
 
         <td className="py-4 sm:py-5 px-4 sm:px-6">
           <div className="flex gap-2 sm:gap-3">
             {/* Action buttons with responsive sizing */}
-            {review?.status === 'accept' && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6 sm:h-8 sm:w-8 text-red-500"
+            {review?.status === "accept" && (
+              <button
+                className="h-6 w-6 sm:h-12 sm:w-12 text-red-500"
                 onClick={() => onReject(review.id)}
               >
                 <span className="sr-only">Reject</span>
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M18 6L6 18M6 6L18 18"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </Button>
+                <CircleX className="w-6 h-6 cursor-pointer" />
+              </button>
             )}
 
-            {review?.status === 'reject' && (
-              <Button
-                variant="ghost"
-                size="icon"
+            {review?.status === "reject" && (
+              <button
                 className="h-6 w-6 sm:h-8 sm:w-8 text-green-500"
                 onClick={() => onApprove(review.id)}
               >
                 <span className="sr-only">Approve</span>
-                <svg
+                {/* <svg
                   width="24"
                   height="24"
                   viewBox="0 0 24 24"
@@ -143,58 +129,30 @@ export function ReviewRow({ review, onApprove, onReject }: ReviewRowProps) {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
-                </svg>
-              </Button>
+                </svg> */}
+                <CircleCheck className="w-6 h-6 cursor-pointer" />
+              </button>
             )}
 
-            {review?.status !== 'accept' && review?.status !== 'reject' && (
+            {review?.status !== "accept" && review?.status !== "reject" && (
               <>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6 sm:h-8 sm:w-8 text-green-500"
+                {/* TODO: Add approve button */}
+                <button
+                  className="h-10 w-10 sm:h-12 sm:w-12 text-green-500"
                   onClick={() => onApprove(review.id)}
                 >
                   <span className="sr-only">Approve</span>
-                  <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M5 12L10 17L20 7"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6 sm:h-8 sm:w-8 text-red-500"
+                  {/* <ApproveIcon /> */}
+                  <CircleCheck className="w-6 h-6 cursor-pointer" />
+                </button>
+                {/* TODO: Add reject button */}
+                <button
+                  className="h-10 w-10 sm:h-12 sm:w-12 text-red-500"
                   onClick={() => onReject(review.id)}
                 >
                   <span className="sr-only">Reject</span>
-                  <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M18 6L6 18M6 6L18 18"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </Button>
+                  <CircleX className="w-6 h-6 cursor-pointer" />
+                </button>
               </>
             )}
           </div>

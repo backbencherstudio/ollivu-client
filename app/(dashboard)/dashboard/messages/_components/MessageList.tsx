@@ -21,8 +21,7 @@ export const MessageList = ({
   // console.log("userId", userId);
   // console.log("userData", userData);
 
-  const [exchangeChatRequest, isLoading ] =
-    useExchangeChatRequestMutation();
+  const [exchangeChatRequest, isLoading] = useExchangeChatRequestMutation();
 
   // console.log("user Data", userData);
   // console.log("user id", userId);
@@ -214,9 +213,13 @@ export const MessageList = ({
                         : user?.email || "No messages yet"}
                     </p>
                     <span className="text-[11px] flex items-center gap-3 text-gray-500">
-                      <small>{user?.senderService || "No service selected"}</small>{" "}
+                      <small>
+                        {user?.senderService || "No service selected"}
+                      </small>{" "}
                       <ArrowRightLeft className="w-4 h-4" />{" "}
-                      <small>{user?.reciverService || "No service selected"}</small>
+                      <small>
+                        {user?.reciverService || "No service selected"}
+                      </small>
                     </span>
                   </div>
 

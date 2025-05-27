@@ -93,7 +93,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className="sticky top-0 z-30">
             <Header user={user} />
           </div>
-          <main className="p-4 md:p-6">{children}</main>
+          <main className="p-4 md:p-4">{children}</main>
         </div>
       </div>
     </ProtectedRoute>

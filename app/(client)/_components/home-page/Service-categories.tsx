@@ -69,8 +69,8 @@ export default function ServiceExchangeFlow() {
 
   // Add this state near your other state declarations
   const [isLoading, setIsLoading] = useState(false);
+  const [showServiceModal, setShowServiceModal] = useState(false);
 
-  // Modify the handleSendRequest function
   const handleSendRequest = async () => {
     if (!currentUser) {
       localStorage.setItem("selectedUsers", JSON.stringify(selectedUsers));
@@ -86,6 +86,12 @@ export default function ServiceExchangeFlow() {
       return;
     }
 
+    // Check if user has my_service
+    if (!currentUserInfo?.my_service || currentUserInfo?.my_service.length === 0) {
+      setShowServiceModal(true);
+      return;
+    }
+
     setIsLoading(true);
     try {
       // Get the selected user's details - fixing the comparison
@@ -96,7 +102,7 @@ export default function ServiceExchangeFlow() {
       const exchangeRequests = selectedUsers.map((userId) => {
         // Find user details for each selected user
         const userDetails = allUsers.find((user) => user._id === userId);
-        console.log("userDetails", userDetails);
+        // console.log("userDetails", userDetails);
 
 
         return {
@@ -121,7 +127,7 @@ export default function ServiceExchangeFlow() {
         toast.success("Exchange request sent successfully");
       }
     } catch (error) {
-      console.error("Error sending exchange request:", error);
+      // console.error("Error sending exchange request:", error);
       toast.error("Failed to send exchange request");
     } finally {
       setIsLoading(false);
@@ -237,6 +243,31 @@ export default function ServiceExchangeFlow() {
           >
             {showAll ? "View Less" : "View All"}
           </button>
+        </div>
+      )}
+      
+      {/* Add this modal for service requirement */}
+      {showServiceModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-white rounded-2xl w-full max-w-[95%] sm:max-w-[500px] p-6 relative">
+            <button
+              className="absolute top-4 right-4 text-[#20B894] cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={() => setShowServiceModal(false)}
+            >
+              <X className="h-6 w-6" />
+            </button>
+            
+            <h3 className="text-xl font-semibold mb-4 text-center">Service Required</h3>
+            <p className="text-center mb-6">You need to add your service before sending exchange requests.</p>
+            
+            <div className="flex justify-center">
+              <Link href="/dashboard/user-profile">
+                <button className="bg-[#20B894] text-white px-6 py-2.5 rounded-full hover:bg-[#1a9677] transition-colors duration-300 cursor-pointer">
+                  Add Service
+                </button>
+              </Link>
+            </div>
+          </div>
         </div>
       )}
     </>

@@ -28,7 +28,7 @@ export default function Header({ user }) {
   const validUser = verifiedUser();
   const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
   const singleUserData = singleUser?.data;
-  // console.log("singleUserData", singleUserData);
+  console.log("singleUserData", singleUserData);
 
   const notifications = [
     {
@@ -119,6 +119,8 @@ export default function Header({ user }) {
       href: '/',
     },
   ];
+
+
 
   return (
     <div className="bg-white shadow-sm py-[21px] px-6 sticky top-0 z-50">
