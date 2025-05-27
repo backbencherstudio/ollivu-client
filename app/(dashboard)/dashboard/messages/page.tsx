@@ -21,10 +21,11 @@ const Messages = () => {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
   const [currentChat, setCurrentChat] = useState(null);
-  const [user, setUser] = useState(null); // Updated to null initially
+  const [user, setUser] = useState(null);
+
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   console.log("currentChat", currentChat);
-  
+
 
   const currentUser = verifiedUser();
   const router = useRouter();
@@ -94,7 +95,7 @@ const Messages = () => {
             if (
               !lastMessagesMap[otherUser] ||
               new Date(msg.timestamp) >
-                new Date(lastMessagesMap[otherUser].timestamp)
+              new Date(lastMessagesMap[otherUser].timestamp)
             ) {
               lastMessagesMap[otherUser] = {
                 content: msg.content,
@@ -430,11 +431,10 @@ const Messages = () => {
     console.log("selected user", user);
     setCurrentChat(user);
     console.log("currentChat", currentChat);
-    
+
     try {
       const messagesResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/chats?email=${
-          currentUser?.email
+        `${process.env.NEXT_PUBLIC_API_URL}/chats?email=${currentUser?.email
         }&recipient=${getOtherUserEmail(user)}`
       );
       const messagesData = await messagesResponse.json();
@@ -512,8 +512,15 @@ const Messages = () => {
         userId: currentUser?.userId,
         exchangeId: currentChat?._id,
       });
-      toast.success(result?.data?.message);
-      refetch();
+      if (result?.data?.success) {
+        // Update currentChat state to reflect the change
+        setCurrentChat(prev => ({
+          ...prev,
+          senderUserAccepted: true
+        }));
+        toast.success(result?.data?.message);
+        refetch();
+      }
     } else {
       setIsConfirmModalOpen(true);
     }
@@ -540,7 +547,7 @@ const Messages = () => {
             <div className="flex md:hidden items-center justify-between p-4 border-b border-gray-100">
               <h3 className="font-bold text-lg">Messages</h3>
               {isSidebarOpen && (
-                <button 
+                <button
                   onClick={() => setIsSidebarOpen(false)}
                   className="p-2 hover:bg-gray-100 rounded-full"
                 >
@@ -596,8 +603,8 @@ const Messages = () => {
               <div className="sticky top-0 z-10 bg-white border-b border-gray-100">
                 <div className="flex items-center p-4">
                   {/* Back Button - Mobile Only */}
-                  <button 
-                    onClick={() => setCurrentChat(null)} 
+                  <button
+                    onClick={() => setCurrentChat(null)}
                     className="mr-3 md:hidden p-2 hover:bg-gray-100 rounded-full"
                   >
                     <svg
@@ -616,7 +623,7 @@ const Messages = () => {
                   </button>
 
                   {/* User Info */}
-                  <div 
+                  <div
                     onClick={() => setIsInfoModalOpen(true)}
                     className="flex items-center flex-1 cursor-pointer"
                   >
@@ -736,15 +743,15 @@ const Messages = () => {
                   </div>
                   <h3 className="font-semibold text-lg mb-1">{getOtherUserName(currentChat)}</h3>
                   <p className="text-gray-500 text-sm mb-6">{getOtherUserEmail(currentChat)}</p>
-                  
+
                   {/* Action Buttons */}
                   <div className="w-full space-y-3">
                     <button
                       className={`
                         w-full px-4 py-2.5 rounded-xl text-sm font-medium transition-colors
-                        ${currentChat?.senderUserAccepted && currentChat?.reciverUserAccepted
-                          ? "bg-gray-200 text-gray-600"
-                          : "bg-[#20b894] text-white hover:bg-[#1a9677]"
+                        ${(currentChat?.senderUserAccepted && currentChat?.reciverUserAccepted)
+                          ? "bg-gray-200 text-gray-600 cursor-not-allowed"
+                          : "bg-[#20b894] text-white hover:bg-[#1a9677] cursor-pointer"
                         }
                       `}
                       onClick={() => modalHandler(currentChat)}
@@ -752,14 +759,14 @@ const Messages = () => {
                     >
                       {currentChat?.senderUserAccepted && currentChat?.reciverUserAccepted
                         ? "Exchange Confirmed"
-                        : currentUser?.email === currentChat?.reciverUserId?.email 
-                          ? "Confirm Exchange Service"
-                          : "Accept Exchange Service"
+                        : currentChat?.reciverUserAccepted || (currentUser?.userId === currentChat?.senderUserId?._id && currentChat?.senderUserAccepted)
+                          ? "Exchange in Progress"
+                          : "Confirm Exchange Service"
                       }
                     </button>
                     <button
                       className="w-full px-4 py-2.5 rounded-xl text-sm font-medium border border-[#b19c87] 
-                        text-[#b19c87] hover:bg-[#b19c87] hover:text-white transition-colors"
+                        text-[#b19c87] hover:bg-[#b19c87] hover:text-white transition-colors cursor-pointer"
                       onClick={() => handleReviewClick(currentChat)}
                     >
                       Post Review
@@ -774,7 +781,7 @@ const Messages = () => {
 
       {/* Mobile Backdrop */}
       {isSidebarOpen && (
-        <div 
+        <div
           className="md:hidden fixed inset-0 bg-black/50 z-40"
           onClick={() => setIsSidebarOpen(false)}
         />
@@ -849,22 +856,21 @@ const Messages = () => {
 
                 <div className="flex flex-col gap-3 w-full mt-4">
                   {/* {currentUser?.email === currentChat?.reciverUserId?.email || currentChat?.senderUserAccepted && currentChat?.reciverUserAccepted && ( */}
-                    <button
-                      className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                        currentChat?.senderUserAccepted && currentChat?.reciverUserAccepted
-                          ? "bg-gray-200 text-gray-600"
-                          : "bg-[#20b894] text-white active:bg-[#1a9677]"
+                  <button
+                    className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${currentChat?.senderUserAccepted && currentChat?.reciverUserAccepted
+                      ? "bg-gray-200 text-gray-600"
+                      : "bg-[#20b894] text-white active:bg-[#1a9677]"
                       }`}
-                      onClick={() => {
-                        modalHandler(currentChat);
-                        setIsInfoModalOpen(false);
-                      }}
-                      disabled={currentChat?.senderUserAccepted && currentChat?.reciverUserAccepted}
-                    >
-                      {currentChat?.senderUserAccepted && currentChat?.reciverUserAccepted
-                        ? "Exchange Confirmed"
-                        : "Confirm Exchange Service"}
-                    </button>
+                    onClick={() => {
+                      modalHandler(currentChat);
+                      setIsInfoModalOpen(false);
+                    }}
+                    disabled={currentChat?.senderUserAccepted && currentChat?.reciverUserAccepted}
+                  >
+                    {currentChat?.senderUserAccepted && currentChat?.reciverUserAccepted
+                      ? "Exchange Confirmed"
+                      : "Confirm Exchange Service"}
+                  </button>
                   {/* )} */}
 
                   <button
