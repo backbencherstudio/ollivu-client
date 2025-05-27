@@ -134,7 +134,7 @@ export default function ConfirmServiceModal({
         </div>
 
         <Button
-          className="w-full mt-8 bg-[#20B894] hover:bg-[#1ca883] text-white"
+          className="w-full mt-8 bg-[#20B894] hover:bg-[#1ca883] text-white cursor-pointer"
           onClick={handleConfirmService}
           disabled={!selectedService}
         >

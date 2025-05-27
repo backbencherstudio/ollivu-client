@@ -80,19 +80,18 @@ export function ReviewRow({ review, onApprove, onReject }: ReviewRowProps) {
 
         <td className="py-4 sm:py-5 px-4 sm:px-6">
           <span
-            className={`px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium uppercase ${
-              review?.status === "accept"
-                ? "bg-green-100 text-green-700"
-                : review?.status === "reject"
+            className={`px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium uppercase ${review?.status === "accept"
+              ? "bg-green-100 text-green-700"
+              : review?.status === "reject"
                 ? "bg-red-100 text-red-700"
                 : "bg-yellow-100 text-yellow-700"
-            }`}
+              }`}
           >
             {review?.status === "accept"
               ? "Accepted"
               : review?.status === "reject"
-              ? "Rejected"
-              : "Pending"}
+                ? "Rejected"
+                : "Pending"}
           </span>
         </td>
 
@@ -161,7 +160,7 @@ export function ReviewRow({ review, onApprove, onReject }: ReviewRowProps) {
           <Button
             variant="ghost"
             size="sm"
-            className="text-blue-500 p-0 text-sm sm:text-base hover:bg-transparent font-medium"
+            className="text-blue-500 p-0 text-sm sm:text-base hover:bg-transparent font-medium cursor-pointer"
             onClick={() => setIsActionModalOpen(true)}
           >
             View details
