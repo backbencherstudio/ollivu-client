@@ -35,8 +35,19 @@ export const categoriesApi = baseApi.injectEndpoints({
                 }
             }),
             invalidatesTags: ["Category"]
+        }),
+
+        deleteCategory: builder.mutation({
+            query: (id) => ({
+                url: `/categories/${id}`,
+                method: "DELETE",
+                headers: {
+                    authorization: `${localStorage.getItem('accessToken')}`
+                }
+            }),
+            invalidatesTags: ["Category"]
         })
     })
 });
 
-export const { useGetAllCategoriesQuery, useCreateCategoryMutation, useUpdateCategoryMutation } = categoriesApi;
+export const { useGetAllCategoriesQuery, useCreateCategoryMutation, useUpdateCategoryMutation, useDeleteCategoryMutation } = categoriesApi;

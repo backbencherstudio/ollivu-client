@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import {
   useCreateCategoryMutation,
+  useDeleteCategoryMutation,
   useGetAllCategoriesQuery,
   useUpdateCategoryMutation,
 } from "@/src/redux/features/categories/categoriesApi";
@@ -61,6 +62,7 @@ export default function AddCategory() {
     null
   );
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteCategoryModalOpen, setDeleteCategoryModalOpen] = useState(false);
   const [selectedSubCategory, setSelectedSubCategory] = useState<string | null>(
     null
   );
@@ -70,7 +72,8 @@ export default function AddCategory() {
   const [editedCategoryName, setEditedCategoryName] = useState("");
 
   // Fetch existing categories
-  const { data: getAllCategories, refetch: refetchGetAllCategories } = useGetAllCategoriesQuery({});
+  const { data: getAllCategories, refetch: refetchGetAllCategories } =
+    useGetAllCategoriesQuery({});
   useEffect(() => {
     refetchGetAllCategories();
   }, []);
@@ -78,6 +81,7 @@ export default function AddCategory() {
   const [createSubCategory] = useCreateSubCategoryMutation();
   const [deleteSubCategory] = useDeleteSubCategoryMutation();
   const [updateCategory] = useUpdateCategoryMutation();
+  const [deleteCategory] = useDeleteCategoryMutation();
 
   const categories = getAllCategories?.data || [];
   // console.log("categories", categories);
@@ -261,6 +265,28 @@ export default function AddCategory() {
     } catch (error) {
       toast.error("Failed to update category");
     }
+  };
+
+  // Handle confirm delete category
+  const handleConfirmDeleteCategory = async () => {
+    if (!selectedCategoryId) return;
+
+    try {
+      const result = await deleteCategory(selectedCategoryId).unwrap();
+
+      if (result.success) {
+        toast.success(result?.message || "Category deleted successfully");
+        setDeleteCategoryModalOpen(false);
+        setSelectedCategoryId(null);
+      }
+    } catch (error) {
+      toast.error(error?.data?.message || "Failed to delete category");
+    }
+  };
+
+  const handleDeleteCategory = (categoryId: string) => {
+    setSelectedCategoryId(categoryId);
+    setDeleteCategoryModalOpen(true);
   };
 
   return (
@@ -469,6 +495,7 @@ export default function AddCategory() {
                             <span className="font-medium text-sm sm:text-base">
                               {category.category_name}
                             </span>
+                            {/* Edit Button */}
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -480,6 +507,16 @@ export default function AddCategory() {
                               className="p-1 sm:p-1.5 hover:bg-[#20B89410] rounded-md transition-all duration-300 ease-in-out cursor-pointer"
                             >
                               <SquarePen className="w-3 h-3 sm:w-4 sm:h-4 text-[#20B894]" />
+                            </button>
+                            {/* TODO: Delete Button */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteCategory(category._id);
+                              }}
+                              className="p-1 sm:p-1.5 hover:bg-[#88505010] rounded-md transition-all duration-300 ease-in-out cursor-pointer"
+                            >
+                              <Trash2 className="w-3 h-3 sm:w-4 sm:h-4 text-red-500" />
                             </button>
                           </div>
                         )}
@@ -627,6 +664,41 @@ export default function AddCategory() {
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmDelete}
+              className="bg-red-500 hover:bg-red-600 text-sm sm:text-base"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Category Alert Dialog */}
+      <AlertDialog
+        open={deleteCategoryModalOpen}
+        onOpenChange={setDeleteCategoryModalOpen}
+      >
+        <AlertDialogContent className="max-w-[90%] sm:max-w-lg">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-lg sm:text-xl">
+              Delete Category
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-sm sm:text-base">
+              Are you sure you want to delete this category? This action cannot
+              be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              onClick={() => {
+                setDeleteCategoryModalOpen(false);
+                setSelectedCategoryId(null);
+              }}
+              className="text-sm sm:text-base"
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDeleteCategory}
               className="bg-red-500 hover:bg-red-600 text-sm sm:text-base"
             >
               Delete
