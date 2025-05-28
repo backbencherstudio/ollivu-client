@@ -100,7 +100,10 @@ export default function ServiceExchangeFlow() {
     }
 
     // Check if user has my_service
-    if (!currentUserInfo?.my_service || currentUserInfo?.my_service.length === 0) {
+    if (
+      !currentUserInfo?.my_service ||
+      currentUserInfo?.my_service.length === 0
+    ) {
       setShowServiceModal(true);
       return;
     }
@@ -117,7 +120,6 @@ export default function ServiceExchangeFlow() {
         const userDetails = allUsers.find((user) => user._id === userId);
         // console.log("userDetails", userDetails);
 
-
         return {
           // senderUserId: currentUserInfo?._id,
           // reciverUserId: userId, // Use the actual selected user ID
@@ -129,7 +131,7 @@ export default function ServiceExchangeFlow() {
           email: currentUser?.email,
           selectedEmail: userDetails?.email,
           senderService: selectedSkill,
-          my_service: currentUserInfo?.my_service
+          my_service: currentUserInfo?.my_service,
         };
       });
 
@@ -214,14 +216,14 @@ export default function ServiceExchangeFlow() {
                     isLoading={isLoadingUsers}
                   />
                   <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-4 mt-4">
-
                     <button
                       onClick={handleSendRequest}
                       disabled={selectedUsers.length === 0 || isLoading}
-                      className={`text-sm sm:text-base bg-[#20B894] text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-full cursor-pointer order-2 sm:order-1 ${selectedUsers.length === 0 || isLoading
-                        ? "opacity-50 cursor-not-allowed"
-                        : "hover:bg-[#1a9677] ease-in-out duration-300"
-                        }`}
+                      className={`text-sm sm:text-base bg-[#20B894] text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-full cursor-pointer order-2 sm:order-1 ${
+                        selectedUsers.length === 0 || isLoading
+                          ? "opacity-50 cursor-not-allowed"
+                          : "hover:bg-[#1a9677] ease-in-out duration-300"
+                      }`}
                     >
                       {isLoading ? "Sending..." : "Send Request"}
                     </button>
@@ -257,7 +259,7 @@ export default function ServiceExchangeFlow() {
           </Link>
         </div>
       )}
-      
+
       {/* Add this modal for service requirement */}
       {showServiceModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-3 sm:p-4">
@@ -268,10 +270,14 @@ export default function ServiceExchangeFlow() {
             >
               <X className="h-6 w-6" />
             </button>
-            
-            <h3 className="text-xl font-semibold mb-4 text-center">Service Required</h3>
-            <p className="text-center mb-6">You need to add your service before sending exchange requests.</p>
-            
+
+            <h3 className="text-xl font-semibold mb-4 text-center">
+              Service Required
+            </h3>
+            <p className="text-center mb-6">
+              You need to add your service before sending exchange requests.
+            </p>
+
             <div className="flex justify-center">
               <Link href="/dashboard/user-profile">
                 <button className="bg-[#20B894] text-white px-6 py-2.5 rounded-full hover:bg-[#1a9677] transition-colors duration-300 cursor-pointer">
