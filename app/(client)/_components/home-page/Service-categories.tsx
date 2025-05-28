@@ -15,6 +15,8 @@ import { useCreateExchangeMutation } from "@/src/redux/features/shared/exchangeA
 import { verifiedUser } from "@/src/utils/token-varify";
 import { useGetCurrentUserQuery } from "@/src/redux/features/users/userApi";
 import { toast } from "sonner";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 
 export default function ServiceExchangeFlow() {
@@ -30,6 +32,8 @@ export default function ServiceExchangeFlow() {
     _id: "",
     my_service: [],
   });
+
+  const router = useRouter();
 
   const { data: getAllCategory } = useGetAllCategoryQuery([]);
   const allCategories = getAllCategory?.data || [];
