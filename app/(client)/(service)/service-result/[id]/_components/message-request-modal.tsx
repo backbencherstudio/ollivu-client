@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { X } from "lucide-react";
 import Image from "next/image";
@@ -5,6 +7,7 @@ import { verifiedUser } from "@/src/utils/token-varify";
 import { useGetCurrentUserQuery } from "@/src/redux/features/users/userApi";
 import Link from "next/link";
 import { toast } from "sonner";
+import RequiredFieldsModal from "@/app/components/RequiredFieldsModal";
 
 interface MessageRequestModalProps {
   isOpen: boolean;
@@ -25,10 +28,39 @@ const MessageRequestModal = ({
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showServiceModal, setShowServiceModal] = useState(false);
+  const [showRequiredFieldsModal, setShowRequiredFieldsModal] = useState(false);
+  const [missingFields, setMissingFields] = useState({});
 
   const currentUser = verifiedUser();
   const { data: currentUserData } = useGetCurrentUserQuery(currentUser?.userId);
   const currentUserInfo = currentUserData?.data;
+
+  const checkMissingFields = () => {
+    const personalInfo = currentUserInfo?.personalInfo || {};
+    const addressInfo = currentUserInfo?.addressInfo || {};
+    
+    console.log("personalInfo:", personalInfo); // For debugging
+    
+    const missing = {
+      firstName: !personalInfo.first_name,
+      lastName: !personalInfo.last_name,
+      phoneNumber: !personalInfo.phone_number,
+      dateOfBirth: !personalInfo.dath_of_birth,
+      gender: !personalInfo.gender,
+      country: !addressInfo.country,
+      city: !addressInfo.city,
+      zipCode: !addressInfo.zipCode,
+      streetAddress: !addressInfo.streetAddress,
+      aboutMe: !currentUserInfo?.about_me
+    };
+
+    // Filter out fields that are not missing
+    const actualMissingFields = Object.fromEntries(
+      Object.entries(missing).filter(([_, isMissing]) => isMissing)
+    );
+
+    return actualMissingFields;
+  };
 
   const handleSubmit = async () => {
     if (!selectedService) {
@@ -39,6 +71,14 @@ const MessageRequestModal = ({
     // Check if user has my_service
     if (!currentUserInfo?.my_service || currentUserInfo?.my_service.length === 0) {
       setShowServiceModal(true);
+      return;
+    }
+
+    // Check for missing required fields
+    const missingFieldsObj = checkMissingFields();
+    if (Object.keys(missingFieldsObj).length > 0) {
+      setMissingFields(missingFieldsObj);
+      setShowRequiredFieldsModal(true);
       return;
     }
 
@@ -88,7 +128,9 @@ const MessageRequestModal = ({
             <div className="flex items-center gap-2 text-red-500 text-sm mb-4">
               <span>⚠</span>
               <p>{error}</p>
-              <button onClick={() => setError("")} className="ml-auto">×</button>
+              <button onClick={() => setError("")} className="ml-auto">
+                ×
+              </button>
             </div>
           )}
 
@@ -138,13 +180,17 @@ const MessageRequestModal = ({
             >
               <X className="h-6 w-6" />
             </button>
-            
-            <h3 className="text-xl font-semibold mb-4 text-center">Service Required</h3>
-            <p className="text-center mb-6">You need to add your service before sending exchange requests.</p>
-            
+
+            <h3 className="text-xl font-semibold mb-4 text-center">
+              Service Required
+            </h3>
+            <p className="text-center mb-6">
+              You need to add your service before sending exchange requests.
+            </p>
+
             <div className="flex justify-center">
               <Link href="/dashboard/user-profile">
-                <button 
+                <button
                   onClick={() => {
                     setShowServiceModal(false);
                     onClose();
@@ -158,6 +204,13 @@ const MessageRequestModal = ({
           </div>
         </div>
       )}
+
+      {/* Required Fields Modal */}
+      <RequiredFieldsModal
+        isOpen={showRequiredFieldsModal}
+        onClose={() => setShowRequiredFieldsModal(false)}
+        missingFields={missingFields}
+      />
     </>
   );
 };

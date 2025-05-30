@@ -40,39 +40,76 @@ export default function Portfolio() {
   const [deletePortfolio] = useDeletePortfolioMutation();
   // console.log("deletePortfolio", deletePortfolio);
 
+  // const portfolioImage = userData?.data?.portfolio
+  //   ? `${process.env.NEXT_PUBLIC_IMAGE_URL}${userData?.data?.portfolio}`
+  //   : null;
+
   const portfolioImage = userData?.data?.portfolio
     ? `${process.env.NEXT_PUBLIC_IMAGE_URL}${userData?.data?.portfolio}`
     : null;
+
+  // const handleUpload = async () => {
+  //   if (!selectedFile || !currentUser?.userId) return;
+
+  //   try {
+  //     const formData = new FormData();
+  //     formData.append("portfolio", selectedFile);
+  //     formData.append("userId", currentUser?.userId);
+
+  //     const response = await uploadPortfolio({
+  //       userId: currentUser?.userId,
+  //       data: formData,
+  //     }).unwrap();
+
+  //     if (response.success) {
+  //       toast.success("Portfolio uploaded successfully");
+  //       setShowPortfolioModal(false);
+  //       setSelectedFile(null);
+  //       setPreviewUrl(null);
+  //     }
+  //   } catch (error: any) {
+  //     toast.error(error.message || "Failed to upload portfolio");
+  //   }
+  // };
 
   const handleUpload = async () => {
     if (!selectedFile || !currentUser?.userId) return;
 
     try {
       const formData = new FormData();
-      formData.append("portfolio", selectedFile);
-      formData.append("userId", currentUser?.userId);
+      formData.append('portfolio', selectedFile);
+      formData.append('userId', currentUser.userId);
 
-      const response = await uploadPortfolio({
-        userId: currentUser?.userId,
-        data: formData,
+      const response = await uploadPortfolio({ 
+        userId: currentUser.userId, 
+        data: formData 
       }).unwrap();
-
+      
       if (response.success) {
-        toast.success("Portfolio uploaded successfully");
+        toast.success('Portfolio uploaded successfully');
         setShowPortfolioModal(false);
         setSelectedFile(null);
         setPreviewUrl(null);
       }
     } catch (error: any) {
-      toast.error(error.message || "Failed to upload portfolio");
+      toast.error(error.message || 'Failed to upload portfolio');
     }
   };
+
+  // const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   if (e.target.files && e.target.files[0]) {
+  //     const file = e.target.files[0];
+  //     setSelectedFile(file);
+  //     // Create preview URL
+  //     const url = URL.createObjectURL(file);
+  //     setPreviewUrl(url);
+  //   }
+  // };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setSelectedFile(file);
-      // Create preview URL
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
     }

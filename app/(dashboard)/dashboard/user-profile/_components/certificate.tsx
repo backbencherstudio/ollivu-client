@@ -22,7 +22,7 @@ export default function Certificate() {
   const [deleteCertificate] = useDeleteCertificateMutation();
 
   const certificateImage = userData?.data?.cartificate 
-    ? `${process.env.NEXT_PUBLIC_IMAGE_URL}${userData.data.cartificate}`
+    ? `${process.env.NEXT_PUBLIC_IMAGE_URL}${userData?.data?.cartificate}`
     : null;
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
