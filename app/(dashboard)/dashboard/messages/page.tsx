@@ -52,9 +52,6 @@ const Messages = () => {
   const { data: userList, refetch } = authApi.useGetAllExchangeDataQuery(finalQuery);
   const [acceptExchange] = useAcceptExchangeMutation();
   const users = userList?.data;
-  
-  console.log(users);
-  
 
   const [unreadMessages, setUnreadMessages] = useState(() => {
     if (typeof window !== "undefined") {
