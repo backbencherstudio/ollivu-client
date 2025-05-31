@@ -395,7 +395,7 @@ export default function UserProfile() {
         <h2 className="text-lg font-medium mb-6">Address Information</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           <div>
-            <label className="text-sm text-gray-600">Country (optional)</label>
+            <label className="text-sm text-gray-600">Country</label>
             <Input
               value={formData.addressInfo.country}
               onChange={(e) =>
@@ -409,7 +409,7 @@ export default function UserProfile() {
 
           <div>
             <label className="text-sm text-gray-600">
-              Street address (optional)
+              Street address
             </label>
             <Input
               value={formData.addressInfo.streetAddress}

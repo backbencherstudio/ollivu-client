@@ -1,9 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   UserCircle,
@@ -21,7 +21,9 @@ import { FaStar } from "react-icons/fa6";
 import logo from "@/public/logo/logo.png";
 
 export default function Sidebar({ user }) {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
 
   // User menu items
   const userMenuItems = [
@@ -48,7 +50,7 @@ export default function Sidebar({ user }) {
       label: "Admin Profile",
       href: "/dashboard/admin-profile",
     },
-    
+
     {
       icon: MessageCircleMore,
       label: "Monitor users",
@@ -72,9 +74,16 @@ export default function Sidebar({ user }) {
   ];
 
   // Combine menu items based on user role
-  const menuItems = user?.role === "admin" 
-    ? [...adminMenuItems] 
-    : userMenuItems;
+  const menuItems =
+    user?.role === "admin" ? [...adminMenuItems] : userMenuItems;
+
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    document.cookie =
+      "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+    setIsAuthenticated(false);
+    router.push("/auth/login");
+  };
 
   return (
     <div className="bg-white h-screen shadow-sm flex flex-col sticky top-0">
@@ -113,7 +122,10 @@ export default function Sidebar({ user }) {
 
       {/* Logout button section */}
       <div className="p-6 border-t shrink-0 bg-white">
-        <button className="flex items-center gap-3 text-red-500 hover:text-red-600 transition-colors w-full px-4 py-2">
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 text-red-500 hover:text-red-600 transition-colors w-full px-4 py-2 cursor-pointer hover:bg-red-50"
+        >
           <LogOut className="w-5 h-5" />
           <span>Log out</span>
         </button>
