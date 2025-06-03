@@ -8,9 +8,8 @@ export default function SuccessMessage() {
         Exchange request is sent!
       </h2>
       <p className="text-gray-500 max-w-md mx-auto">
-        Wait for the user to review your exchange request. After they
-        have reviewed your request they will get connected to you
-        through chat. All the best!
+        Your exchange request has been sent. The service provider will contact
+        you via chat. We wish you all the best!
       </p>
     </div>
   );
