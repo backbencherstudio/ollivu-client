@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEffect, useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ArrowRightLeft, ChevronDown } from "lucide-react";
 import { PendingIcon } from "../../../../icons/PendingIcon";
 import { MessageIcon } from "../../../../icons/MessageIcon";
 import { ConfirmedIcon } from "../../../../icons/ConfirmedIcon";
@@ -58,13 +58,15 @@ export default function MonitorMessaging() {
   const [dateFilter, setDateFilter] = useState("Last 30 days");
   const [open, setOpen] = useState<{ [key: string]: boolean }>({});
 
-  const { data: getAllExchange, refetch: refetchAllExchange } = useGetAllExchangeQuery({});
+  const { data: getAllExchange, refetch: refetchAllExchange } =
+    useGetAllExchangeQuery({});
   useEffect(() => {
     refetchAllExchange();
   }, []);
-  // console.log("getAllExchange", getAllExchange);
+  console.log("getAllExchange", getAllExchange?.data);
 
-  const { data: getProfileReport, refetch: refetchGetProfileReport } = useGetProfileReportQuery({});
+  const { data: getProfileReport, refetch: refetchGetProfileReport } =
+    useGetProfileReportQuery({});
   useEffect(() => {
     refetchGetProfileReport();
   }, []);
@@ -73,10 +75,10 @@ export default function MonitorMessaging() {
 
   // Transform exchange data to match conversation format
   const transformedConversations =
-    getAllExchange?.data?.map((exchange: Exchange) => ({
+    getAllExchange?.data?.exchangeData?.map((exchange: Exchange) => ({
       id: exchange._id,
-      user1: exchange.senderUserId?.first_name || "Unknown",
-      user2: exchange.reciverUserId?.first_name || "Unknown",
+      user1: exchange?.senderUserId?.first_name || "Unknown",
+      user2: exchange?.reciverUserId?.first_name || "Unknown",
       joinDate: new Date(exchange.createdAt).toLocaleDateString("en-US", {
         year: "numeric",
         month: "short",
@@ -86,14 +88,14 @@ export default function MonitorMessaging() {
         exchange.reciverUserAccepted && exchange.senderUserAccepted
           ? "Completed"
           : "Pending",
-      senderService: exchange.senderService || "No service",
-      receiverServices: exchange.reciverService || [],
-      senderEmail: exchange.senderUserId?.email || "",
-      receiverEmail: exchange.reciverUserId?.email || "",
-      senderDetails: exchange.senderUserId || {},
-      receiverDetails: exchange.reciverUserId || {},
+      senderService: exchange?.senderService || "No service",
+      receiverServices: exchange?.reciverService || [],
+      senderEmail: exchange?.senderUserId?.email || "",
+      receiverEmail: exchange?.reciverUserId?.email || "",
+      senderDetails: exchange?.senderUserId || {},
+      receiverDetails: exchange?.reciverUserId || {},
     })) || [];
-  console.log("transformedConversations", transformedConversations);
+  // console.log("transformedConversations", transformedConversations);
 
   const reportedProfile =
     getProfileReport?.data?.map((report) => ({
@@ -116,7 +118,8 @@ export default function MonitorMessaging() {
 
   console.log("reportedProfile", reportedProfile);
 
-  const { data: getSuspendedData, refetch: refetchGetSuspendedData } = useGetSuspendedDataQuery({});
+  const { data: getSuspendedData, refetch: refetchGetSuspendedData } =
+    useGetSuspendedDataQuery({});
   useEffect(() => {
     refetchGetSuspendedData();
   }, []);
@@ -142,10 +145,18 @@ export default function MonitorMessaging() {
   // Update STAT_CARDS with suspended profiles count
   const updatedStatCards = [
     {
-      title: "Total Exchanges",
-      value: transformedConversations?.length,
-      subtitle: "All exchanges",
+      title: "Total Conversations",
+      // value: transformedConversations?.length,
+      value: getAllExchange?.data?.acceptedData?.length,
+      subtitle: "All conversations",
       icon: MessageIcon,
+    },
+    {
+      title: "Total Exchanges",
+      // value: transformedConversations?.length,
+      value: getAllExchange?.data?.exchangeData?.length,
+      subtitle: "All exchanges",
+      icon: ArrowRightLeft,
     },
     {
       title: "Reported Profile",
@@ -171,7 +182,7 @@ export default function MonitorMessaging() {
     <ProtectedRoute allowedRoles={["admin"]}>
       <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
           {updatedStatCards.map((stat, i) => (
             <StatCard key={i} {...stat} />
           ))}

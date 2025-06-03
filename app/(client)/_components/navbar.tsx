@@ -281,12 +281,17 @@ export default function Navbar() {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link href="/dashboard/messages?tab=requests" className="relative">
-              <Bell className="w-7 h-7 text-[#20B894]" />
-              <span className="absolute top-0 right-0 w-4 h-4 bg-[#20B894] text-white text-xs rounded-full flex items-center justify-center">
-                {requestList?.data?.length}
-              </span>
-            </Link>
+            {validUser?.role === "user" && (
+              <Link
+                href="/dashboard/messages?tab=requests"
+                className="relative"
+              >
+                <Bell className="w-7 h-7 text-[#20B894]" />
+                <span className="absolute top-0 right-0 w-4 h-4 bg-[#20B894] text-white text-xs rounded-full flex items-center justify-center">
+                  {requestList?.data?.length}
+                </span>
+              </Link>
+            )}
 
             {validUser?.role === "user" && (
               <NotificationBadge currentUser={validUser?.email} />

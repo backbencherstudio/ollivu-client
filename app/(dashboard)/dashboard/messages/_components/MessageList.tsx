@@ -34,10 +34,15 @@ export const MessageList = ({
     isAccepted: true,
   });
   const { data } = useGetAllExchangeDataQuery(finalQuery);
-  const { data: requestList } = useGetAllExchangeDataQuery({
+  const { data: requestList, refetch } = useGetAllExchangeDataQuery({
     userId: userId,
     isAccepted: false,
   });
+
+  useEffect(() => {
+    refetch();
+  }, []);
+
   // console.log("requestList", requestList);
   // const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
