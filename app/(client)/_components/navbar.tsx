@@ -48,10 +48,14 @@ export default function Navbar() {
   const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
   const singleUserData = singleUser?.data;
 
-  const { data: requestList } = useGetAllExchangeDataQuery({
+  const { data: requestList, refetch } = useGetAllExchangeDataQuery({
     userId: validUser?.userId,
     isAccepted: false,
   });
+
+  useEffect(() => {
+    refetch();
+  }, []);
 
   // Update the authentication check
   useEffect(() => {

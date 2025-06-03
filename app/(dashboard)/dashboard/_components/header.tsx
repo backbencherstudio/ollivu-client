@@ -13,12 +13,6 @@ import {
   Home,
 } from "lucide-react";
 import profile from "@/public/avatars/emily.png";
-import {
-  AiFillMessage,
-  AiOutlineLogout,
-  AiOutlineUser,
-  AiOutlineHome,
-} from "react-icons/ai";
 import { MdNotifications } from "react-icons/md";
 import Link from "next/link";
 import { verifiedUser } from "@/src/utils/token-varify";
@@ -84,11 +78,14 @@ export default function Header({ user }) {
     },
   ];
 
-  const { data: requestList } = useGetAllExchangeDataQuery({
+  const { data: requestList, refetch } = useGetAllExchangeDataQuery({
     userId: validUser?.userId,
     isAccepted: false,
   });
-  
+
+  useEffect(() => {
+    refetch();
+  }, []);
 
   // Toggle dropdowns
   const handleProfileClick = () => {
@@ -212,12 +209,14 @@ export default function Header({ user }) {
             )}
           </div> */}
 
-          <Link href="/dashboard/messages?tab=requests" className="relative">
-            <Bell className="w-8 h-8 text-gray-600" />
-            <span className="absolute top-0 right-0 w-4 h-4 bg-[#20B894] text-white text-xs rounded-full flex items-center justify-center">
-              {requestList?.data?.length}
-            </span>
-          </Link>
+          {singleUserData?.role === "user" && (
+            <Link href="/dashboard/messages?tab=requests" className="relative">
+              <Bell className="w-8 h-8 text-gray-600" />
+              <span className="absolute top-0 right-0 w-4 h-4 bg-[#20B894] text-white text-xs rounded-full flex items-center justify-center">
+                {requestList?.data?.length}
+              </span>
+            </Link>
+          )}
 
           {/* Profile Dropdown */}
           <div ref={profileRef} className="relative">
