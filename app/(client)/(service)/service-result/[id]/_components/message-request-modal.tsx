@@ -49,7 +49,7 @@ const MessageRequestModal = ({
       gender: !personalInfo.gender,
       country: !addressInfo.country,
       city: !addressInfo.city,
-      state: !addressInfo.state,
+      state: !addressInfo.state_province_country_region,
       zipCode: !addressInfo.zipCode,
       // streetAddress: !addressInfo.streetAddress,
       aboutMe: !currentUserInfo?.about_me,
