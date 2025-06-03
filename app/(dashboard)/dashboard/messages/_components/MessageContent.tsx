@@ -56,7 +56,7 @@ export const MessageContent = ({
           >
             <div className="max-w-[85%] group">
               <div className="relative">
-                {msg.sender === currentUser?.email && (
+                {/* {msg.sender === currentUser?.email && (
                   <button
                     onClick={() => deleteMessage(msg._id)}
                     className="absolute -left-10 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-200 p-1.5 rounded-full hover:bg-red-50"
@@ -77,7 +77,7 @@ export const MessageContent = ({
                       />
                     </svg>
                   </button>
-                )}
+                )} */}
                 <div
                   className={`px-4 py-2.5 rounded-2xl shadow-sm break-words ${
                     msg.sender === currentUser?.email
