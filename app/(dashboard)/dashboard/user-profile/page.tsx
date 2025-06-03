@@ -398,6 +398,7 @@ export default function UserProfile() {
             <label className="text-sm text-gray-600">Country</label>
             <Input
               value={formData.addressInfo.country}
+              required
               onChange={(e) =>
                 handleInputChange("addressInfo", "country", e.target.value)
               }
