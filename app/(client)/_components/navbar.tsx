@@ -4,7 +4,14 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "@/public/logo/logo.png";
-import { ChevronDown, ChevronUp, Menu, MoveUpRight, X } from "lucide-react";
+import {
+  Bell,
+  ChevronDown,
+  ChevronUp,
+  Menu,
+  MoveUpRight,
+  X,
+} from "lucide-react";
 import { usePathname } from "next/navigation";
 import CustomImage from "@/components/reusable/CustomImage";
 import {
@@ -22,6 +29,7 @@ import { useGetAllCategoriesQuery } from "@/src/redux/features/categories/catego
 import { useGetSingleUserQuery } from "@/src/redux/features/users/userApi";
 import NotificationBadge from "./NotificationBadge/NotificationBadge";
 import { Button } from "@/components/ui/button";
+import { useGetAllExchangeDataQuery } from "@/src/redux/features/auth/authApi";
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -40,7 +48,10 @@ export default function Navbar() {
   const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
   const singleUserData = singleUser?.data;
 
-  console.log("singleUserData", singleUserData);
+  const { data: requestList } = useGetAllExchangeDataQuery({
+    userId: validUser?.userId,
+    isAccepted: false,
+  });
 
   // Update the authentication check
   useEffect(() => {
@@ -270,6 +281,13 @@ export default function Navbar() {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
+            <Link href="/dashboard/messages?tab=requests" className="relative">
+              <Bell className="w-7 h-7 text-[#20B894]" />
+              <span className="absolute top-0 right-0 w-4 h-4 bg-[#20B894] text-white text-xs rounded-full flex items-center justify-center">
+                {requestList?.data?.length}
+              </span>
+            </Link>
+
             {validUser?.role === "user" && (
               <NotificationBadge currentUser={validUser?.email} />
             )}
