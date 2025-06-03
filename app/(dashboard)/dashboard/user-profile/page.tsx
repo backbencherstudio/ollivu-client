@@ -34,6 +34,8 @@ import {
 import { verifiedUser } from "@/src/utils/token-varify";
 import { toast } from "sonner";
 import { useRef } from "react"; // Add this import
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 export default function UserProfile() {
   const [profileImage, setProfileImage] = useState(profile);
@@ -69,6 +71,8 @@ export default function UserProfile() {
     aboutMe: "",
   });
 
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+
   const handleInputChange = (section: string, field: string, value: string) => {
     setFormData((prev) => {
       if (section === "aboutMe") {
@@ -87,6 +91,12 @@ export default function UserProfile() {
   // Update the handleEditSave function
   useEffect(() => {
     if (singleUserData) {
+      // Convert the stored date string to Date object if it exists
+      const storedDate = singleUserData.personalInfo?.dath_of_birth
+        ? new Date(singleUserData.personalInfo.dath_of_birth)
+        : null;
+      setSelectedDate(storedDate);
+
       setFormData({
         personalInfo: {
           firstName: singleUserData.personalInfo?.first_name || "",
@@ -110,6 +120,14 @@ export default function UserProfile() {
       });
     }
   }, [singleUserData]);
+
+  const handleDateChange = (date: Date | null) => {
+    setSelectedDate(date);
+    if (date) {
+      const formattedDate = date.toISOString().split("T")[0];
+      handleInputChange("personalInfo", "dateOfBirth", formattedDate);
+    }
+  };
 
   // Update handleEditSave function
   const handleEditSave = async () => {
@@ -149,7 +167,7 @@ export default function UserProfile() {
         );
         formDataToSend.append(
           "personalInfo[dath_of_birth]",
-          formData.personalInfo.dateOfBirth
+          selectedDate ? selectedDate.toISOString().split("T")[0] : ""
         );
 
         // Add address info
@@ -357,15 +375,20 @@ export default function UserProfile() {
 
           <div>
             <label className="text-sm text-gray-600">Date of birth</label>
-            <Input
-              type="date"
-              value={formData.personalInfo.dateOfBirth}
-              onChange={(e) =>
-                handleInputChange("personalInfo", "dateOfBirth", e.target.value)
-              }
-              className="mt-1"
-              disabled={!isEditing}
-            />
+            <div className="mt-1">
+              <DatePicker
+                selected={selectedDate}
+                onChange={handleDateChange}
+                dateFormat="yyyy-MM-dd"
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                placeholderText="Select date"
+                disabled={!isEditing}
+                showYearDropdown
+                showMonthDropdown
+                dropdownMode="select"
+                maxDate={new Date()}
+              />
+            </div>
           </div>
 
           <div className="w-full">
@@ -409,9 +432,7 @@ export default function UserProfile() {
           </div>
 
           <div>
-            <label className="text-sm text-gray-600">
-              Street address
-            </label>
+            <label className="text-sm text-gray-600">Street address</label>
             <Input
               value={formData.addressInfo.streetAddress}
               onChange={(e) =>
