@@ -48,10 +48,13 @@ export default function Navbar() {
   const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
   const singleUserData = singleUser?.data;
 
-  const { data: requestList, refetch } = useGetAllExchangeDataQuery({
-    userId: validUser?.userId,
-    isAccepted: false,
-  });
+  const { data: requestList, refetch } = useGetAllExchangeDataQuery(
+    {
+      userId: validUser?.userId,
+      isAccepted: false,
+    },
+    { pollingInterval: 5000 }
+  );
 
   useEffect(() => {
     refetch();
