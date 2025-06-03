@@ -22,6 +22,7 @@ interface ConfirmServiceModalProps {
   myServices: string[];
   senderService: string;
   acceptedService: string;
+  setIsConfirmExchange: (isConfirmExchange: boolean) => void;
 }
 
 export default function ConfirmServiceModal({
@@ -31,12 +32,11 @@ export default function ConfirmServiceModal({
   myServices = [],
   senderService = "",
   acceptedService = "",
+  setIsConfirmExchange,
 }: ConfirmServiceModalProps) {
   const [selectedService, setSelectedService] = useState<string>("");
   const [acceptExchange] = useAcceptExchangeMutation();
   const currentUser = verifiedUser();
-
-
 
   if (!isOpen) return null;
 
@@ -61,6 +61,7 @@ export default function ConfirmServiceModal({
 
       if (result?.data?.success) {
         toast.success(result?.data?.message);
+        setIsConfirmExchange(true);
         onClose();
       } else {
         toast.error("Failed to confirm exchange");
@@ -90,7 +91,7 @@ export default function ConfirmServiceModal({
           {/* Sender's Service */}
           <div>
             <label className="text-sm text-gray-500 mb-2 block">
-              Service you'll receive:
+              The service you are offering for exchange:
             </label>
             <div className="p-3 bg-gray-50 rounded-lg text-gray-900">
               {senderService}
@@ -116,7 +117,7 @@ export default function ConfirmServiceModal({
           {/* Your Service Selection */}
           <div>
             <label className="text-sm text-gray-500 mb-2 block">
-              Select your service to exchange:
+              The service the other user is offering for exchange:
             </label>
             <Select onValueChange={setSelectedService} value={selectedService}>
               <SelectTrigger className="w-full">

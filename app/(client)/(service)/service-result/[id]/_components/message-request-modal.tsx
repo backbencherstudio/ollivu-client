@@ -38,9 +38,9 @@ const MessageRequestModal = ({
   const checkMissingFields = () => {
     const personalInfo = currentUserInfo?.personalInfo || {};
     const addressInfo = currentUserInfo?.addressInfo || {};
-    
+
     console.log("personalInfo:", personalInfo); // For debugging
-    
+
     const missing = {
       firstName: !personalInfo.first_name,
       lastName: !personalInfo.last_name,
@@ -49,9 +49,10 @@ const MessageRequestModal = ({
       gender: !personalInfo.gender,
       country: !addressInfo.country,
       city: !addressInfo.city,
+      state: !addressInfo.state_province_country_region,
       zipCode: !addressInfo.zipCode,
-      streetAddress: !addressInfo.streetAddress,
-      aboutMe: !currentUserInfo?.about_me
+      // streetAddress: !addressInfo.streetAddress,
+      aboutMe: !currentUserInfo?.about_me,
     };
 
     // Filter out fields that are not missing
@@ -69,7 +70,10 @@ const MessageRequestModal = ({
     }
 
     // Check if user has my_service
-    if (!currentUserInfo?.my_service || currentUserInfo?.my_service.length === 0) {
+    if (
+      !currentUserInfo?.my_service ||
+      currentUserInfo?.my_service.length === 0
+    ) {
       setShowServiceModal(true);
       return;
     }

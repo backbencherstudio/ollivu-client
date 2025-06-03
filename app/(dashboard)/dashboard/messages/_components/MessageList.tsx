@@ -7,7 +7,8 @@ import {
 import { useExchangeChatRequestMutation } from "@/src/redux/features/shared/exchangeApi";
 import { ArrowBigDown, ArrowRightLeft } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 
 export const MessageList = ({
   onChatSelect,
@@ -19,6 +20,8 @@ export const MessageList = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRole, setSelectedRole] = useState("all");
+  const searchParams = useSearchParams();
+  const defaultTab = searchParams.get("tab") || "messages";
   // console.log("userId", userId);
   // console.log("userData", userData);
 
@@ -31,10 +34,15 @@ export const MessageList = ({
     isAccepted: true,
   });
   const { data } = useGetAllExchangeDataQuery(finalQuery);
-  const { data: requestList } = useGetAllExchangeDataQuery({
+  const { data: requestList, refetch } = useGetAllExchangeDataQuery({
     userId: userId,
     isAccepted: false,
   });
+
+  useEffect(() => {
+    refetch();
+  }, []);
+
   // console.log("requestList", requestList);
   // const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -100,7 +108,10 @@ export const MessageList = ({
       </div>
 
       {/* Tabs Container */}
-      <Tabs defaultValue="messages" className="flex-1 flex flex-col overflow-hidden">
+      <Tabs
+        defaultValue={defaultTab}
+        className="flex-1 flex flex-col overflow-hidden"
+      >
         <TabsList className="w-full bg-white border-b rounded-none z-10">
           <TabsTrigger
             value="messages"
@@ -125,9 +136,7 @@ export const MessageList = ({
                 onClick={() => onChatSelect(user)}
                 className={`w-full text-left hover:bg-gray-50 p-3 sm:p-4 border-b border-gray-100 cursor-pointer ${
                   user.hasUnread ? "bg-blue-100" : ""
-                } ${
-                  activeChat?._id === user._id ? "bg-emerald-50" : ""
-                }`}
+                } ${activeChat?._id === user._id ? "bg-emerald-50" : ""}`}
               >
                 <div className="flex items-center gap-2 sm:gap-4">
                   {/* User Avatar */}
