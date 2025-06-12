@@ -34,10 +34,13 @@ export const MessageList = ({
     isAccepted: true,
   });
   const { data } = useGetAllExchangeDataQuery(finalQuery);
-  const { data: requestList, refetch } = useGetAllExchangeDataQuery({
-    userId: userId,
-    isAccepted: false,
-  });
+  const { data: requestList, refetch } = useGetAllExchangeDataQuery(
+    {
+      userId: userId,
+      isAccepted: false,
+    },
+    { pollingInterval: 5000 }
+  );
 
   useEffect(() => {
     refetch();

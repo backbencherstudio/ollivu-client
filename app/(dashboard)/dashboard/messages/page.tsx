@@ -49,7 +49,7 @@ const Messages = () => {
 
   // TODO: get all exchange data
   const { data: userList, refetch } =
-    authApi.useGetAllExchangeDataQuery(finalQuery);
+    authApi.useGetAllExchangeDataQuery(finalQuery, { pollingInterval: 5000 });
   const [acceptExchange] = useAcceptExchangeMutation();
   const users = userList?.data;
 
