@@ -72,8 +72,10 @@ const ServiceDetails = () => {
 
   const [createExchange] = useCreateExchangeMutation();
   const { data: allProfileReport, refetch } = useGetAllProfileReportQuery({});
+  console.log("all profile report", allProfileReport);
+
   const filteredProfileReport = allProfileReport?.data?.filter(
-    (report) => report.reporterId._id === currentUser?.userId
+    (report) => report?.reporterId?._id === currentUser?.userId
   );
 
   // Pagination logic
