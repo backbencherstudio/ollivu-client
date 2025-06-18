@@ -29,8 +29,16 @@ export const exchangeApi = baseApi.injectEndpoints({
       invalidatesTags:["User"]
     }),
 
+    updateExchangeUpdateDateForSerial: builder.mutation({
+      query: (data) => ({
+        url: `/shared/updateExchangeUpdateDateForSerial`,
+        method: "PATCH",
+        body: data
+      }),
+    }),
+
 
   }),
 });
 
-export const { useCreateExchangeMutation, useExchangeChatRequestMutation, useAcceptExchangeMutation } = exchangeApi;
+export const { useCreateExchangeMutation, useExchangeChatRequestMutation, useAcceptExchangeMutation, useUpdateExchangeUpdateDateForSerialMutation } = exchangeApi;

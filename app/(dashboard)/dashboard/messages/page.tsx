@@ -9,11 +9,11 @@ import { authApi } from "@/src/redux/features/auth/authApi";
 import { MessageContent } from "./_components/MessageContent";
 import ConfirmServiceModal from "./_components/confirm-service-modal";
 import { toast } from "sonner";
-import { useAcceptExchangeMutation } from "@/src/redux/features/shared/exchangeApi";
+import { useAcceptExchangeMutation, useUpdateExchangeUpdateDateForSerialMutation } from "@/src/redux/features/shared/exchangeApi";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
-const socket = io("https://backend.ollivu.com");
+const socket = io("http://localhost:5000");
 
 const Messages = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -22,6 +22,8 @@ const Messages = () => {
   const [message, setMessage] = useState("");
   const [currentChat, setCurrentChat] = useState(null);
   const [user, setUser] = useState(null);
+
+  const [updateExchangeUpdateDateForSerial] = useUpdateExchangeUpdateDateForSerialMutation()
 
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   console.log("currentChat", currentChat);
@@ -50,6 +52,7 @@ const Messages = () => {
   // TODO: get all exchange data
   const { data: userList, refetch } =
     authApi.useGetAllExchangeDataQuery(finalQuery, { pollingInterval: 5000 });
+    
   const [acceptExchange] = useAcceptExchangeMutation();
   const users = userList?.data;
 
@@ -358,7 +361,8 @@ const Messages = () => {
     };
   }, [currentUser?.email]);
 
-  const sendMessage = (e) => {
+  const sendMessage = async (e) => {
+    
     e.preventDefault();
     if (message && currentChat) {
       const messageData = {
@@ -368,6 +372,11 @@ const Messages = () => {
         timestamp: new Date().toISOString(),
         read: false,
       };
+
+      console.log({messageData});
+      await updateExchangeUpdateDateForSerial({ recipient : messageData.recipient , sender : messageData.sender })
+
+      
 
       socket.emit("message", messageData);
       setMessage("");
