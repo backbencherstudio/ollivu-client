@@ -47,7 +47,7 @@ export default function UserProfile() {
   const [updateUser] = useUpdateUserMutation();
   const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
   const singleUserData = singleUser?.data;
-  console.log("singleUser", singleUserData);
+  // console.log("singleUser", singleUserData);
 
   // Add these after other state declarations
   const [formData, setFormData] = useState({
@@ -194,7 +194,7 @@ export default function UserProfile() {
         );
         formDataToSend.append("about_me", formData.aboutMe);
         const formDataObject = Object.fromEntries(formDataToSend.entries());
-        console.log("formDataObject", formDataObject);
+        // console.log("formDataObject", formDataObject);
 
         const response = await updateUser(formDataToSend).unwrap();
 

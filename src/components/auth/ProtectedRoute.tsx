@@ -18,7 +18,7 @@ const ProtectedRoute = ({
   const router = useRouter();
   const user = verifiedUser();
   const { data: singleUser, isLoading } = useGetSingleUserQuery(user?.userId);
-  console.log("private route singleUser", singleUser);
+  // console.log("private route singleUser", singleUser);
 
   // if (isLoading) {
   //   return (

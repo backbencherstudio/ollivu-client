@@ -13,7 +13,7 @@ export const reviewApi = baseApi.injectEndpoints({
 
     getSingleReview: builder.query({
       query: (id) => {
-        console.log(16, id);
+        // console.log(16, id);
         return {
           url: `/shared/review/${id}`,
           method: "GET",

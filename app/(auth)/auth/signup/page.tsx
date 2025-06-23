@@ -39,7 +39,7 @@ export default function SignupPage() {
   // Update handleSubmit function
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     // Reset errors
     setErrors({
       firstName: "",
@@ -211,13 +211,17 @@ export default function SignupPage() {
                   name="confirmPassword"
                   placeholder="Input your confirm password"
                   className={`w-full px-4 py-2 rounded-[8px] border ${
-                    errors.confirmPassword ? "border-red-500" : "border-[#20B894]"
+                    errors.confirmPassword
+                      ? "border-red-500"
+                      : "border-[#20B894]"
                   } bg-transparent text-black focus:outline-none`}
                   value={form.confirmPassword}
                   onChange={handleChange}
                 />
                 {errors.confirmPassword && (
-                  <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.confirmPassword}
+                  </p>
                 )}
               </div>
             </div>

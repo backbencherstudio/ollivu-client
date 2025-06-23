@@ -48,7 +48,7 @@ function TermsContent() {
     useGetTermsQuery(undefined);
 
   const handleEditorChange = (content: string) => {
-    console.log("Editor Content Changed:", content);
+    // console.log("Editor Content Changed:", content);
     setCurrentSection((prev) => ({ ...prev, content }));
   };
 
@@ -64,10 +64,10 @@ function TermsContent() {
 
   const handleSave = async () => {
     const { title, content, _id } = currentSection;
-    console.log("Attempting to save section:", currentSection);
+    // console.log("Attempting to save section:", currentSection);
 
     if (!title.trim() || !content.trim()) {
-      console.log("Validation Failed: Empty title or content");
+      // console.log("Validation Failed: Empty title or content");
       toast.error("Please fill in both title and content");
       return;
     }

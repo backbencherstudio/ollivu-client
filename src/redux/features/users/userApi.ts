@@ -13,7 +13,7 @@ export const usersApi = baseApi.injectEndpoints({
     getAllUsers: builder.query({
       query: (query) => {
         const queryString = new URLSearchParams(query).toString();
-        console.log("queryString", queryString);
+        // console.log("queryString", queryString);
         return {
           url: `/auth/allUsers${queryString ? `?${queryString}` : ""}`,
           method: "GET",

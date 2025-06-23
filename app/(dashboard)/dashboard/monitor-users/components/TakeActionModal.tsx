@@ -40,7 +40,7 @@ export function TakeActionModal({ isOpen, onClose, conversation }: TakeActionMod
     title: "",
     message: ""
   });
-  console.log("conversation", conversation);
+  // console.log("conversation", conversation);
   
 
   const handleSubmit = () => {
@@ -61,7 +61,7 @@ export function TakeActionModal({ isOpen, onClose, conversation }: TakeActionMod
 
   const handleConfirm = () => {
     // Handle the confirmed action here
-    console.log("Confirmed action:", selectedAction);
+    // console.log("Confirmed action:", selectedAction);
     setConfirmationModal(prev => ({ ...prev, isOpen: false }));
     onClose();
   };

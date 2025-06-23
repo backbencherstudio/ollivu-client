@@ -48,7 +48,7 @@ const ServiceDetails = () => {
     params.id as string
   );
   const singleUserData = instructor?.data;
-  console.log("singleUserData", singleUserData);
+  // console.log("singleUserData", singleUserData);
 
   const { data: currentUserData } = useGetCurrentUserQuery(currentUser?.userId);
   const currentUsreInfo = currentUserData?.data;

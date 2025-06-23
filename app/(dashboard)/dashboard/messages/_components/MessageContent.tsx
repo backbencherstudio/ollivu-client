@@ -1,4 +1,5 @@
 "use client";
+import { ArrowRightLeft } from "lucide-react";
 import moment from "moment";
 import { useEffect, useRef } from "react";
 
@@ -86,6 +87,15 @@ export const MessageContent = ({
                   }`}
                 >
                   <p className="text-[15px] leading-relaxed">{msg.content}</p>
+                </div>
+                <div>
+                  <span className="text-[11px] flex items-center gap-3 text-gray-500">
+                    <small>{msg?.senderService || "No service selected"}</small>{" "}
+                    <ArrowRightLeft className="w-4 h-4" />{" "}
+                    <small>
+                      {msg?.reciverService || "No service selected"}
+                    </small>
+                  </span>
                 </div>
                 <div
                   className={`text-xs mt-1.5 ${
