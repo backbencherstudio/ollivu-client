@@ -9,7 +9,10 @@ import { authApi } from "@/src/redux/features/auth/authApi";
 import { MessageContent } from "./_components/MessageContent";
 import ConfirmServiceModal from "./_components/confirm-service-modal";
 import { toast } from "sonner";
-import { useAcceptExchangeMutation, useUpdateExchangeUpdateDateForSerialMutation } from "@/src/redux/features/shared/exchangeApi";
+import {
+  useAcceptExchangeMutation,
+  useUpdateExchangeUpdateDateForSerialMutation,
+} from "@/src/redux/features/shared/exchangeApi";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
@@ -24,6 +27,9 @@ const Messages = () => {
   const [user, setUser] = useState(null);
   const [senderService, setSenderService] = useState(null);
   const [receiverService, setReceiverService] = useState(null);
+
+  const [updateExchangeUpdateDateForSerial] =
+    useUpdateExchangeUpdateDateForSerialMutation();
 
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   // console.log("currentChat", currentChat);
@@ -256,7 +262,7 @@ const Messages = () => {
   }, [currentUser?.email]);
 
   // TODO: send message function
-  const sendMessage = (e) => {
+  const sendMessage = async (e) => {
     e.preventDefault();
     if (message && currentChat) {
       // Determine sender/receiver services based on current user
@@ -282,6 +288,11 @@ const Messages = () => {
       console.log("send message:", messageData);
 
       socket.emit("message", messageData);
+      await updateExchangeUpdateDateForSerial({
+        recipient: messageData.recipient,
+        sender: messageData.sender,
+      });
+
       setMessage("");
     }
   };
