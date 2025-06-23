@@ -229,6 +229,8 @@ export const MessageList = ({
                         ? user?.reciverUserId?.email
                         : user?.email || "No messages yet"}
                     </p>
+
+                    {/* TODO: show exchange services */}
                     <span className="text-[11px] flex items-center gap-3 text-gray-500">
                       <small>
                         {user?.senderService || "No service selected"}

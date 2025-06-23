@@ -30,7 +30,7 @@ export default function RatingOverview({
     userId: currentUserId,
     isAccepted: true,
   });
-  console.log("userList", userList);
+  // console.log("userList", userList);
   // Check if users have exchanged services and both accepted
   const canWriteReview = useMemo(() => {
     if (!userList?.data || !currentUserId || !instructorId) return false;

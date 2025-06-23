@@ -22,11 +22,11 @@ const Messages = () => {
   const [message, setMessage] = useState("");
   const [currentChat, setCurrentChat] = useState(null);
   const [user, setUser] = useState(null);
-
-  const [updateExchangeUpdateDateForSerial] = useUpdateExchangeUpdateDateForSerialMutation()
+  const [senderService, setSenderService] = useState(null);
+  const [receiverService, setReceiverService] = useState(null);
 
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
-  console.log("currentChat", currentChat);
+  // console.log("currentChat", currentChat);
 
   const currentUser = verifiedUser();
   const router = useRouter();
@@ -49,12 +49,15 @@ const Messages = () => {
       : chat?.senderUserId?.first_name;
   };
 
-  // TODO: get all exchange data
-  const { data: userList, refetch } =
-    authApi.useGetAllExchangeDataQuery(finalQuery, { pollingInterval: 5000 });
-    
+  // TODO: get all message list data
+  const { data: userList, refetch } = authApi.useGetAllExchangeDataQuery(
+    finalQuery,
+    { pollingInterval: 5000 }
+  );
   const [acceptExchange] = useAcceptExchangeMutation();
   const users = userList?.data;
+  // console.log("user list", users);
+  // const
 
   const [unreadMessages, setUnreadMessages] = useState(() => {
     if (typeof window !== "undefined") {
@@ -112,115 +115,6 @@ const Messages = () => {
     }
   }, []);
 
-  // Remove the nested useEffect and combine socket logic
-  //  useEffect(() => {
-  //   if (!currentUser?.email) return;
-
-  //   socket.emit("join", currentUser?.email);
-
-  //   socket.on("connect", () => {
-  //     socket.emit("user_online", currentUser?.email);
-  //   });
-
-  //   socket.on("online_users", (users) => {
-  //     setOnlineUsers(users);
-  //   });
-
-  //   socket.on("user_connected", (email) => {
-  //     setOnlineUsers((prev) => ({
-  //       ...prev,
-  //       [email]: true,
-  //     }));
-  //   });
-
-  //   socket.on("user_disconnected", (email) => {
-  //     setOnlineUsers((prev) => ({
-  //       ...prev,
-  //       [email]: false,
-  //     }));
-  //   });
-
-  //   socket.on("message", (message) => {
-  //     setMessages((prevMessages) => [...prevMessages, message]);
-
-  //     // Update unread count for both sender and recipient
-  //     if (
-  //       (!currentChat ||
-  //       (message.sender !== getOtherUserEmail(currentChat) &&
-  //        message.recipient !== getOtherUserEmail(currentChat)))
-  //     ) {
-  //       const otherUser = message.sender === currentUser?.email
-  //         ? message.recipient
-  //         : message.sender;
-
-  //       setUnreadMessages((prev) => {
-  //         const newUnreadMessages = {
-  //           ...prev,
-  //           [otherUser]: (prev[otherUser] || 0) + 1,
-  //         };
-  //         localStorage.setItem("unreadMessages", JSON.stringify(newUnreadMessages));
-  //         return newUnreadMessages;
-  //       });
-  //     }
-
-  //     // Update last messages
-  //     const otherUser = message.sender === currentUser?.email
-  //       ? message.recipient
-  //       : message.sender;
-
-  //     setLastMessages((prev) => {
-  //       const newLastMessages = {
-  //         ...prev,
-  //         [otherUser]: {
-  //           content: message.content,
-  //           timestamp: message.timestamp,
-  //         },
-  //       };
-  //       localStorage.setItem("lastMessages", JSON.stringify(newLastMessages));
-  //       return newLastMessages;
-  //     });
-  //   });
-
-  //   socket.on("message history", (history) => {
-  //     setMessages(history);
-  //   });
-
-  //   socket.on("user list", (userList) => {
-  //     // console.log("User list updated:", userList);
-  //   });
-
-  //   // Fetch initial unread messages when component mounts
-  //   const fetchInitialUnreadMessages = async () => {
-  //     try {
-  //       // Get unread messages count directly from the server
-  //       const response = await fetch(
-  //         `${process.env.NEXT_PUBLIC_API_URL}/messages/unread/${currentUser?.email}`
-  //       );
-  //       const unreadCounts = await response.json();
-  //       // console.log("Initial unread counts:", unreadCounts); // Debug log
-  //       // Update unread messages state and localStorage
-  //       setUnreadMessages(unreadCounts);
-  //       localStorage.setItem("unreadMessages", JSON.stringify(unreadCounts));
-  //     } catch (error) {
-  //       console.error("Error fetching initial unread messages:", error);
-  //     }
-  //   };
-
-  //   fetchInitialUnreadMessages();
-
-  //   return () => {
-  //     socket.emit("user_offline", currentUser?.email);
-  //     socket.off("online_users");
-  //     socket.off("user_connected");
-  //     socket.off("user_disconnected");
-  //     socket.off("message");
-  //     socket.off("message history");
-  //     socket.off("user list");
-  //   };
-  // }, [currentUser?.email, currentChat, getOtherUserEmail]);
-
-  // Remove duplicate useEffect and combine socket logic
-  // Remove all other useEffects related to socket and keep only this one
   useEffect(() => {
     if (!currentUser?.email) return;
 
@@ -250,7 +144,7 @@ const Messages = () => {
 
           // TODO check 1
           if (currentUser?.email != message.sender) {
-            console.log("sojeb 1", currentUser?.email, message.sender);
+            // console.log("sojeb 1", currentUser?.email, message.sender);
             setUnreadMessages((prev) => {
               const newUnreadMessages = {
                 ...prev,
@@ -361,80 +255,36 @@ const Messages = () => {
     };
   }, [currentUser?.email]);
 
-  const sendMessage = async (e) => {
-    
+  // TODO: send message function
+  const sendMessage = (e) => {
     e.preventDefault();
     if (message && currentChat) {
+      // Determine sender/receiver services based on current user
+      let senderService, reciverService;
+      if (currentUser?.email === currentChat?.senderUserId?.email) {
+        senderService = currentChat?.senderService || "N/A";
+        reciverService = currentChat?.reciverService || "N/A";
+      } else {
+        senderService = currentChat?.reciverService || "N/A";
+        reciverService = currentChat?.senderService || "N/A";
+      }
+
       const messageData = {
         content: message,
         recipient: getOtherUserEmail(currentChat),
         sender: currentUser?.email,
         timestamp: new Date().toISOString(),
         read: false,
+        senderService,
+        reciverService,
       };
 
-      console.log({messageData});
-      await updateExchangeUpdateDateForSerial({ recipient : messageData.recipient , sender : messageData.sender })
-
-      
+      console.log("send message:", messageData);
 
       socket.emit("message", messageData);
       setMessage("");
     }
   };
-  // const handleChatSelect = async (user) => {
-  //   console.log("selected user", user);
-  //   setCurrentChat(user);
-  //   try {
-  //     // Fetch messages for the selected chat
-  //     const messagesResponse = await fetch(
-  //       `${process.env.NEXT_PUBLIC_API_URL}/chats?email=${
-  //         currentUser?.email
-  //       }&recipient=${getOtherUserEmail(user)}`
-  //     );
-  //     const messagesData = await messagesResponse.json();
-  //     setMessages(messagesData);
-
-  //     // Mark messages as read in the backend
-  //     const response = await fetch(
-  //       `${process.env.NEXT_PUBLIC_API_URL}/messages/mark-read`,
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify({
-  //           sender: user.email,
-  //           recipient: currentUser?.email,
-  //         }),
-  //       }
-  //     );
-
-  //     if (response.ok) {
-  //       // Update local messages state
-  //       setMessages((prevMessages) =>
-  //         prevMessages.map((msg) =>
-  //           msg.sender === user.email && msg.recipient === currentUser?.email
-  //             ? { ...msg, read: true }
-  //             : msg
-  //         )
-  //       );
-
-  //       // Clear unread count for this user
-  //       setUnreadMessages((prev) => {
-  //         const newUnreadMessages = { ...prev };
-  //         delete newUnreadMessages[user.email];
-  //         localStorage.setItem(
-  //           "unreadMessages",
-  //           JSON.stringify(newUnreadMessages)
-  //         );
-  //         return newUnreadMessages;
-  //       });
-  //     }
-  //   } catch (error) {
-  //     console.error("Error handling chat selection:", error);
-  //   }
-  // };
 
   const handleChatSelect = async (user) => {
     console.log("selected user", user);
@@ -575,6 +425,7 @@ const Messages = () => {
             </div>
 
             {/* Messages List */}
+            {/* TODO: message list */}
             <div className="flex-1 overflow-y-auto">
               <MessageList
                 onChatSelect={(user) => {
@@ -720,6 +571,7 @@ const Messages = () => {
                 />
               </div>
 
+              {/* TODO: Add the send message form */}
               {/* Message Input */}
               <div className="sticky bottom-0 bg-white border-t border-gray-100">
                 <MessageInput

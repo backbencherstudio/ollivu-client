@@ -37,14 +37,14 @@ export default function AdminReviewsPage() {
   }, []);
 
   const singleUserAllReview = getSingleReview?.data;
-  console.log("singleUserAllReview", singleUserAllReview);
+  // console.log("singleUserAllReview", singleUserAllReview);
 
   // Calculate pagination
   const filteredReviews = useMemo(() => {
     return singleUserAllReview || [];
   }, [singleUserAllReview]);
   const review = filteredReviews?.length;
-  console.log("filteredReviews", review);
+  // console.log("filteredReviews", review);
 
   const totalPages = Math.ceil(filteredReviews.length / ITEMS_PER_PAGE);
   const paginatedReviews = filteredReviews.slice(

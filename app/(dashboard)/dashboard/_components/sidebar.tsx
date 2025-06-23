@@ -35,7 +35,7 @@ export default function Sidebar({ user }) {
     },
     { icon: MessageSquare, label: "Message", href: "/dashboard/messages" },
     { icon: Star, label: "Review", href: "/dashboard/review" },
-    // { icon: Settings, label: "Settings", href: "/dashboard/settings" },
+    { icon: Settings, label: "Settings", href: "/dashboard/settings" },
   ];
 
   // Admin menu items

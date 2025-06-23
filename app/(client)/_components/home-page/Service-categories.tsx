@@ -37,7 +37,7 @@ export default function ServiceExchangeFlow() {
 
   const { data: getAllCategory } = useGetAllCategoryQuery([]);
   const allCategories = getAllCategory?.data || [];
-  console.log("allCategories", allCategories);
+  // console.log("allCategories", allCategories);
 
   const { data: getAllUserBaseOnSubCategory, isLoading: isLoadingUsers } =
     useGetAllUserBaseOnSubCategoryQuery(selectedService.subCategory, {
@@ -58,7 +58,7 @@ export default function ServiceExchangeFlow() {
     setModalStep("users");
     setSelectedUsers([]); // Reset selected users when changing category
   };
-  console.log("currentUserInfo", currentUserInfo);
+  // console.log("currentUserInfo", currentUserInfo);
 
   const handleUserToggle = (userId: string) => {
     setSelectedUsers((prev) =>

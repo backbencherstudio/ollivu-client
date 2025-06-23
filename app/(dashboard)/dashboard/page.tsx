@@ -76,10 +76,10 @@ export default function UserDashboardHome() {
   useEffect(() => {
     refetchAllOverviewData();
   }, []);
-  console.log("allOverviewDataData", allOverviewDataData);
+  // console.log("allOverviewDataData", allOverviewDataData);
   const confirmedExchanges = allOverviewDataData?.confirmExchange || 0;
   const totalExchangeRequests = allOverviewDataData?.exchangeRequest || 0;
-  console.log("totalExchangeRequests", totalExchangeRequests);
+  // console.log("totalExchangeRequests", totalExchangeRequests);
   const totalReviews = allOverviewDataData?.totalReview || 0;
 
 

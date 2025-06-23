@@ -39,7 +39,7 @@ const MessageRequestModal = ({
     const personalInfo = currentUserInfo?.personalInfo || {};
     const addressInfo = currentUserInfo?.addressInfo || {};
 
-    console.log("personalInfo:", personalInfo); // For debugging
+    // console.log("personalInfo:", personalInfo); // For debugging
 
     const missing = {
       firstName: !personalInfo.first_name,
