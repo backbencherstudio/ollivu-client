@@ -184,15 +184,19 @@ export function ViewDetailsModal({
               )}
 
               <div>
-                <button
-                  onClick={() => {
-                    handelShowConversation();
-                    setIsConversationModalOpen(true);
-                  }}
-                  className="w-1/2 bg-green-600 hover:bg-green-700 text-white py-1 rounded-xl cursor-pointer"
-                >
-                  Show Conversation
-                </button>
+                {isConversationLoading ? (
+                  <p>Loading...</p>
+                ) : (
+                  <button
+                    onClick={() => {
+                      handelShowConversation();
+                      setIsConversationModalOpen(true);
+                    }}
+                    className="w-1/2 bg-green-600 hover:bg-green-700 text-white py-1 rounded-xl cursor-pointer"
+                  >
+                    Show Conversation
+                  </button>
+                )}
               </div>
 
               <div className="space-y-3">
