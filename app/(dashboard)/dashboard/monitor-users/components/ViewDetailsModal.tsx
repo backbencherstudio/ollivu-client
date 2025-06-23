@@ -1,6 +1,6 @@
 "use client";
 
-import { X } from "lucide-react";
+import { ArrowRightLeft, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useTakeActionProfileReportMutation } from "@/src/redux/features/admin/profileReportApi";
@@ -432,7 +432,7 @@ function ConversationModal({
           <h3 className="text-lg font-semibold">Message History</h3>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
+            className="text-gray-500 hover:text-gray-700 cursor-pointer"
           >
             <X className="h-5 w-5" />
           </button>
@@ -493,10 +493,21 @@ function ConversationModal({
                           {msg.content}
                         </p>
                         <div className="text-[10px] mt-1 opacity-75">
-                          {msg.senderService !== "N/A" && (
+                          {/* {msg.senderService !== "N/A" && (
                             <span>{msg.senderService}</span>
-                          )}
+                          )} */}
                         </div>
+                      </div>
+                      <div>
+                        <span className="text-[11px] flex items-center gap-3 text-gray-500">
+                          <small>
+                            {msg?.senderService || "No service selected"}
+                          </small>{" "}
+                          <ArrowRightLeft className="w-4 h-4" />{" "}
+                          <small>
+                            {msg?.reciverService || "No service selected"}
+                          </small>
+                        </span>
                       </div>
                       <span className="text-xs text-gray-500 mt-1 px-1">
                         {moment(msg.timestamp).format("h:mm A")}
