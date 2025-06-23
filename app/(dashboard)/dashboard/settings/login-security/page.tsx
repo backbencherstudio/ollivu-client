@@ -5,9 +5,13 @@ import React, { useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { verifiedUser } from "@/src/utils/token-varify";
-import { useGetSingleUserQuery } from "@/src/redux/features/users/userApi";
+import {
+  useDeleteAccountMutation,
+  useGetSingleUserQuery,
+} from "@/src/redux/features/users/userApi";
 import { useChangePasswordMutation } from "@/src/redux/features/auth/authApi";
 import { Eye, EyeOff } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function LoginSecurity() {
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
@@ -15,8 +19,11 @@ export default function LoginSecurity() {
   const [newPassword, setNewPassword] = useState("");
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
-
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [formData, setFormData] = useState();
+
+  const router = useRouter();
 
   const validUser = verifiedUser();
   const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
@@ -24,6 +31,8 @@ export default function LoginSecurity() {
   console.log("settings single user", singleUserData?._id);
 
   const [changePassword] = useChangePasswordMutation();
+
+  const [deleteAccount] = useDeleteAccountMutation();
 
   // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   //   const { name, value } = e.target;
@@ -76,6 +85,25 @@ export default function LoginSecurity() {
     //     },
     //   });
     //   console.log("chagnePass", response);
+  };
+
+  const handleDelete = async () => {
+    try {
+      const response = await deleteAccount(singleUserData?._id).unwrap();
+      if (response?.success) {
+        toast.success(response?.message || "Account deleted successfully.");
+        localStorage.removeItem("accessToken");
+        document.cookie =
+          "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+        setIsAuthenticated(false);
+        setIsDeleteModalOpen(false);
+        router.push("/auth/login");
+      } else {
+        toast.error(response?.error || "Failed to delete account.");
+      }
+    } catch (error) {
+      toast.error(error?.data?.message || "Failed to delete account.");
+    }
   };
 
   return (
@@ -234,13 +262,56 @@ export default function LoginSecurity() {
                   Permanently delete your Hotels.com account and data.
                 </p>
               </div>
-              <button className="px-4 py-2 text-sm text-red-500 border border-red-500 rounded-md hover:bg-red-50">
+              <button
+                onClick={() => setIsDeleteModalOpen(true)}
+                className="px-4 py-2 text-sm text-red-500 border border-red-500 rounded-md hover:bg-red-50"
+              >
                 Delete
               </button>
             </div>
           </div>
         </div>
       </Card>
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 transition-opacity duration-300">
+          <div
+            className="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm transform transition-all duration-300 scale-95 opacity-0 animate-fadeIn"
+            style={{ animation: "fadeIn 0.3s forwards" }}
+          >
+            <h2 className="text-lg font-semibold mb-4 text-center text-red-600">
+              Delete Account
+            </h2>
+            <p className="mb-6 text-center text-gray-700">
+              Are you sure you want to permanently delete your account? This
+              action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setIsDeleteModalOpen(false)}
+                className="px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                className="px-4 py-2 rounded-md bg-red-500 text-white hover:bg-red-600"
+              >
+                Yes, Delete
+              </button>
+            </div>
+          </div>
+          <style jsx>{`
+            @keyframes fadeIn {
+              to {
+                opacity: 1;
+                transform: scale(1);
+              }
+            }
+          `}</style>
+        </div>
+      )}
     </div>
   );
 }

@@ -22,33 +22,7 @@ export const usersApi = baseApi.injectEndpoints({
       providesTags: ["User"],
     }),
 
-    //     getALlUser: builder.query({
-    //       query: (query) => {
-    //         const queryString = new URLSearchParams(query).toString();
-    //         return {
-    //           url: /auth/allUsers?${queryString},
-    //           method: "GET",
-    //         };
-    //       },
-    //       providesTags: ["user"],
-    //     }),
-
-    // getAllUsersByService: builder.query({
-    //   query: ({ service, country, rating, searchTerm }) => {
-    //     const params = new URLSearchParams();
-    //     if (searchTerm) params.append("searchTerm", searchTerm);
-    //     if (service) params.append("my_service", service);
-    //     if (country) params.append("country", country);
-    //     if (rating) params.append("rating", rating);
-    
-
-    //     return {
-    //       url: `/auth/allUsers?${params.toString()}`,
-    //       method: "GET",
-    //     };
-    //   },
-    //   providesTags: ["User"],
-    // }),
+   
 
     getSingleUser: builder.query({
       query: (id: string) => ({
@@ -139,7 +113,9 @@ export const usersApi = baseApi.injectEndpoints({
 
     getExchangeHistory: builder.query({
       query: ({ userId, year }) => ({
-        url: `/auth/exchangeHistorybyUser/${userId}${year ? `?date=${year}` : ''}`,
+        url: `/auth/exchangeHistorybyUser/${userId}${
+          year ? `?date=${year}` : ""
+        }`,
         method: "GET",
       }),
       providesTags: ["User"],
@@ -153,6 +129,13 @@ export const usersApi = baseApi.injectEndpoints({
       providesTags: ["User"],
     }),
 
+    deleteAccount: builder.mutation({
+      query: (userId) => ({
+        url: `/auth/deleteUser/${userId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["User"],
+    }),
   }),
 });
 
@@ -171,4 +154,5 @@ export const {
   useSearchUsersQuery,
   useGetExchangeHistoryQuery,
   useGetAllOverviewDataByUserQuery,
+  useDeleteAccountMutation
 } = usersApi;
