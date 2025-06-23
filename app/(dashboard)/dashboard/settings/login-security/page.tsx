@@ -77,14 +77,6 @@ export default function LoginSecurity() {
       console.error(error);
       toast.error(error?.data?.message);
     }
-    //   const response = await changePassword({
-    //     id: singleUserData?._id,
-    //     data: {
-    //       oldPass: oldPassword,
-    //       newPass: newPassword,
-    //     },
-    //   });
-    //   console.log("chagnePass", response);
   };
 
   const handleDelete = async () => {
