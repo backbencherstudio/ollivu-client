@@ -58,6 +58,7 @@ export default function Navbar() {
     },
     { pollingInterval: 5000 }
   );
+  
 
   const { data: readNotificationCount, isLoading: isNotificationLoading } =
     useGetReadExchangeNotificaionQuery(validUser?.userId);
@@ -67,7 +68,6 @@ export default function Navbar() {
   //     skip: !validUser?.userId,
   //   });
   // console.log("readNotificationCount", readNotificationCount);
-  
 
   useEffect(() => {
     refetch();
@@ -152,6 +152,25 @@ export default function Navbar() {
     e.stopPropagation();
     setIsNotificationPopupOpen(!isNotificationPopupOpen);
   };
+
+  // ==============================Message Request Notificaton ===================
+
+  // const [finalQuery, setFinalQuery] = useState({
+  //   userId: validUser?.userId,
+  //   isAccepted: true,
+  // });
+  // const { data } = useGetAllExchangeDataQuery(finalQuery);
+  // const { data: requestList } = useGetAllExchangeDataQuery(
+  //   {
+  //     userId: validUser?.userId,
+  //     isAccepted: false,
+  //   },
+  //   { pollingInterval: 5000 }
+  // );
+
+  // useEffect(() => {
+  //   refetch();
+  // }, []);
 
   return (
     <nav
@@ -316,7 +335,7 @@ export default function Navbar() {
                   <Bell className="w-7 h-7 text-[#20B894]" />
                   {readNotificationCount?.data?.length > 0 && (
                     <span className="absolute top-0 right-0 w-4 h-4 bg-[#20B894] text-white text-xs rounded-full flex items-center justify-center">
-                      {readNotificationCount?.data?.length}
+                      {readNotificationCount?.data?.length + requestList?.data?.length}
                     </span>
                   )}
                 </button>
