@@ -101,7 +101,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
     );
   }, [getAcceptedExchangeNotification?.data, requestList?.data]);
 
-  // console.log("marge noti", mergedNotifications);
+  console.log("marged Notification", mergedNotifications);
 
   const handleRequest = async (notification, isAccepted) => {
     try {
@@ -471,13 +471,13 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
         </div>
 
         {/* Footer */}
-        {!isNotificationLoading && localNotifications.length > 0 && (
+        {/* {!isNotificationLoading && localNotifications.length > 0 && (
           <div className="p-3 border-t border-gray-200 bg-gray-50">
             <button className="w-full py-3 text-center text-green-600 font-semibold bg-green-50 rounded-b-lg">
               View All
             </button>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

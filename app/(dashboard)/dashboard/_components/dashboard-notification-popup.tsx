@@ -85,8 +85,6 @@ const DashboardNotificationPopup: React.FC<DashboardNotificationPopupProps> = ({
       _source: "notification",
       // Keep existing data structure
     }));
-    
-    
 
     const requestNotifications = (requestList?.data || []).map((request) => ({
       ...request,
@@ -101,7 +99,7 @@ const DashboardNotificationPopup: React.FC<DashboardNotificationPopupProps> = ({
     );
   }, [getAcceptedExchangeNotification?.data, requestList?.data]);
 
-  // console.log("marge noti", mergedNotifications);
+  console.log("marge noti", mergedNotifications);
 
   const handleRequest = async (notification, isAccepted) => {
     try {
@@ -280,7 +278,6 @@ const DashboardNotificationPopup: React.FC<DashboardNotificationPopupProps> = ({
     const result = await exchangeChatRequest(data);
   };
 
-
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-end pt-16">
       <div className="fixed inset-0  bg-opacity-25" onClick={onClose} />
@@ -371,6 +368,7 @@ const DashboardNotificationPopup: React.FC<DashboardNotificationPopupProps> = ({
                   : {
                       email: notification.selectedEmail,
                       first_name: notification.selectedEmail.split("@")[0],
+                      //   first_name: notification.selectedEmail.split("@")[0],
                     };
 
                 return (
@@ -391,24 +389,24 @@ const DashboardNotificationPopup: React.FC<DashboardNotificationPopupProps> = ({
                         <User className="w-6 h-6 text-gray-500" />
                       )} */}
                       {notification?.senderUserId?.profileImage ? (
-                      <Image
-                        src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${notification?.senderUserId?.profileImage}`}
-                        alt={notification?.senderUserId?.first_name
-                          ?.slice(0, 2)
-                          .toUpperCase()}
-                        width={100}
-                        height={100}
-                        className="w-full h-full object-cover rounded-full"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-[#20B894] flex items-center justify-center text-white font-semibold rounded-full">
-                        {notification?.senderUserId?.first_name
-                          ? notification?.senderUserId.first_name
-                              .slice(0, 2)
-                              .toUpperCase()
-                          : "UN"}
-                      </div>
-                    )}
+                        <Image
+                          src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${notification?.senderUserId?.profileImage}`}
+                          alt={notification?.senderUserId?.first_name
+                            ?.slice(0, 2)
+                            .toUpperCase()}
+                          width={100}
+                          height={100}
+                          className="w-full h-full object-cover rounded-full"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-[#20B894] flex items-center justify-center text-white font-semibold rounded-full">
+                          {notification?.senderUserId?.first_name
+                            ? notification?.senderUserId.first_name
+                                .slice(0, 2)
+                                .toUpperCase()
+                            : "UN"}
+                        </div>
+                      )}
                     </div>
 
                     {/* Content */}
@@ -440,7 +438,9 @@ const DashboardNotificationPopup: React.FC<DashboardNotificationPopupProps> = ({
                         <div className="mt-2 flex gap-2">
                           <button
                             // onClick={() => handleRequest(notification, true)}
-                            onClick={() => requestHandler("true", notification._id)}
+                            onClick={() =>
+                              requestHandler("true", notification._id)
+                            }
                             disabled={isExchangeLoading}
                             className="px-4 py-1.5 bg-green-500 text-white rounded-md text-xs font-semibold hover:bg-green-600 transition-colors disabled:opacity-50"
                           >
@@ -448,8 +448,10 @@ const DashboardNotificationPopup: React.FC<DashboardNotificationPopupProps> = ({
                           </button>
                           <button
                             // onClick={() => handleRequest(notification, false)}
-                            
-                            onClick={() => requestHandler("false", notification._id)}
+
+                            onClick={() =>
+                              requestHandler("false", notification._id)
+                            }
                             disabled={isExchangeLoading}
                             className="px-4 py-1.5 bg-gray-200 text-gray-700 rounded-md text-xs font-semibold hover:bg-gray-300 transition-colors disabled:opacity-50"
                           >
@@ -471,13 +473,13 @@ const DashboardNotificationPopup: React.FC<DashboardNotificationPopupProps> = ({
         </div>
 
         {/* Footer */}
-        {!isNotificationLoading && localNotifications.length > 0 && (
+        {/* {!isNotificationLoading && localNotifications.length > 0 && (
           <div className="p-3 border-t border-gray-200 bg-gray-50">
             <button className="w-full py-3 text-center text-green-600 font-semibold bg-green-50 rounded-b-lg">
               View All
             </button>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );
