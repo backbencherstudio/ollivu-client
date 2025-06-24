@@ -28,6 +28,7 @@ import { verifiedUser } from "@/src/utils/token-varify";
 import { useGetAllCategoriesQuery } from "@/src/redux/features/categories/categoriesApi";
 import { useGetSingleUserQuery } from "@/src/redux/features/users/userApi";
 import NotificationBadge from "./NotificationBadge/NotificationBadge";
+import NotificationPopup from "./notification-popup";
 import { Button } from "@/components/ui/button";
 import { useGetAllExchangeDataQuery } from "@/src/redux/features/auth/authApi";
 
@@ -37,6 +38,7 @@ export default function Navbar() {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isNotificationPopupOpen, setIsNotificationPopupOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -133,6 +135,12 @@ export default function Navbar() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const handleBellClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsNotificationPopupOpen(!isNotificationPopupOpen);
+  };
 
   return (
     <nav
@@ -289,15 +297,17 @@ export default function Navbar() {
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
             {validUser?.role === "user" && (
-              <Link
-                href="/dashboard/messages?tab=requests"
-                className="relative"
-              >
-                <Bell className="w-7 h-7 text-[#20B894]" />
-                <span className="absolute top-0 right-0 w-4 h-4 bg-[#20B894] text-white text-xs rounded-full flex items-center justify-center">
-                  {requestList?.data?.length}
-                </span>
-              </Link>
+              <div className="relative">
+                <button
+                  onClick={handleBellClick}
+                  className="relative p-1 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <Bell className="w-7 h-7 text-[#20B894]" />
+                  <span className="absolute top-0 right-0 w-4 h-4 bg-[#20B894] text-white text-xs rounded-full flex items-center justify-center">
+                    {requestList?.data?.length}
+                  </span>
+                </button>
+              </div>
             )}
 
             {validUser?.role === "user" && (
@@ -424,6 +434,17 @@ export default function Navbar() {
             <div className="mr-4 ">
               <NotificationBadge currentUser={validUser?.email} />
             </div>
+            {validUser?.role === "user" && (
+              <button
+                onClick={handleBellClick}
+                className="relative p-1 hover:bg-gray-100 rounded-full transition-colors mr-2"
+              >
+                <Bell className="w-6 h-6 text-[#20B894]" />
+                <span className="absolute top-0 right-0 w-4 h-4 bg-[#20B894] text-white text-xs rounded-full flex items-center justify-center">
+                  {requestList?.data?.length}
+                </span>
+              </button>
+            )}
             <button
               onClick={toggleMobileMenu}
               className="text-gray-600 hover:text-teal-600 mobile-menu-button"
@@ -437,6 +458,13 @@ export default function Navbar() {
           </div>
         </div>
       </div>
+
+      {/* Notification Popup */}
+      <NotificationPopup
+        isOpen={isNotificationPopupOpen}
+        onClose={() => setIsNotificationPopupOpen(false)}
+        notificationCount={requestList?.data?.length || 0}
+      />
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
