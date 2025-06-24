@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import {
   Bell,
   X,
@@ -19,14 +19,13 @@ import {
 import { verifiedUser } from "@/src/utils/token-varify";
 import { useGetSingleUserQuery } from "@/src/redux/features/users/userApi";
 import { CustomToast } from "@/lib/Toast/CustomToast";
-import { useGetAllExchangeDataQuery } from "@/src/redux/features/auth/authApi";
 import { useExchangeChatRequestMutation } from "@/src/redux/features/shared/exchangeApi";
 
 interface NotificationPopupProps {
   isOpen: boolean;
   onClose: () => void;
   notificationCount: number;
-  requestList: any[];
+  requestList: any;
 }
 
 const NotificationPopup: React.FC<NotificationPopupProps> = ({
@@ -72,6 +71,49 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
     "getAcceptedExchangeNotification",
     getAcceptedExchangeNotification?.data
   );
+
+  const [exchangeChatRequest, { isLoading: isExchangeLoading }] =
+    useExchangeChatRequestMutation();
+
+  // Normalize and merge notifications
+  const mergedNotifications = useMemo(() => {
+    const acceptedNotifications = (
+      getAcceptedExchangeNotification?.data || []
+    ).map((notification) => ({
+      ...notification,
+      _source: "notification",
+      // Keep existing data structure
+    }));
+
+    const requestNotifications = (requestList?.data || []).map((request) => ({
+      ...request,
+      _source: "request",
+      isAcceptNotificationRead: false, // Requests are always unread
+      // Keep nested user objects intact
+    }));
+
+    return [...acceptedNotifications, ...requestNotifications].sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+  }, [getAcceptedExchangeNotification?.data, requestList?.data]);
+
+  const handleRequest = async (notification, isAccepted) => {
+    try {
+      const data = {
+        senderId: notification.senderUserId._id,
+        receiverId: notification.reciverUserId._id,
+        isAccepted,
+      };
+      await exchangeChatRequest(data).unwrap();
+      CustomToast.show(
+        `Request ${isAccepted ? "accepted" : "declined"} successfully`
+      );
+    } catch (error) {
+      console.error("Error handling request:", error);
+      CustomToast.show("Failed to process request. Please try again.");
+    }
+  };
 
   // Close popup when clicking outside
   useEffect(() => {
@@ -224,13 +266,6 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
   // ================= Show Message Notification =================
   // const [exchangeChatRequest, isLoading] = useExchangeChatRequestMutation();
 
-  const mergedNotifications = [
-    ...(localNotifications || []).map(n => ({ ...n, _source: "notification" })),
-    ...(Array.isArray(requestList) ? requestList : []).map(n => ({ ...n, _source: "request" })),
-  ].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-end pt-16">
       <div className="fixed inset-0  bg-opacity-25" onClick={onClose} />
@@ -252,7 +287,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
           </div>
           {/* Right: Mark all as read, Close */}
           <div className="flex items-center space-x-2">
-            {unreadCount > 0 && (
+            {/* {unreadCount > 0 && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -270,7 +305,17 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
                   "Mark all read"
                 )}
               </Button>
-            )}
+            )} */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={markAllAsRead}
+              disabled={isMarkingAllRead}
+              className="text-xs text-blue-500 hover:text-blue-700 disabled:opacity-50 cursor-pointer"
+              aria-label="Mark all as read"
+            >
+              Mark all read
+            </Button>
             <Button
               variant="ghost"
               size="sm"
@@ -290,7 +335,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600 mx-auto mb-4"></div>
               <p>Loading notifications...</p>
             </div>
-          ) : getAcceptedExchangeNotification?.data?.length === 0 ? (
+          ) : mergedNotifications.length === 0 ? (
             <div className="p-8 text-center text-gray-500">
               <Bell className="w-12 h-12 mx-auto mb-4 text-gray-300" />
               <p>No notifications yet</p>
@@ -301,82 +346,89 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
             </div>
           ) : (
             <div className="divide-y divide-gray-100">
-              {[...(getAcceptedExchangeNotification?.data || [])]
-                .sort(
-                  (a, b) =>
-                    new Date(b.createdAt).getTime() -
-                    new Date(a.createdAt).getTime()
-                )
-                .map((notification, index) => {
-                  const isUnread = !notification.isAcceptNotificationRead;
-                  const isWarning = notification.title
-                    ?.toLowerCase()
-                    .includes("suspend");
-                  const isRequest = notification._source === "request";
-                  return (
-                    <div
-                      key={notification._id}
-                      className={`flex items-center px-4 py-3 rounded-lg mb-2 shadow-sm bg-white relative ${
-                        isUnread
-                          ? "border-l-4 border-green-500"
-                          : "border-l-4 border-transparent"
-                      }`}
-                    >
-                      {/* Avatar or Initial */}
-                      <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-lg font-bold mr-3">
-                        {notification.selectedEmail ? (
-                          notification.selectedEmail[0].toUpperCase()
-                        ) : (
-                          <User className="w-6 h-6 text-gray-500" />
-                        )}
-                      </div>
-                      {/* Main Content */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between">
-                          <span
-                            className={`font-semibold ${
-                              isWarning ? "text-red-600" : "text-gray-900"
-                            }`}
-                          >
-                            {isWarning
-                              ? "Account Suspension Notice!"
-                              : notification?.selectedEmail}
-                            {isWarning && (
-                              // <ExclamationTriangleIcon className="inline ml-1 text-red-500" />
-                              <p>Email</p>
-                            )}
-                          </span>
-                          {/* Time */}
-                          <span className="text-xs text-gray-400 ml-2">
-                            {formatTime(notification.createdAt)}
-                          </span>
-                        </div>
-                        <div className="text-sm text-gray-600 line-clamp-2">
-                          {notification.isAccepted === "true"
-                            ? `Your service "${notification.senderService}" was accepted!`
-                            : `You have a new service request for "${notification.senderService}".`}
-                        </div>
-                        {/* Action Buttons */}
-                        {isRequest && (
-                          <div className="mt-2 flex gap-2">
-                            <button className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
-                              Accept
-                            </button>
-                            <button className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">
-                              Decline
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                      {/* Status Dot */}
-                      <span
-                        className={`ml-3 w-3 h-3 rounded-full ${
-                          isUnread ? "bg-green-500" : "bg-gray-300"
-                        }`}
-                      ></span>
+              {mergedNotifications.map((notification, index) => {
+                const isRequest = notification._source === "request";
+                const isUnread = !notification.isAcceptNotificationRead;
+
+                // Handle user data based on notification type
+                const userData = isRequest
+                  ? notification.senderUserId
+                  : {
+                      email: notification.selectedEmail,
+                      first_name: notification.selectedEmail.split("@")[0],
+                    };
+
+                return (
+                  <div
+                    key={notification._id}
+                    className={`flex items-start px-4 py-3 rounded-lg mb-2 shadow-sm bg-white relative ${
+                      isUnread
+                        ? "border-l-4 border-green-500"
+                        : "border-l-4 border-transparent"
+                    }`}
+                    onClick={() => !isRequest && markAsRead(notification._id)}
+                  >
+                    {/* Avatar/Initial */}
+                    <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-lg font-bold mr-3 flex-shrink-0">
+                      {userData.first_name ? (
+                        userData.first_name[0].toUpperCase()
+                      ) : (
+                        <User className="w-6 h-6 text-gray-500" />
+                      )}
                     </div>
-                  );
-                })}
+
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <span className="font-semibold text-gray-900 truncate">
+                          {userData.first_name || userData.email}
+                        </span>
+                        <span className="text-xs text-gray-400 ml-2 flex-shrink-0">
+                          {formatTime(notification.createdAt)}
+                        </span>
+                      </div>
+
+                      {/* Message */}
+                      <div
+                        className={`text-sm line-clamp-2 ${
+                          isRequest ? "text-green-700" : "text-gray-600"
+                        }`}
+                      >
+                        {isRequest
+                          ? `Sent you a request for "${notification.senderService}"`
+                          : notification.isAccepted === "true"
+                          ? `Your service "${notification.senderService}" was accepted!`
+                          : `You have a new service request for "${notification.senderService}".`}
+                      </div>
+
+                      {/* Action Buttons - Only for requests */}
+                      {isRequest && (
+                        <div className="mt-2 flex gap-2">
+                          <button
+                            onClick={() => handleRequest(notification, true)}
+                            disabled={isExchangeLoading}
+                            className="px-4 py-1.5 bg-green-500 text-white rounded-md text-xs font-semibold hover:bg-green-600 transition-colors disabled:opacity-50"
+                          >
+                            Accept
+                          </button>
+                          <button
+                            onClick={() => handleRequest(notification, false)}
+                            disabled={isExchangeLoading}
+                            className="px-4 py-1.5 bg-gray-200 text-gray-700 rounded-md text-xs font-semibold hover:bg-gray-300 transition-colors disabled:opacity-50"
+                          >
+                            Decline
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Status Dot */}
+                    {isUnread && (
+                      <span className="ml-3 mt-1 w-2.5 h-2.5 rounded-full bg-green-500 flex-shrink-0" />
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
