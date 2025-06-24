@@ -16,7 +16,7 @@ export const notificationApi = baseApi.injectEndpoints({
 
     getAcceptedExchangeNotification: builder.query({
       query: (id) => ({
-        url: `/shared/getALlAcceptedDataForEachUser/${id}`,
+        url: `/shared/getAcceptedDataForNav/${id}`,
         method: "GET",
       }),
     }),

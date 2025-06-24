@@ -35,12 +35,14 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
   const validUser = verifiedUser();
   const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
   const singleUserData = singleUser?.data;
+  // console.log("sin", singleUserData);
 
   const { data: getReadExchangeNotificaion, isLoading: isNotificationLoading } =
     useGetReadExchangeNotificaionQuery(singleUserData?._id, {
       skip: !singleUserData?._id,
+      pollingInterval: 5000,
     });
-  // console.log("getRead", getReadExchangeNotificaion);
+  console.log("getReadExchangeNotificaion", getReadExchangeNotificaion?.data);
 
   // Update notifications when API data changes
   useEffect(() => {
@@ -50,11 +52,16 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
     }
   }, [getReadExchangeNotificaion, localNotifications.length]);
 
+  // console.log("localNotification", localNotifications);
+
   const [postMarkAllReadExchangeNotification, { isLoading: isMarkingAllRead }] =
     usePostMarkAllReadExchangeNotificationMutation();
 
   const { data: getAcceptedExchangeNotification } =
-    useGetAcceptedExchangeNotificationQuery(singleUserData?._id);
+    useGetAcceptedExchangeNotificationQuery(singleUserData?._id, {
+      skip: !singleUserData?._id,
+      pollingInterval: 5000,
+    });
   console.log(
     "getAcceptedExchangeNotification",
     getAcceptedExchangeNotification?.data
@@ -101,19 +108,19 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
     console.log("Marking individual notification as read:", id);
     console.log(
       "Before - Unread count:",
-      localNotifications.filter((n) => !n.isRead).length
+      localNotifications.filter((n) => !n.isAcceptNotificationRead).length
     );
 
     // Update local notifications to preserve them
     setLocalNotifications((prev) => {
       const updated = prev.map((notification) =>
         notification._id === id || notification.id === id
-          ? { ...notification, isRead: true }
+          ? { ...notification, isAcceptNotificationRead: true }
           : notification
       );
       console.log(
         "After - Unread count:",
-        updated.filter((n) => !n.isRead).length
+        updated.filter((n) => !n.isAcceptNotificationRead).length
       );
       return updated;
     });
@@ -137,7 +144,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
         setLocalNotifications((prev) => {
           const updated = prev.map((notification) => ({
             ...notification,
-            isRead: true,
+            isAcceptNotificationRead: true,
           }));
           console.log("After updating local state - count:", updated.length);
           return updated;
@@ -189,7 +196,9 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
     }
   };
 
-  const unreadCount = localNotifications.filter((n) => !n.isRead).length;
+  const unreadCount = localNotifications.filter(
+    (n) => !n.isAcceptNotificationRead
+  ).length;
 
   // Debug log
   console.log(
@@ -215,15 +224,17 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
+          {/* Left: Icon, Title, Unread badge */}
           <div className="flex items-center space-x-2">
             <Bell className="w-5 h-5 text-gray-600" />
             <h3 className="font-semibold text-gray-900">Notifications</h3>
-            {unreadCount > 0 && (
+            {/* {unreadCount > 0 && (
               <span className="ml-2 px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">
                 {unreadCount}
               </span>
-            )}
+            )} */}
           </div>
+          {/* Right: Mark all as read, Close */}
           <div className="flex items-center space-x-2">
             {unreadCount > 0 && (
               <Button
@@ -232,6 +243,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
                 onClick={markAllAsRead}
                 disabled={isMarkingAllRead}
                 className="text-xs text-blue-600 hover:text-blue-700 disabled:opacity-50"
+                aria-label="Mark all as read"
               >
                 {isMarkingAllRead ? (
                   <>
@@ -248,6 +260,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
               size="sm"
               onClick={onClose}
               className="p-1 hover:bg-gray-200 rounded-full"
+              aria-label="Close notifications"
             >
               <X className="w-4 h-4" />
             </Button>
