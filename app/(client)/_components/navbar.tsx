@@ -31,6 +31,7 @@ import NotificationBadge from "./NotificationBadge/NotificationBadge";
 import NotificationPopup from "./notification-popup";
 import { Button } from "@/components/ui/button";
 import { useGetAllExchangeDataQuery } from "@/src/redux/features/auth/authApi";
+import { useGetReadExchangeNotificaionQuery } from "@/src/redux/features/notification/notificationApi";
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -57,6 +58,16 @@ export default function Navbar() {
     },
     { pollingInterval: 5000 }
   );
+
+  const { data: readNotificationCount, isLoading: isNotificationLoading } =
+    useGetReadExchangeNotificaionQuery(validUser?.userId);
+  // const { data: readNotificationCount, isLoading: isNotificationLoading } =
+  //   useGetReadExchangeNotificaionQuery(validUser?.userId, {
+  //     pollingInterval: 5000,
+  //     skip: !validUser?.userId,
+  //   });
+  // console.log("readNotificationCount", readNotificationCount);
+  
 
   useEffect(() => {
     refetch();
@@ -303,9 +314,11 @@ export default function Navbar() {
                   className="relative p-1 hover:bg-gray-100 rounded-full transition-colors"
                 >
                   <Bell className="w-7 h-7 text-[#20B894]" />
-                  <span className="absolute top-0 right-0 w-4 h-4 bg-[#20B894] text-white text-xs rounded-full flex items-center justify-center">
-                    {requestList?.data?.length}
-                  </span>
+                  {readNotificationCount?.data?.length > 0 && (
+                    <span className="absolute top-0 right-0 w-4 h-4 bg-[#20B894] text-white text-xs rounded-full flex items-center justify-center">
+                      {readNotificationCount?.data?.length}
+                    </span>
+                  )}
                 </button>
               </div>
             )}
@@ -440,9 +453,11 @@ export default function Navbar() {
                 className="relative p-1 hover:bg-gray-100 rounded-full transition-colors mr-2"
               >
                 <Bell className="w-6 h-6 text-[#20B894]" />
-                <span className="absolute top-0 right-0 w-4 h-4 bg-[#20B894] text-white text-xs rounded-full flex items-center justify-center">
-                  {requestList?.data?.length}
-                </span>
+                {readNotificationCount?.data?.length > 0 && (
+                  <span className="absolute top-0 right-0 w-4 h-4 bg-[#20B894] text-white text-xs rounded-full flex items-center justify-center">
+                    {readNotificationCount?.data?.length}
+                  </span>
+                )}
               </button>
             )}
             <button
@@ -463,7 +478,7 @@ export default function Navbar() {
       <NotificationPopup
         isOpen={isNotificationPopupOpen}
         onClose={() => setIsNotificationPopupOpen(false)}
-        notificationCount={requestList?.data?.length || 0}
+        notificationCount={readNotificationCount?.data?.length || 0}
       />
 
       {/* Mobile Menu */}

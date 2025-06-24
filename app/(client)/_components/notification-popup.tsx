@@ -9,66 +9,14 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useGetReadExchangeNotificaionQuery } from "@/src/redux/features/notification/notificationApi";
+import {
+  useGetAcceptedExchangeNotificationQuery,
+  useGetReadExchangeNotificaionQuery,
+  usePostMarkAllReadExchangeNotificationMutation,
+} from "@/src/redux/features/notification/notificationApi";
 import { verifiedUser } from "@/src/utils/token-varify";
 import { useGetSingleUserQuery } from "@/src/redux/features/users/userApi";
-
-// Static notification data
-const staticNotifications = [
-  {
-    id: 1,
-    type: "message",
-    title: "New message from John Doe",
-    message:
-      "Hi! I'm interested in your web development services. Can we discuss the project?",
-    time: "2 minutes ago",
-    isRead: false,
-    sender: "John Doe",
-    avatar: "/avatars/john.png",
-  },
-  {
-    id: 2,
-    type: "request",
-    title: "Service request received",
-    message:
-      "Sarah Smith has requested your graphic design services for a logo project.",
-    time: "15 minutes ago",
-    isRead: false,
-    sender: "Sarah Smith",
-    avatar: "/avatars/sophia.png",
-  },
-  {
-    id: 3,
-    type: "review",
-    title: "New review received",
-    message: "Michael Johnson left a 5-star review for your completed project.",
-    time: "1 hour ago",
-    isRead: true,
-    sender: "Michael Johnson",
-    avatar: "/avatars/michael.png",
-  },
-  {
-    id: 4,
-    type: "system",
-    title: "Profile verification completed",
-    message: "Congratulations! Your profile has been verified successfully.",
-    time: "2 hours ago",
-    isRead: true,
-    sender: "System",
-    avatar: null,
-  },
-  {
-    id: 5,
-    type: "message",
-    title: "Project update from Emily",
-    message:
-      "The design files have been uploaded. Please review and let me know your thoughts.",
-    time: "3 hours ago",
-    isRead: true,
-    sender: "Emily Wilson",
-    avatar: "/avatars/emily.png",
-  },
-];
+import { CustomToast } from "@/lib/Toast/CustomToast";
 
 interface NotificationPopupProps {
   isOpen: boolean;
@@ -81,17 +29,37 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
   onClose,
   notificationCount,
 }) => {
-  const [notifications, setNotifications] = useState(staticNotifications);
+  const [notifications, setNotifications] = useState([]);
+  const [localNotifications, setLocalNotifications] = useState([]);
   const popupRef = useRef<HTMLDivElement>(null);
   const validUser = verifiedUser();
   const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
   const singleUserData = singleUser?.data;
-  // console.log("sin", singleUserData?._id);
 
-  const { data: getReadExchangeNotificaion } =
-    useGetReadExchangeNotificaionQuery(singleUserData?._id);
-  console.log("getRead", getReadExchangeNotificaion);
-// 
+  const { data: getReadExchangeNotificaion, isLoading: isNotificationLoading } =
+    useGetReadExchangeNotificaionQuery(singleUserData?._id, {
+      skip: !singleUserData?._id,
+    });
+  // console.log("getRead", getReadExchangeNotificaion);
+
+  // Update notifications when API data changes
+  useEffect(() => {
+    if (getReadExchangeNotificaion?.data && localNotifications.length === 0) {
+      setNotifications(getReadExchangeNotificaion.data);
+      setLocalNotifications(getReadExchangeNotificaion.data);
+    }
+  }, [getReadExchangeNotificaion, localNotifications.length]);
+
+  const [postMarkAllReadExchangeNotification, { isLoading: isMarkingAllRead }] =
+    usePostMarkAllReadExchangeNotificationMutation();
+
+  const { data: getAcceptedExchangeNotification } =
+    useGetAcceptedExchangeNotificationQuery(singleUserData?._id);
+  console.log(
+    "getAcceptedExchangeNotification",
+    getAcceptedExchangeNotification?.data
+  );
+
   // Close popup when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -129,20 +97,62 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
     };
   }, [isOpen, onClose]);
 
-  const markAsRead = (id: number) => {
-    setNotifications((prev) =>
-      prev.map((notification) =>
-        notification.id === id
+  const markAsRead = (id: string | number) => {
+    console.log("Marking individual notification as read:", id);
+    console.log(
+      "Before - Unread count:",
+      localNotifications.filter((n) => !n.isRead).length
+    );
+
+    // Update local notifications to preserve them
+    setLocalNotifications((prev) => {
+      const updated = prev.map((notification) =>
+        notification._id === id || notification.id === id
           ? { ...notification, isRead: true }
           : notification
-      )
-    );
+      );
+      console.log(
+        "After - Unread count:",
+        updated.filter((n) => !n.isRead).length
+      );
+      return updated;
+    });
   };
 
-  const markAllAsRead = () => {
-    setNotifications((prev) =>
-      prev.map((notification) => ({ ...notification, isRead: true }))
-    );
+  const markAllAsRead = async () => {
+    try {
+      if (singleUserData?._id) {
+        console.log(
+          "Before API call - Local notifications count:",
+          localNotifications.length
+        );
+
+        // Call the API to mark all notifications as read
+        const result = await postMarkAllReadExchangeNotification(
+          singleUserData._id
+        ).unwrap();
+        console.log("API response:", result);
+
+        // Update local state to mark all notifications as read (but keep them visible)
+        setLocalNotifications((prev) => {
+          const updated = prev.map((notification) => ({
+            ...notification,
+            isRead: true,
+          }));
+          console.log("After updating local state - count:", updated.length);
+          return updated;
+        });
+
+        // Show success toast
+        CustomToast.show("All notifications marked as read");
+      }
+    } catch (error) {
+      console.error("Error marking all notifications as read:", error);
+      // Show error toast
+      CustomToast.show(
+        "Failed to mark notifications as read. Please try again."
+      );
+    }
   };
 
   const getNotificationIcon = (type: string) => {
@@ -155,6 +165,8 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
         return <CheckCircle className="w-4 h-4 text-yellow-500" />;
       case "system":
         return <AlertCircle className="w-4 h-4 text-purple-500" />;
+      case "exchange":
+        return <User className="w-4 h-4 text-green-500" />;
       default:
         return <Bell className="w-4 h-4 text-gray-500" />;
     }
@@ -170,12 +182,27 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
         return "bg-yellow-100 text-yellow-800";
       case "system":
         return "bg-purple-100 text-purple-800";
+      case "exchange":
+        return "bg-green-100 text-green-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
   };
 
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
+  const unreadCount = localNotifications.filter((n) => !n.isRead).length;
+
+  // Debug log
+  console.log(
+    "Render - Local notifications count:",
+    localNotifications.length,
+    "Unread count:",
+    unreadCount
+  );
+
+  function formatTime(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
 
   if (!isOpen) return null;
 
@@ -203,9 +230,17 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
                 variant="ghost"
                 size="sm"
                 onClick={markAllAsRead}
-                className="text-xs text-blue-600 hover:text-blue-700"
+                disabled={isMarkingAllRead}
+                className="text-xs text-blue-600 hover:text-blue-700 disabled:opacity-50"
               >
-                Mark all read
+                {isMarkingAllRead ? (
+                  <>
+                    <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-600 mr-1"></div>
+                    Marking...
+                  </>
+                ) : (
+                  "Mark all read"
+                )}
               </Button>
             )}
             <Button
@@ -221,100 +256,107 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
 
         {/* Notifications List */}
         <div className="max-h-[500px] overflow-y-auto">
-          {notifications.length === 0 ? (
+          {isNotificationLoading ? (
+            <div className="p-8 text-center text-gray-500">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600 mx-auto mb-4"></div>
+              <p>Loading notifications...</p>
+            </div>
+          ) : getAcceptedExchangeNotification?.data?.length === 0 ? (
             <div className="p-8 text-center text-gray-500">
               <Bell className="w-12 h-12 mx-auto mb-4 text-gray-300" />
               <p>No notifications yet</p>
               <p className="text-sm">
-                You'll see notifications here when you receive them.
+                You'll see exchange requests and notifications here when you
+                receive them.
               </p>
             </div>
           ) : (
             <div className="divide-y divide-gray-100">
-              {notifications.map((notification) => (
-                <div
-                  key={notification.id}
-                  className={`p-4 hover:bg-gray-50 transition-colors cursor-pointer ${
-                    !notification.isRead ? "bg-blue-50" : ""
-                  }`}
-                  onClick={() => markAsRead(notification.id)}
-                >
-                  <div className="flex items-start space-x-3">
-                    {/* Avatar */}
-                    <div className="flex-shrink-0">
-                      {notification.avatar ? (
-                        <img
-                          src={notification.avatar}
-                          alt={notification.sender}
-                          className="w-10 h-10 rounded-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                          {getNotificationIcon(notification.type)}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2 mb-1">
-                            <p
-                              className={`text-sm font-medium ${
-                                !notification.isRead
-                                  ? "text-gray-900"
-                                  : "text-gray-700"
-                              }`}
-                            >
-                              {notification.title}
-                            </p>
-                            {!notification.isRead && (
-                              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                            )}
-                          </div>
-                          <p className="text-sm text-gray-600 mb-2 line-clamp-2">
-                            {notification.message}
-                          </p>
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-2">
-                              <span
-                                className={`px-2 py-1 text-xs font-medium rounded-full ${getNotificationBadgeColor(
-                                  notification.type
-                                )}`}
-                              >
-                                {notification.type}
-                              </span>
-                              <div className="flex items-center text-xs text-gray-500">
-                                <Clock className="w-3 h-3 mr-1" />
-                                {notification.time}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+              {[...(getAcceptedExchangeNotification?.data || [])]
+                .sort(
+                  (a, b) =>
+                    new Date(b.createdAt).getTime() -
+                    new Date(a.createdAt).getTime()
+                )
+                .map((notification, index) => {
+                  const isUnread = !notification.isAcceptNotificationRead;
+                  const isWarning = notification.title
+                    ?.toLowerCase()
+                    .includes("suspend");
+                  return (
+                    <div
+                      key={notification._id}
+                      className={`flex items-center px-4 py-3 rounded-lg mb-2 shadow-sm bg-white relative ${
+                        isUnread
+                          ? "border-l-4 border-green-500"
+                          : "border-l-4 border-transparent"
+                      }`}
+                    >
+                      {/* Avatar or Initial */}
+                      <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-lg font-bold mr-3">
+                        {notification.selectedEmail ? (
+                          notification.selectedEmail[0].toUpperCase()
+                        ) : (
+                          <User className="w-6 h-6 text-gray-500" />
+                        )}
                       </div>
+                      {/* Main Content */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <span
+                            className={`font-semibold ${
+                              isWarning ? "text-red-600" : "text-gray-900"
+                            }`}
+                          >
+                            {isWarning
+                              ? "Account Suspension Notice!"
+                              : notification?.selectedEmail}
+                            {isWarning && (
+                              // <ExclamationTriangleIcon className="inline ml-1 text-red-500" />
+                              <p>Email</p>
+                            )}
+                          </span>
+                          {/* Time */}
+                          <span className="text-xs text-gray-400 ml-2">
+                            {formatTime(notification.createdAt)}
+                          </span>
+                        </div>
+                        <div className="text-sm text-gray-600 line-clamp-2">
+                          {notification.isAccepted === "true"
+                            ? `Your service "${notification.senderService}" was accepted!`
+                            : `You have a new service request for "${notification.senderService}".`}
+                        </div>
+                        {/* Action Buttons */}
+                        {notification.isAccepted !== "true" && (
+                          <div className="mt-2 flex gap-2">
+                            <button className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                              Accept
+                            </button>
+                            <button className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">
+                              Decline
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                      {/* Status Dot */}
+                      <span
+                        className={`ml-3 w-3 h-3 rounded-full ${
+                          isUnread ? "bg-green-500" : "bg-gray-300"
+                        }`}
+                      ></span>
                     </div>
-                  </div>
-                </div>
-              ))}
+                  );
+                })}
             </div>
           )}
         </div>
 
         {/* Footer */}
-        {notifications.length > 0 && (
+        {!isNotificationLoading && localNotifications.length > 0 && (
           <div className="p-3 border-t border-gray-200 bg-gray-50">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="w-full text-sm text-gray-600 hover:text-gray-800"
-              onClick={() => {
-                // Navigate to notifications page or dashboard
-                window.location.href = "/dashboard/notifications";
-              }}
-            >
-              View all notifications
-            </Button>
+            <button className="w-full py-3 text-center text-green-600 font-semibold bg-green-50 rounded-b-lg">
+              View All
+            </button>
           </div>
         )}
       </div>
