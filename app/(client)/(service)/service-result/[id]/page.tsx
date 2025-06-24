@@ -57,8 +57,12 @@ const ServiceDetails = () => {
   const singleUser = instructor?.data;
   // console.log("current user", singleUser);
 
-  const { data: getSingleReview } = useGetSingleReviewQuery(singleUser?._id);
+  // const { data: getSingleReview } = useGetSingleReviewQuery(singleUser?._id);
+  const { data: getSingleReview } = useGetSingleReviewQuery(params?.id);
   const singleReview = getSingleReview?.data;
+
+  console.log(getSingleReview);
+  
 
   // console.log("get single review", getSingleReview?.data);
 
@@ -232,11 +236,11 @@ const ServiceDetails = () => {
 
   // Calculate quality service badge eligibility
   const hasQualityService = () => {
-    if (!singleReview || singleReview.length < 10) return false;
-    const highRatingReviews = singleReview.filter(
-      (review) => review.rating >= 4.5
+    if (!singleReview || singleReview?.length < 10) return false;
+    const highRatingReviews = singleReview?.filter(
+      (review) => review?.rating >= 4.5
     );
-    return highRatingReviews.length >= 10;
+    return highRatingReviews?.length >= 10;
   };
 
   const badges = [
@@ -501,7 +505,7 @@ const ServiceDetails = () => {
                       <div>
                         {currentReviews?.map((singleReview: any) => (
                           <ReviewList
-                            key={singleReview._id}
+                            key={singleReview?._id}
                             review={singleReview}
                             instructor={formattedInstructor}
                           />
