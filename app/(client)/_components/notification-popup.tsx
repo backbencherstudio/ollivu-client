@@ -40,7 +40,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
   const validUser = verifiedUser();
   const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
   const singleUserData = singleUser?.data;
-  console.log("requestList popup", requestList);
+  // console.log("requestList popup", requestList);
 
   const { data: getReadExchangeNotificaion, isLoading: isNotificationLoading } =
     useGetReadExchangeNotificaionQuery(singleUserData?._id, {
@@ -67,10 +67,10 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
       skip: !singleUserData?._id,
       pollingInterval: 5000,
     });
-  console.log(
-    "getAcceptedExchangeNotification",
-    getAcceptedExchangeNotification?.data
-  );
+  // console.log(
+  //   "getAcceptedExchangeNotification",
+  //   getAcceptedExchangeNotification?.data
+  // );
 
   const [exchangeChatRequest, { isLoading: isExchangeLoading }] =
     useExchangeChatRequestMutation();
@@ -84,6 +84,8 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
       _source: "notification",
       // Keep existing data structure
     }));
+    
+    
 
     const requestNotifications = (requestList?.data || []).map((request) => ({
       ...request,
@@ -97,6 +99,8 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
   }, [getAcceptedExchangeNotification?.data, requestList?.data]);
+
+  // console.log("marge noti", mergedNotifications);
 
   const handleRequest = async (notification, isAccepted) => {
     try {
@@ -266,6 +270,16 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
   // ================= Show Message Notification =================
   // const [exchangeChatRequest, isLoading] = useExchangeChatRequestMutation();
 
+  const requestHandler = async (isAccepted, exchangeId) => {
+    const data = {
+      exchangeId,
+      isAccepted,
+      reciverUserId: validUser?.userId,
+    };
+    const result = await exchangeChatRequest(data);
+  };
+
+
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-end pt-16">
       <div className="fixed inset-0  bg-opacity-25" onClick={onClose} />
@@ -405,14 +419,17 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
                       {isRequest && (
                         <div className="mt-2 flex gap-2">
                           <button
-                            onClick={() => handleRequest(notification, true)}
+                            // onClick={() => handleRequest(notification, true)}
+                            onClick={() => requestHandler("true", notification._id)}
                             disabled={isExchangeLoading}
                             className="px-4 py-1.5 bg-green-500 text-white rounded-md text-xs font-semibold hover:bg-green-600 transition-colors disabled:opacity-50"
                           >
                             Accept
                           </button>
                           <button
-                            onClick={() => handleRequest(notification, false)}
+                            // onClick={() => handleRequest(notification, false)}
+                            
+                            onClick={() => requestHandler("false", notification._id)}
                             disabled={isExchangeLoading}
                             className="px-4 py-1.5 bg-gray-200 text-gray-700 rounded-md text-xs font-semibold hover:bg-gray-300 transition-colors disabled:opacity-50"
                           >
