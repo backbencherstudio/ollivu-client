@@ -18,6 +18,8 @@ import Link from "next/link";
 import { verifiedUser } from "@/src/utils/token-varify";
 import { useGetSingleUserQuery } from "@/src/redux/features/users/userApi";
 import { useGetAllExchangeDataQuery } from "@/src/redux/features/auth/authApi";
+import { useGetReadExchangeNotificaionQuery } from "@/src/redux/features/notification/notificationApi";
+import DashboardNotificationPopup from "./dashboard-notification-popup";
 
 export default function Header({ user }) {
   const router = useRouter();
@@ -27,11 +29,24 @@ export default function Header({ user }) {
   const profileRef = useRef(null);
   const notificationRef = useRef(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isNotificationPopupOpen, setIsNotificationPopupOpen] = useState(false);
 
   const validUser = verifiedUser();
   const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
   const singleUserData = singleUser?.data;
   // console.log("singleUserData", singleUserData);
+
+  const { data: readNotificationCount, isLoading: isNotificationLoading } =
+    useGetReadExchangeNotificaionQuery(validUser?.userId, {
+      skip: !validUser,
+      pollingInterval: 5000,
+    });
+  // const { data: readNotificationCount, isLoading: isNotificationLoading } =
+  //   useGetReadExchangeNotificaionQuery(validUser?.userId, {
+  //     pollingInterval: 5000,
+  //     skip: !validUser?.userId,
+  //   });
+  // console.log("readNotificationCount", readNotificationCount);
 
   const notifications = [
     {
@@ -78,10 +93,13 @@ export default function Header({ user }) {
     },
   ];
 
-  const { data: requestList, refetch } = useGetAllExchangeDataQuery({
-    userId: validUser?.userId,
-    isAccepted: false,
-  });
+  const { data: requestList, refetch } = useGetAllExchangeDataQuery(
+    {
+      userId: validUser?.userId,
+      isAccepted: false,
+    },
+    { pollingInterval: 5000 }
+  );
 
   useEffect(() => {
     refetch();
@@ -96,6 +114,12 @@ export default function Header({ user }) {
   const handleNotificationClick = () => {
     setShowNotifications(!showNotifications);
     setShowProfile(false);
+  };
+
+  const handleBellClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsNotificationPopupOpen(!isNotificationPopupOpen);
   };
 
   // Add click outside handler
@@ -210,13 +234,35 @@ export default function Header({ user }) {
           </div> */}
 
           {singleUserData?.role === "user" && (
-            <Link href="/dashboard/messages?tab=requests" className="relative">
-              <Bell className="w-8 h-8 text-gray-600" />
-              <span className="absolute top-0 right-0 w-4 h-4 bg-[#20B894] text-white text-xs rounded-full flex items-center justify-center">
-                {requestList?.data?.length}
-              </span>
-            </Link>
+            // <Link href="/dashboard/messages?tab=requests" className="relative">
+            //   <Bell className="w-8 h-8 text-[#20B894]" />
+            //   <span className="absolute top-0 right-0 w-4 h-4 bg-[#20B894] text-white text-xs rounded-full flex items-center justify-center">
+            //     {requestList?.data?.length}
+            //   </span>
+            // </Link>
+            <div className="relative">
+              <button
+                onClick={handleBellClick}
+                className="relative p-1 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <Bell className="w-7 h-7 text-[#20B894]" />
+                {/* {readNotificationCount?.data?.length > 0 && ( */}
+                <span className="absolute top-0 right-0 w-4 h-4 bg-[#20B894] text-white text-xs rounded-full flex items-center justify-center">
+                  {readNotificationCount?.data?.length +
+                    requestList?.data?.length}
+                </span>
+                {/* )} */}
+              </button>
+            </div>
           )}
+
+          {/* Notification Popup */}
+          <DashboardNotificationPopup
+            isOpen={isNotificationPopupOpen}
+            onClose={() => setIsNotificationPopupOpen(false)}
+            notificationCount={readNotificationCount?.data?.length || 0}
+            requestList={requestList}
+          />
 
           {/* Profile Dropdown */}
           <div ref={profileRef} className="relative">
