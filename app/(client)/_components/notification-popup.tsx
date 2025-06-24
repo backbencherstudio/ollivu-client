@@ -20,6 +20,7 @@ import { verifiedUser } from "@/src/utils/token-varify";
 import { useGetSingleUserQuery } from "@/src/redux/features/users/userApi";
 import { CustomToast } from "@/lib/Toast/CustomToast";
 import { useExchangeChatRequestMutation } from "@/src/redux/features/shared/exchangeApi";
+import Image from "next/image";
 
 interface NotificationPopupProps {
   isOpen: boolean;
@@ -384,11 +385,30 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
                   >
                     {/* Avatar/Initial */}
                     <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-lg font-bold mr-3 flex-shrink-0">
-                      {userData.first_name ? (
+                      {/* {userData.first_name ? (
                         userData.first_name[0].toUpperCase()
                       ) : (
                         <User className="w-6 h-6 text-gray-500" />
-                      )}
+                      )} */}
+                      {notification?.senderUserId?.profileImage ? (
+                      <Image
+                        src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${notification?.senderUserId?.profileImage}`}
+                        alt={notification?.senderUserId?.first_name
+                          ?.slice(0, 2)
+                          .toUpperCase()}
+                        width={100}
+                        height={100}
+                        className="w-full h-full object-cover rounded-full"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-[#20B894] flex items-center justify-center text-white font-semibold rounded-full">
+                        {notification?.senderUserId?.first_name
+                          ? notification?.senderUserId.first_name
+                              .slice(0, 2)
+                              .toUpperCase()
+                          : "UN"}
+                      </div>
+                    )}
                     </div>
 
                     {/* Content */}
