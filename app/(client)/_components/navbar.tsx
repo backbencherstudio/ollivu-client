@@ -471,16 +471,29 @@ export default function Navbar() {
               <NotificationBadge currentUser={validUser?.email} />
             </div>
             {validUser?.role === "user" && (
+              // <button
+              //   onClick={handleBellClick}
+              //   className="relative p-1 hover:bg-gray-100 rounded-full transition-colors mr-2"
+              // >
+              //   <Bell className="w-6 h-6 text-[#20B894]" />
+              //   {readNotificationCount?.data?.length > 0 && (
+              //     <span className="absolute top-0 right-0 w-4 h-4 bg-[#20B894] text-white text-xs rounded-full flex items-center justify-center">
+              //       {readNotificationCount?.data?.length +
+              //         requestList?.data?.length}
+              //     </span>
+              //   )}
+              // </button>
               <button
                 onClick={handleBellClick}
-                className="relative p-1 hover:bg-gray-100 rounded-full transition-colors mr-2"
+                className="relative p-1 hover:bg-gray-100 rounded-full transition-colors"
               >
                 <Bell className="w-6 h-6 text-[#20B894]" />
-                {readNotificationCount?.data?.length > 0 && (
-                  <span className="absolute top-0 right-0 w-4 h-4 bg-[#20B894] text-white text-xs rounded-full flex items-center justify-center">
-                    {readNotificationCount?.data?.length}
-                  </span>
-                )}
+                {/* {readNotificationCount?.data?.length > 0 && ( */}
+                <span className="absolute top-0 right-0 w-4 h-4 bg-[#20B894] text-white text-xs rounded-full flex items-center justify-center">
+                  {readNotificationCount?.data?.length +
+                    requestList?.data?.length}
+                </span>
+                {/* )} */}
               </button>
             )}
             <button
