@@ -58,7 +58,8 @@ export default function Navbar() {
     },
     { pollingInterval: 5000 }
   );
-  
+
+  // console.log("llist", requestList);
 
   const { data: readNotificationCount, isLoading: isNotificationLoading } =
     useGetReadExchangeNotificaionQuery(validUser?.userId);
@@ -171,6 +172,8 @@ export default function Navbar() {
   // useEffect(() => {
   //   refetch();
   // }, []);
+
+  // console.log("Request List from Navbar:", requestList);
 
   return (
     <nav
@@ -333,11 +336,12 @@ export default function Navbar() {
                   className="relative p-1 hover:bg-gray-100 rounded-full transition-colors"
                 >
                   <Bell className="w-7 h-7 text-[#20B894]" />
-                  {readNotificationCount?.data?.length > 0 && (
-                    <span className="absolute top-0 right-0 w-4 h-4 bg-[#20B894] text-white text-xs rounded-full flex items-center justify-center">
-                      {readNotificationCount?.data?.length + requestList?.data?.length}
-                    </span>
-                  )}
+                  {/* {readNotificationCount?.data?.length > 0 && ( */}
+                  <span className="absolute top-0 right-0 w-4 h-4 bg-[#20B894] text-white text-xs rounded-full flex items-center justify-center">
+                    {readNotificationCount?.data?.length +
+                      requestList?.data?.length}
+                  </span>
+                  {/* )} */}
                 </button>
               </div>
             )}
@@ -498,6 +502,7 @@ export default function Navbar() {
         isOpen={isNotificationPopupOpen}
         onClose={() => setIsNotificationPopupOpen(false)}
         notificationCount={readNotificationCount?.data?.length || 0}
+        requestList={requestList}
       />
 
       {/* Mobile Menu */}

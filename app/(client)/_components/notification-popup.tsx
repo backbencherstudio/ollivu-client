@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect, useRef } from "react";
 import {
   Bell,
@@ -17,17 +19,21 @@ import {
 import { verifiedUser } from "@/src/utils/token-varify";
 import { useGetSingleUserQuery } from "@/src/redux/features/users/userApi";
 import { CustomToast } from "@/lib/Toast/CustomToast";
+import { useGetAllExchangeDataQuery } from "@/src/redux/features/auth/authApi";
+import { useExchangeChatRequestMutation } from "@/src/redux/features/shared/exchangeApi";
 
 interface NotificationPopupProps {
   isOpen: boolean;
   onClose: () => void;
   notificationCount: number;
+  requestList: any[];
 }
 
 const NotificationPopup: React.FC<NotificationPopupProps> = ({
   isOpen,
   onClose,
   notificationCount,
+  requestList,
 }) => {
   const [notifications, setNotifications] = useState([]);
   const [localNotifications, setLocalNotifications] = useState([]);
@@ -35,14 +41,14 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
   const validUser = verifiedUser();
   const { data: singleUser } = useGetSingleUserQuery(validUser?.userId);
   const singleUserData = singleUser?.data;
-  // console.log("sin", singleUserData);
+  console.log("requestList popup", requestList);
 
   const { data: getReadExchangeNotificaion, isLoading: isNotificationLoading } =
     useGetReadExchangeNotificaionQuery(singleUserData?._id, {
       skip: !singleUserData?._id,
       pollingInterval: 5000,
     });
-  console.log("getReadExchangeNotificaion", getReadExchangeNotificaion?.data);
+  // console.log("getReadExchangeNotificaion", getReadExchangeNotificaion?.data);
 
   // Update notifications when API data changes
   useEffect(() => {
@@ -105,11 +111,11 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
   }, [isOpen, onClose]);
 
   const markAsRead = (id: string | number) => {
-    console.log("Marking individual notification as read:", id);
-    console.log(
-      "Before - Unread count:",
-      localNotifications.filter((n) => !n.isAcceptNotificationRead).length
-    );
+    // console.log("Marking individual notification as read:", id);
+    // console.log(
+    //   "Before - Unread count:",
+    //   localNotifications.filter((n) => !n.isAcceptNotificationRead).length
+    // );
 
     // Update local notifications to preserve them
     setLocalNotifications((prev) => {
@@ -118,10 +124,10 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
           ? { ...notification, isAcceptNotificationRead: true }
           : notification
       );
-      console.log(
-        "After - Unread count:",
-        updated.filter((n) => !n.isAcceptNotificationRead).length
-      );
+      // console.log(
+      //   "After - Unread count:",
+      //   updated.filter((n) => !n.isAcceptNotificationRead).length
+      // );
       return updated;
     });
   };
@@ -129,16 +135,16 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
   const markAllAsRead = async () => {
     try {
       if (singleUserData?._id) {
-        console.log(
-          "Before API call - Local notifications count:",
-          localNotifications.length
-        );
+        // console.log(
+        //   "Before API call - Local notifications count:",
+        //   localNotifications.length
+        // );
 
         // Call the API to mark all notifications as read
         const result = await postMarkAllReadExchangeNotification(
           singleUserData._id
         ).unwrap();
-        console.log("API response:", result);
+        // console.log("API response:", result);
 
         // Update local state to mark all notifications as read (but keep them visible)
         setLocalNotifications((prev) => {
@@ -146,7 +152,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
             ...notification,
             isAcceptNotificationRead: true,
           }));
-          console.log("After updating local state - count:", updated.length);
+          // console.log("After updating local state - count:", updated.length);
           return updated;
         });
 
@@ -201,12 +207,12 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
   ).length;
 
   // Debug log
-  console.log(
-    "Render - Local notifications count:",
-    localNotifications.length,
-    "Unread count:",
-    unreadCount
-  );
+  // console.log(
+  //   "Render - Local notifications count:",
+  //   localNotifications.length,
+  //   "Unread count:",
+  //   unreadCount
+  // );
 
   function formatTime(dateString) {
     const date = new Date(dateString);
@@ -214,6 +220,16 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
   }
 
   if (!isOpen) return null;
+
+  // ================= Show Message Notification =================
+  // const [exchangeChatRequest, isLoading] = useExchangeChatRequestMutation();
+
+  const mergedNotifications = [
+    ...(localNotifications || []).map(n => ({ ...n, _source: "notification" })),
+    ...(Array.isArray(requestList) ? requestList : []).map(n => ({ ...n, _source: "request" })),
+  ].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-end pt-16">
@@ -296,6 +312,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
                   const isWarning = notification.title
                     ?.toLowerCase()
                     .includes("suspend");
+                  const isRequest = notification._source === "request";
                   return (
                     <div
                       key={notification._id}
@@ -340,7 +357,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
                             : `You have a new service request for "${notification.senderService}".`}
                         </div>
                         {/* Action Buttons */}
-                        {notification.isAccepted !== "true" && (
+                        {isRequest && (
                           <div className="mt-2 flex gap-2">
                             <button className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
                               Accept
