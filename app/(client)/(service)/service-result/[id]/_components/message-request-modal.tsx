@@ -8,6 +8,8 @@ import { useGetCurrentUserQuery } from "@/src/redux/features/users/userApi";
 import Link from "next/link";
 import { toast } from "sonner";
 import RequiredFieldsModal from "@/app/components/RequiredFieldsModal";
+import { logout } from "@/src/redux/features/auth/authSlice";
+import { useRouter } from "next/navigation";
 
 interface MessageRequestModalProps {
   isOpen: boolean;
@@ -30,6 +32,8 @@ const MessageRequestModal = ({
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [showRequiredFieldsModal, setShowRequiredFieldsModal] = useState(false);
   const [missingFields, setMissingFields] = useState({});
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const router = useRouter();
 
   const currentUser = verifiedUser();
   const { data: currentUserData } = useGetCurrentUserQuery(currentUser?.userId);
@@ -64,6 +68,16 @@ const MessageRequestModal = ({
   };
 
   const handleSubmit = async () => {
+    // need to logout
+    if (currentUserInfo?.profileStatus !== "safe") {
+      localStorage.removeItem("accessToken");
+      document.cookie =
+        "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+      setIsAuthenticated(false);
+      router.push("/auth/login");
+      return;
+    }
+
     if (!selectedService) {
       setError("Please select a service to continue");
       return;
