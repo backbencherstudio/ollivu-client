@@ -99,7 +99,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
     );
   }, [getAcceptedExchangeNotification?.data, requestList?.data]);
 
-  console.log("marged Notification", mergedNotifications);
+  // console.log("marged Notification", mergedNotifications);
 
   const handleRequest = async (notification, isAccepted) => {
     try {
@@ -367,7 +367,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
                   ? notification.senderUserId
                   : {
                       email: notification.selectedEmail,
-                      first_name: notification.selectedEmail.split("@")[0],
+                      first_name: notification.selectedEmail
                     };
 
                 return (
@@ -421,7 +421,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
                     {/* Content */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <span className="font-semibold text-gray-900 truncate">
+                        <span className="text-sm font-medium text-gray-900 truncate">
                           {userData.first_name || userData.email}
                         </span>
                         <span className="text-xs text-gray-400 ml-2 flex-shrink-0">

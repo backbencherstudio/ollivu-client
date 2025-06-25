@@ -53,7 +53,7 @@ const ServiceDetails = () => {
 
   const { data: currentUserData } = useGetCurrentUserQuery(currentUser?.userId);
   const currentUsreInfo = currentUserData?.data;
-  console.log("current user info", currentUsreInfo);
+  // console.log("current user info", currentUsreInfo);
 
   const singleUser = instructor?.data;
   // console.log("current user", singleUser);

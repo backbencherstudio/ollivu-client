@@ -6,7 +6,10 @@ import {
   useGetAllCategoryQuery,
   useGetAllUserBaseOnSubCategoryQuery,
 } from "@/src/redux/features/shared/categoryAPi";
-import { useGetAllUsersQuery } from "@/src/redux/features/users/userApi";
+import {
+  useGetAllUsersQuery,
+  useGetSingleUserQuery,
+} from "@/src/redux/features/users/userApi";
 import CategoryCard from "./service-categories/CategoryCard";
 import UserList from "./service-categories/UserList";
 import SkillExchange from "./service-categories/SkillExchange";
@@ -17,7 +20,6 @@ import { useGetCurrentUserQuery } from "@/src/redux/features/users/userApi";
 import { toast } from "sonner";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
 
 export default function ServiceExchangeFlow() {
   const [modalStep, setModalStep] = useState<
@@ -45,6 +47,7 @@ export default function ServiceExchangeFlow() {
     });
 
   const allUsers = getAllUserBaseOnSubCategory?.data || [];
+  console.log("all users", allUsers);
 
   const [createExchange] = useCreateExchangeMutation();
 
@@ -110,7 +113,7 @@ export default function ServiceExchangeFlow() {
       const exchangeRequests = selectedUsers.map((userId) => {
         // Find user details for each selected user
         const userDetails = allUsers.find((user) => user._id === userId);
-        // console.log("userDetails", userDetails);
+        console.log("userDetails", userDetails);
 
         return {
           // senderUserId: currentUserInfo?._id,
@@ -119,7 +122,9 @@ export default function ServiceExchangeFlow() {
           // senderService: selectedSkill,
           // my_service: currentUserInfo?.my_service,
           senderUserId: currentUser?.userId,
+          senderImage: currentUserInfo?.profileImage,
           reciverUserId: userId,
+          reciverImage: userDetails?.profileImage,
           email: currentUser?.email,
           selectedEmail: userDetails?.email,
           senderService: selectedSkill,
