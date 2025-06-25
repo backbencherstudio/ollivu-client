@@ -85,8 +85,6 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
       _source: "notification",
       // Keep existing data structure
     }));
-    
-    
 
     const requestNotifications = (requestList?.data || []).map((request) => ({
       ...request,
@@ -280,7 +278,6 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
     const result = await exchangeChatRequest(data);
   };
 
-
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-end pt-16">
       <div className="fixed inset-0  bg-opacity-25" onClick={onClose} />
@@ -390,7 +387,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
                       ) : (
                         <User className="w-6 h-6 text-gray-500" />
                       )} */}
-                      {notification?.senderUserId?.profileImage ? (
+                      {/* {notification?.senderUserId?.profileImage ? (
                       <Image
                         src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${notification?.senderUserId?.profileImage}`}
                         alt={notification?.senderUserId?.first_name
@@ -408,7 +405,17 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
                               .toUpperCase()
                           : "UN"}
                       </div>
-                    )}
+                    )} */}
+
+                      <Image
+                        src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${notification?.isAccepted === "true" ? notification?.reciverImage : notification?.senderImage}`}
+                        alt={notification?.senderUserId?.first_name
+                          ?.slice(0, 2)
+                          .toUpperCase()}
+                        width={100}
+                        height={100}
+                        className="w-full h-full object-cover rounded-full"
+                      />
                     </div>
 
                     {/* Content */}
@@ -440,7 +447,9 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
                         <div className="mt-2 flex gap-2">
                           <button
                             // onClick={() => handleRequest(notification, true)}
-                            onClick={() => requestHandler("true", notification._id)}
+                            onClick={() =>
+                              requestHandler("true", notification._id)
+                            }
                             disabled={isExchangeLoading}
                             className="px-4 py-1.5 bg-green-500 text-white rounded-md text-xs font-semibold hover:bg-green-600 transition-colors disabled:opacity-50"
                           >
@@ -448,8 +457,10 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
                           </button>
                           <button
                             // onClick={() => handleRequest(notification, false)}
-                            
-                            onClick={() => requestHandler("false", notification._id)}
+
+                            onClick={() =>
+                              requestHandler("false", notification._id)
+                            }
                             disabled={isExchangeLoading}
                             className="px-4 py-1.5 bg-gray-200 text-gray-700 rounded-md text-xs font-semibold hover:bg-gray-300 transition-colors disabled:opacity-50"
                           >

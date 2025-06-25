@@ -41,6 +41,7 @@ const ServiceDetails = () => {
   const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
 
   const currentUser = verifiedUser();
+  // console.log("");
 
   const itemsPerPage = 10;
 
@@ -52,7 +53,7 @@ const ServiceDetails = () => {
 
   const { data: currentUserData } = useGetCurrentUserQuery(currentUser?.userId);
   const currentUsreInfo = currentUserData?.data;
-  // console.log("current user info", currentUsreInfo);
+  console.log("current user info", currentUsreInfo);
 
   const singleUser = instructor?.data;
   // console.log("current user", singleUser);
@@ -61,8 +62,7 @@ const ServiceDetails = () => {
   const { data: getSingleReview } = useGetSingleReviewQuery(params?.id);
   const singleReview = getSingleReview?.data;
 
-  console.log(getSingleReview);
-  
+  // console.log(getSingleReview);
 
   // console.log("get single review", getSingleReview?.data);
 
@@ -183,7 +183,9 @@ const ServiceDetails = () => {
       const exchangeData = [
         {
           senderUserId: currentUser?.userId,
+          senderImage: currentUsreInfo?.profileImage,
           reciverUserId: singleUser?._id,
+          reciverImage: singleUser?.profileImage,
           email: currentUser?.email,
           selectedEmail: singleUser?.email,
           senderService: selectedService,
