@@ -63,18 +63,6 @@ export function ReviewActionModal({
 
         <div className="bg-gray-50 p-6 rounded-b-lg">
           <h3 className="font-semibold mb-3">Review</h3>
-          {/* <div className="flex items-center gap-1 mb-3">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <Star 
-                key={star}
-                className={`h-5 w-5 ${
-                  star <= review.rating 
-                    ? 'fill-yellow-400 text-yellow-400' 
-                    : 'fill-gray-200 text-gray-200'
-                }`}
-              />
-            ))}
-          </div> */}
           <p className="text-gray-600 text-sm leading-relaxed">
             <p className="text-gray-600 text-sm leading-relaxed">
               {review?.reportDetails}

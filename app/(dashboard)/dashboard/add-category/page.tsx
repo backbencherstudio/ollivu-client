@@ -179,19 +179,7 @@ export default function AddCategory() {
       formData.append("categoryId", selectedCategoryId);
       formData.append("categoryImage", subCategoryImage);
 
-      // Debug log
-      // console.log(
-      //   "Sending request to:",
-      //   `/categories/sub-category/${selectedCategoryId}`
-      // );
-      // console.log("Form data:", {
-      //   subCategory: newSubCategory,
-      //   categoryId: selectedCategoryId,
-      //   categoryImage: subCategoryImage.name,
-      // });
-
       const result = await createSubCategory(formData).unwrap();
-      // console.log("API Response:", result);
 
       if (result) {
         setNewSubCategory("");
@@ -317,12 +305,6 @@ export default function AddCategory() {
                   onOpenChange={setOpenCategoryPopover}
                 >
                   <PopoverTrigger asChild>
-                    {/* <button
-                      className="absolute right-2 top-2 p-1 hover:bg-gray-100 rounded-full"
-                      onClick={(e) => e.preventDefault()}
-                    >
-                      <Search className="h-4 w-4 text-gray-400" />
-                    </button> */}
                   </PopoverTrigger>
                   <PopoverContent className="w-[300px] sm:w-[400px] p-0">
                     <Command>
@@ -362,68 +344,7 @@ export default function AddCategory() {
             </div>
           </div>
 
-          {/* Subcategory Input Section */}
-          {/* <div className="space-y-4 pt-6 border-t">
-            <h3 className="text-lg font-medium flex items-center gap-2">
-              <Plus className="h-5 w-5 text-[#20B894]" />
-              Add New Subcategory
-            </h3>
-            <div className="flex gap-3">
-              <div className="flex-1 max-w-md space-y-4">
-                <Input
-                  placeholder="Select a category first"
-                  value={newSubCategory}
-                  onChange={(e) => setNewSubCategory(e.target.value)}
-                  disabled={!selectedCategoryId}
-                />
-
-                <div className="space-y-2">
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    disabled={!selectedCategoryId}
-                    className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#20B89410] file:text-[#20B894] hover:file:bg-[#20B89420]"
-                  />
-                  {imagePreview && (
-                    <div className="relative w-20 h-20">
-                      <img
-                        src={imagePreview}
-                        alt="Preview"
-                        className="w-full h-full object-cover rounded-lg"
-                      />
-                      <button
-                        onClick={() => {
-                          setSubCategoryImage(null);
-                          setImagePreview(null);
-                        }}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                {selectedCategoryId && (
-                  <p className="text-sm text-gray-500">
-                    Adding to:{" "}
-                    {
-                      categories.find((cat) => cat._id === selectedCategoryId)
-                        ?.category_name
-                    }
-                  </p>
-                )}
-              </div>
-              <Button
-                onClick={handleAddSubCategory}
-                className="bg-[#20B894] text-white hover:bg-[#1ca883] self-start"
-                disabled={!selectedCategoryId || isLoading}
-              >
-                {isLoading ? "Adding..." : "Add Subcategory"}
-              </Button>
-            </div>
-          </div> */}
+         
 
           {/* Categories List */}
           <div className="space-y-3 sm:space-y-4 pt-4 sm:pt-6 border-t">

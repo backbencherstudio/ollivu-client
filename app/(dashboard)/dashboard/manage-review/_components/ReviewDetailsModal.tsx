@@ -68,37 +68,7 @@ export function ReviewDetailsModal({
             {review?.reportDetails}
           </p>
 
-          {/* {review?.personalInfo && (
-            <div className="mt-4 space-y-2">
-              <h4 className="font-medium">Reporter Information:</h4>
-              <p className="text-sm text-gray-600">
-                Display Name: {review?.personalInfo?.display_name}
-              </p>
-              <p className="text-sm text-gray-600">
-                Full Name: {review?.personalInfo?.first_name}{" "}
-                {review?.personalInfo?.last_name}
-              </p>
-              <p className="text-sm text-gray-600">
-                Gender: {review?.personalInfo?.gender}
-              </p>
-              <p className="text-sm text-gray-600">
-                Phone: {review?.personalInfo?.phone_number}
-              </p>
-            </div>
-          )}
-
-          {review?.reportDocument && (
-            <div className="mt-4">
-              <h4 className="font-medium mb-2">Supporting Document:</h4>
-              <Image
-                src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${review?.reportDocument}`}
-                alt={review?.reviewer?.name}
-                className="w-full h-full object-cover"
-                height={100}
-                width={100}
-              />
-            </div>
-          )} */}
+         
 
           <div className="mt-4 text-gray-400 text-sm">
             {review?.createdAt ? new Date(review.createdAt).toLocaleString('en-US', {

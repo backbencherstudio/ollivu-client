@@ -18,11 +18,7 @@ export default function CustomSelect({
   placeholder?: string;
   rest?: any;
 }) {
-  // const optionsa = [
-  //   { value: "chocolate", label: "Chocolate" },
-  //   { value: "strawberry", label: "Strawberry" },
-  //   { value: "vanilla", label: "Vanilla" },
-  // ];
+
 
   return (
     <Creatable

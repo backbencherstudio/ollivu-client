@@ -108,9 +108,6 @@ export default function AdminReviewsPage() {
             subtitle="Average Rating on this year"
           />
         </div>
-        {/* <div className="md:col-span-2">
-          <RatingBreakdown />
-        </div> */}
       </div>
       {/* Sort + Header */}
       <div className="flex items-center justify-between mt-4 sm:mt-8 border-b pb-2 sm:pb-3">

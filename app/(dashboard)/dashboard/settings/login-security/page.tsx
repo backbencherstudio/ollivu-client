@@ -34,14 +34,6 @@ export default function LoginSecurity() {
 
   const [deleteAccount] = useDeleteAccountMutation();
 
-  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const { name, value } = e.target;
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     [name]: value,
-  //   }));
-  // };
-
   const handleCopy = async (text: string, field: string) => {
     try {
       await navigator.clipboard.writeText(text);

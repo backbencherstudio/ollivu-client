@@ -308,49 +308,9 @@ const ServiceDetails = () => {
                     key={i}
                     className="relative border rounded-xl px-3 py-4 flex flex-col items-center text-center shadow-sm bg-white"
                   >
-                    {/* <div className="absolute top-2 right-2 text-gray-400">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-4 h-4"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <circle cx="12" cy="12" r="10" />
-                    <line x1="12" y1="16" x2="12" y2="12" />
-                    <line x1="12" y1="8" x2="12.01" y2="8" />
-                  </svg>
-                </div> */}
-
+                    
                     <div className="relative w-20 h-20 mb-3">
-                      {/* <svg
-                    className="w-20 h-20 transform -rotate-90"
-                    viewBox="0 0 36 36"
-                  >
-                    <path
-                      className="text-gray-200"
-                      strokeWidth="4"
-                      stroke="currentColor"
-                      fill="none"
-                      d="M18 2.0845
-                    a 15.9155 15.9155 0 0 1 0 31.831
-                    a 15.9155 15.9155 0 0 1 0 -31.831"
-                    />
-                    <path
-                      className="text-[#FACC15]"
-                      strokeWidth="4"
-                      strokeDasharray={`${badge.progress}, 100`}
-                      strokeLinecap="round"
-                      stroke="currentColor"
-                      fill="none"
-                      d="M18 2.0845
-                    a 15.9155 15.9155 0 0 1 0 31.831
-                    a 15.9155 15.9155 0 0 1 0 -31.831"
-                    />
-                  </svg> */}
+                     
                       <div className="absolute inset-0 flex items-center justify-center">
                         {typeof badge.icon === "string" ? (
                           <Image
@@ -368,30 +328,7 @@ const ServiceDetails = () => {
 
                     <p className="text-sm text-[#4A4C56] mb-2">{badge.label}</p>
 
-                    {/* {badge.status === "locked" ? (
-                  <button className="bg-gray-300 text-white text-sm px-4 py-2 rounded-full w-full">
-                    Locked
-                  </button>
-                ) : badge.status === "claim-green" ? (
-                  <button className="bg-[#20B894] text-white text-sm px-4 py-2 rounded-full w-full">
-                    Claim
-                  </button>
-                ) : (
-                  <button className="bg-[#C5C7CD] text-white text-sm px-4 py-2 rounded-full w-full">
-                    Claim
-                  </button>
-                )} */}
-
-                    {/* {badge.verified && (
-                  <div className="absolute bottom-14 right-10 w-5 h-5 rounded-full bg-white shadow flex items-center justify-center">
-                    <Image
-                      src="/badges/check.png"
-                      alt="check"
-                      width={14}
-                      height={14}
-                    />
-                  </div>
-                )} */}
+                   
                   </div>
                 ))}
               </div>
@@ -613,11 +550,6 @@ const ServiceDetails = () => {
                 />
               </div>
 
-              {/* <div className="mt-4 text-center">
-                <p className="text-sm  text-gray-500">
-                  Average response time: 5 hours
-                </p>
-              </div> */}
             </div>
           </div>
         </div>

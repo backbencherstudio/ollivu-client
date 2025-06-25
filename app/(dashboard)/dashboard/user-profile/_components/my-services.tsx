@@ -133,15 +133,6 @@ export default function MyService({ singleUser }: MyServiceProps) {
       toast.error(error.message || "Failed to update services");
     }
   };
-
-  // Update the services state when singleUserData changes
-  // useEffect(() => {
-  //   if (singleUserData?.my_service) {
-  //     setServices(singleUserData.my_service);
-  //   }
-  // }, [singleUserData]);
-
-  // Update useEffect to properly initialize services from singleUser
   useEffect(() => {
     if (singleUser?.my_service) {
       setServices(singleUser.my_service);

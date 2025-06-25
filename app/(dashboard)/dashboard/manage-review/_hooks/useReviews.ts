@@ -19,14 +19,6 @@ export function useReviews() {
     setReviews(reviews.filter((review) => review.id !== id));
   };
 
-  // const approveReview = (id: string) => {
-  //   updateReviewStatus(id, 'Accepted');
-  // };
-
-  // const rejectReview = (id: string) => {
-  //   updateReviewStatus(id, 'Cancelled');
-  // };
-
   const sortedReviews = [...reviews].sort((a, b) => {
     switch (sortBy) {
       case "Oldest":

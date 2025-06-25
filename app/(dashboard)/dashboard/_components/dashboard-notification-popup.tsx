@@ -48,9 +48,6 @@ const DashboardNotificationPopup: React.FC<DashboardNotificationPopupProps> = ({
       skip: !singleUserData?._id,
       pollingInterval: 5000,
     });
-  // console.log("getReadExchangeNotificaion", getReadExchangeNotificaion?.data);
-
-  // Update notifications when API data changes
   useEffect(() => {
     if (getReadExchangeNotificaion?.data && localNotifications.length === 0) {
       setNotifications(getReadExchangeNotificaion.data);
@@ -58,7 +55,6 @@ const DashboardNotificationPopup: React.FC<DashboardNotificationPopupProps> = ({
     }
   }, [getReadExchangeNotificaion, localNotifications.length]);
 
-  // console.log("localNotification", localNotifications);
 
   const [postMarkAllReadExchangeNotification, { isLoading: isMarkingAllRead }] =
     usePostMarkAllReadExchangeNotificationMutation();
@@ -68,10 +64,6 @@ const DashboardNotificationPopup: React.FC<DashboardNotificationPopupProps> = ({
       skip: !singleUserData?._id,
       pollingInterval: 5000,
     });
-  // console.log(
-  //   "getAcceptedExchangeNotification",
-  //   getAcceptedExchangeNotification?.data
-  // );
 
   const [exchangeChatRequest, { isLoading: isExchangeLoading }] =
     useExchangeChatRequestMutation();
@@ -156,23 +148,12 @@ const DashboardNotificationPopup: React.FC<DashboardNotificationPopupProps> = ({
   }, [isOpen, onClose]);
 
   const markAsRead = (id: string | number) => {
-    // console.log("Marking individual notification as read:", id);
-    // console.log(
-    //   "Before - Unread count:",
-    //   localNotifications.filter((n) => !n.isAcceptNotificationRead).length
-    // );
-
-    // Update local notifications to preserve them
     setLocalNotifications((prev) => {
       const updated = prev.map((notification) =>
         notification._id === id || notification.id === id
           ? { ...notification, isAcceptNotificationRead: true }
           : notification
       );
-      // console.log(
-      //   "After - Unread count:",
-      //   updated.filter((n) => !n.isAcceptNotificationRead).length
-      // );
       return updated;
     });
   };
@@ -180,18 +161,9 @@ const DashboardNotificationPopup: React.FC<DashboardNotificationPopupProps> = ({
   const markAllAsRead = async () => {
     try {
       if (singleUserData?._id) {
-        // console.log(
-        //   "Before API call - Local notifications count:",
-        //   localNotifications.length
-        // );
-
-        // Call the API to mark all notifications as read
         const result = await postMarkAllReadExchangeNotification(
           singleUserData._id
         ).unwrap();
-        // console.log("API response:", result);
-
-        // Update local state to mark all notifications as read (but keep them visible)
         setLocalNotifications((prev) => {
           const updated = prev.map((notification) => ({
             ...notification,
@@ -251,13 +223,6 @@ const DashboardNotificationPopup: React.FC<DashboardNotificationPopupProps> = ({
     (n) => !n.isAcceptNotificationRead
   ).length;
 
-  // Debug log
-  // console.log(
-  //   "Render - Local notifications count:",
-  //   localNotifications.length,
-  //   "Unread count:",
-  //   unreadCount
-  // );
 
   function formatTime(dateString) {
     const date = new Date(dateString);
@@ -267,7 +232,6 @@ const DashboardNotificationPopup: React.FC<DashboardNotificationPopupProps> = ({
   if (!isOpen) return null;
 
   // ================= Show Message Notification =================
-  // const [exchangeChatRequest, isLoading] = useExchangeChatRequestMutation();
 
   const requestHandler = async (isAccepted, exchangeId) => {
     const data = {
@@ -291,33 +255,10 @@ const DashboardNotificationPopup: React.FC<DashboardNotificationPopupProps> = ({
           <div className="flex items-center space-x-2">
             <Bell className="w-5 h-5 text-gray-600" />
             <h3 className="font-semibold text-gray-900">Notifications</h3>
-            {/* {unreadCount > 0 && (
-              <span className="ml-2 px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">
-                {unreadCount}
-              </span>
-            )} */}
           </div>
           {/* Right: Mark all as read, Close */}
           <div className="flex items-center space-x-2">
-            {/* {unreadCount > 0 && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={markAllAsRead}
-                disabled={isMarkingAllRead}
-                className="text-xs text-blue-600 hover:text-blue-700 disabled:opacity-50"
-                aria-label="Mark all as read"
-              >
-                {isMarkingAllRead ? (
-                  <>
-                    <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-600 mr-1"></div>
-                    Marking...
-                  </>
-                ) : (
-                  "Mark all read"
-                )}
-              </Button>
-            )} */}
+            
             <Button
               variant="ghost"
               size="sm"
@@ -383,30 +324,7 @@ const DashboardNotificationPopup: React.FC<DashboardNotificationPopupProps> = ({
                   >
                     {/* Avatar/Initial */}
                     <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-lg font-bold mr-3 flex-shrink-0">
-                      {/* {userData.first_name ? (
-                        userData.first_name[0].toUpperCase()
-                      ) : (
-                        <User className="w-6 h-6 text-gray-500" />
-                      )} */}
-                      {/* {notification?.senderUserId?.profileImage ? (
-                        <Image
-                          src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${notification?.senderUserId?.profileImage}`}
-                          alt={notification?.senderUserId?.first_name
-                            ?.slice(0, 2)
-                            .toUpperCase()}
-                          width={100}
-                          height={100}
-                          className="w-full h-full object-cover rounded-full"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-[#20B894] flex items-center justify-center text-white font-semibold rounded-full">
-                          {notification?.senderUserId?.first_name
-                            ? notification?.senderUserId.first_name
-                                .slice(0, 2)
-                                .toUpperCase()
-                            : "UN"}
-                        </div>
-                      )} */}
+                     
                       <Image
                         src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${
                           notification?.isAccepted === "true"
@@ -485,14 +403,7 @@ const DashboardNotificationPopup: React.FC<DashboardNotificationPopupProps> = ({
           )}
         </div>
 
-        {/* Footer */}
-        {/* {!isNotificationLoading && localNotifications.length > 0 && (
-          <div className="p-3 border-t border-gray-200 bg-gray-50">
-            <button className="w-full py-3 text-center text-green-600 font-semibold bg-green-50 rounded-b-lg">
-              View All
-            </button>
-          </div>
-        )} */}
+       
       </div>
     </div>
   );

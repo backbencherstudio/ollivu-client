@@ -70,10 +70,6 @@ export default function MonitorMessaging() {
   useEffect(() => {
     refetchGetProfileReport();
   }, []);
-  // Add suspended profiles data fetch if available
-  // const { data: getSuspendedProfiles } = useGetSuspendedProfilesQuery({});
-
-  // Transform exchange data to match conversation format
   const transformedConversations =
     getAllExchange?.data?.exchangeData?.map((exchange: Exchange) => ({
       id: exchange._id,
@@ -140,9 +136,6 @@ export default function MonitorMessaging() {
     }
     return conv.status === "Pending";
   });
-  // console.log("filteredConversations", filteredConversations);
-
-  // Update STAT_CARDS with suspended profiles count
   const updatedStatCards = [
     {
       title: "Total Conversations",
@@ -219,33 +212,7 @@ export default function MonitorMessaging() {
 
           {/* Search and Filter */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            {/* <Input
-              placeholder="Search by user name or id"
-              className="w-full sm:w-1/3"
-            /> */}
-            {/* <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full sm:w-auto gap-1 text-xs sm:text-sm"
-                >
-                  {dateFilter} <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-[160px]">
-                {["Last 30 days", "Last 60 days", "Last 120 days"].map(
-                  (option) => (
-                    <DropdownMenuItem
-                      key={option}
-                      onClick={() => setDateFilter(option)}
-                      className="cursor-pointer text-xs sm:text-sm"
-                    >
-                      {option}
-                    </DropdownMenuItem>
-                  )
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu> */}
+           
           </div>
 
           {/* Table */}

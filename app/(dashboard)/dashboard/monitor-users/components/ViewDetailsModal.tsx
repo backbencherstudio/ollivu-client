@@ -300,21 +300,6 @@ export function ViewDetailsModal({
               </div>
             ))}
 
-            {/* <div>
-              <h3 className="text-sm text-gray-500 mb-2">Service Exchanged</h3>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium">{conversation.user1}</p>
-                  <p className="text-xs text-gray-500">Photography</p>
-                </div>
-                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                  ⇄
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-medium">{conversation.user2}</p>
-                </div>
-              </div>
-            </div> */}
 
             <div className="flex flex-col justify-center items-center gap-3">
               <Button

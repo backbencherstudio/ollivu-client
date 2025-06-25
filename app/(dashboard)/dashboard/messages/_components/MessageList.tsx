@@ -46,8 +46,6 @@ export const MessageList = ({
     refetch();
   }, []);
 
-  // console.log("requestList", requestList);
-  // const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const filteredUsers = userData

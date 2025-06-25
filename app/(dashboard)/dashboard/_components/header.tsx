@@ -41,13 +41,7 @@ export default function Header({ user }) {
       skip: !validUser,
       pollingInterval: 5000,
     });
-  // const { data: readNotificationCount, isLoading: isNotificationLoading } =
-  //   useGetReadExchangeNotificaionQuery(validUser?.userId, {
-  //     pollingInterval: 5000,
-  //     skip: !validUser?.userId,
-  //   });
-  // console.log("readNotificationCount", readNotificationCount);
-
+  
   const notifications = [
     {
       id: 1,
@@ -160,97 +154,14 @@ export default function Header({ user }) {
     <div className="bg-white shadow-sm py-[21px] px-6 sticky top-0 z-50">
       <div className="flex items-center justify-end">
         <div className="flex items-center gap-6">
-          {/* Message Icon */}
-          {/* {singleUserData?.role === "user" && (
-            <Link href="/dashboard/messages">
-              <button className="relative cursor-pointer">
-                <MessageCircle className="w-6 h-6 text-gray-600" />
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#20B894] text-white text-xs rounded-full flex items-center justify-center">
-                  {2}
-                </span>
-              </button>
-            </Link>
-          )} */}
+       
 
-          {/* Notification Bell */}
-          {/* <div ref={notificationRef} className="relative">
-            <button
-              onClick={handleNotificationClick}
-              className="relative cursor-pointer"
-            >
-              <Bell className="w-6 h-6 text-gray-600" />
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#20B894] text-white text-xs rounded-full flex items-center justify-center">
-                {notifications.length}
-              </span>
-            </button>
-
-            {showNotifications && (
-              <div className="absolute top-12 right-0 bg-gray-50 shadow-lg rounded-md p-4 w-[500px]">
-                <h3 className="text-lg font-medium mb-2">Your Notifications</h3>
-                <div className="flex flex-col gap-4">
-                  {notifications.slice(0, 5).map((notification) => (
-                    <div
-                      key={notification.id}
-                      className="flex items-center gap-3 border-b pb-2"
-                    >
-                      {notification.image ? (
-                        <Image
-                          src={notification.image}
-                          alt="User"
-                          width={40}
-                          height={40}
-                          className="rounded-full"
-                        />
-                      ) : (
-                        <div className="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center text-white font-medium">
-                          {notification.text
-                            .split(" ")[0]
-                            .slice(0, 2)
-                            .toUpperCase()}
-                        </div>
-                      )}
-                      <div className="flex flex-col ">
-                        <p className="text-base font-medium text-[#23262F]">
-                          {notification.name}
-                        </p>
-                        <p className="text-sm font-normal text-[#4A4C56]">
-                          {notification.text}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                  <button
-                    className="w-full  text-[#20B894] hover:text-[#1a9678] text-sm font-medium cursor-pointer"
-                    onClick={() => {
-                      router.push("/dashboard/notifications");
-                      setShowNotifications(false);
-                    }}
-                  >
-                    View All
-                  </button>
-                </div>
-              </div>
-            )}
-          </div> */}
+         
 
           {singleUserData?.role === "user" && (
-            // <Link href="/dashboard/messages?tab=requests" className="relative">
-            //   <Bell className="w-8 h-8 text-[#20B894]" />
-            //   <span className="absolute top-0 right-0 w-4 h-4 bg-[#20B894] text-white text-xs rounded-full flex items-center justify-center">
-            //     {requestList?.data?.length}
-            //   </span>
-            // </Link>
+           
             <div className="relative">
-              {/* <button
-                onClick={handleBellClick}
-                className="relative p-1 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <Bell className="w-7 h-7 text-[#20B894]" />
-                <span className="absolute top-0 right-0 w-4 h-4 bg-[#20B894] text-white text-xs rounded-full flex items-center justify-center">
-                  {readNotificationCount?.data?.length +
-                    requestList?.data?.length}
-                </span>
-              </button> */}
+             
               <button
                 onClick={handleBellClick}
                 className="relative p-1 hover:bg-gray-100 rounded-full transition-colors"

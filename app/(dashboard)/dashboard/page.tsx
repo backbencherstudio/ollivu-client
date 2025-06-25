@@ -146,27 +146,7 @@ export default function UserDashboardHome() {
   const [selectedRequest, setSelectedRequest] = useState(null);
   console.log("selectedRequest", selectedRequest);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // console.log("selectedRequest", selectedRequest);
-
-  // Filter data based on selected time period
-  // const filteredExchangeDashboardData = exchangeDashboardData?.filter((req) => {
-  //   const requestDate = new Date(req.createdAt);
-  //   const today = new Date();
-  //   const daysDifference = differenceInDays(today, requestDate);
-
-  //   switch (timeFilter) {
-  //     case "7":
-  //       return daysDifference <= 7;
-  //     case "15":
-  //       return daysDifference <= 15;
-  //     case "30":
-  //       return daysDifference <= 30;
-  //     default:
-  //       return true;
-  //   }
-  // });
-
-  // pagination section update
+  
   const filteredExchangeDashboardData = exchangeDashboardData?.filter((req) => {
     const requestDate = new Date(req.createdAt).toISOString().split("T")[0];
     return requestDate === selectedDate;
@@ -255,16 +235,6 @@ export default function UserDashboardHome() {
     </AreaChart>
   </ResponsiveContainer>;
 
-  // Calculate counts from exchangeDashboardData
-  // const confirmedExchanges =
-  //   exchangeDashboardData?.filter((exchange) => exchange.isAccepted === "true")
-  //     .length || 0;
-
-  // const totalExchangeRequests =
-  //   exchangeDashboardData?.filter((exchange) => exchange.isAccepted === "false")
-  //     .length || 0;
-
-  // Add function to handle exchange confirmation
   const handleExchangeConfirm = async () => {
     // After successful confirmation API call
     try {
@@ -350,15 +320,6 @@ export default function UserDashboardHome() {
                         </div>
                       </td>
                       <td className="p-3 whitespace-nowrap">
-                        {/* <span
-                          className={`inline-block text-xs px-2 py-1 rounded-full font-medium ${
-                            req?.isAccepted === "true"
-                              ? "bg-green-100 text-green-600"
-                              : "bg-yellow-100 text-yellow-600"
-                          }`}
-                        >
-                          {req?.isAccepted === "true" ? "Accepted" : "Pending"}
-                        </span> */}
                         <span className={`inline-block text-xs px-2 py-1 rounded-full font-medium ${
                             req?.senderUserAccepted === true && req?.reciverUserAccepted === true
                               ? "bg-green-100 text-green-600"
@@ -476,16 +437,6 @@ export default function UserDashboardHome() {
                     </button>
                   )}
 
-                  {/* {badge.verified && (
-                    <div className="absolute bottom-14 right-10 w-5 h-5 rounded-full bg-white shadow flex items-center justify-center">
-                      <Image
-                        src="/badges/check.png"
-                        alt="check"
-                        width={14}
-                        height={14}
-                      />
-                    </div>
-                  )} */}
                 </div>
               ))}
             </div>
@@ -709,15 +660,6 @@ export default function UserDashboardHome() {
                 </div>
               )}
 
-              {/* Add confirmation button if needed */}
-              {/* <div className="p-4 border-t flex justify-end">
-                <button
-                  onClick={handleExchangeConfirm}
-                  className="bg-[#20B894] text-white px-4 py-2 rounded-lg hover:bg-[#1a9677] transition-colors"
-                >
-                  Confirm Exchange
-                </button>
-              </div> */}
             </div>
           </div>
         )}
