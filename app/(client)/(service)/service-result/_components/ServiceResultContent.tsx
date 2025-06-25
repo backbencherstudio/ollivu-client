@@ -156,8 +156,6 @@ export default function ServiceResultContent() {
       // When selecting a category, clear any selected item if category changes
       if (category !== selectedCategory) {
         setSelectedItem(null);
-        // Don't close sidebar when selecting main category
-        // This allows users to see subcategories on mobile
       }
     },
     [selectedCategory]

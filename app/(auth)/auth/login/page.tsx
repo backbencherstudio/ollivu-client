@@ -106,15 +106,6 @@ export default function LoginPage() {
 
             {/* Remember Me & Forgot Password */}
             <div className="flex justify-end items-center text-sm text-gray-500">
-              {/* <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="accent-[#20B894] cursor-pointer"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                />
-                Remember Me
-              </label> */}
               <Link href="/auth/forgot-password">
                 <button
                   type="button"
@@ -134,26 +125,6 @@ export default function LoginPage() {
               {isLoading ? "Logging in..." : "Log in ↗"}
             </button>
           </form>
-
-          {/* Divider */}
-          {/* <div className="flex items-center gap-4 my-6">
-            <div className="flex-1 h-px bg-gray-600" />
-            <span className="text-gray-400 text-sm">Or</span>
-            <div className="flex-1 h-px bg-gray-600" />
-          </div> */}
-
-          {/* Social Buttons */}
-          {/* <div className="flex flex-col md:flex-row gap-4">
-            <button className="flex-1 border border-[#20B894] rounded-full py-2 text-sm flex items-center justify-center gap-2 hover:bg-[#20B894]/10 transition">
-              <img src="/google.svg" alt="Google" className="h-5 w-5" />
-              Login with Google
-            </button>
-            <button className="flex-1 border border-[#20B894] rounded-full py-2 text-sm flex items-center justify-center gap-2 hover:bg-[#20B894]/10 transition">
-              <img src="/facebook.svg" alt="Facebook" className="h-5 w-5" />
-              Login with Facebook
-            </button>
-          </div> */}
-
           {/* Sign Up Link */}
           <p className="mt-6 text-center text-sm text-gray-400">
             You're new in here?{" "}

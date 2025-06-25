@@ -145,11 +145,6 @@ export default function ServiceExchangeFlow({
         console.log("userDetails", userDetails);
 
         return {
-          // senderUserId: currentUserInfo?._id,
-          // reciverUserId: userId, // Use the actual selected user ID
-          // email: userDetails?.email, // Use the found user's email
-          // senderService: selectedSkill,
-          // my_service: currentUserInfo?.my_service,
           senderUserId: currentUser?.userId,
           senderImage: currentUserInfo?.profileImage,
           reciverUserId: userId,

@@ -71,12 +71,6 @@ const NotificationBadge = ({ currentUser }: { currentUser: string }) => {
           </span>
         )}
       </div>
-      {/* <p>N</p>
-            {unreadCount > 0 && (
-                <span className="absolute top-0 right-0 bg-red-600 text-white rounded-full w-5 h-5 text-sm flex items-center justify-center">
-                    {unreadCount}
-                </span>
-            )} */}
     </div>
   );
 };

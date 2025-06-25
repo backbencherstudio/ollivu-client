@@ -841,29 +841,7 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
             : ""
         }`}
       >
-        {/* Location Filter */}
-        {/* <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold text-[#070707]">Location</h2>
-          <button
-            onClick={handleLocationReset}
-            className="text-xs text-teal-600 hover:text-teal-700 cursor-pointer"
-            disabled={isTransitioning}
-          >
-            Reset
-          </button>
-        </div>
-        <div className="relative">
-          <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-
-          <input
-            type="text"
-            placeholder="Enter post code/location"
-            value={locationSearchTerm}
-            onChange={handleLocationChange}
-            className="w-full pl-10 p-2 border border-[#D2B9A1] rounded-full text-sm"
-            disabled={isTransitioning}
-          />
-        </div> */}
+       
       </div>
 
       {/* Ratings Filter with transition effect */}

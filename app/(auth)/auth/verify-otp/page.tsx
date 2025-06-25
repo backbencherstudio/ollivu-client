@@ -22,7 +22,6 @@ function VerifyOTPContent() {
   const router = useRouter();
   const [verifyOTP, { isLoading }] = useVerifyOTPMutation();
   const email = searchParams.get("email") || "";
-  // console.log("email", email);
 
   const handleCodeChange = (index: number, value: string) => {
     if (value.length > 1) {

@@ -28,18 +28,6 @@ export default function ServicesSection() {
             Find people who need what you offer. Exchange your services
             easily and grow your network! No cash required—just collaboration!
           </p>
-
-          {/* Search Bar */}
-          {/* <div className="w-full max-w-lg">
-            <div className="flex items-center bg-white border border-[#F2EDEB] rounded-full px-4 py-2 shadow-sm">
-              <Search className="w-5 h-5 text-gray-500 mr-3" />
-              <input
-                type="text"
-                placeholder="Type your services"
-                className="w-full bg-transparent focus:outline-none text-black"
-              />
-            </div>
-          </div> */}
         </div>
       </div>
     </section>

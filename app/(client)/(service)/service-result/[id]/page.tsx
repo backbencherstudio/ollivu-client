@@ -41,30 +41,18 @@ const ServiceDetails = () => {
   const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
 
   const currentUser = verifiedUser();
-  // console.log("");
-
   const itemsPerPage = 10;
 
   const { data: instructor, isLoading } = useGetSingleUserQuery(
     params.id as string
   );
   const singleUserData = instructor?.data;
-  // console.log("singleUserData", singleUserData);
 
   const { data: currentUserData } = useGetCurrentUserQuery(currentUser?.userId);
   const currentUsreInfo = currentUserData?.data;
-  // console.log("current user info", currentUsreInfo);
-
   const singleUser = instructor?.data;
-  // console.log("current user", singleUser);
-
-  // const { data: getSingleReview } = useGetSingleReviewQuery(singleUser?._id);
   const { data: getSingleReview } = useGetSingleReviewQuery(params?.id);
   const singleReview = getSingleReview?.data;
-
-  // console.log(getSingleReview);
-
-  // console.log("get single review", getSingleReview?.data);
 
   const [createProfileReport] = useCreateProfileReportMutation();
 
@@ -142,13 +130,10 @@ const ServiceDetails = () => {
       rating: rating,
       review: review,
     };
-    // console.log(reviewCreate);
     try {
       const response = await createReview(reviewCreate).unwrap();
-      // console.log("res", response);
       toast.success("Review submitted successfully");
     } catch (err) {
-      // console.log(err);
       toast.error("Something went wrong");
     }
 
@@ -192,10 +177,8 @@ const ServiceDetails = () => {
           my_service: currentUsreInfo?.my_service,
         },
       ];
-      // console.log("exchange Data", exchangeData);
 
       const response = await createExchange(exchangeData).unwrap();
-      // console.log("send exchange response", response);
 
       if (response?.success) {
         toast.success("Message request sent successfully");

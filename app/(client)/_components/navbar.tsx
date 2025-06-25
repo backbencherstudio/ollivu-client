@@ -63,12 +63,6 @@ export default function Navbar() {
 
   const { data: readNotificationCount, isLoading: isNotificationLoading } =
     useGetReadExchangeNotificaionQuery(validUser?.userId);
-  // const { data: readNotificationCount, isLoading: isNotificationLoading } =
-  //   useGetReadExchangeNotificaionQuery(validUser?.userId, {
-  //     pollingInterval: 5000,
-  //     skip: !validUser?.userId,
-  //   });
-  // console.log("readNotificationCount", readNotificationCount);
 
   useEffect(() => {
     refetch();
@@ -156,25 +150,6 @@ export default function Navbar() {
 
   // ==============================Message Request Notificaton ===================
 
-  // const [finalQuery, setFinalQuery] = useState({
-  //   userId: validUser?.userId,
-  //   isAccepted: true,
-  // });
-  // const { data } = useGetAllExchangeDataQuery(finalQuery);
-  // const { data: requestList } = useGetAllExchangeDataQuery(
-  //   {
-  //     userId: validUser?.userId,
-  //     isAccepted: false,
-  //   },
-  //   { pollingInterval: 5000 }
-  // );
-
-  // useEffect(() => {
-  //   refetch();
-  // }, []);
-
-  // console.log("Request List from Navbar:", requestList);
-
   const handleProtectedNav = (e: React.MouseEvent, targetPath: string) => {
     if (
       singleUserData &&
@@ -227,17 +202,7 @@ export default function Navbar() {
 
               {/* Services Dropdown */}
               <div className="relative group">
-                {/* <Link
-                  href="/service-result"
-                  className={`flex items-center space-x-1 font-medium hover:text-teal-600 ${
-                    pathname.includes("/service-result")
-                      ? "text-[#070707]"
-                      : "text-[#777980]"
-                  }`}
-                >
-                  <span>Services</span>
-                  <ChevronDown className="w-4 h-4 ml-1 group-hover:rotate-180 transition-transform" />
-                </Link> */}
+                
                 <Link
                   href="/service-result"
                   className={`flex items-center space-x-1 font-medium hover:text-teal-600 ${
@@ -394,12 +359,7 @@ export default function Navbar() {
             {isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger className="focus:outline-none cursor-pointer">
-                  {/* <Avatar className="h-8 w-8 hover:ring-2 hover:ring-teal-500 transition-all">
-                    <AvatarImage src="/default-avatar.png" />
-                    <AvatarFallback className="bg-teal-500 text-white">
-                      U
-                    </AvatarFallback>
-                  </Avatar> */}
+                 
                   <div className="w-10 h-10 rounded-full relative overflow-hidden">
                     {singleUserData?.profileImage ? (
                       <div>
@@ -513,19 +473,7 @@ export default function Navbar() {
               <NotificationBadge currentUser={validUser?.email} />
             </div>
             {validUser?.role === "user" && (
-              // <button
-              //   onClick={handleBellClick}
-              //   className="relative p-1 hover:bg-gray-100 rounded-full transition-colors mr-2"
-              // >
-              //   <Bell className="w-6 h-6 text-[#20B894]" />
-              //   {readNotificationCount?.data?.length > 0 && (
-              //     <span className="absolute top-0 right-0 w-4 h-4 bg-[#20B894] text-white text-xs rounded-full flex items-center justify-center">
-              //       {readNotificationCount?.data?.length +
-              //         requestList?.data?.length}
-              //     </span>
-              //   )}
-              // </button>
-              <button
+             <button
                 onClick={handleBellClick}
                 className="relative p-1 hover:bg-gray-100 rounded-full transition-colors"
               >
