@@ -15,8 +15,6 @@ import SkillExchange from "../_components/home-page/service-categories/SkillExch
 import SuccessMessage from "../_components/home-page/service-categories/SuccessMessage";
 import exchange from "@/public/service-list.png";
 import { useRouter } from "next/navigation";
-import { ServiceCard } from "../(service)/service-result/_components/service-card";
-import ServiceExchangeFlow from "../_components/home-page/Service-categories";
 
 export default function ServiceList() {
   const { data: categories } = useGetAllCategoriesQuery({});
@@ -84,41 +82,33 @@ export default function ServiceList() {
   // Handle send request
   // Add useRouter at the top with other imports
   const router = useRouter();
-
+  
   // Modify handleSendRequest function
   const handleSendRequest = async () => {
     if (!currentUser) {
       // Store selected users and service info before redirecting
-      localStorage.setItem("selectedUsers", JSON.stringify(selectedUsers));
-      localStorage.setItem(
-        "selectedService",
-        JSON.stringify({
-          skill: selectedService?.subCategory,
-          subCategory: selectedService?.subCategory,
-          serviceData: selectedService,
-          activeCategory: activeCategory, // Store active category to restore tab state
-        })
-      );
-      localStorage.setItem("redirectPath", "/service-list"); // Add this line
-      router.push("/auth/login");
+      localStorage.setItem('selectedUsers', JSON.stringify(selectedUsers));
+      localStorage.setItem('selectedService', JSON.stringify({
+        skill: selectedService?.subCategory,
+        subCategory: selectedService?.subCategory,
+        serviceData: selectedService,
+        activeCategory: activeCategory // Store active category to restore tab state
+      }));
+      localStorage.setItem('redirectPath', '/service-list'); // Add this line
+      router.push('/auth/login');
       return;
     }
 
     try {
-      const exchangeRequests = selectedUsers.map((userId) => {
-        // Find user details for each selected user
-        const userDetails = filteredUsers.find((user) => user._id === userId);
-
-        return {
-          senderUserId: currentUser?.userId,
-          senderImage: currentUserInfo?.profileImage,
-          reciverUserId: userId,
-          reciverImage: userDetails?.profileImage,
-          email: currentUser?.email,
-          senderService: selectedService?.subCategory,
-          my_service: currentUserInfo?.my_service,
-        };
-      });
+      const exchangeRequests = selectedUsers.map((userId) => ({
+        senderUserId: currentUser?.userId,
+        senderImage: currentUserInfo?.profileImage,
+        reciverUserId: userId,
+        reciverImage: userDetails?.profileImage,
+        email: currentUser?.email,
+        senderService: selectedService?.subCategory,
+        my_service: currentUserInfo?.my_service,
+      }));
 
       const response = await createExchange(exchangeRequests).unwrap();
 
@@ -137,26 +127,26 @@ export default function ServiceList() {
       toast.error("Failed to send exchange request");
     }
   };
-
+  
   // Add useEffect to restore state after login
   useEffect(() => {
     if (currentUser) {
-      const storedUsers = localStorage.getItem("selectedUsers");
-      const storedService = localStorage.getItem("selectedService");
-
+      const storedUsers = localStorage.getItem('selectedUsers');
+      const storedService = localStorage.getItem('selectedService');
+      
       if (storedUsers && storedService) {
         const parsedUsers = JSON.parse(storedUsers);
         const parsedService = JSON.parse(storedService);
-
+        
         // Restore all states
         setSelectedUsers(parsedUsers);
         setSelectedService(parsedService.serviceData);
         setActiveCategory(parsedService.activeCategory || "All");
         setModalStep("users");
-
+        
         // Clean up storage
-        localStorage.removeItem("selectedUsers");
-        localStorage.removeItem("selectedService");
+        localStorage.removeItem('selectedUsers');
+        localStorage.removeItem('selectedService');
       }
     }
   }, [currentUser]);
@@ -220,7 +210,7 @@ export default function ServiceList() {
         </div>
 
         {/* Service Cards Grid */}
-        {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 mt-6 md:mt-10 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 mt-6 md:mt-10 mb-10">
           {filteredSubCategories.map((subCategory) => (
             <div
               key={subCategory._id}
@@ -260,10 +250,10 @@ export default function ServiceList() {
               </div>
             </div>
           ))}
-        </div> */}
+        </div>
 
         {/* Exchange Modal */}
-        {/* {modalStep !== "none" && (
+        {modalStep !== "none" && (
           <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
             <div className="bg-white rounded-2xl w-full p-4 md:p-10 max-w-[95%] md:max-w-[70%] relative">
               <button
@@ -321,12 +311,7 @@ export default function ServiceList() {
               {modalStep === "success" && <SuccessMessage />}
             </div>
           </div>
-        )} */}
-
-        <ServiceExchangeFlow
-          activeCategory={activeCategory}
-          showAllCategories={true}
-        />
+        )}
       </div>
     </div>
   );

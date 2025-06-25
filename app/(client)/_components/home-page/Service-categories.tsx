@@ -2,10 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
-import {
-  useGetAllCategoryQuery,
-  useGetAllUserBaseOnSubCategoryQuery,
-} from "@/src/redux/features/shared/categoryAPi";
+import { useGetAllUserBaseOnSubCategoryQuery } from "@/src/redux/features/shared/categoryAPi";
+import { useGetAllCategoriesQuery } from "@/src/redux/features/categories/categoriesApi";
 import {
   useGetAllUsersQuery,
   useGetSingleUserQuery,
@@ -21,13 +19,20 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-export default function ServiceExchangeFlow() {
+interface ServiceExchangeFlowProps {
+  activeCategory?: string;
+  showAllCategories?: boolean;
+}
+
+export default function ServiceExchangeFlow({
+  activeCategory = "All",
+  showAllCategories = false,
+}: ServiceExchangeFlowProps) {
   const [modalStep, setModalStep] = useState<
     "none" | "exchange" | "users" | "success"
   >("none");
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [selectedSkill, setSelectedSkill] = useState("Web Development");
-  const [showAll, setShowAll] = useState(false);
   const [selectedService, setSelectedService] = useState<any>({
     subCategory: "",
     categoryImage: "",
@@ -37,9 +42,27 @@ export default function ServiceExchangeFlow() {
 
   const router = useRouter();
 
-  const { data: getAllCategory } = useGetAllCategoryQuery([]);
-  const allCategories = getAllCategory?.data || [];
-  // console.log("allCategories", allCategories);
+  const { data: getAllCategories } = useGetAllCategoriesQuery({});
+  const allCategories = getAllCategories?.data || [];
+
+  // Create subcategories array with parent category info
+  const allSubCategories = allCategories.flatMap((category) =>
+    category.subCategories.map((sub) => ({
+      ...sub,
+      parentCategory: category.category_name,
+    }))
+  );
+
+  // Filter subcategories based on activeCategory
+  const filteredSubCategories =
+    activeCategory === "All"
+      ? allSubCategories
+      : allSubCategories.filter((sub) => sub.parentCategory === activeCategory);
+
+  // Apply category limit based on showAllCategories prop
+  const displayedCategories = showAllCategories
+    ? filteredSubCategories
+    : filteredSubCategories.slice(0, 8);
 
   const { data: getAllUserBaseOnSubCategory, isLoading: isLoadingUsers } =
     useGetAllUserBaseOnSubCategoryQuery(selectedService.subCategory, {
@@ -54,6 +77,10 @@ export default function ServiceExchangeFlow() {
   const currentUser = verifiedUser();
   const { data: currentUserData } = useGetCurrentUserQuery(currentUser?.userId);
   const currentUserInfo = currentUserData?.data;
+
+  // Add this state near your other state declarations
+  const [isLoading, setIsLoading] = useState(false);
+  const [showServiceModal, setShowServiceModal] = useState(false);
 
   // Update the handleExchangeClick function
   const handleExchangeClick = (service: any) => {
@@ -70,14 +97,6 @@ export default function ServiceExchangeFlow() {
         : [...prev, userId]
     );
   };
-
-  const displayedCategories = showAll
-    ? allCategories
-    : allCategories.slice(0, 8);
-
-  // Add this state near your other state declarations
-  const [isLoading, setIsLoading] = useState(false);
-  const [showServiceModal, setShowServiceModal] = useState(false);
 
   const handleSendRequest = async () => {
     if (!currentUser) {
@@ -243,18 +262,6 @@ export default function ServiceExchangeFlow() {
 
             {modalStep === "success" && <SuccessMessage />}
           </div>
-        </div>
-      )}
-
-      {/* Only show the View All button if there are more than 8 categories */}
-      {allCategories.length > 8 && (
-        <div className="text-center">
-          <button
-            onClick={() => setShowAll(!showAll)}
-            className="bg-[#20B894] text-white text-sm font-medium px-6 py-3 rounded-full flex items-center gap-2 mx-auto hover:opacity-90 transition"
-          >
-            {showAll ? "View Less" : "View All"}
-          </button>
         </div>
       )}
 
