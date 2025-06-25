@@ -175,6 +175,23 @@ export default function Navbar() {
 
   // console.log("Request List from Navbar:", requestList);
 
+  const handleProtectedNav = (e: React.MouseEvent, targetPath: string) => {
+    if (
+      singleUserData &&
+      singleUserData.profileStatus &&
+      singleUserData.profileStatus !== "safe"
+    ) {
+      e.preventDefault();
+      localStorage.removeItem("accessToken");
+      document.cookie =
+        "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+      setIsAuthenticated(false);
+      router.push("/auth/login");
+      return;
+    }
+    router.push(targetPath);
+  };
+
   return (
     <nav
       className={`secondary_color shadow-sm sticky top-0 z-50 transition-transform duration-300 ${
@@ -210,6 +227,17 @@ export default function Navbar() {
 
               {/* Services Dropdown */}
               <div className="relative group">
+                {/* <Link
+                  href="/service-result"
+                  className={`flex items-center space-x-1 font-medium hover:text-teal-600 ${
+                    pathname.includes("/service-result")
+                      ? "text-[#070707]"
+                      : "text-[#777980]"
+                  }`}
+                >
+                  <span>Services</span>
+                  <ChevronDown className="w-4 h-4 ml-1 group-hover:rotate-180 transition-transform" />
+                </Link> */}
                 <Link
                   href="/service-result"
                   className={`flex items-center space-x-1 font-medium hover:text-teal-600 ${
@@ -217,6 +245,20 @@ export default function Navbar() {
                       ? "text-[#070707]"
                       : "text-[#777980]"
                   }`}
+                  onClick={(e) => {
+                    if (
+                      singleUserData &&
+                      singleUserData.profileStatus &&
+                      singleUserData.profileStatus !== "safe"
+                    ) {
+                      e.preventDefault();
+                      localStorage.removeItem("accessToken");
+                      document.cookie =
+                        "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+                      setIsAuthenticated(false);
+                      router.push("/auth/login");
+                    }
+                  }}
                 >
                   <span>Services</span>
                   <ChevronDown className="w-4 h-4 ml-1 group-hover:rotate-180 transition-transform" />
@@ -397,12 +439,12 @@ export default function Navbar() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     className="cursor-pointer"
-                    onClick={() => {
+                    onClick={(e) => {
                       const targetPath =
                         user?.role === "admin"
                           ? "/dashboard/user-management"
                           : "/dashboard";
-                      router.push(targetPath);
+                      handleProtectedNav(e, targetPath);
                     }}
                   >
                     <User className="mr-2 h-4 w-4" />
@@ -619,17 +661,25 @@ export default function Navbar() {
             <div className="flex flex-col items-center justify-center w-full gap-4 pt-4 pb-3 border-t border-gray-200">
               {isAuthenticated ? (
                 <>
-                  <Link
+                  <a
                     href={
                       user?.role === "admin"
                         ? "/dashboard/user-management"
                         : "/dashboard"
                     }
                     className="block w-full px-3 py-2 rounded-md text-base font-medium text-[#777980] hover:text-teal-600"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const targetPath =
+                        user?.role === "admin"
+                          ? "/dashboard/user-management"
+                          : "/dashboard";
+                      handleProtectedNav(e, targetPath);
+                      setIsMobileMenuOpen(false);
+                    }}
                   >
                     Dashboard
-                  </Link>
+                  </a>
                   <Link
                     href={
                       singleUserData?.role === "user"

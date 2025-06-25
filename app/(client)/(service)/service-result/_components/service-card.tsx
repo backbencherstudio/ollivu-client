@@ -5,6 +5,7 @@ import { Star } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { User } from "@/src/redux/types/authInterface";
 import { verifiedUser } from "@/src/utils/token-varify";
+import { useGetSingleUserQuery } from "@/src/redux/features/users/userApi";
 
 interface ServiceCardProps {
   user: User;
@@ -15,12 +16,25 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ user }) => {
   const [portfolioImageError, setPortfolioImageError] = useState(false);
   const router = useRouter();
 
-  const handleCardClick = () => {
-    const currentUser = verifiedUser();
+  const currentUser = verifiedUser();
+  const { data: singleUser } = useGetSingleUserQuery(currentUser?.userId);
+  const singleUserData = singleUser?.data;
 
+  const handleCardClick = () => {
     if (!currentUser) {
       // Store the target user ID before redirecting to login
       localStorage.setItem("redirectUserId", user?._id || "");
+      router.push("/auth/login");
+      return;
+    }
+
+    if (
+      singleUserData?.profileStatus &&
+      singleUserData.profileStatus !== "safe"
+    ) {
+      localStorage.removeItem("accessToken");
+      document.cookie =
+        "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
       router.push("/auth/login");
       return;
     }

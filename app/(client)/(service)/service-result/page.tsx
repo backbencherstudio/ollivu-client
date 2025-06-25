@@ -2,7 +2,6 @@
 
 import { Suspense } from "react";
 import ServiceResultContent from "./_components/ServiceResultContent";
-import ProtectedRoute from "@/src/components/auth/ProtectedRoute";
 
 export default function ServicesPage() {
   

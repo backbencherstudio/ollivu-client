@@ -33,6 +33,7 @@ export default function ServiceExchangeFlow({
   >("none");
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [selectedSkill, setSelectedSkill] = useState("Web Development");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [selectedService, setSelectedService] = useState<any>({
     subCategory: "",
     categoryImage: "",
@@ -84,6 +85,15 @@ export default function ServiceExchangeFlow({
 
   // Update the handleExchangeClick function
   const handleExchangeClick = (service: any) => {
+    if (currentUserInfo?.profileStatus !== "safe") {
+      localStorage.removeItem("accessToken");
+      document.cookie =
+        "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+      setIsAuthenticated(false);
+      router.push("/auth/login");
+      return;
+    }
+
     setSelectedService(service);
     setModalStep("users");
     setSelectedUsers([]); // Reset selected users when changing category
