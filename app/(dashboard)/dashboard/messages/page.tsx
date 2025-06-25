@@ -20,7 +20,6 @@ const socket = io("https://backend.ollivu.com");
 
 const Messages = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
   const [currentChat, setCurrentChat] = useState(null);
