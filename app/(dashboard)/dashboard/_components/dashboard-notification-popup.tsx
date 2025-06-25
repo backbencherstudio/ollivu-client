@@ -388,7 +388,7 @@ const DashboardNotificationPopup: React.FC<DashboardNotificationPopupProps> = ({
                       ) : (
                         <User className="w-6 h-6 text-gray-500" />
                       )} */}
-                      {notification?.senderUserId?.profileImage ? (
+                      {/* {notification?.senderUserId?.profileImage ? (
                         <Image
                           src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${notification?.senderUserId?.profileImage}`}
                           alt={notification?.senderUserId?.first_name
@@ -406,7 +406,20 @@ const DashboardNotificationPopup: React.FC<DashboardNotificationPopupProps> = ({
                                 .toUpperCase()
                             : "UN"}
                         </div>
-                      )}
+                      )} */}
+                      <Image
+                        src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${
+                          notification?.isAccepted === "true"
+                            ? notification?.reciverImage
+                            : notification?.senderImage
+                        }`}
+                        alt={notification?.senderUserId?.first_name
+                          ?.slice(0, 2)
+                          .toUpperCase()}
+                        width={100}
+                        height={100}
+                        className="w-full h-full object-cover rounded-full"
+                      />
                     </div>
 
                     {/* Content */}
