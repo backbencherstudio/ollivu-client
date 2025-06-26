@@ -1,4 +1,4 @@
-export type ReviewStatus = 'accept' | 'reject' | 'pending';
+export type ReviewStatus = "accept" | "reject" | "pending";
 
 export interface Review {
   id: string;
@@ -18,4 +18,5 @@ export interface Review {
   reportDetails: string;
   reportDocument: string;
   personalInfo: any;
+  document?: string;
 }

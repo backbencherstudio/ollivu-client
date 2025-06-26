@@ -15,7 +15,8 @@ export function ManageReview() {
 
   const { data: getAllReviewReport, refetch } =
     useGetAllReviewReportQuery(undefined);
-    
+  // console.log("all review", getAllReviewReport);
+
   const [actionReviewReport] = useActionReviewReportMutation();
 
   const handleApprove = async (id: string) => {
@@ -47,8 +48,6 @@ export function ManageReview() {
   useEffect(() => {
     if (getAllReviewReport?.data) {
       const formattedReviews = getAllReviewReport?.data?.map((report: any) => {
-        // console.log(28, report);
-
         return {
           id: report?._id,
           reviewer: {
@@ -60,7 +59,8 @@ export function ManageReview() {
             name: report?.reviewId?.reviewerId?.first_name,
             avatar: report?.reviewId?.reviewerId?.profileImage || "",
           },
-          reviewText: report?.reportType,
+          reviewText: report?.reviewId?.review,
+          document: report?.document,
           rating: report?.reviewId?.rating,
           status: report?.status,
           createdAt: report?.reviewId?.createdAt,
