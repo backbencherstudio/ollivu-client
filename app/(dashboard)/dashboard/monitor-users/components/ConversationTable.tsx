@@ -102,10 +102,10 @@ export function ConversationTable({
                       #
                     </th>
                     <th className="px-2 sm:px-4 font-medium whitespace-nowrap">
-                      Sender Service
+                      Sender Name
                     </th>
                     <th className="px-2 sm:px-4 font-medium whitespace-nowrap">
-                      Receiver Service
+                      Receiver Name
                     </th>
                     <th className="px-2 sm:px-4 font-medium whitespace-nowrap">
                       Status

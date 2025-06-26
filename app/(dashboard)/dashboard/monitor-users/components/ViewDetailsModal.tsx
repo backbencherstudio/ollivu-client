@@ -319,13 +319,13 @@ export function ViewDetailsModal({
               <h3 className="font-medium">Completed Service</h3>
               <div className="space-y-3">
                 <div className="flex justify-between items-start">
-                  <span className="text-gray-500">Sender Service:</span>
+                  <span className="text-gray-500">Sender Name:</span>
                   <div className="text-right">
                     <p className="font-medium">{conversation?.user1}</p>
                   </div>
                 </div>
                 <div className="flex justify-between items-start">
-                  <span className="text-gray-500">Receiver Service:</span>
+                  <span className="text-gray-500">Receiver Name:</span>
                   <div className="text-right">
                     <p className="font-medium">{conversation?.user2}</p>
                   </div>
