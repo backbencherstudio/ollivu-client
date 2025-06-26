@@ -151,12 +151,13 @@ export default function ServiceExchangeFlow({
           reciverImage: userDetails?.profileImage,
           email: currentUser?.email,
           selectedEmail: userDetails?.email,
-          senderService: selectedSkill,
+          senderService: selectedService?.subCategory,
           my_service: currentUserInfo?.my_service,
         };
       });
 
       const response = await createExchange(exchangeRequests).unwrap();
+      console.log("request send", response);
 
       if (response?.success) {
         setModalStep("success");
