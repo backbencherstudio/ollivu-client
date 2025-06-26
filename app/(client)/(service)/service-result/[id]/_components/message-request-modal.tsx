@@ -36,12 +36,14 @@ const MessageRequestModal = ({
   const router = useRouter();
 
   const currentUser = verifiedUser();
-  const { data: currentUserData } = useGetCurrentUserQuery(currentUser?.userId);
+  const { data: currentUserData, refetch } = useGetCurrentUserQuery(
+    currentUser?.userId
+  );
   const currentUserInfo = currentUserData?.data;
 
-  const checkMissingFields = () => {
-    const personalInfo = currentUserInfo?.personalInfo || {};
-    const addressInfo = currentUserInfo?.addressInfo || {};
+  const checkMissingFields = (userInfo = currentUserInfo) => {
+    const personalInfo = userInfo?.personalInfo || {};
+    const addressInfo = userInfo?.addressInfo || {};
 
     // console.log("personalInfo:", personalInfo); // For debugging
 
@@ -68,8 +70,12 @@ const MessageRequestModal = ({
   };
 
   const handleSubmit = async () => {
-    // need to logout
-    if (currentUserInfo?.profileStatus !== "safe") {
+    // Refetch user info and get the latest data
+    const refetchResult = await refetch();
+    const latestUserInfo = refetchResult?.data?.data;
+
+    // If profile status is not safe, logout and redirect
+    if (latestUserInfo?.profileStatus !== "safe") {
       localStorage.removeItem("accessToken");
       document.cookie =
         "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
@@ -85,15 +91,15 @@ const MessageRequestModal = ({
 
     // Check if user has my_service
     if (
-      !currentUserInfo?.my_service ||
-      currentUserInfo?.my_service.length === 0
+      !latestUserInfo?.my_service ||
+      latestUserInfo?.my_service.length === 0
     ) {
       setShowServiceModal(true);
       return;
     }
 
     // Check for missing required fields
-    const missingFieldsObj = checkMissingFields();
+    const missingFieldsObj = checkMissingFields(latestUserInfo);
     if (Object.keys(missingFieldsObj).length > 0) {
       setMissingFields(missingFieldsObj);
       setShowRequiredFieldsModal(true);

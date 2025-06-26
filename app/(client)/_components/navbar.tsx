@@ -26,7 +26,10 @@ import { LogOut, User, Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { verifiedUser } from "@/src/utils/token-varify";
 import { useGetAllCategoriesQuery } from "@/src/redux/features/categories/categoriesApi";
-import { useGetSingleUserQuery } from "@/src/redux/features/users/userApi";
+import {
+  useGetSingleUserQuery,
+  useGetCurrentUserQuery,
+} from "@/src/redux/features/users/userApi";
 import NotificationBadge from "./NotificationBadge/NotificationBadge";
 import NotificationPopup from "./notification-popup";
 import { Button } from "@/components/ui/button";
@@ -63,6 +66,10 @@ export default function Navbar() {
 
   const { data: readNotificationCount, isLoading: isNotificationLoading } =
     useGetReadExchangeNotificaionQuery(validUser?.userId);
+
+  const { refetch: refetchCurrentUser } = useGetCurrentUserQuery(
+    validUser?.userId
+  );
 
   useEffect(() => {
     refetch();
@@ -167,6 +174,27 @@ export default function Navbar() {
     router.push(targetPath);
   };
 
+  // Handler for Dashboard navigation
+  const handleDashboardClick = async (e, isMobile = false) => {
+    e.preventDefault();
+    const refetchResult = await refetchCurrentUser();
+    const latestUserInfo = refetchResult?.data?.data;
+
+    if (latestUserInfo?.profileStatus !== "safe") {
+      localStorage.removeItem("accessToken");
+      document.cookie =
+        "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+      setIsAuthenticated(false);
+      router.push("/auth/login");
+      if (isMobile) setIsMobileMenuOpen(false);
+      return;
+    }
+    const targetPath =
+      user?.role === "admin" ? "/dashboard/user-management" : "/dashboard";
+    router.push(targetPath);
+    if (isMobile) setIsMobileMenuOpen(false);
+  };
+
   return (
     <nav
       className={`secondary_color shadow-sm sticky top-0 z-50 transition-transform duration-300 ${
@@ -202,7 +230,6 @@ export default function Navbar() {
 
               {/* Services Dropdown */}
               <div className="relative group">
-                
                 <Link
                   href="/service-result"
                   className={`flex items-center space-x-1 font-medium hover:text-teal-600 ${
@@ -359,7 +386,6 @@ export default function Navbar() {
             {isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger className="focus:outline-none cursor-pointer">
-                 
                   <div className="w-10 h-10 rounded-full relative overflow-hidden">
                     {singleUserData?.profileImage ? (
                       <div>
@@ -399,13 +425,7 @@ export default function Navbar() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     className="cursor-pointer"
-                    onClick={(e) => {
-                      const targetPath =
-                        user?.role === "admin"
-                          ? "/dashboard/user-management"
-                          : "/dashboard";
-                      handleProtectedNav(e, targetPath);
-                    }}
+                    onClick={(e) => handleDashboardClick(e, false)}
                   >
                     <User className="mr-2 h-4 w-4" />
                     Dashboard
@@ -473,7 +493,7 @@ export default function Navbar() {
               <NotificationBadge currentUser={validUser?.email} />
             </div>
             {validUser?.role === "user" && (
-             <button
+              <button
                 onClick={handleBellClick}
                 className="relative p-1 hover:bg-gray-100 rounded-full transition-colors"
               >
@@ -616,15 +636,7 @@ export default function Navbar() {
                         : "/dashboard"
                     }
                     className="block w-full px-3 py-2 rounded-md text-base font-medium text-[#777980] hover:text-teal-600"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      const targetPath =
-                        user?.role === "admin"
-                          ? "/dashboard/user-management"
-                          : "/dashboard";
-                      handleProtectedNav(e, targetPath);
-                      setIsMobileMenuOpen(false);
-                    }}
+                    onClick={(e) => handleDashboardClick(e, true)}
                   >
                     Dashboard
                   </a>
@@ -635,12 +647,12 @@ export default function Navbar() {
                         : "/dashboard/admin-profile"
                     }
                     className="block w-full px-3 py-2 rounded-md text-base font-medium text-[#777980] hover:text-teal-600"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={(e) => setIsMobileMenuOpen(false)}
                   >
                     Profile
                   </Link>
                   <button
-                    onClick={() => {
+                    onClick={(e) => {
                       handleLogout();
                       setIsMobileMenuOpen(false);
                     }}
