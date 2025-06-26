@@ -36,7 +36,8 @@ export function ViewDetailsModal({
   } | null>(null);
   const [showUserConversation, setShowUserConversation] = useState(false);
 
-  const [takeActionProfileReport] = useTakeActionProfileReportMutation();
+  const [takeActionProfileReport, { isLoading }] =
+    useTakeActionProfileReportMutation();
 
   const {
     data: showConversation,
@@ -49,12 +50,15 @@ export function ViewDetailsModal({
   );
 
   const [isConversationModalOpen, setIsConversationModalOpen] = useState(false);
+  const [loadingAction, setLoadingAction] = useState("");
 
   const actionHandler = async (action) => {
+    setLoadingAction(action.action);
     const result = await takeActionProfileReport(action);
     if (result?.data?.success) {
       toast.success(result?.data?.message);
       setViewDetailsModal(false);
+      setLoadingAction("");
     }
   };
 
@@ -206,26 +210,37 @@ export function ViewDetailsModal({
                     onClick={() =>
                       actionHandler({ action: "safe", id: conversation.id })
                     }
-                    variant="outline"
-                    className="w-1/2 text-red-500 hover:text-red-600 hover:bg-red-50 cursor-pointer"
+                    // variant="outline"
+                    className="w-1/2 bg-green-600 hover:bg-green-700 text-white cursor-pointer"
+                    disabled={isLoading && loadingAction === "safe"}
                   >
-                    Mark as safe
+                    {isLoading && loadingAction === "safe"
+                      ? "Loading..."
+                      : "Mark as safe"}
                   </Button>
                   <Button
+                    variant="outline"
                     onClick={() =>
                       actionHandler({ action: "suspend", id: conversation.id })
                     }
-                    className="w-1/2 bg-green-600 hover:bg-green-700 text-white cursor-pointer"
+                    className="w-1/2 text-orange-500 hover:text-orange-600 hover:bg-red-50 cursor-pointer "
+                    disabled={isLoading && loadingAction === "suspend"}
                   >
-                    Suspend Account
+                    {isLoading && loadingAction === "suspend"
+                      ? "Loading..."
+                      : "Suspend Account"}
                   </Button>
                   <Button
+                    variant="outline"
                     onClick={() =>
                       actionHandler({ action: "blocked", id: conversation.id })
                     }
-                    className="w-1/2 bg-green-600 hover:bg-green-700 text-white cursor-pointer"
+                    className="w-1/2 text-red-500 hover:text-red-600 hover:bg-red-50 cursor-pointer "
+                    disabled={isLoading && loadingAction === "blocked"}
                   >
-                    Block & Remove Profile
+                    {isLoading && loadingAction === "blocked"
+                      ? "Loading..."
+                      : "Block & Remove Profile"}
                   </Button>
                 </div>
               </div>
@@ -300,16 +315,18 @@ export function ViewDetailsModal({
               </div>
             ))}
 
-
             <div className="flex flex-col justify-center items-center gap-3">
               <Button
                 onClick={() =>
                   actionHandler({ action: "safe", id: conversation?._id })
                 }
                 variant="outline"
-                className="w-1/2 text-red-500 hover:text-red-600 hover:bg-red-50"
+                className="w-1/2 text-green-500 hover:text-green-600 hover:bg-red-50 cursor-pointer"
+                disabled={isLoading && loadingAction === "safe"}
               >
-                Mark as safe
+                {isLoading && loadingAction === "safe"
+                  ? "Loading..."
+                  : "Mark as safe"}
               </Button>
             </div>
           </div>

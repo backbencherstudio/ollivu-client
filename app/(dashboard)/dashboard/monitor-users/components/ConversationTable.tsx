@@ -138,7 +138,18 @@ export function ConversationTable({
                         {item?.reportType}
                       </td>
                       <td className="px-2 sm:px-4 whitespace-nowrap">
-                        {item.updatedAt}
+                        <span className="text-sm font-medium">
+                          {new Date(item?.createdAt).toLocaleDateString(
+                            "en-US",
+                            {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            }
+                          )}
+                        </span>
                       </td>
                       <td className="px-2 sm:px-4 whitespace-nowrap">
                         <span className="text-[10px] sm:text-xs px-2 py-1 rounded-full font-medium bg-red-100 text-yellow-600">

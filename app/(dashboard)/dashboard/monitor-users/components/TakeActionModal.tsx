@@ -60,8 +60,6 @@ export function TakeActionModal({ isOpen, onClose, conversation }: TakeActionMod
   };
 
   const handleConfirm = () => {
-    // Handle the confirmed action here
-    // console.log("Confirmed action:", selectedAction);
     setConfirmationModal(prev => ({ ...prev, isOpen: false }));
     onClose();
   };
