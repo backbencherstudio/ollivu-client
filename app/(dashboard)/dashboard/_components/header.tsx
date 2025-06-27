@@ -39,7 +39,7 @@ export default function Header({ user }) {
   const { data: readNotificationCount, isLoading: isNotificationLoading } =
     useGetReadExchangeNotificaionQuery(validUser?.userId, {
       skip: !validUser,
-      // pollingInterval: 5000,
+      pollingInterval: 5000,
     });
   
   const notifications = [
@@ -92,7 +92,7 @@ export default function Header({ user }) {
       userId: validUser?.userId,
       isAccepted: false,
     },
-    // { pollingInterval: 5000 }
+    { pollingInterval: 5000 }
   );
 
   useEffect(() => {

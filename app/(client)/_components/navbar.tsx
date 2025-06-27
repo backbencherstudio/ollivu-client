@@ -59,7 +59,7 @@ export default function Navbar() {
       userId: validUser?.userId,
       isAccepted: false,
     },
-    // { pollingInterval: 5000 }
+    { pollingInterval: 5000 }
   );
 
   // console.log("llist", requestList);
