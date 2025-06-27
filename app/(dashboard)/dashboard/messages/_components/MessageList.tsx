@@ -39,7 +39,7 @@ export const MessageList = ({
       userId: userId,
       isAccepted: false,
     },
-    { pollingInterval: 5000 }
+    // { pollingInterval: 5000 }
   );
 
   useEffect(() => {

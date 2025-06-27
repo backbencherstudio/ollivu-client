@@ -46,7 +46,7 @@ const DashboardNotificationPopup: React.FC<DashboardNotificationPopupProps> = ({
   const { data: getReadExchangeNotificaion, isLoading: isNotificationLoading } =
     useGetReadExchangeNotificaionQuery(singleUserData?._id, {
       skip: !singleUserData?._id,
-      pollingInterval: 5000,
+      // pollingInterval: 5000,
     });
   useEffect(() => {
     if (getReadExchangeNotificaion?.data && localNotifications.length === 0) {
@@ -62,7 +62,7 @@ const DashboardNotificationPopup: React.FC<DashboardNotificationPopupProps> = ({
   const { data: getAcceptedExchangeNotification } =
     useGetAcceptedExchangeNotificationQuery(singleUserData?._id, {
       skip: !singleUserData?._id,
-      pollingInterval: 5000,
+      // pollingInterval: 5000,
     });
 
   const [exchangeChatRequest, { isLoading: isExchangeLoading }] =

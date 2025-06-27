@@ -46,7 +46,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
   const { data: getReadExchangeNotificaion, isLoading: isNotificationLoading } =
     useGetReadExchangeNotificaionQuery(singleUserData?._id, {
       skip: !singleUserData?._id,
-      pollingInterval: 5000,
+      // pollingInterval: 5000,
     });
   // console.log("getReadExchangeNotificaion", getReadExchangeNotificaion?.data);
 
@@ -66,7 +66,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
   const { data: getAcceptedExchangeNotification } =
     useGetAcceptedExchangeNotificationQuery(singleUserData?._id, {
       skip: !singleUserData?._id,
-      pollingInterval: 5000,
+      // pollingInterval: 5000,
     });
   // console.log(
   //   "getAcceptedExchangeNotification",
