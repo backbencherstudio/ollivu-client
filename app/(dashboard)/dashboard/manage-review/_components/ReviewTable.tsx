@@ -26,10 +26,10 @@ export function ReviewTable({
           <thead>
             <tr className="text-left text-xs sm:text-sm text-gray-500 border-b">
               <th className="py-3 sm:py-4 px-3 sm:px-4 font-medium whitespace-nowrap">
-                Reviewer
+                Flagged By
               </th>
               <th className="py-3 sm:py-4 px-3 sm:px-4 font-medium whitespace-nowrap">
-                Flagged By
+                Reviewer
               </th>
               <th className="py-3 sm:py-4 px-3 sm:px-4 font-medium whitespace-nowrap">
                 Review
