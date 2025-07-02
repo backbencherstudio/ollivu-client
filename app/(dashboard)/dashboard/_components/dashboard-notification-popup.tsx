@@ -55,7 +55,6 @@ const DashboardNotificationPopup: React.FC<DashboardNotificationPopupProps> = ({
     }
   }, [getReadExchangeNotificaion, localNotifications.length]);
 
-
   const [postMarkAllReadExchangeNotification, { isLoading: isMarkingAllRead }] =
     usePostMarkAllReadExchangeNotificationMutation();
 
@@ -223,7 +222,6 @@ const DashboardNotificationPopup: React.FC<DashboardNotificationPopupProps> = ({
     (n) => !n.isAcceptNotificationRead
   ).length;
 
-
   function formatTime(dateString) {
     const date = new Date(dateString);
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -258,7 +256,6 @@ const DashboardNotificationPopup: React.FC<DashboardNotificationPopupProps> = ({
           </div>
           {/* Right: Mark all as read, Close */}
           <div className="flex items-center space-x-2">
-            
             <Button
               variant="ghost"
               size="sm"
@@ -324,20 +321,37 @@ const DashboardNotificationPopup: React.FC<DashboardNotificationPopupProps> = ({
                   >
                     {/* Avatar/Initial */}
                     <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-lg font-bold mr-3 flex-shrink-0">
-                     
-                      <Image
-                        src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${
-                          notification?.isAccepted === "true"
-                            ? notification?.reciverImage
-                            : notification?.senderImage
-                        }`}
-                        alt={notification?.senderUserId?.first_name
-                          ?.slice(0, 2)
-                          .toUpperCase()}
-                        width={100}
-                        height={100}
-                        className="w-full h-full object-cover rounded-full"
-                      />
+                      {(
+                        notification?.isAccepted === "true"
+                          ? notification?.reciverImage
+                          : notification?.senderImage
+                      ) ? (
+                        <Image
+                          src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${
+                            notification?.isAccepted === "true"
+                              ? notification?.reciverImage
+                              : notification?.senderImage
+                          }`}
+                          alt={
+                            notification?.senderUserId?.first_name
+                              ?.slice(0, 1)
+                              ?.toUpperCase() || "U"
+                          }
+                          width={100}
+                          height={100}
+                          className="w-full h-full object-cover rounded-full"
+                        />
+                      ) : (
+                        <span>
+                          {(
+                            (isRequest
+                              ? notification?.senderUserId?.first_name
+                              : notification?.selectedEmail ||
+                                notification?.senderUserId?.first_name
+                            )?.slice(0, 1) || "U"
+                          ).toUpperCase()}
+                        </span>
+                      )}
                     </div>
 
                     {/* Content */}
@@ -402,8 +416,6 @@ const DashboardNotificationPopup: React.FC<DashboardNotificationPopupProps> = ({
             </div>
           )}
         </div>
-
-       
       </div>
     </div>
   );
