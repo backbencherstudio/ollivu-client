@@ -212,10 +212,10 @@ export default function ServiceExchangeFlow({
       </section>
 
       {modalStep !== "none" && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full p-10 max-w-[70%] relative">
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-2 sm:p-4">
+          <div className="bg-white rounded-2xl w-full max-w-full sm:max-w-[70%] p-4 sm:p-10 relative overflow-y-auto max-h-[95vh]">
             <button
-              className="absolute top-4 right-4 text-[#20B894] text-xl cursor-pointer"
+              className="absolute top-2 right-2 sm:top-4 sm:right-4 text-[#20B894] text-xl cursor-pointer"
               onClick={() => {
                 setModalStep("none");
                 setSelectedUsers([]);
@@ -226,8 +226,8 @@ export default function ServiceExchangeFlow({
 
             {modalStep === "users" && (
               <>
-                <div className="bg-[#EDE3D9] p-5 rounded-2xl">
-                  <h3 className="text-xl font-semibold mb-4">
+                <div className="bg-[#EDE3D9] p-3 sm:p-5 rounded-2xl">
+                  <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">
                     Select Specific Users
                   </h3>
                   <UserList
@@ -240,7 +240,7 @@ export default function ServiceExchangeFlow({
                     <button
                       onClick={handleSendRequest}
                       disabled={selectedUsers.length === 0 || isLoading}
-                      className={`text-sm sm:text-base bg-[#20B894] text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-full cursor-pointer order-2 sm:order-1 ${
+                      className={`text-sm sm:text-base bg-[#20B894] text-white mx-6 sm:px-6 py-2 sm:py-2.5 rounded-full cursor-pointer order-2 sm:order-1 ${
                         selectedUsers.length === 0 || isLoading
                           ? "opacity-50 cursor-not-allowed"
                           : "hover:bg-[#1a9677] ease-in-out duration-300"
@@ -250,7 +250,7 @@ export default function ServiceExchangeFlow({
                     </button>
                     <button
                       onClick={() => setModalStep("none")}
-                      className="border border-red-500 text-red-500 px-6 py-2 rounded-full hover:bg-red-50 cursor-pointer ease-in-out duration-300"
+                      className="border border-red-500 text-red-500 mx-6 md:mx-0 sm:px-6 py-1 md:py-2 rounded-full hover:bg-red-50 cursor-pointer ease-in-out duration-300"
                     >
                       Cancel
                     </button>

@@ -262,11 +262,64 @@ export function ConversationTable({
                   ) : (
                     <>
                       <td className="px-2 sm:px-4 whitespace-nowrap">
+                        <div className="flex items-center gap-1 sm:gap-2">
+                          <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gray-100 relative overflow-hidden">
+                            {item?.senderDetails?.profileImage ? (
+                              <Image
+                                src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${item?.senderDetails?.profileImage}`}
+                                alt={item?.user1 || "User"}
+                                fill
+                                className="object-cover"
+                                onError={(e: any) => {
+                                  e.currentTarget.style.display = "none";
+                                  e.currentTarget.parentElement.innerHTML = `<span class="flex h-full items-center justify-center text-lg font-medium text-gray-500">${
+                                    item?.user1?.charAt(0) ||
+                                    "U"
+                                  }</span>`;
+                                }}
+                              />
+                            ) : (
+                              <span className="flex h-full items-center justify-center text-lg font-medium text-gray-500">
+                                {item?.user1?.charAt(0) || "U"}
+                              </span>
+                            )}
+                          </div>
+                          {item?.user1 || "Anonymous"}
+                        </div>
+                      </td>
+                      {/* <td className="px-2 sm:px-4 whitespace-nowrap">
                         {item.user1}
-                      </td>
+                      </td> */}
+
                       <td className="px-2 sm:px-4 whitespace-nowrap">
-                        {item.user2}
+                        <div className="flex items-center gap-1 sm:gap-2">
+                          <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gray-100 relative overflow-hidden">
+                            {item?.receiverDetails?.profileImage ? (
+                              <Image
+                                src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${item?.receiverDetails?.profileImage}`}
+                                alt={item?.user2 || "User"}
+                                fill
+                                className="object-cover"
+                                onError={(e: any) => {
+                                  e.currentTarget.style.display = "none";
+                                  e.currentTarget.parentElement.innerHTML = `<span class="flex h-full items-center justify-center text-lg font-medium text-gray-500">${
+                                    item?.user2?.charAt(0) ||
+                                    "U"
+                                  }</span>`;
+                                }}
+                              />
+                            ) : (
+                              <span className="flex h-full items-center justify-center text-lg font-medium text-gray-500">
+                                {item?.user2?.charAt(0) || "U"}
+                              </span>
+                            )}
+                          </div>
+                          {item?.user2 || "Anonymous"}
+                        </div>
                       </td>
+                      {/* <td className="px-2 sm:px-4 whitespace-nowrap">
+                        {item.user2}
+                      </td> */}
                       <td className="px-2 sm:px-4 whitespace-nowrap">
                         <p
                           className={`text-[10px] sm:text-xs px-2 py-1 rounded-full font-medium text-center ${

@@ -39,13 +39,13 @@ export function ReviewActionModal({
         <div className="p-6 pb-0">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <div className="text-gray-600">Reviewed By:</div>
+              <div className="text-gray-600">Flagged By:</div>
               <div className="font-medium">
                 {reviewWithDocument?.reviewer?.name}
               </div>
             </div>
             <div className="flex items-center justify-between">
-              <div className="text-gray-600">Flagged By:</div>
+              <div className="text-gray-600">Reviewed By:</div>
               <div className="font-medium">
                 {reviewWithDocument?.flaggedBy?.name}
               </div>
