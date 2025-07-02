@@ -46,7 +46,7 @@ export default function SkillExchange({
             alt="Swap Icon"
             width={60}
             height={60}
-            className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rotate-90 lg:rotate-0"
+            className="w-6 h-6 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rotate-90 lg:rotate-0"
           />
         </div>
 
