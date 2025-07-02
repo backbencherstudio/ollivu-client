@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useCreateUserMutation } from "@/src/redux/features/auth/authApi";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -204,36 +205,38 @@ export default function SignupPage() {
                 >
                   {showPassword ? (
                     // Eye-off SVG
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="w-5 h-5"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M3.98 8.223A10.477 10.477 0 0 0 2.25 12c2.083 3.61 6.017 6 9.75 6 1.563 0 3.06-.362 4.396-1.01m2.624-2.09A10.45 10.45 0 0 0 21.75 12c-.417-.723-.948-1.414-1.574-2.057m-2.624-2.09A9.956 9.956 0 0 0 12 6c-1.563 0-3.06.362-4.396 1.01m0 0A10.45 10.45 0 0 0 3.98 8.223m0 0L2.25 6.75m1.73 1.473 16.77 16.77"
-                      />
-                    </svg>
+                    // <svg
+                    //   xmlns="http://www.w3.org/2000/svg"
+                    //   fill="none"
+                    //   viewBox="0 0 24 24"
+                    //   strokeWidth={1.5}
+                    //   stroke="currentColor"
+                    //   className="w-5 h-5"
+                    // >
+                    //   <path
+                    //     strokeLinecap="round"
+                    //     strokeLinejoin="round"
+                    //     d="M3.98 8.223A10.477 10.477 0 0 0 2.25 12c2.083 3.61 6.017 6 9.75 6 1.563 0 3.06-.362 4.396-1.01m2.624-2.09A10.45 10.45 0 0 0 21.75 12c-.417-.723-.948-1.414-1.574-2.057m-2.624-2.09A9.956 9.956 0 0 0 12 6c-1.563 0-3.06.362-4.396 1.01m0 0A10.45 10.45 0 0 0 3.98 8.223m0 0L2.25 6.75m1.73 1.473 16.77 16.77"
+                    //   />
+                    // </svg>
+                    <Eye />
                   ) : (
                     // Eye SVG
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="w-5 h-5"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M2.25 12C3.285 7.943 7.522 5 12 5c4.478 0 8.715 2.943 9.75 7-.417.723-.948 1.414-1.574 2.057A9.956 9.956 0 0 1 12 18c-1.563 0-3.06-.362-4.396-1.01A10.45 10.45 0 0 1 2.25 12zm9.75 2.25a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5z"
-                      />
-                    </svg>
+                    // <svg
+                    //   xmlns="http://www.w3.org/2000/svg"
+                    //   fill="none"
+                    //   viewBox="0 0 24 24"
+                    //   strokeWidth={1.5}
+                    //   stroke="currentColor"
+                    //   className="w-5 h-5"
+                    // >
+                    //   <path
+                    //     strokeLinecap="round"
+                    //     strokeLinejoin="round"
+                    //     d="M2.25 12C3.285 7.943 7.522 5 12 5c4.478 0 8.715 2.943 9.75 7-.417.723-.948 1.414-1.574 2.057A9.956 9.956 0 0 1 12 18c-1.563 0-3.06-.362-4.396-1.01A10.45 10.45 0 0 1 2.25 12zm9.75 2.25a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5z"
+                    //   />
+                    // </svg>
+                    <EyeOff />
                   )}
                 </button>
                 {errors.password && (
@@ -267,36 +270,38 @@ export default function SignupPage() {
                 >
                   {showConfirmPassword ? (
                     // Eye-off SVG
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="w-5 h-5"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M3.98 8.223A10.477 10.477 0 0 0 2.25 12c2.083 3.61 6.017 6 9.75 6 1.563 0 3.06-.362 4.396-1.01m2.624-2.09A10.45 10.45 0 0 0 21.75 12c-.417-.723-.948-1.414-1.574-2.057m-2.624-2.09A9.956 9.956 0 0 0 12 6c-1.563 0-3.06.362-4.396 1.01m0 0A10.45 10.45 0 0 0 3.98 8.223m0 0L2.25 6.75m1.73 1.473 16.77 16.77"
-                      />
-                    </svg>
+                    // <svg
+                    //   xmlns="http://www.w3.org/2000/svg"
+                    //   fill="none"
+                    //   viewBox="0 0 24 24"
+                    //   strokeWidth={1.5}
+                    //   stroke="currentColor"
+                    //   className="w-5 h-5"
+                    // >
+                    //   <path
+                    //     strokeLinecap="round"
+                    //     strokeLinejoin="round"
+                    //     d="M3.98 8.223A10.477 10.477 0 0 0 2.25 12c2.083 3.61 6.017 6 9.75 6 1.563 0 3.06-.362 4.396-1.01m2.624-2.09A10.45 10.45 0 0 0 21.75 12c-.417-.723-.948-1.414-1.574-2.057m-2.624-2.09A9.956 9.956 0 0 0 12 6c-1.563 0-3.06.362-4.396 1.01m0 0A10.45 10.45 0 0 0 3.98 8.223m0 0L2.25 6.75m1.73 1.473 16.77 16.77"
+                    //   />
+                    // </svg>
+                    <Eye />
                   ) : (
                     // Eye SVG
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="w-5 h-5"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M2.25 12C3.285 7.943 7.522 5 12 5c4.478 0 8.715 2.943 9.75 7-.417.723-.948 1.414-1.574 2.057A9.956 9.956 0 0 1 12 18c-1.563 0-3.06-.362-4.396-1.01A10.45 10.45 0 0 1 2.25 12zm9.75 2.25a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5z"
-                      />
-                    </svg>
+                    // <svg
+                    //   xmlns="http://www.w3.org/2000/svg"
+                    //   fill="none"
+                    //   viewBox="0 0 24 24"
+                    //   strokeWidth={1.5}
+                    //   stroke="currentColor"
+                    //   className="w-5 h-5"
+                    // >
+                    //   <path
+                    //     strokeLinecap="round"
+                    //     strokeLinejoin="round"
+                    //     d="M2.25 12C3.285 7.943 7.522 5 12 5c4.478 0 8.715 2.943 9.75 7-.417.723-.948 1.414-1.574 2.057A9.956 9.956 0 0 1 12 18c-1.563 0-3.06-.362-4.396-1.01A10.45 10.45 0 0 1 2.25 12zm9.75 2.25a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5z"
+                    //   />
+                    // </svg>
+                    <EyeOff />
                   )}
                 </button>
                 {errors.confirmPassword && (
@@ -319,14 +324,14 @@ export default function SignupPage() {
                 />
                 Remember Me
               </label>
-              <Link href="/auth/forgot-password">
+              {/* <Link href="/auth/forgot-password">
                 <button
                   type="button"
                   className="hover:underline cursor-pointer hover:text-[#20B894] ease-in duration-300"
                 >
                   Forgot Password
                 </button>
-              </Link>
+              </Link> */}
             </div>
 
             {/* Submit Button */}
