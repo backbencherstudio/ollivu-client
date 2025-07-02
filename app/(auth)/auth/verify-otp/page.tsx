@@ -100,8 +100,8 @@ function VerifyOTPContent() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="container w-full flex flex-col md:flex-row overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center px-2 sm:px-4">
+      <div className="w-full flex flex-col md:flex-row overflow-hidden bg-white md:bg-transparent md:shadow-none md:rounded-none md:max-w-none max-w-md mx-auto">
         {/* Left Illustration */}
         <div className="hidden md:flex items-center justify-center w-1/2 p-6">
           <CustomImage
@@ -112,8 +112,8 @@ function VerifyOTPContent() {
         </div>
 
         {/* Right Form */}
-        <div className="w-full md:w-1/2 p-8">
-          <div className="mb-8">
+        <div className="w-full md:w-1/2 p-4 sm:p-8">
+          <div className="mb-6 sm:mb-8">
             <Link
               href="/auth/signup"
               className="text-sm text-gray-600 hover:text-gray-800 flex items-center gap-2"
@@ -126,19 +126,22 @@ function VerifyOTPContent() {
             Check your email
           </h1>
 
-          <p className="text-sm text-gray-600 mb-8">
+          <p className="text-sm text-gray-600 mb-6 sm:mb-8 break-words">
             We sent a verification link to {email}
           </p>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-            <div className="flex justify-center gap-4">
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col gap-4 sm:gap-6"
+          >
+            <div className="flex justify-center gap-2 sm:gap-4">
               {verificationCode.map((code, index) => (
                 <input
                   key={index}
                   type="text"
                   name={`code-${index}`}
                   maxLength={1}
-                  className="w-12 h-12 text-center border border-[#20B894] rounded-lg text-xl focus:outline-none focus:border-[#20B894] focus:ring-1 focus:ring-[#20B894]"
+                  className="w-10 h-10 sm:w-12 sm:h-12 text-center border border-[#20B894] rounded-lg text-xl focus:outline-none focus:border-[#20B894] focus:ring-1 focus:ring-[#20B894]"
                   value={code}
                   onChange={(e) => handleCodeChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
