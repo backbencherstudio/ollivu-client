@@ -21,7 +21,7 @@ export const MessageInput = ({ sendMessage, message, setMessage }) => {
 
   return (
     <div className="sticky bottom-0 bg-white border-t border-gray-100 py-4 px-6">
-      <form onSubmit={handleSubmit} className="relative flex items-end gap-2">
+      <form onSubmit={handleSubmit} className="relative flex flex-col md:flex-row gap-2">
         <div className="relative flex-1">
           <div className="absolute left-4 bottom-4 z-10">
             <button

@@ -156,14 +156,13 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
   }, [isOpen, onClose]);
 
   const markAsRead = (id: string | number) => {
-   
     setLocalNotifications((prev) => {
       const updated = prev.map((notification) =>
         notification._id === id || notification.id === id
           ? { ...notification, isAcceptNotificationRead: true }
           : notification
       );
-      
+
       return updated;
     });
   };
@@ -171,7 +170,6 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
   const markAllAsRead = async () => {
     try {
       if (singleUserData?._id) {
-        
         const result = await postMarkAllReadExchangeNotification(
           singleUserData._id
         ).unwrap();
@@ -237,7 +235,6 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
     (n) => !n.isAcceptNotificationRead
   ).length;
 
-
   function formatTime(dateString) {
     const date = new Date(dateString);
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -269,12 +266,10 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
           {/* Left: Icon, Title, Unread badge */}
           <div className="flex items-center space-x-2">
             <Bell className="w-5 h-5 text-gray-600" />
-            <h3 className="font-semibold text-gray-900">Notifications</h3>
-           
+            <h3 className="font-semibold text-gray-900">Notificationsad</h3>
           </div>
           {/* Right: Mark all as read, Close */}
           <div className="flex items-center space-x-2">
-            
             <Button
               variant="ghost"
               size="sm"
@@ -324,7 +319,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
                   ? notification.senderUserId
                   : {
                       email: notification.selectedEmail,
-                      first_name: notification.selectedEmail
+                      first_name: notification.selectedEmail,
                     };
 
                 return (
@@ -339,16 +334,37 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
                   >
                     {/* Avatar/Initial */}
                     <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-lg font-bold mr-3 flex-shrink-0">
-                     
-                      <Image
-                        src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${notification?.isAccepted === "true" ? notification?.reciverImage : notification?.senderImage}`}
-                        alt={notification?.senderUserId?.first_name
-                          ?.slice(0, 2)
-                          .toUpperCase()}
-                        width={100}
-                        height={100}
-                        className="w-full h-full object-cover rounded-full"
-                      />
+                      {(
+                        notification?.isAccepted === "true"
+                          ? notification?.reciverImage
+                          : notification?.senderImage
+                      ) ? (
+                        <Image
+                          src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${
+                            notification?.isAccepted === "true"
+                              ? notification?.reciverImage
+                              : notification?.senderImage
+                          }`}
+                          alt={
+                            notification?.senderUserId?.first_name
+                              ?.slice(0, 1)
+                              ?.toUpperCase() || "U"
+                          }
+                          width={100}
+                          height={100}
+                          className="w-full h-full object-cover rounded-full"
+                        />
+                      ) : (
+                        <span>
+                          {(
+                            (isRequest
+                              ? notification?.senderUserId?.first_name
+                              : notification?.selectedEmail ||
+                                notification?.senderUserId?.first_name
+                            )?.slice(0, 1) || "U"
+                          ).toUpperCase()}
+                        </span>
+                      )}
                     </div>
 
                     {/* Content */}
@@ -413,8 +429,6 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
             </div>
           )}
         </div>
-
-       
       </div>
     </div>
   );
