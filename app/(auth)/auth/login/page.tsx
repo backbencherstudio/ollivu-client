@@ -7,6 +7,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import loginImg from "@/public/login.png";
 import Image from "next/image";
+import { ArrowLeft } from "lucide-react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -95,6 +96,15 @@ export default function LoginPage() {
           <h1 className="text-[32px] font-medium leading-[126%] tracking-[-0.96px] heading_color mb-6">
             Login to your account
           </h1>
+
+          <button
+            type="button"
+            className="mb-4 text-[#20B894] hover:underline flex items-center gap-1 cursor-pointer"
+            onClick={() => router.push("/")}
+          >
+            <ArrowLeft />
+            Back to Home
+          </button>
 
           <form onSubmit={handleLogin} className="flex flex-col gap-4">
             {/* Email */}
