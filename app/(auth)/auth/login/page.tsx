@@ -13,11 +13,31 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+  const [errors, setErrors] = useState({ email: "", password: "" });
+
   const router = useRouter();
   const [loginUser, { isLoading }] = useLoginUserMutation();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Reset errors
+    setErrors({ email: "", password: "" });
+
+    let hasError = false;
+    const newErrors = { email: "", password: "" };
+    if (!email.trim()) {
+      newErrors.email = "Email is required";
+      hasError = true;
+    }
+    if (!password) {
+      newErrors.password = "Password is required";
+      hasError = true;
+    }
+    if (hasError) {
+      setErrors(newErrors);
+      return;
+    }
 
     try {
       const response = await loginUser({
@@ -87,8 +107,15 @@ export default function LoginPage() {
                 placeholder="Input your email"
                 className="w-full px-4 py-2 rounded-[8px] border border-[#20B894] bg-transparent text-black focus:outline-none"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (errors.email)
+                    setErrors((prev) => ({ ...prev, email: "" }));
+                }}
               />
+              {errors.email && (
+                <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+              )}
             </div>
 
             {/* Password */}
@@ -101,8 +128,15 @@ export default function LoginPage() {
                 placeholder="Input your password"
                 className="w-full px-4 py-2 rounded-[8px] border border-[#20B894] bg-transparent text-black focus:outline-none pr-10"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (errors.password)
+                    setErrors((prev) => ({ ...prev, password: "" }));
+                }}
               />
+              {errors.password && (
+                <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+              )}
               <button
                 type="button"
                 className="absolute right-3 top-12 transform -translate-y-1/2 text-gray-400 hover:text-gray-700 focus:outline-none cursor-pointer"
