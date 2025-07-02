@@ -11,6 +11,7 @@ import Image from "next/image";
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const router = useRouter();
   const [loginUser, { isLoading }] = useLoginUserMutation();
@@ -26,23 +27,23 @@ export default function LoginPage() {
 
       if (response.success) {
         toast.success(response.message || "Login successful!");
-        
+
         // Check for stored selections
-        const storedUsers = localStorage.getItem('selectedUsers');
-        const storedService = localStorage.getItem('selectedService');
-        const redirectUserId = localStorage.getItem('redirectUserId');
-        const redirectPath = localStorage.getItem('redirectPath');
-        
+        const storedUsers = localStorage.getItem("selectedUsers");
+        const storedService = localStorage.getItem("selectedService");
+        const redirectUserId = localStorage.getItem("redirectUserId");
+        const redirectPath = localStorage.getItem("redirectPath");
+
         if (storedUsers && storedService) {
           // Check if redirect path exists (for service-list)
           if (redirectPath) {
-            localStorage.removeItem('redirectPath');
+            localStorage.removeItem("redirectPath");
             router.push(redirectPath);
           } else {
-            router.push('/#service-categories');
+            router.push("/#service-categories");
           }
         } else if (redirectUserId) {
-          localStorage.removeItem('redirectUserId');
+          localStorage.removeItem("redirectUserId");
           router.push(`/service-result/${redirectUserId}`);
         } else {
           router.push("/");
@@ -83,7 +84,7 @@ export default function LoginPage() {
               </label>
               <input
                 type="text"
-                placeholder="Input your full name"
+                placeholder="Input your email"
                 className="w-full px-4 py-2 rounded-[8px] border border-[#20B894] bg-transparent text-black focus:outline-none"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -91,17 +92,58 @@ export default function LoginPage() {
             </div>
 
             {/* Password */}
-            <div>
+            <div className="relative">
               <label className="text-sm text-black block mb-2">
                 Password<span className="text-red-500">*</span>
               </label>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Input your password"
-                className="w-full px-4 py-2 rounded-[8px] border border-[#20B894] bg-transparent text-black focus:outline-none"
+                className="w-full px-4 py-2 rounded-[8px] border border-[#20B894] bg-transparent text-black focus:outline-none pr-10"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+              <button
+                type="button"
+                className="absolute right-3 top-12 transform -translate-y-1/2 text-gray-400 hover:text-gray-700 focus:outline-none cursor-pointer"
+                tabIndex={-1}
+                onClick={() => setShowPassword((prev) => !prev)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? (
+                  // Eye-off SVG
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-5 h-5"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M3.98 8.223A10.477 10.477 0 0 0 2.25 12c2.083 3.61 6.017 6 9.75 6 1.563 0 3.06-.362 4.396-1.01m2.624-2.09A10.45 10.45 0 0 0 21.75 12c-.417-.723-.948-1.414-1.574-2.057m-2.624-2.09A9.956 9.956 0 0 0 12 6c-1.563 0-3.06.362-4.396 1.01m0 0A10.45 10.45 0 0 0 3.98 8.223m0 0L2.25 6.75m1.73 1.473 16.77 16.77"
+                    />
+                  </svg>
+                ) : (
+                  // Eye SVG
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-5 h-5"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M2.25 12C3.285 7.943 7.522 5 12 5c4.478 0 8.715 2.943 9.75 7-.417.723-.948 1.414-1.574 2.057A9.956 9.956 0 0 1 12 18c-1.563 0-3.06-.362-4.396-1.01A10.45 10.45 0 0 1 2.25 12zm9.75 2.25a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5z"
+                    />
+                  </svg>
+                )}
+              </button>
             </div>
 
             {/* Remember Me & Forgot Password */}
@@ -117,7 +159,7 @@ export default function LoginPage() {
             </div>
 
             {/* Login Button */}
-            
+
             <button
               type="submit"
               className="w-full primary_color hover:opacity-90 text-white py-2 rounded-full font-medium transition-all cursor-pointer"
