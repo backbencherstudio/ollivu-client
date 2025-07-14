@@ -336,6 +336,8 @@ export function ConversationTable({
                           {item.joinDate}
                         </p>
                       </td>
+
+                      {/* show view details modal */}
                       <td className="px-2 sm:px-4 whitespace-nowrap">
                         <Button
                           variant="link"

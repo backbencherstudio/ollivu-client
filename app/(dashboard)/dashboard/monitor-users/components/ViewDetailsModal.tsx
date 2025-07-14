@@ -5,7 +5,10 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useTakeActionProfileReportMutation } from "@/src/redux/features/admin/profileReportApi";
 import { toast } from "sonner";
-import { useShowConversationQuery } from "@/src/redux/features/categories/categoriesApi";
+import {
+  useExchangeUserConversationQuery,
+  useShowConversationQuery,
+} from "@/src/redux/features/categories/categoriesApi";
 import { useState, useRef, useEffect } from "react";
 import moment from "moment";
 
@@ -29,12 +32,13 @@ export function ViewDetailsModal({
   setViewDetailsModal,
 }: ViewDetailsModalProps) {
   if (!isOpen) return null;
-  console.log("conversation", conversation);
+  // console.log("conversation", conversation);
   const [userIds, setUserIds] = useState<{
     reporterId: string;
     reportedId: string;
   } | null>(null);
   const [showUserConversation, setShowUserConversation] = useState(false);
+  const [exchangeUserEmails, setExchangeUserEmails] = useState(null);
 
   const [takeActionProfileReport, { isLoading }] =
     useTakeActionProfileReportMutation();
@@ -77,6 +81,20 @@ export function ViewDetailsModal({
     }
   }, [showConversation]);
 
+  const exchangeEmail = {
+    email1: conversation.senderEmail,
+    email2: conversation.receiverEmail,
+  };
+  // console.log("87", exchangeEmail);
+
+  const { data: exchangeConversationData } =
+    useExchangeUserConversationQuery(exchangeUserEmails);
+  console.log("exchange data", exchangeConversationData);
+
+  const handelExchangeUserConversation = () => {
+    setExchangeUserEmails(exchangeEmail);
+  };
+
   return (
     <div
       className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
@@ -87,7 +105,7 @@ export function ViewDetailsModal({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold">Details View</h2>
+          <h2 className="text-xl font-semibold">View Details</h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 cursor-pointer"
@@ -353,6 +371,18 @@ export function ViewDetailsModal({
                     <p className="font-medium">{conversation?.status}</p>
                   </div>
                 </div>
+                <div className="flex justify-between items-start my-8">
+                  {/* Completed Service */}
+                  <button
+                    onClick={() => {
+                      handelExchangeUserConversation();
+                      setIsConversationModalOpen(true); // Open the conversation modal
+                    }}
+                    className="w-1/2 bg-green-600 hover:bg-green-700 text-white py-1 rounded-xl cursor-pointer"
+                  >
+                    Show Conversation
+                  </button>
+                </div>
                 <hr />
                 <div>
                   <h3 className="text-xl text-gray-900 font-medium mb-2">
@@ -388,7 +418,12 @@ export function ViewDetailsModal({
 
       {isConversationModalOpen && (
         <ConversationModal
-          showConversation={showConversation}
+          showConversation={
+            exchangeConversationData?.data &&
+            exchangeConversationData?.data.length > 0
+              ? { data: exchangeConversationData.data }
+              : showConversation
+          }
           isLoading={isConversationLoading}
           error={conversationError}
           onClose={() => setIsConversationModalOpen(false)}
@@ -467,58 +502,68 @@ function ConversationModal({
                   new Date(b.timestamp).getTime()
               )
               .map((msg, idx) => {
-                const isSender = msg.sender === firstUserEmail;
+                // Decide alignment: right if sender is the first user, left otherwise
+                const isSender = msg.sender === messages[0]?.sender;
+                // Get initials
+                const getInitials = (email) =>
+                  email ? email.split("@")[0][0].toUpperCase() : "?";
                 return (
                   <div
-                    key={idx}
-                    className={`flex items-start gap-2 ${
-                      isSender ? "flex-row-reverse" : "flex-row"
+                    key={msg._id || idx}
+                    className={`flex items-end gap-2 ${
+                      isSender ? "justify-end" : "justify-start"
                     }`}
                   >
-                    <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                        isSender ? "bg-[#20B894] text-white" : "bg-gray-200"
-                      }`}
-                      title={msg.sender}
-                    >
-                      {getInitials(msg.sender)}
-                    </div>
-                    <div
-                      className={`flex flex-col ${
-                        isSender ? "items-end" : "items-start"
-                      } max-w-[70%]`}
-                    >
+                    {/* Avatar/Initial */}
+                    {!isSender && (
                       <div
-                        className={`rounded-2xl px-4 py-2 ${
+                        className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray-700 font-bold"
+                        title={msg.sender}
+                      >
+                        {getInitials(msg.sender)}
+                      </div>
+                    )}
+                    {/* Message Bubble */}
+                    <div className={`flex flex-col max-w-[70%]`}>
+                      <div
+                        className={`rounded-2xl px-4 py-2 mb-1 ${
                           isSender
-                            ? "bg-[#20B894] text-white rounded-tr-none"
-                            : "bg-gray-100 rounded-tl-none"
+                            ? "bg-green-500 text-white rounded-br-none"
+                            : "bg-gray-200 text-gray-900 rounded-bl-none"
                         }`}
                       >
                         <p className="text-[15px] leading-relaxed whitespace-pre-wrap break-words">
                           {msg.content}
                         </p>
-                        <div className="text-[10px] mt-1 opacity-75">
-                          {/* {msg.senderService !== "N/A" && (
-                            <span>{msg.senderService}</span>
-                          )} */}
-                        </div>
                       </div>
-                      <div>
-                        <span className="text-[11px] flex items-center gap-3 text-gray-500">
-                          <small>
-                            {msg?.senderService || "No service selected"}
-                          </small>{" "}
-                          <ArrowRightLeft className="w-4 h-4" />{" "}
-                          <small>
-                            {msg?.reciverService || "No service selected"}
-                          </small>
+                      {/* Service Info */}
+                      <div className="flex items-center gap-2 text-xs text-gray-500 mb-1">
+                        <span>
+                          {msg.senderService && msg.senderService !== "N/A"
+                            ? msg.senderService
+                            : "No service"}
+                        </span>
+                        <span>⇄</span>
+                        <span>
+                          {msg.reciverService && msg.reciverService !== "N/A"
+                            ? msg.reciverService
+                            : "No service"}
                         </span>
                       </div>
-                      <span className="text-xs text-gray-500 mt-1 px-1">
-                        {moment(msg.timestamp).format("h:mm A")}
+                      {/* Timestamp */}
+                      <span className="text-[11px] text-gray-400">
+                        {moment(msg.timestamp).format("MMM D, h:mm A")}
                       </span>
                     </div>
+                    {/* Avatar/Initial for sender (right side) */}
+                    {isSender && (
+                      <div
+                        className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white font-bold"
+                        title={msg.sender}
+                      >
+                        {getInitials(msg.sender)}
+                      </div>
+                    )}
                   </div>
                 );
               })

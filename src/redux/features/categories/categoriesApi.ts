@@ -54,6 +54,13 @@ export const categoriesApi = baseApi.injectEndpoints({
         method: "GET",
       }),
     }),
+
+    exchangeUserConversation: builder.query({
+      query: ({ email1, email2 }) => ({
+        url: `/categories/showALlExchangeServiceUserMessageDataFromDBByAdmin?email1=${email1}&email2=${email2}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -63,4 +70,5 @@ export const {
   useUpdateCategoryMutation,
   useDeleteCategoryMutation,
   useShowConversationQuery,
+  useExchangeUserConversationQuery,
 } = categoriesApi;
