@@ -174,12 +174,10 @@ const Messages = () => {
       },
     };
 
-    // Register all event listeners
     Object.entries(socketHandlers).forEach(([event, handler]) => {
       socket.on(event, handler);
     });
 
-    // Fetch initial unread messages only once when component mounts
     const fetchInitialUnreadMessages = async () => {
       try {
         const response = await fetch(
@@ -202,9 +200,8 @@ const Messages = () => {
         socket.off(event);
       });
     };
-  }, [currentUser?.email]); // Remove currentChat and getOtherUserEmail from dependencies
-  // Remove other duplicate useEffects related to socket events
-
+  }, [currentUser?.email]); 
+  
   useEffect(() => {
     socket.on("message history", (history) => {
       setMessages(history);
