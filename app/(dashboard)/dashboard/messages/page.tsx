@@ -16,7 +16,7 @@ import {
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
-const socket = io("https://backend.ollivu.com");
+const socket = io("http://localhost:5000");
 
 const Messages = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -31,7 +31,7 @@ const Messages = () => {
     useUpdateExchangeUpdateDateForSerialMutation();
 
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
-  // console.log("currentChat", currentChat);
+  console.log("currentChat", currentChat);
 
   const currentUser = verifiedUser();
   const router = useRouter();
@@ -263,6 +263,9 @@ const Messages = () => {
   // TODO: send message function
   const sendMessage = async (e) => {
     e.preventDefault();
+
+    console.log({currentChat});
+    
     if (message && currentChat) {
       // Determine sender/receiver services based on current user
       let senderService, reciverService;
@@ -282,6 +285,9 @@ const Messages = () => {
         read: false,
         senderService,
         reciverService,
+        senderSerialNumber : currentChat.senderSerialNumber,
+        reciverSerialNumber : currentChat.reciverSerialNumber,
+
       };
 
       console.log("send message:", messageData);

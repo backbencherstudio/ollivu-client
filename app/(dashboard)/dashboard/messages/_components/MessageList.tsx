@@ -17,6 +17,7 @@ export const MessageList = ({
   userId,
   userImage,
   activeChat, // Add this prop
+  
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRole, setSelectedRole] = useState("all");
