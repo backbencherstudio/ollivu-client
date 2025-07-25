@@ -16,7 +16,7 @@ import {
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
-const socket = io("http://localhost:5000");
+const socket = io("https://backend.ollivu.com");
 
 const Messages = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);

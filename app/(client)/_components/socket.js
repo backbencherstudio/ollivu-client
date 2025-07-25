@@ -1,6 +1,6 @@
 import { io } from 'socket.io-client';
 
-export const socket = io('http://localhost:5000', {
+export const socket = io('https://backend.ollivu.com', {
   withCredentials: true,
   autoConnect: false, 
 });
