@@ -101,14 +101,12 @@ const Messages = () => {
           setMessages(data);
           const lastMessagesMap = {};
           data.forEach((msg) => {
-            const otherUser =
-              msg.sender === currentUser?.email ? msg.recipient : msg.sender;
+            const exchangeKey = `${msg.senderSerialNumber}--${msg.reciverSerialNumber}`;
             if (
-              !lastMessagesMap[otherUser] ||
-              new Date(msg.timestamp) >
-                new Date(lastMessagesMap[otherUser].timestamp)
+              !lastMessagesMap[exchangeKey] ||
+              new Date(msg.timestamp) > new Date(lastMessagesMap[exchangeKey].timestamp)
             ) {
-              lastMessagesMap[otherUser] = {
+              lastMessagesMap[exchangeKey] = {
                 content: msg.content,
                 timestamp: msg.timestamp,
               };
@@ -137,23 +135,17 @@ const Messages = () => {
       message: (message) => {
         setMessages((prev) => [...prev, message]);
 
+        const exchangeKey = `${message.senderSerialNumber}--${message.reciverSerialNumber}`;
         if (
           !currentChat ||
-          (message.sender !== getOtherUserEmail(currentChat) &&
-            message.recipient !== getOtherUserEmail(currentChat))
+          (message.senderSerialNumber !== currentChat.senderSerialNumber ||
+            message.reciverSerialNumber !== currentChat.reciverSerialNumber)
         ) {
-          const otherUser =
-            message.sender === currentUser?.email
-              ? message.recipient
-              : message.sender;
-
-          // TODO check 1
           if (currentUser?.email != message.sender) {
-            // console.log("sojeb 1", currentUser?.email, message.sender);
             setUnreadMessages((prev) => {
               const newUnreadMessages = {
                 ...prev,
-                [otherUser]: (prev[otherUser] || 0) + 1,
+                [exchangeKey]: (prev[exchangeKey] || 0) + 1,
               };
               localStorage.setItem(
                 "unreadMessages",
@@ -164,15 +156,10 @@ const Messages = () => {
           }
         }
 
-        const otherUser =
-          message.sender === currentUser?.email
-            ? message.recipient
-            : message.sender;
-
         setLastMessages((prev) => {
           const newLastMessages = {
             ...prev,
-            [otherUser]: {
+            [exchangeKey]: {
               content: message.content,
               timestamp: message.timestamp,
             },
@@ -309,14 +296,13 @@ const Messages = () => {
 
     try {
       const messagesResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/chats?email=${
-          currentUser?.email
-        }&recipient=${getOtherUserEmail(user)}`
+        `${process.env.NEXT_PUBLIC_API_URL}/chats?email=${currentUser?.email}&recipient=${getOtherUserEmail(user)}`
       );
       const messagesData = await messagesResponse.json();
       setMessages(messagesData);
 
-      // Mark messages as read for both users
+      // Mark messages as read for this exchange
+      const exchangeKey = `${user.senderSerialNumber}--${user.reciverSerialNumber}`;
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/messages/mark-read`,
         {
@@ -325,8 +311,9 @@ const Messages = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            sender: getOtherUserEmail(user),
-            recipient: currentUser?.email,
+            senderSerialNumber: user.senderSerialNumber,
+            reciverSerialNumber: user.reciverSerialNumber,
+            recipientEmail: currentUser?.email,
           }),
         }
       );
@@ -334,13 +321,18 @@ const Messages = () => {
       if (response.ok) {
         // Update local messages state
         setMessages((prevMessages) =>
-          prevMessages.map((msg) => ({ ...msg, read: true }))
+          prevMessages.map((msg) =>
+            msg.senderSerialNumber === user.senderSerialNumber &&
+            msg.reciverSerialNumber === user.reciverSerialNumber
+              ? { ...msg, read: true }
+              : msg
+          )
         );
 
         // Clear unread count for this conversation
         setUnreadMessages((prev) => {
           const newUnreadMessages = { ...prev };
-          delete newUnreadMessages[getOtherUserEmail(user)];
+          delete newUnreadMessages[exchangeKey];
           localStorage.setItem(
             "unreadMessages",
             JSON.stringify(newUnreadMessages)
@@ -455,13 +447,13 @@ const Messages = () => {
                   } else {
                     receiverEmail = user.senderUserId?.email;
                   }
-
+                  const exchangeKey = `${user.senderSerialNumber}--${user.reciverSerialNumber}`;
                   return {
                     ...user,
-                    hasUnread: Boolean(unreadMessages[receiverEmail]),
-                    lastMessage: lastMessages[receiverEmail],
+                    hasUnread: Boolean(unreadMessages[exchangeKey]),
+                    lastMessage: lastMessages[exchangeKey],
                     isOnline: onlineUsers[receiverEmail] || false,
-                    unreadCount: unreadMessages[receiverEmail] || 0,
+                    unreadCount: unreadMessages[exchangeKey] || 0,
                   };
                 })}
                 currentUser={currentUser?.email}
