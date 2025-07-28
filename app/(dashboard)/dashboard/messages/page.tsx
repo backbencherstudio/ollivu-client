@@ -658,10 +658,10 @@ const Messages = () => {
                     {getOtherUserEmail(currentChat)}
                   </p>
 
-                  <div>
+                  {/* <div>
                     <h2>{currentChat?.senderSerialNumber}</h2>
                     <h2>{exchangeSerialNumber}</h2>
-                  </div>
+                  </div> */}
 
                   {/* Action Buttons */}
                   <div className="w-full space-y-3">
@@ -713,46 +713,31 @@ const Messages = () => {
                       className={`
                         w-full px-4 py-2.5 rounded-xl text-sm font-medium transition-colors
                         ${
-                          currentChat?.senderUserAccepted ||
+                          currentChat?.senderUserAccepted &&
                           currentChat?.reciverUserAccepted
                             ? "bg-gray-200 text-gray-600 cursor-not-allowed"
+                            : (currentChat?.senderUserId?._id ===
+                                currentUser?.userId &&
+                                currentChat?.senderUserAccepted) ||
+                              (currentChat?.reciverUserId?._id ===
+                                currentUser?.userId &&
+                                currentChat?.reciverUserAccepted)
+                            ? "bg-gray-200 text-gray-600 cursor-not-allowed"
                             : "bg-[#20b894] text-white hover:bg-[#1a9677] cursor-pointer"
-                        },
+                        }
                       `}
                       onClick={() => modalHandler(currentChat)}
-                      // disabled={
-                      //   currentChat?.senderUserAccepted ||
-                      //   currentChat?.reciverUserAccepted
-                      // }
-
-                      // disabled={
-                      //   (currentChat?.senderUserAccepted &&
-                      //     currentChat?.reciverUserAccepted) ||
-                      //   (currentUser?.userId ===
-                      //     currentChat?.senderUserId?._id &&
-                      //     currentChat?.senderUserAccepted) ||
-                      //   (currentUser?.userId ===
-                      //     currentChat?.reciverUserId?._id &&
-                      //     currentChat?.reciverUserAccepted) ||
-                      //   isConfirmExchange
-                      // }
+                      disabled={
+                        (currentChat?.senderUserAccepted &&
+                          currentChat?.reciverUserAccepted) ||
+                        (currentChat?.senderUserId?._id ===
+                          currentUser?.userId &&
+                          currentChat?.senderUserAccepted) ||
+                        (currentChat?.reciverUserId?._id ===
+                          currentUser?.userId &&
+                          currentChat?.reciverUserAccepted)
+                      }
                     >
-                      {/* old code */}
-                      {/* {currentChat?.senderUserAccepted &&
-                      currentChat?.reciverUserAccepted
-                        ? "Exchange Confirmed"
-                        : (currentUser?.userId ===
-                            currentChat?.senderUserId?._id &&
-                            currentChat?.senderUserAccepted) ||
-                          (currentUser?.userId ===
-                            currentChat?.reciverUserId?._id &&
-                            currentChat?.reciverUserAccepted) ||
-                          isConfirmExchange &&
-                          (currentChat?.senderSerialNumber === exchangeSerialNumber)
-                        ? "Exchange in Progress"
-                        : "Confirm Exchange Service"} */}
-
-                      {/* current changes */}
                       {currentChat?.senderUserAccepted &&
                       currentChat?.reciverUserAccepted
                         ? "Exchange Confirmed"
