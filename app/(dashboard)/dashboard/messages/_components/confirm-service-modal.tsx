@@ -23,6 +23,7 @@ interface ConfirmServiceModalProps {
   senderService: string;
   acceptedService: string;
   setIsConfirmExchange: (isConfirmExchange: boolean) => void;
+  onExchangeConfirmed?: () => void; // Add callback prop
 }
 
 export default function ConfirmServiceModal({
@@ -33,8 +34,10 @@ export default function ConfirmServiceModal({
   senderService = "",
   acceptedService = "",
   setIsConfirmExchange,
+  onExchangeConfirmed, // Add this prop
 }: ConfirmServiceModalProps) {
   const [selectedService, setSelectedService] = useState<string>("");
+  const [isConfirming, setIsConfirming] = useState(false);
   const [acceptExchange] = useAcceptExchangeMutation();
   const currentUser = verifiedUser();
 
@@ -52,6 +55,10 @@ export default function ConfirmServiceModal({
       return;
     }
 
+    if (isConfirming) return; // Prevent multiple clicks
+
+    setIsConfirming(true);
+
     try {
       const result = await acceptExchange({
         userId: currentUser?.userId,
@@ -63,11 +70,17 @@ export default function ConfirmServiceModal({
         toast.success(result?.data?.message);
         setIsConfirmExchange(true);
         onClose();
+        // Auto reload the page after successful confirmation
+        if (onExchangeConfirmed) {
+          onExchangeConfirmed();
+        }
       } else {
         toast.error("Failed to confirm exchange");
       }
     } catch (error) {
       toast.error("An error occurred while confirming exchange");
+    } finally {
+      setIsConfirming(false);
     }
   };
 
@@ -137,9 +150,9 @@ export default function ConfirmServiceModal({
         <Button
           className="w-full mt-8 bg-[#20B894] hover:bg-[#1ca883] text-white cursor-pointer"
           onClick={handleConfirmService}
-          disabled={!selectedService}
+          disabled={!selectedService || isConfirming}
         >
-          Confirm Exchange
+          {isConfirming ? "Confirming..." : "Confirm Exchange"}
         </Button>
       </div>
     </div>

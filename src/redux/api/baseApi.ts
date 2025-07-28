@@ -24,5 +24,6 @@ export const baseApi = createApi({
     "Privacy",
     "profileReport",
     "ExchangeNotification",
+    "Exchange"
   ],
 });

@@ -17,6 +17,8 @@ const exchangeApi = baseApi.injectEndpoints({
         method: "GET",
       }),
     }),
+
+    
   }),
 });
 

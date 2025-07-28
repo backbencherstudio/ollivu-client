@@ -11,6 +11,7 @@ import ConfirmServiceModal from "./_components/confirm-service-modal";
 import { toast } from "sonner";
 import {
   useAcceptExchangeMutation,
+  useGetSingleExchangeDataQuery,
   useUpdateExchangeUpdateDateForSerialMutation,
 } from "@/src/redux/features/shared/exchangeApi";
 import Image from "next/image";
@@ -22,16 +23,21 @@ const Messages = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
-  const [currentChat, setCurrentChat] = useState(null);
+  // const [currentChat, setCurrentChat] = useState(null);
+  const [exchangeId, setExchangeId] = useState("");
   const [user, setUser] = useState(null);
   const [senderService, setSenderService] = useState(null);
   const [receiverService, setReceiverService] = useState(null);
+  const [exchangeSerialNumber, setExchangeSerialNumber] = useState("");
 
   const [updateExchangeUpdateDateForSerial] =
     useUpdateExchangeUpdateDateForSerialMutation();
 
+  const { data, isLoading } = useGetSingleExchangeDataQuery(exchangeId);
+  const currentChat = data?.data;
+  console.log("34", currentChat);
+
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
-  console.log("currentChat", currentChat);
 
   const currentUser = verifiedUser();
   const router = useRouter();
@@ -104,7 +110,8 @@ const Messages = () => {
             const exchangeKey = `${msg.senderSerialNumber}--${msg.reciverSerialNumber}`;
             if (
               !lastMessagesMap[exchangeKey] ||
-              new Date(msg.timestamp) > new Date(lastMessagesMap[exchangeKey].timestamp)
+              new Date(msg.timestamp) >
+                new Date(lastMessagesMap[exchangeKey].timestamp)
             ) {
               lastMessagesMap[exchangeKey] = {
                 content: msg.content,
@@ -138,8 +145,8 @@ const Messages = () => {
         const exchangeKey = `${message.senderSerialNumber}--${message.reciverSerialNumber}`;
         if (
           !currentChat ||
-          (message.senderSerialNumber !== currentChat.senderSerialNumber ||
-            message.reciverSerialNumber !== currentChat.reciverSerialNumber)
+          message.senderSerialNumber !== currentChat.senderSerialNumber ||
+          message.reciverSerialNumber !== currentChat.reciverSerialNumber
         ) {
           if (currentUser?.email != message.sender) {
             setUnreadMessages((prev) => {
@@ -200,8 +207,8 @@ const Messages = () => {
         socket.off(event);
       });
     };
-  }, [currentUser?.email]); 
-  
+  }, [currentUser?.email]);
+
   useEffect(() => {
     socket.on("message history", (history) => {
       setMessages(history);
@@ -248,8 +255,8 @@ const Messages = () => {
   const sendMessage = async (e) => {
     e.preventDefault();
 
-    console.log({currentChat});
-    
+    console.log({ currentChat });
+
     if (message && currentChat) {
       // Determine sender/receiver services based on current user
       let senderService, reciverService;
@@ -269,9 +276,8 @@ const Messages = () => {
         read: false,
         senderService,
         reciverService,
-        senderSerialNumber : currentChat.senderSerialNumber,
-        reciverSerialNumber : currentChat.reciverSerialNumber,
-
+        senderSerialNumber: currentChat.senderSerialNumber,
+        reciverSerialNumber: currentChat.reciverSerialNumber,
       };
 
       console.log("send message:", messageData);
@@ -288,12 +294,15 @@ const Messages = () => {
 
   const handleChatSelect = async (user) => {
     console.log("selected user", user);
-    setCurrentChat(user);
-    console.log("currentChat", currentChat);
+    setExchangeId(user._id);
+    setExchangeSerialNumber(user?.senderSerialNumber);
+    // console.log("currentChat", currentChat);
 
     try {
       const messagesResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/chats?email=${currentUser?.email}&recipient=${getOtherUserEmail(user)}`
+        `${process.env.NEXT_PUBLIC_API_URL}/chats?email=${
+          currentUser?.email
+        }&recipient=${getOtherUserEmail(user)}`
       );
       const messagesData = await messagesResponse.json();
       setMessages(messagesData);
@@ -381,10 +390,10 @@ const Messages = () => {
       });
       if (result?.data?.success) {
         // Update currentChat state to reflect the change
-        setCurrentChat((prev) => ({
-          ...prev,
-          senderUserAccepted: true,
-        }));
+        // setCurrentChat((prev) => ({
+        //   ...prev,
+        //   senderUserAccepted: true,
+        // }));
         toast.success(result?.data?.message);
         refetch();
       }
@@ -481,7 +490,7 @@ const Messages = () => {
                 <div className="flex items-center p-4">
                   {/* Back Button - Mobile Only */}
                   <button
-                    onClick={() => setCurrentChat(null)}
+                    onClick={() => setExchangeId("")}
                     className="mr-3 md:hidden p-2 hover:bg-gray-100 rounded-full"
                   >
                     <svg
@@ -649,9 +658,14 @@ const Messages = () => {
                     {getOtherUserEmail(currentChat)}
                   </p>
 
+                  <div>
+                    <h2>{currentChat?.senderSerialNumber}</h2>
+                    <h2>{exchangeSerialNumber}</h2>
+                  </div>
+
                   {/* Action Buttons */}
                   <div className="w-full space-y-3">
-                    <button
+                    {/* <button
                       className={`
                         w-full px-4 py-2.5 rounded-xl text-sm font-medium transition-colors
                         ${
@@ -690,7 +704,64 @@ const Messages = () => {
                           (currentUser?.userId ===
                             currentChat?.reciverUserId?._id &&
                             currentChat?.reciverUserAccepted) ||
-                          isConfirmExchange
+                          isConfirmExchange &&
+                          (currentChat?.senderSerialNumber === exchangeSerialNumber)
+                        ? "Exchange in Progress"
+                        : "Confirm Exchange Service"}
+                    </button> */}
+                    <button
+                      className={`
+                        w-full px-4 py-2.5 rounded-xl text-sm font-medium transition-colors
+                        ${
+                          currentChat?.senderUserAccepted ||
+                          currentChat?.reciverUserAccepted
+                            ? "bg-gray-200 text-gray-600 cursor-not-allowed"
+                            : "bg-[#20b894] text-white hover:bg-[#1a9677] cursor-pointer"
+                        },
+                      `}
+                      onClick={() => modalHandler(currentChat)}
+                      // disabled={
+                      //   currentChat?.senderUserAccepted ||
+                      //   currentChat?.reciverUserAccepted
+                      // }
+
+                      // disabled={
+                      //   (currentChat?.senderUserAccepted &&
+                      //     currentChat?.reciverUserAccepted) ||
+                      //   (currentUser?.userId ===
+                      //     currentChat?.senderUserId?._id &&
+                      //     currentChat?.senderUserAccepted) ||
+                      //   (currentUser?.userId ===
+                      //     currentChat?.reciverUserId?._id &&
+                      //     currentChat?.reciverUserAccepted) ||
+                      //   isConfirmExchange
+                      // }
+                    >
+                      {/* old code */}
+                      {/* {currentChat?.senderUserAccepted &&
+                      currentChat?.reciverUserAccepted
+                        ? "Exchange Confirmed"
+                        : (currentUser?.userId ===
+                            currentChat?.senderUserId?._id &&
+                            currentChat?.senderUserAccepted) ||
+                          (currentUser?.userId ===
+                            currentChat?.reciverUserId?._id &&
+                            currentChat?.reciverUserAccepted) ||
+                          isConfirmExchange &&
+                          (currentChat?.senderSerialNumber === exchangeSerialNumber)
+                        ? "Exchange in Progress"
+                        : "Confirm Exchange Service"} */}
+
+                      {/* current changes */}
+                      {currentChat?.senderUserAccepted &&
+                      currentChat?.reciverUserAccepted
+                        ? "Exchange Confirmed"
+                        : (currentChat?.senderUserId?._id ===
+                            currentUser?.userId &&
+                            currentChat?.senderUserAccepted) ||
+                          (currentChat?.reciverUserId?._id ===
+                            currentUser?.userId &&
+                            currentChat?.reciverUserAccepted)
                         ? "Exchange in Progress"
                         : "Confirm Exchange Service"}
                     </button>
