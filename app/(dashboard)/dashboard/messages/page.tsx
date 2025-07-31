@@ -783,13 +783,13 @@ const Messages = () => {
                         : "Confirm Exchange Service"}
                     </button>
                     {/* post review button */}
-                    {/* <button
+                    <button
                       className="w-full px-4 py-2.5 rounded-xl text-sm font-medium border border-[#b19c87] 
                         text-[#b19c87] hover:bg-[#b19c87] hover:text-white transition-colors cursor-pointer"
                       onClick={() => handleReviewClick(currentChat)}
                     >
                       Post Review
-                    </button> */}
+                    </button>
 
                     <button
                       className={`
@@ -811,7 +811,7 @@ const Messages = () => {
                       }
                       onClick={handleExchangeServiceDone}
                     >
-                      Exchange Complete 2
+                      Exchange Complete
                     </button>
                   </div>
                 </div>
@@ -944,6 +944,29 @@ const Messages = () => {
                   >
                     Post Review
                   </button>
+
+                  <button
+                      className={`
+                          w-full px-4 py-2.5 rounded-xl text-sm font-medium transition-colors
+                          ${
+                            currentChat?.senderUserAccepted === false ||
+                            currentChat?.reciverUserAccepted === false ||
+                            (currentChat?.reciverServiceDone === true &&
+                              currentChat?.senderServiceDone === true)
+                              ? "bg-gray-200 text-gray-600 cursor-not-allowed"
+                              : "bg-[#20b894] text-white hover:bg-[#1a9677] cursor-pointer"
+                          }
+                        `}
+                      disabled={
+                        currentChat?.senderUserAccepted === false ||
+                        currentChat?.reciverUserAccepted === false ||
+                        (currentChat?.reciverServiceDone === true &&
+                          currentChat?.senderServiceDone === true)
+                      }
+                      onClick={handleExchangeServiceDone}
+                    >
+                      Exchange Complete
+                    </button>
                 </div>
               </div>
             </div>
