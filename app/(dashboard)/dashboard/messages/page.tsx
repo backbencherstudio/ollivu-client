@@ -791,18 +791,21 @@ const Messages = () => {
 
                     <button
                       className={`
-                        w-full px-4 py-2.5 rounded-xl text-sm font-medium transition-colors
-                        ${
-                          currentChat?.senderUserAccepted === false ||
-                          currentChat?.reciverUserAccepted === false
-                            ? "bg-gray-200 text-gray-600 cursor-not-allowed"
-                            : "bg-[#20b894] text-white hover:bg-[#1a9677] cursor-pointer"
-                        }
-                      `}
+                          w-full px-4 py-2.5 rounded-xl text-sm font-medium transition-colors
+                          ${
+                            currentChat?.senderUserAccepted === false ||
+                            currentChat?.reciverUserAccepted === false ||
+                            (currentChat?.reciverServiceDone === true &&
+                              currentChat?.senderServiceDone === true)
+                              ? "bg-gray-200 text-gray-600 cursor-not-allowed"
+                              : "bg-[#20b894] text-white hover:bg-[#1a9677] cursor-pointer"
+                          }
+                        `}
                       disabled={
                         currentChat?.senderUserAccepted === false ||
-                        currentChat?.reciverUserAccepted === false
-                        // true
+                        currentChat?.reciverUserAccepted === false ||
+                        (currentChat?.reciverServiceDone === true &&
+                          currentChat?.senderServiceDone === true)
                       }
                       onClick={handleExchangeServiceDone}
                     >
