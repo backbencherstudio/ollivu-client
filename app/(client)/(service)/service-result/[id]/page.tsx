@@ -63,7 +63,8 @@ const ServiceDetails = () => {
   console.log("all profile report", allProfileReport);
 
   const filteredProfileReport = allProfileReport?.data?.filter(
-    (report) => report?.reporterId?._id === currentUser?.userId
+    (report) =>
+      report?.reporterId && report.reporterId._id === currentUser?.userId
   );
 
   // Pagination logic
@@ -193,8 +194,8 @@ const ServiceDetails = () => {
   const isProfileReported = () => {
     return filteredProfileReport?.some(
       (report) =>
-        report.reporterId?._id === currentUser?.userId &&
-        report.reportedId?._id === params?.id
+        report?.reporterId?._id === currentUser?.userId &&
+        report?.reportedId?._id === params?.id
     );
   };
 
@@ -308,9 +309,7 @@ const ServiceDetails = () => {
                     key={i}
                     className="relative border rounded-xl px-3 py-4 flex flex-col items-center text-center shadow-sm bg-white"
                   >
-                    
                     <div className="relative w-20 h-20 mb-3">
-                     
                       <div className="absolute inset-0 flex items-center justify-center">
                         {typeof badge.icon === "string" ? (
                           <Image
@@ -327,8 +326,6 @@ const ServiceDetails = () => {
                     </div>
 
                     <p className="text-sm text-[#4A4C56] mb-2">{badge.label}</p>
-
-                   
                   </div>
                 ))}
               </div>
@@ -549,7 +546,6 @@ const ServiceDetails = () => {
                   singleUser={singleUser}
                 />
               </div>
-
             </div>
           </div>
         </div>
