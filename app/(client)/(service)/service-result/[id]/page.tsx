@@ -64,7 +64,7 @@ const ServiceDetails = () => {
 
   const filteredProfileReport = allProfileReport?.data?.filter(
     (report) =>
-      report?.reporterId && report.reporterId._id === currentUser?.userId
+      report?.reporterId && report.reporterId?._id === currentUser?.userId
   );
 
   // Pagination logic

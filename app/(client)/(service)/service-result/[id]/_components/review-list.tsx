@@ -68,7 +68,7 @@ const ReviewList = ({ review }: ReviewListProps) => {
     const userInteractions = JSON.parse(
       localStorage.getItem("reviewInteractions") || "{}"
     );
-    const reviewInteraction = userInteractions[review._id] || {};
+    const reviewInteraction = userInteractions[review?._id] || {};
 
     // Check for likes
     if (
@@ -99,7 +99,7 @@ const ReviewList = ({ review }: ReviewListProps) => {
       setIsDisliked(true);
       setUserAction("dislike");
     }
-  }, [review._id, review.likedBy, review.dislikedBy, currentUser?.userId]);
+  }, [review?._id, review.likedBy, review.dislikedBy, currentUser?.userId]);
 
   // Helper function to update localStorage
   const updateLocalStorage = (
@@ -135,7 +135,7 @@ const ReviewList = ({ review }: ReviewListProps) => {
 
     try {
       const response = await createLike({
-        reviewId: review._id,
+        reviewId: review?._id,
         userId: currentUser?.userId,
       }).unwrap();
 
@@ -146,7 +146,7 @@ const ReviewList = ({ review }: ReviewListProps) => {
         setIsLiked(true);
 
         // Store interaction in localStorage
-        updateLocalStorage(review._id, "like");
+        updateLocalStorage(review?._id, "like");
 
         toast.success("Review liked successfully");
       }
@@ -162,7 +162,7 @@ const ReviewList = ({ review }: ReviewListProps) => {
 
     try {
       const response = await createDislike({
-        reviewId: review._id,
+        reviewId: review?._id,
         userId: currentUser?.userId,
       }).unwrap();
 
@@ -173,7 +173,7 @@ const ReviewList = ({ review }: ReviewListProps) => {
         setIsDisliked(true);
 
         // Store interaction in localStorage
-        updateLocalStorage(review._id, "dislike");
+        updateLocalStorage(review?._id, "dislike");
 
         toast.success("Review disliked");
       }
@@ -188,7 +188,7 @@ const ReviewList = ({ review }: ReviewListProps) => {
       const formData = new FormData();
       formData.append("reporterId", currentUser.userId);
       formData.append("reportDetails", description);
-      formData.append("reviewId", review._id);
+      formData.append("reviewId", review?._id);
       if (file) {
         formData.append("document", file);
       }

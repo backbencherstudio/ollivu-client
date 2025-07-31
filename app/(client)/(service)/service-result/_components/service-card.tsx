@@ -40,7 +40,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ user }) => {
     }
 
     if (user?._id) {
-      router.push(`/service-result/${user._id}`);
+      router.push(`/service-result/${user?._id}`);
     }
   };
 

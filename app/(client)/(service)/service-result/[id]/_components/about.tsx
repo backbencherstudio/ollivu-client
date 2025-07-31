@@ -8,7 +8,7 @@ export default function About({ instructor, isExpanded, setIsExpanded }) {
     const wordCount = instructor.about?.split(/\s+/).length || 0;
     setShowReadMore(wordCount > 50);
   }, [instructor.about]);
-
+  
   return (
     <div>
       <div>

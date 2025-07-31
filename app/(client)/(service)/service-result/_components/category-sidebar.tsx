@@ -781,7 +781,7 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
 
           {/* Dynamic Categories and SubCategories */}
           {categories.map((category) => (
-            <div key={category._id} className="mb-2">
+            <div key={category?._id} className="mb-2">
               <div
                 className={`p-2 cursor-pointer rounded flex justify-between items-center text-sm item-transition ${
                   selectedCategory === category.category_name && !selectedItem
@@ -805,7 +805,7 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
                   {category.subCategories?.length > 0 ? (
                     category.subCategories.map((sub: any) => (
                       <div
-                        key={sub._id}
+                        key={sub?._id}
                         className={`block p-2 text-sm rounded cursor-pointer item-transition ${
                           selectedItem === sub.subCategory
                             ? "bg-teal-500 text-white"
