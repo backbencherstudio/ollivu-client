@@ -35,7 +35,10 @@ const Messages = () => {
   const [updateExchangeUpdateDateForSerial] =
     useUpdateExchangeUpdateDateForSerialMutation();
 
-  const { data, isLoading } = useGetSingleExchangeDataQuery(exchangeId);
+  const { data, isLoading } = useGetSingleExchangeDataQuery(exchangeId, {
+    skip: !exchangeId,
+    pollingInterval: 5000,
+  });
   const currentChat = data?.data;
   // console.log("current chat", currentChat);
 
@@ -787,8 +790,20 @@ const Messages = () => {
                     </button>
 
                     <button
-                      className="w-full px-4 py-2.5 rounded-xl text-sm font-medium border border-[#20b894] 
-                        text-[#20b894] hover:bg-[#20b894] hover:text-white transition-colors cursor-pointer"
+                      className={`
+                        w-full px-4 py-2.5 rounded-xl text-sm font-medium transition-colors
+                        ${
+                          currentChat?.senderUserAccepted === false ||
+                          currentChat?.reciverUserAccepted === false
+                            ? "bg-gray-200 text-gray-600 cursor-not-allowed"
+                            : "bg-[#20b894] text-white hover:bg-[#1a9677] cursor-pointer"
+                        }
+                      `}
+                      disabled={
+                        currentChat?.senderUserAccepted === false ||
+                        currentChat?.reciverUserAccepted === false
+                        // true
+                      }
                       onClick={handleExchangeServiceDone}
                     >
                       Exchange Complete
