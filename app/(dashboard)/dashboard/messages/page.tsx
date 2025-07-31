@@ -810,7 +810,7 @@ const Messages = () => {
                       }
                       onClick={handleExchangeServiceDone}
                     >
-                      Exchange Complete
+                      Exchange Complete 2
                     </button>
                   </div>
                 </div>
