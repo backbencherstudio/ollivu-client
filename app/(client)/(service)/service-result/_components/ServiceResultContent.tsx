@@ -312,7 +312,7 @@ export default function ServiceResultContent() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {paginatedUsers.length > 0 ? (
               paginatedUsers.map((user: any) => (
-                <ServiceCard key={user._id} user={user} />
+                <ServiceCard key={user?._id} user={user} />
               ))
             ) : (
               <div className="col-span-3 text-center py-10">

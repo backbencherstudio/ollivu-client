@@ -428,7 +428,7 @@ const Messages = () => {
         data: currentUserData,
         exchangeId,
       }).unwrap();
-      console.log("res", res);
+      // console.log("res", res);
       toast.success(res?.message);
     } catch (error) {
       console.error(error);

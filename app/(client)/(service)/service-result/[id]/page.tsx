@@ -101,7 +101,7 @@ const ServiceDetails = () => {
 
   // Modify the location formatting in formattedInstructor
   const formattedInstructor = {
-    id: singleUser._id,
+    id: singleUser?._id,
     name: singleUser?.first_name,
     first_name: singleUser.personalInfo?.first_name,
     last_name: singleUser.personalInfo?.last_name,
@@ -126,7 +126,7 @@ const ServiceDetails = () => {
     // Handle the review submission here
     const reviewCreate = {
       reviewerId: currentUser?.userId,
-      reciverId: singleUser._id,
+      reciverId: singleUser?._id,
       rating: rating,
       review: review,
     };
@@ -193,8 +193,8 @@ const ServiceDetails = () => {
   const isProfileReported = () => {
     return filteredProfileReport?.some(
       (report) =>
-        report.reporterId._id === currentUser?.userId &&
-        report.reportedId._id === params?.id
+        report.reporterId?._id === currentUser?.userId &&
+        report.reportedId?._id === params?.id
     );
   };
 
