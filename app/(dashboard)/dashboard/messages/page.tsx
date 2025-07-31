@@ -782,13 +782,14 @@ const Messages = () => {
                         ? "Exchange in Progress"
                         : "Confirm Exchange Service"}
                     </button>
-                    <button
+                    {/* post review button */}
+                    {/* <button
                       className="w-full px-4 py-2.5 rounded-xl text-sm font-medium border border-[#b19c87] 
                         text-[#b19c87] hover:bg-[#b19c87] hover:text-white transition-colors cursor-pointer"
                       onClick={() => handleReviewClick(currentChat)}
                     >
                       Post Review
-                    </button>
+                    </button> */}
 
                     <button
                       className={`
