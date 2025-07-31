@@ -90,7 +90,7 @@ const DashboardNotificationPopup: React.FC<DashboardNotificationPopupProps> = ({
     );
   }, [getAcceptedExchangeNotification?.data, requestList?.data]);
 
-  console.log("marge noti", mergedNotifications);
+  // console.log("marge noti", mergedNotifications);
 
   const handleRequest = async (notification, isAccepted) => {
     try {

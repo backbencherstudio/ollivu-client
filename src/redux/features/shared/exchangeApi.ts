@@ -39,10 +39,22 @@ export const exchangeApi = baseApi.injectEndpoints({
 
     getSingleExchangeData: builder.query({
       query: (exchange_id) => ({
-        url: `shared/singleExchangeData/${exchange_id}`,
+        url: `/shared/singleExchangeData/${exchange_id}`,
         method: "GET",
       }),
       providesTags: ["Exchange"],
+    }),
+
+    exchangeServiceDone: builder.mutation({
+      query: ({ data, exchangeId }) => {
+        console.log("exchange api data", data);
+
+        return {
+          url: `/shared/exchangeServiceDone/${exchangeId}`,
+          method: "PATCH",
+          body: data,
+        };
+      },
     }),
   }),
 });
@@ -53,4 +65,5 @@ export const {
   useAcceptExchangeMutation,
   useUpdateExchangeUpdateDateForSerialMutation,
   useGetSingleExchangeDataQuery,
+  useExchangeServiceDoneMutation,
 } = exchangeApi;

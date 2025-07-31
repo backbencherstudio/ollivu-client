@@ -11,12 +11,14 @@ import ConfirmServiceModal from "./_components/confirm-service-modal";
 import { toast } from "sonner";
 import {
   useAcceptExchangeMutation,
+  useExchangeServiceDoneMutation,
   useGetSingleExchangeDataQuery,
   useUpdateExchangeUpdateDateForSerialMutation,
 } from "@/src/redux/features/shared/exchangeApi";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
+import { useGetSingleUserQuery } from "@/src/redux/features/users/userApi";
 const socket = io("https://backend.ollivu.com");
 
 const Messages = () => {
@@ -35,11 +37,18 @@ const Messages = () => {
 
   const { data, isLoading } = useGetSingleExchangeDataQuery(exchangeId);
   const currentChat = data?.data;
-  console.log("34", currentChat);
+  // console.log("current chat", currentChat);
+
+  const [exchangeServiceDone] = useExchangeServiceDoneMutation();
 
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
 
   const currentUser = verifiedUser();
+  // console.log("current user", currentUser);
+
+  const { data: singleUser } = useGetSingleUserQuery(currentUser?.userId);
+  // console.log("single user", singleUser?.data?.personalInfo?.first_name);
+
   const router = useRouter();
   const [recipient, setRecipient] = useState(currentUser?.email);
   // TODO: check if the user is online or not
@@ -403,6 +412,25 @@ const Messages = () => {
   };
   // console.log("currentChat", currentChat);
 
+  const handleExchangeServiceDone = async () => {
+    const currentUserData = {
+      name: singleUser?.data?.personalInfo?.first_name,
+      email: currentUser?.email,
+      userId: currentUser?.userId,
+    };
+    const exchangeId = currentChat?._id;
+
+    try {
+      const res = await exchangeServiceDone({
+        data: currentUserData,
+        exchangeId,
+      }).unwrap();
+      console.log("res", res);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div className="flex flex-col bg-white">
       {/* Main Container - Responsive Grid Layout */}
@@ -756,6 +784,14 @@ const Messages = () => {
                       onClick={() => handleReviewClick(currentChat)}
                     >
                       Post Review
+                    </button>
+
+                    <button
+                      className="w-full px-4 py-2.5 rounded-xl text-sm font-medium border border-[#20b894] 
+                        text-[#20b894] hover:bg-[#20b894] hover:text-white transition-colors cursor-pointer"
+                      onClick={handleExchangeServiceDone}
+                    >
+                      Exchange Complete
                     </button>
                   </div>
                 </div>
