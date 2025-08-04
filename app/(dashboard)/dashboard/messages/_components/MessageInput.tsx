@@ -42,6 +42,15 @@ export const MessageInput = ({ sendMessage, message, setMessage }) => {
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (message.trim()) {
+                  sendMessage(e);
+                  setShowEmojiPicker(false);
+                }
+              }
+            }}
             placeholder="Type your message..."
             className="w-full min-h-[100px] max-h-[200px] pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-[#20b894] focus:ring-1 focus:ring-[#20b894] focus:outline-none resize-none text-gray-700 placeholder:text-gray-400 transition-all duration-200"
             style={{
