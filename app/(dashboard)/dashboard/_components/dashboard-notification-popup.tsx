@@ -387,7 +387,7 @@ const DashboardNotificationPopup: React.FC<DashboardNotificationPopupProps> = ({
                               requestHandler("true", notification._id)
                             }
                             disabled={isExchangeLoading}
-                            className="px-4 py-1.5 bg-green-500 text-white rounded-md text-xs font-semibold hover:bg-green-600 transition-colors disabled:opacity-50"
+                            className="px-4 py-1.5 bg-green-500 text-white rounded-md text-xs font-semibold hover:bg-green-600 transition-colors disabled:opacity-50 cursor-pointer"
                           >
                             Accept
                           </button>
@@ -398,7 +398,7 @@ const DashboardNotificationPopup: React.FC<DashboardNotificationPopupProps> = ({
                               requestHandler("false", notification._id)
                             }
                             disabled={isExchangeLoading}
-                            className="px-4 py-1.5 bg-gray-200 text-gray-700 rounded-md text-xs font-semibold hover:bg-gray-300 transition-colors disabled:opacity-50"
+                            className="px-4 py-1.5 bg-gray-200 text-gray-700 rounded-md text-xs font-semibold hover:bg-gray-300 transition-colors disabled:opacity-50 cursor-pointer"
                           >
                             Decline
                           </button>

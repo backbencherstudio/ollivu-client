@@ -266,7 +266,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
           {/* Left: Icon, Title, Unread badge */}
           <div className="flex items-center space-x-2">
             <Bell className="w-5 h-5 text-gray-600" />
-            <h3 className="font-semibold text-gray-900">Notificationsad</h3>
+            <h3 className="font-semibold text-gray-900">Notifications</h3>
           </div>
           {/* Right: Mark all as read, Close */}
           <div className="flex items-center space-x-2">
@@ -400,7 +400,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
                               requestHandler("true", notification._id)
                             }
                             disabled={isExchangeLoading}
-                            className="px-4 py-1.5 bg-green-500 text-white rounded-md text-xs font-semibold hover:bg-green-600 transition-colors disabled:opacity-50"
+                            className="px-4 py-1.5 bg-green-500 text-white rounded-md text-xs font-semibold hover:bg-green-600 transition-colors disabled:opacity-50 cursor-pointer"
                           >
                             Accept
                           </button>
@@ -411,7 +411,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
                               requestHandler("false", notification._id)
                             }
                             disabled={isExchangeLoading}
-                            className="px-4 py-1.5 bg-gray-200 text-gray-700 rounded-md text-xs font-semibold hover:bg-gray-300 transition-colors disabled:opacity-50"
+                            className="px-4 py-1.5 bg-gray-200 text-gray-700 rounded-md text-xs font-semibold hover:bg-gray-300 transition-colors disabled:opacity-50 cursor-pointer"
                           >
                             Decline
                           </button>
