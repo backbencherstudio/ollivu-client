@@ -1,9 +1,9 @@
-import { Star } from 'lucide-react'
-import React, { useMemo } from 'react'
+import { Star, StarHalf } from "lucide-react";
+import React, { useMemo } from "react";
 import { verifiedUser } from "@/src/utils/token-varify";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { authApi } from '@/src/redux/features/auth/authApi';
+import { authApi } from "@/src/redux/features/auth/authApi";
 
 interface RatingOverviewProps {
   formattedInstructor: {
@@ -16,12 +16,12 @@ interface RatingOverviewProps {
   reviews?: any[];
 }
 
-export default function RatingOverview({ 
-  formattedInstructor, 
+export default function RatingOverview({
+  formattedInstructor,
   setIsReviewModalOpen,
   currentUserId,
   instructorId,
-  reviews 
+  reviews,
 }: RatingOverviewProps) {
   const router = useRouter();
   const currentUser = verifiedUser();
@@ -35,15 +35,17 @@ export default function RatingOverview({
   const canWriteReview = useMemo(() => {
     if (!userList?.data || !currentUserId || !instructorId) return false;
 
-    return userList.data.some(exchange => {
+    return userList.data.some((exchange) => {
       // Check if the current user and instructor are involved in this exchange
-      const isValidExchange = (
-        (exchange.senderUserId?._id === currentUserId && exchange.reciverUserId?._id === instructorId) ||
-        (exchange.senderUserId?._id === instructorId && exchange.reciverUserId?._id === currentUserId)
-      );
+      const isValidExchange =
+        (exchange.senderUserId?._id === currentUserId &&
+          exchange.reciverUserId?._id === instructorId) ||
+        (exchange.senderUserId?._id === instructorId &&
+          exchange.reciverUserId?._id === currentUserId);
 
       // Check if both users have accepted the exchange
-      const bothAccepted = exchange.senderUserAccepted && exchange.reciverUserAccepted;
+      const bothAccepted =
+        exchange.senderUserAccepted && exchange.reciverUserAccepted;
 
       return isValidExchange && bothAccepted;
     });
@@ -90,16 +92,40 @@ export default function RatingOverview({
               {formattedInstructor.rating}
             </div>
             <div className="flex items-center gap-1.5 justify-center my-3">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star
-                  key={star}
-                  className={`w-5 h-5 ${
-                    star <= formattedInstructor.rating 
-                      ? 'fill-amber-400 text-amber-400'
-                      : 'fill-gray-200 text-gray-200'
-                  } transition-colors duration-200`}
-                />
-              ))}
+              {Array.from({ length: 5 }, (_, i) => {
+                const starValue = i + 1;
+                const fullStars = Math.floor(formattedInstructor.rating);
+                const hasHalfStar = formattedInstructor.rating % 1 !== 0;
+                const halfStarPosition = Math.ceil(formattedInstructor.rating);
+
+                // Full star
+                if (starValue <= fullStars) {
+                  return (
+                    <Star
+                      key={i}
+                      className="w-5 h-5 fill-yellow-500 text-yellow-500 transition-colors duration-200"
+                    />
+                  );
+                }
+
+                // Half star
+                if (hasHalfStar && starValue === halfStarPosition) {
+                  return (
+                    <StarHalf
+                      key={i}
+                      className="w-5 h-5 fill-yellow-500 text-yellow-500 transition-colors duration-200"
+                    />
+                  );
+                }
+
+                // Empty star
+                return (
+                  <Star
+                    key={i}
+                    className="w-5 h-5 fill-gray-200 text-gray-200 transition-colors duration-200"
+                  />
+                );
+              })}
             </div>
             <p className="text-sm font-medium text-[#777980]">
               Based on {formattedInstructor.totalReview} reviews
