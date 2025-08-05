@@ -298,7 +298,7 @@ const ReviewList = ({ review }: ReviewListProps) => {
         </div>
 
         {/* Like/Dislike Section */}
-        <div className="flex items-center gap-3 sm:gap-4 mt-3 sm:mt-4">
+        {/* <div className="flex items-center gap-3 sm:gap-4 mt-3 sm:mt-4">
           <button
             onClick={handleLike}
             disabled={isLiked || isDisliked}
@@ -365,7 +365,7 @@ const ReviewList = ({ review }: ReviewListProps) => {
               />
             </svg>
           </button>
-        </div>
+        </div> */}
       </div>
 
       {/* Report Modal remains unchanged */}
