@@ -109,11 +109,10 @@ export default function Sidebar({ user }) {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition-colors ${
-                pathname === item.href
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition-colors ${pathname === item.href
                   ? "bg-[#20B894] text-white"
                   : "text-[#777980] hover:bg-gray-100"
-              }`}
+                }`}
             >
               <item.icon className="w-5 h-5" />
               <span>{item.label}</span>

@@ -31,6 +31,7 @@ const Messages = () => {
   const [senderService, setSenderService] = useState(null);
   const [receiverService, setReceiverService] = useState(null);
   const [exchangeSerialNumber, setExchangeSerialNumber] = useState("");
+  const [showMessageList, setShowMessageList] = useState(true);
 
   const [updateExchangeUpdateDateForSerial] =
     useUpdateExchangeUpdateDateForSerialMutation();
@@ -123,7 +124,7 @@ const Messages = () => {
             if (
               !lastMessagesMap[exchangeKey] ||
               new Date(msg.timestamp) >
-                new Date(lastMessagesMap[exchangeKey].timestamp)
+              new Date(lastMessagesMap[exchangeKey].timestamp)
             ) {
               lastMessagesMap[exchangeKey] = {
                 content: msg.content,
@@ -308,12 +309,12 @@ const Messages = () => {
     console.log("selected user", user);
     setExchangeId(user._id);
     setExchangeSerialNumber(user?.senderSerialNumber);
+    setShowMessageList(false);
     // console.log("currentChat", currentChat);
 
     try {
       const messagesResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/chats?email=${
-          currentUser?.email
+        `${process.env.NEXT_PUBLIC_API_URL}/chats?email=${currentUser?.email
         }&recipient=${getOtherUserEmail(user)}`
       );
       const messagesData = await messagesResponse.json();
@@ -341,7 +342,7 @@ const Messages = () => {
         setMessages((prevMessages) =>
           prevMessages.map((msg) =>
             msg.senderSerialNumber === user.senderSerialNumber &&
-            msg.reciverSerialNumber === user.reciverSerialNumber
+              msg.reciverSerialNumber === user.reciverSerialNumber
               ? { ...msg, read: true }
               : msg
           )
@@ -435,6 +436,13 @@ const Messages = () => {
     }
   };
 
+  // Handle back button click for mobile
+  const handleBackButton = () => {
+    setExchangeId("");
+    setShowMessageList(true);
+    setIsSidebarOpen(true);
+  };
+
   return (
     <div className="flex flex-col bg-white">
       {/* Main Container - Responsive Grid Layout */}
@@ -442,19 +450,18 @@ const Messages = () => {
         {/* Left Sidebar - Messages List */}
         <div
           className={`
-          ${currentChat ? "hidden" : "block"} 
-          md:block 
-          md:col-span-4 
-          lg:col-span-3 
-          border-r 
-          border-gray-100
-          h-full
-          ${
-            isSidebarOpen
+           ${!showMessageList ? "hidden" : "block"} 
+           md:block 
+           md:col-span-4 
+           lg:col-span-3 
+           border-r 
+           border-gray-100
+           h-full
+           ${isSidebarOpen
               ? "fixed inset-0 z-50 bg-white md:relative md:z-auto"
               : ""
-          }
-        `}
+            }
+         `}
         >
           <div className="h-full flex flex-col">
             {/* Mobile Header - Only visible on mobile when no chat is selected */}
@@ -477,6 +484,7 @@ const Messages = () => {
                 onChatSelect={(user) => {
                   handleChatSelect(user);
                   setIsSidebarOpen(false);
+                  setShowMessageList(false);
                 }}
                 userData={userList?.data?.map((user) => {
                   let receiverEmail = "";
@@ -506,14 +514,14 @@ const Messages = () => {
         {/* Main Chat Area */}
         <div
           className={`
-          ${!currentChat ? "hidden" : "flex"} 
-          md:flex 
-          flex-col 
-          md:col-span-8 
-          lg:col-span-6
-          h-full
-          relative
-        `}
+           ${showMessageList ? "hidden" : "flex"} 
+           md:flex 
+           flex-col 
+           md:col-span-8 
+           lg:col-span-6
+           h-full
+           relative
+         `}
         >
           {currentChat ? (
             <>
@@ -522,8 +530,8 @@ const Messages = () => {
                 <div className="flex items-center p-4">
                   {/* Back Button - Mobile Only */}
                   <button
-                    onClick={() => setExchangeId("")}
-                    className="mr-3 md:hidden p-2 hover:bg-gray-100 rounded-full"
+                    onClick={handleBackButton}
+                    className="mr-3 md:hidden p-2 hover:bg-gray-100 rounded-full cursor-pointer"
                   >
                     <svg
                       className="w-6 h-6"
@@ -547,7 +555,7 @@ const Messages = () => {
                   >
                     <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
                       {currentUser?.userId ===
-                      currentChat?.senderUserId?._id ? (
+                        currentChat?.senderUserId?._id ? (
                         currentChat?.reciverUserId?.profileImage ? (
                           <Image
                             src={`${process.env.NEXT_PUBLIC_IMAGE_URL}${currentChat?.reciverUserId?.profileImage}`}
@@ -592,11 +600,10 @@ const Messages = () => {
                         {getOtherUserName(currentChat)}
                       </h3>
                       <span
-                        className={`text-xs md:text-sm ${
-                          onlineUsers[getOtherUserEmail(currentChat)]
-                            ? "text-green-500"
-                            : "text-gray-500"
-                        }`}
+                        className={`text-xs md:text-sm ${onlineUsers[getOtherUserEmail(currentChat)]
+                          ? "text-green-500"
+                          : "text-gray-500"
+                          }`}
                       >
                         {onlineUsers[getOtherUserEmail(currentChat)]
                           ? "Online"
@@ -744,16 +751,15 @@ const Messages = () => {
                     <button
                       className={`
                         w-full px-4 py-2.5 rounded-xl text-sm font-medium transition-colors
-                        ${
-                          currentChat?.senderUserAccepted &&
+                        ${currentChat?.senderUserAccepted &&
                           currentChat?.reciverUserAccepted
-                            ? "bg-gray-200 text-gray-600 cursor-not-allowed"
-                            : (currentChat?.senderUserId?._id ===
-                                currentUser?.userId &&
-                                currentChat?.senderUserAccepted) ||
-                              (currentChat?.reciverUserId?._id ===
-                                currentUser?.userId &&
-                                currentChat?.reciverUserAccepted)
+                          ? "bg-gray-200 text-gray-600 cursor-not-allowed"
+                          : (currentChat?.senderUserId?._id ===
+                            currentUser?.userId &&
+                            currentChat?.senderUserAccepted) ||
+                            (currentChat?.reciverUserId?._id ===
+                              currentUser?.userId &&
+                              currentChat?.reciverUserAccepted)
                             ? "bg-gray-200 text-gray-600 cursor-not-allowed"
                             : "bg-[#20b894] text-white hover:bg-[#1a9677] cursor-pointer"
                         }
@@ -771,16 +777,16 @@ const Messages = () => {
                       }
                     >
                       {currentChat?.senderUserAccepted &&
-                      currentChat?.reciverUserAccepted
+                        currentChat?.reciverUserAccepted
                         ? "Exchange Confirmed"
                         : (currentChat?.senderUserId?._id ===
-                            currentUser?.userId &&
-                            currentChat?.senderUserAccepted) ||
+                          currentUser?.userId &&
+                          currentChat?.senderUserAccepted) ||
                           (currentChat?.reciverUserId?._id ===
                             currentUser?.userId &&
                             currentChat?.reciverUserAccepted)
-                        ? "Exchange in Progress"
-                        : "Confirm Exchange Service"}
+                          ? "Exchange in Progress"
+                          : "Confirm Exchange Service"}
                     </button>
                     {/* post review button */}
                     <button
@@ -794,14 +800,13 @@ const Messages = () => {
                     <button
                       className={`
                           w-full px-4 py-2.5 rounded-xl text-sm font-medium transition-colors
-                          ${
-                            currentChat?.senderUserAccepted === false ||
-                            currentChat?.reciverUserAccepted === false ||
-                            (currentChat?.reciverServiceDone === true &&
-                              currentChat?.senderServiceDone === true)
-                              ? "bg-gray-200 text-gray-600 cursor-not-allowed"
-                              : "bg-[#20b894] text-white hover:bg-[#1a9677] cursor-pointer"
-                          }
+                          ${currentChat?.senderUserAccepted === false ||
+                          currentChat?.reciverUserAccepted === false ||
+                          (currentChat?.reciverServiceDone === true &&
+                            currentChat?.senderServiceDone === true)
+                          ? "bg-gray-200 text-gray-600 cursor-not-allowed"
+                          : "bg-[#20b894] text-white hover:bg-[#1a9677] cursor-pointer"
+                        }
                         `}
                       disabled={
                         currentChat?.senderUserAccepted === false ||
@@ -912,12 +917,11 @@ const Messages = () => {
                 <div className="flex flex-col gap-3 w-full mt-4">
                   {/* {currentUser?.email === currentChat?.reciverUserId?.email || currentChat?.senderUserAccepted && currentChat?.reciverUserAccepted && ( */}
                   <button
-                    className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                      currentChat?.senderUserAccepted &&
+                    className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${currentChat?.senderUserAccepted &&
                       currentChat?.reciverUserAccepted
-                        ? "bg-gray-200 text-gray-600"
-                        : "bg-[#20b894] text-white active:bg-[#1a9677]"
-                    }`}
+                      ? "bg-gray-200 text-gray-600"
+                      : "bg-[#20b894] text-white active:bg-[#1a9677]"
+                      }`}
                     onClick={() => {
                       modalHandler(currentChat);
                       setIsInfoModalOpen(false);
@@ -928,7 +932,7 @@ const Messages = () => {
                     }
                   >
                     {currentChat?.senderUserAccepted &&
-                    currentChat?.reciverUserAccepted
+                      currentChat?.reciverUserAccepted
                       ? "Exchange Confirmed"
                       : "Confirm Exchange Service"}
                   </button>
@@ -946,27 +950,26 @@ const Messages = () => {
                   </button>
 
                   <button
-                      className={`
+                    className={`
                           w-full px-4 py-2.5 rounded-xl text-sm font-medium transition-colors
-                          ${
-                            currentChat?.senderUserAccepted === false ||
-                            currentChat?.reciverUserAccepted === false ||
-                            (currentChat?.reciverServiceDone === true &&
-                              currentChat?.senderServiceDone === true)
-                              ? "bg-gray-200 text-gray-600 cursor-not-allowed"
-                              : "bg-[#20b894] text-white hover:bg-[#1a9677] cursor-pointer"
-                          }
-                        `}
-                      disabled={
-                        currentChat?.senderUserAccepted === false ||
+                          ${currentChat?.senderUserAccepted === false ||
                         currentChat?.reciverUserAccepted === false ||
                         (currentChat?.reciverServiceDone === true &&
                           currentChat?.senderServiceDone === true)
+                        ? "bg-gray-200 text-gray-600 cursor-not-allowed"
+                        : "bg-[#20b894] text-white hover:bg-[#1a9677] cursor-pointer"
                       }
-                      onClick={handleExchangeServiceDone}
-                    >
-                      Exchange Complete
-                    </button>
+                        `}
+                    disabled={
+                      currentChat?.senderUserAccepted === false ||
+                      currentChat?.reciverUserAccepted === false ||
+                      (currentChat?.reciverServiceDone === true &&
+                        currentChat?.senderServiceDone === true)
+                    }
+                    onClick={handleExchangeServiceDone}
+                  >
+                    Exchange Complete
+                  </button>
                 </div>
               </div>
             </div>
