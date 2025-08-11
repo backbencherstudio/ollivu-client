@@ -3,11 +3,13 @@
 import { useLoginUserMutation } from "@/src/redux/features/auth/authApi";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import loginImg from "@/public/login.png";
 import Image from "next/image";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { useGetCurrentUserQuery } from "@/src/redux/features/users/userApi";
+import { verifiedUser } from "@/src/utils/token-varify";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -18,6 +20,59 @@ export default function LoginPage() {
 
   const router = useRouter();
   const [loginUser, { isLoading }] = useLoginUserMutation();
+
+  const currentUser = verifiedUser();
+  const { data: currentUserData, isLoading: isCurrentUserLoading } =
+    useGetCurrentUserQuery(currentUser?.userId, {
+      skip: !currentUser?.userId,
+    });
+
+  // Ensure we have the current user's data
+  const currentUserInfo = currentUserData?.data;
+
+  useEffect(() => {
+    if (currentUserInfo && !isCurrentUserLoading) {
+      validateProfileAndRedirect();
+    }
+  }, [currentUserInfo, isCurrentUserLoading]);
+
+  const validateProfileAndRedirect = () => {
+    // Check if the profile is complete
+    const isPersonalInfoValid = isValid(currentUserInfo?.personalInfo);
+    const isAddressInfoValid = isValid(currentUserInfo?.addressInfo);
+    const isServicesValid = currentUserInfo?.my_service?.length > 0;
+    const isPortfolioValid = currentUserInfo?.portfolio?.length > 0;
+    const isCertificateValid = currentUserInfo?.cartificate?.length > 0;
+    const isAboutMeValid = currentUserInfo?.about_me?.trim().length > 0;
+
+    // Perform redirection based on profile completeness
+    if (
+      isPersonalInfoValid &&
+      isAddressInfoValid &&
+      isServicesValid &&
+      isPortfolioValid &&
+      isCertificateValid &&
+      isAboutMeValid
+    ) {
+      router.push("/");
+    } else {
+      router.push("/dashboard/user-profile"); 
+    }
+  };
+
+  // Define a reusable validation function
+  const isValid = (data) => {
+    if (!data) return false;
+    return Object.values(data).every((value) => {
+      if (Array.isArray(value)) {
+        return value.length > 0; 
+      }
+      if (typeof value === "string") {
+        return value.trim().length > 0; 
+      }
+      return value !== null && value !== undefined; 
+    });
+  };
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -66,8 +121,11 @@ export default function LoginPage() {
         } else if (redirectUserId) {
           localStorage.removeItem("redirectUserId");
           router.push(`/service-result/${redirectUserId}`);
-        } else {
-          router.push("/");
+        }
+
+        // After successful login, check if the profile is complete and redirect
+        if (!isCurrentUserLoading) {
+          validateProfileAndRedirect(); // Re-check and perform the correct redirection
         }
       } else {
         toast.error(response.message || "Login failed");
@@ -78,6 +136,10 @@ export default function LoginPage() {
       toast.error(errorMessage);
     }
   };
+
+  if (isCurrentUserLoading || isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center  px-4">
@@ -154,41 +216,7 @@ export default function LoginPage() {
                 onClick={() => setShowPassword((prev) => !prev)}
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
-                {showPassword ? (
-                  // Eye On SVG
-                  // <svg
-                  //   xmlns="http://www.w3.org/2000/svg"
-                  //   fill="none"
-                  //   viewBox="0 0 24 24"
-                  //   strokeWidth={1.5}
-                  //   stroke="currentColor"
-                  //   className="w-5 h-5"
-                  // >
-                  //   <path
-                  //     strokeLinecap="round"
-                  //     strokeLinejoin="round"
-                  //     d="M3.98 8.223A10.477 10.477 0 0 0 2.25 12c2.083 3.61 6.017 6 9.75 6 1.563 0 3.06-.362 4.396-1.01m2.624-2.09A10.45 10.45 0 0 0 21.75 12c-.417-.723-.948-1.414-1.574-2.057m-2.624-2.09A9.956 9.956 0 0 0 12 6c-1.563 0-3.06.362-4.396 1.01m0 0A10.45 10.45 0 0 0 3.98 8.223m0 0L2.25 6.75m1.73 1.473 16.77 16.77"
-                  //   />
-                  // </svg>
-                  <Eye />
-                ) : (
-                  // Eye Off SVG
-                  // <svg
-                  //   xmlns="http://www.w3.org/2000/svg"
-                  //   fill="none"
-                  //   viewBox="0 0 24 24"
-                  //   strokeWidth={1.5}
-                  //   stroke="currentColor"
-                  //   className="w-5 h-5"
-                  // >
-                  //   <path
-                  //     strokeLinecap="round"
-                  //     strokeLinejoin="round"
-                  //     d="M2.25 12C3.285 7.943 7.522 5 12 5c4.478 0 8.715 2.943 9.75 7-.417.723-.948 1.414-1.574 2.057A9.956 9.956 0 0 1 12 18c-1.563 0-3.06-.362-4.396-1.01A10.45 10.45 0 0 1 2.25 12zm9.75 2.25a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5z"
-                  //   />
-                  // </svg>
-                  <EyeOff />
-                )}
+                {showPassword ? <Eye /> : <EyeOff />}
               </button>
             </div>
 
@@ -205,7 +233,6 @@ export default function LoginPage() {
             </div>
 
             {/* Login Button */}
-
             <button
               type="submit"
               className="w-full primary_color hover:opacity-90 text-white py-2 rounded-full font-medium transition-all cursor-pointer"
@@ -213,9 +240,10 @@ export default function LoginPage() {
               {isLoading ? "Logging in..." : "Log in ↗"}
             </button>
           </form>
+
           {/* Sign Up Link */}
           <p className="mt-6 text-center text-sm text-gray-400">
-            You're new in here?{" "}
+            You're new here?{" "}
             <a href="/auth/signup" className="text-[#20B894] hover:underline">
               Create Account
             </a>

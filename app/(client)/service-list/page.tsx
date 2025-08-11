@@ -81,7 +81,6 @@ export default function ServiceList() {
     // setSelectedSkill("");
   };
 
-  // Handle send request
   // Add useRouter at the top with other imports
   const router = useRouter();
 
