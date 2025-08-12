@@ -13,7 +13,11 @@ export const authApi = baseApi.injectEndpoints({
       transformResponse: (response) => {
         if (response.data?.accessToken) {
           localStorage.setItem("accessToken", response.data.accessToken);
-          document.cookie = `accessToken=${response.data.accessToken}; path=/; secure; samesite=strict`;
+          try {
+            document.cookie = `accessToken=${response.data.accessToken}; path=/; secure; samesite=lax`;
+          } catch (_) {
+            // Ignore cookie errors
+          }
         }
         return response;
       },

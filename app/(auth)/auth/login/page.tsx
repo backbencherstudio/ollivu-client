@@ -8,8 +8,9 @@ import { toast } from "sonner";
 import loginImg from "@/public/login.png";
 import Image from "next/image";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
-import { useGetCurrentUserQuery } from "@/src/redux/features/users/userApi";
+import { useGetCurrentUserQuery, usersApi } from "@/src/redux/features/users/userApi";
 import { verifiedUser } from "@/src/utils/token-varify";
+import { store } from "@/src/redux/store";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -263,17 +264,23 @@ export default function LoginPage() {
             // Get fresh user data after login
             const freshCurrentUser = verifiedUser();
             if (freshCurrentUser?.userId) {
-              // Fetch fresh user data
-              const { data: freshUserData } = await useGetCurrentUserQuery(
-                freshCurrentUser.userId
+              // Imperatively fetch fresh user data via RTK Query
+              const result = await store.dispatch(
+                usersApi.endpoints.getCurrentUser.initiate(
+                  freshCurrentUser.userId,
+                  { forceRefetch: true }
+                )
               );
+              const freshUserData: any = (result as any).data;
               if (freshUserData?.data) {
                 await handlePostLoginRedirect(freshUserData.data);
+                return;
               }
             }
+            // Fallback: redirect to home if user data not available
+            router.push("/");
           } catch (error) {
             console.error("Error fetching fresh user data:", error);
-            // Fallback: redirect to home if there's an error
             router.push("/");
           }
         }, 100); // Small delay to ensure token is set
