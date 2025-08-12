@@ -16,6 +16,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({ email: "", password: "" });
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const router = useRouter();
   const [loginUser, { isLoading }] = useLoginUserMutation();
@@ -30,16 +31,25 @@ export default function LoginPage() {
   const currentUserInfo = currentUserData?.data;
 
   useEffect(() => {
-    if (currentUserInfo && !isCurrentUserLoading) {
-      console.log("Current user info:", currentUserInfo); // Debug log
+    // Only redirect if user is already logged in (not after fresh login)
+    if (
+      currentUserInfo &&
+      !isCurrentUserLoading &&
+      !isLoading &&
+      !isRedirecting
+    ) {
+      console.log(
+        "User already logged in, checking profile and redirecting..."
+      );
+      setIsRedirecting(true);
       validateProfileAndRedirect();
     }
-  }, [currentUserInfo, isCurrentUserLoading]);
+  }, [currentUserInfo, isCurrentUserLoading, isLoading, isRedirecting]);
 
   // Enhanced validation function for nested objects
   const isObjectValid = (obj) => {
-    if (!obj || typeof obj !== 'object') return false;
-    
+    if (!obj || typeof obj !== "object") return false;
+
     // Check if all values in the object are non-empty
     return Object.values(obj).every((value) => {
       if (value === null || value === undefined) return false;
@@ -58,13 +68,14 @@ export default function LoginPage() {
 
   // Enhanced validation function for strings
   const isStringValid = (str) => {
-    if (typeof str !== 'string') return false;
+    if (typeof str !== "string") return false;
     return str.trim().length > 0;
   };
 
   const validateProfileAndRedirect = () => {
     if (!currentUserInfo) {
       console.log("No current user info available");
+      setIsRedirecting(false);
       return;
     }
 
@@ -72,35 +83,57 @@ export default function LoginPage() {
 
     // Detailed validation with logging
     const isPersonalInfoValid = isObjectValid(currentUserInfo?.personalInfo);
-    console.log("Personal info valid:", isPersonalInfoValid, currentUserInfo?.personalInfo);
+    console.log(
+      "Personal info valid:",
+      isPersonalInfoValid,
+      currentUserInfo?.personalInfo
+    );
 
     const isAddressInfoValid = isObjectValid(currentUserInfo?.addressInfo);
-    console.log("Address info valid:", isAddressInfoValid, currentUserInfo?.addressInfo);
+    console.log(
+      "Address info valid:",
+      isAddressInfoValid,
+      currentUserInfo?.addressInfo
+    );
 
     const isServicesValid = isArrayValid(currentUserInfo?.my_service);
-    console.log("Services valid:", isServicesValid, currentUserInfo?.my_service);
+    console.log(
+      "Services valid:",
+      isServicesValid,
+      currentUserInfo?.my_service
+    );
 
     // Handle both string and array for portfolio
-    const isPortfolioValid = currentUserInfo?.portfolio 
-      ? (Array.isArray(currentUserInfo.portfolio) 
-         ? currentUserInfo.portfolio.length > 0 
-         : typeof currentUserInfo.portfolio === 'string' && currentUserInfo.portfolio.trim().length > 0)
+    const isPortfolioValid = currentUserInfo?.portfolio
+      ? Array.isArray(currentUserInfo.portfolio)
+        ? currentUserInfo.portfolio.length > 0
+        : typeof currentUserInfo.portfolio === "string" &&
+          currentUserInfo.portfolio.trim().length > 0
       : false;
-    console.log("Portfolio valid:", isPortfolioValid, currentUserInfo?.portfolio);
+    console.log(
+      "Portfolio valid:",
+      isPortfolioValid,
+      currentUserInfo?.portfolio
+    );
 
     // Handle both string and array for certificate
-    const isCertificateValid = currentUserInfo?.cartificate 
-      ? (Array.isArray(currentUserInfo.cartificate) 
-         ? currentUserInfo.cartificate.length > 0 
-         : typeof currentUserInfo.cartificate === 'string' && currentUserInfo.cartificate.trim().length > 0)
+    const isCertificateValid = currentUserInfo?.cartificate
+      ? Array.isArray(currentUserInfo.cartificate)
+        ? currentUserInfo.cartificate.length > 0
+        : typeof currentUserInfo.cartificate === "string" &&
+          currentUserInfo.cartificate.trim().length > 0
       : false;
-    console.log("Certificate valid:", isCertificateValid, currentUserInfo?.cartificate);
+    console.log(
+      "Certificate valid:",
+      isCertificateValid,
+      currentUserInfo?.cartificate
+    );
 
     const isAboutMeValid = isStringValid(currentUserInfo?.about_me);
     console.log("About me valid:", isAboutMeValid, currentUserInfo?.about_me);
 
     // Check overall profile completeness
-    const isProfileComplete = 
+    const isProfileComplete =
       isPersonalInfoValid &&
       isAddressInfoValid &&
       isServicesValid &&
@@ -120,6 +153,77 @@ export default function LoginPage() {
     }
   };
 
+  const handlePostLoginRedirect = async (userInfo) => {
+    console.log("Handling post-login redirect...");
+    setIsRedirecting(true);
+
+    // Check for stored selections first (higher priority)
+    const storedUsers = localStorage.getItem("selectedUsers");
+    const storedService = localStorage.getItem("selectedService");
+    const redirectUserId = localStorage.getItem("redirectUserId");
+    const redirectPath = localStorage.getItem("redirectPath");
+
+    if (storedUsers && storedService) {
+      if (redirectPath) {
+        localStorage.removeItem("redirectPath");
+        console.log("Redirecting to stored path:", redirectPath);
+        router.push(redirectPath);
+        return;
+      } else {
+        console.log("Redirecting to service categories");
+        router.push("/#service-categories");
+        return;
+      }
+    } else if (redirectUserId) {
+      localStorage.removeItem("redirectUserId");
+      console.log("Redirecting to service result:", redirectUserId);
+      router.push(`/service-result/${redirectUserId}`);
+      return;
+    }
+
+    // If no stored selections, validate profile and redirect accordingly
+    if (userInfo) {
+      // Detailed validation
+      const isPersonalInfoValid = isObjectValid(userInfo?.personalInfo);
+      const isAddressInfoValid = isObjectValid(userInfo?.addressInfo);
+      const isServicesValid = isArrayValid(userInfo?.my_service);
+
+      const isPortfolioValid = userInfo?.portfolio
+        ? Array.isArray(userInfo.portfolio)
+          ? userInfo.portfolio.length > 0
+          : typeof userInfo.portfolio === "string" &&
+            userInfo.portfolio.trim().length > 0
+        : false;
+
+      const isCertificateValid = userInfo?.cartificate
+        ? Array.isArray(userInfo.cartificate)
+          ? userInfo.cartificate.length > 0
+          : typeof userInfo.cartificate === "string" &&
+            userInfo.cartificate.trim().length > 0
+        : false;
+
+      const isAboutMeValid = isStringValid(userInfo?.about_me);
+
+      const isProfileComplete =
+        isPersonalInfoValid &&
+        isAddressInfoValid &&
+        isServicesValid &&
+        isPortfolioValid &&
+        isCertificateValid &&
+        isAboutMeValid;
+
+      console.log("Profile complete after login:", isProfileComplete);
+
+      if (isProfileComplete) {
+        console.log("Redirecting to home page");
+        router.push("/");
+      } else {
+        console.log("Redirecting to profile completion page");
+        router.push("/dashboard/user-profile");
+      }
+    }
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -128,7 +232,7 @@ export default function LoginPage() {
 
     let hasError = false;
     const newErrors = { email: "", password: "" };
-    
+
     if (!email.trim()) {
       newErrors.email = "Email is required";
       hasError = true;
@@ -137,7 +241,7 @@ export default function LoginPage() {
       newErrors.password = "Password is required";
       hasError = true;
     }
-    
+
     if (hasError) {
       setErrors(newErrors);
       return;
@@ -152,31 +256,27 @@ export default function LoginPage() {
       if (response.success) {
         toast.success(response.message || "Login successful!");
 
-        // Handle stored selections for redirects
-        const storedUsers = localStorage.getItem("selectedUsers");
-        const storedService = localStorage.getItem("selectedService");
-        const redirectUserId = localStorage.getItem("redirectUserId");
-        const redirectPath = localStorage.getItem("redirectPath");
-
-        // If there are stored selections, handle those first
-        if (storedUsers && storedService) {
-          if (redirectPath) {
-            localStorage.removeItem("redirectPath");
-            router.push(redirectPath);
-            return; // Exit early to avoid profile validation redirect
-          } else {
-            router.push("/#service-categories");
-            return; // Exit early to avoid profile validation redirect
+        // After successful login, we need to get the fresh user data
+        // and then redirect. We'll wait a bit for the token to be set and data to be fetched
+        setTimeout(async () => {
+          try {
+            // Get fresh user data after login
+            const freshCurrentUser = verifiedUser();
+            if (freshCurrentUser?.userId) {
+              // Fetch fresh user data
+              const { data: freshUserData } = await useGetCurrentUserQuery(
+                freshCurrentUser.userId
+              );
+              if (freshUserData?.data) {
+                await handlePostLoginRedirect(freshUserData.data);
+              }
+            }
+          } catch (error) {
+            console.error("Error fetching fresh user data:", error);
+            // Fallback: redirect to home if there's an error
+            router.push("/");
           }
-        } else if (redirectUserId) {
-          localStorage.removeItem("redirectUserId");
-          router.push(`/service-result/${redirectUserId}`);
-          return; // Exit early to avoid profile validation redirect
-        }
-
-        // Only do profile validation redirect if no other redirects are needed
-        // The useEffect will handle this automatically when currentUserInfo is available
-        
+        }, 100); // Small delay to ensure token is set
       } else {
         toast.error(response.message || "Login failed");
       }
@@ -187,10 +287,38 @@ export default function LoginPage() {
     }
   };
 
-  if (isCurrentUserLoading || isLoading) {
+  // Show loading if:
+  // 1. Login is in progress
+  // 2. User data is loading for already logged-in user
+  // 3. We're in the process of redirecting
+  if (isLoading || (currentUser && isCurrentUserLoading) || isRedirecting) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
+        <div className="text-lg">
+          {isLoading
+            ? "Logging in..."
+            : isRedirecting
+            ? "Redirecting..."
+            : "Loading..."}
+        </div>
+      </div>
+    );
+  }
+
+  // Don't show login form if user is already logged in and we have their data
+  if (currentUser && currentUserInfo && !isRedirecting) {
+    // This shouldn't normally happen as useEffect should handle redirect
+    // But just in case, trigger redirect here too
+    setTimeout(() => {
+      if (!isRedirecting) {
+        setIsRedirecting(true);
+        validateProfileAndRedirect();
+      }
+    }, 0);
+
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-lg">Redirecting...</div>
       </div>
     );
   }
@@ -238,6 +366,7 @@ export default function LoginPage() {
                   if (errors.email)
                     setErrors((prev) => ({ ...prev, email: "" }));
                 }}
+                disabled={isLoading || isRedirecting}
               />
               {errors.email && (
                 <p className="text-red-500 text-xs mt-1">{errors.email}</p>
@@ -259,6 +388,7 @@ export default function LoginPage() {
                   if (errors.password)
                     setErrors((prev) => ({ ...prev, password: "" }));
                 }}
+                disabled={isLoading || isRedirecting}
               />
               {errors.password && (
                 <p className="text-red-500 text-xs mt-1">{errors.password}</p>
@@ -269,6 +399,7 @@ export default function LoginPage() {
                 tabIndex={-1}
                 onClick={() => setShowPassword((prev) => !prev)}
                 aria-label={showPassword ? "Hide password" : "Show password"}
+                disabled={isLoading || isRedirecting}
               >
                 {showPassword ? <Eye /> : <EyeOff />}
               </button>
@@ -280,6 +411,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   className="hover:underline cursor-pointer"
+                  disabled={isLoading || isRedirecting}
                 >
                   Forgot Password
                 </button>
@@ -289,10 +421,14 @@ export default function LoginPage() {
             {/* Login Button */}
             <button
               type="submit"
-              className="w-full primary_color hover:opacity-90 text-white py-2 rounded-full font-medium transition-all cursor-pointer"
-              disabled={isLoading}
+              className="w-full primary_color hover:opacity-90 text-white py-2 rounded-full font-medium transition-all cursor-pointer disabled:opacity-50"
+              disabled={isLoading || isRedirecting}
             >
-              {isLoading ? "Logging in..." : "Log in ↗"}
+              {isLoading
+                ? "Logging in..."
+                : isRedirecting
+                ? "Redirecting..."
+                : "Log in ↗"}
             </button>
           </form>
 
