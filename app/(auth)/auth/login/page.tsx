@@ -15,7 +15,6 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-
   const [errors, setErrors] = useState({ email: "", password: "" });
 
   const router = useRouter();
@@ -32,49 +31,96 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (currentUserInfo && !isCurrentUserLoading) {
+      console.log("Current user info:", currentUserInfo); // Debug log
       validateProfileAndRedirect();
     }
   }, [currentUserInfo, isCurrentUserLoading]);
 
-  const validateProfileAndRedirect = () => {
-    // Check if the profile is complete
-    const isPersonalInfoValid = isValid(currentUserInfo?.personalInfo);
-    const isAddressInfoValid = isValid(currentUserInfo?.addressInfo);
-    const isServicesValid = currentUserInfo?.my_service?.length > 0;
-    const isPortfolioValid = currentUserInfo?.portfolio?.length > 0;
-    const isCertificateValid = currentUserInfo?.cartificate?.length > 0;
-    const isAboutMeValid = currentUserInfo?.about_me?.trim().length > 0;
+  // Enhanced validation function for nested objects
+  const isObjectValid = (obj) => {
+    if (!obj || typeof obj !== 'object') return false;
+    
+    // Check if all values in the object are non-empty
+    return Object.values(obj).every((value) => {
+      if (value === null || value === undefined) return false;
+      if (typeof value === "string") return value.trim().length > 0;
+      if (typeof value === "number") return true; // Numbers are valid if they exist
+      if (Array.isArray(value)) return value.length > 0;
+      return true;
+    });
+  };
 
-    // Perform redirection based on profile completeness
-    if (
+  // Enhanced validation function for arrays
+  const isArrayValid = (arr) => {
+    if (!Array.isArray(arr)) return false;
+    return arr.length > 0;
+  };
+
+  // Enhanced validation function for strings
+  const isStringValid = (str) => {
+    if (typeof str !== 'string') return false;
+    return str.trim().length > 0;
+  };
+
+  const validateProfileAndRedirect = () => {
+    if (!currentUserInfo) {
+      console.log("No current user info available");
+      return;
+    }
+
+    console.log("Validating profile..."); // Debug log
+
+    // Detailed validation with logging
+    const isPersonalInfoValid = isObjectValid(currentUserInfo?.personalInfo);
+    console.log("Personal info valid:", isPersonalInfoValid, currentUserInfo?.personalInfo);
+
+    const isAddressInfoValid = isObjectValid(currentUserInfo?.addressInfo);
+    console.log("Address info valid:", isAddressInfoValid, currentUserInfo?.addressInfo);
+
+    const isServicesValid = isArrayValid(currentUserInfo?.my_service);
+    console.log("Services valid:", isServicesValid, currentUserInfo?.my_service);
+
+    // Handle both string and array for portfolio
+    const isPortfolioValid = currentUserInfo?.portfolio 
+      ? (Array.isArray(currentUserInfo.portfolio) 
+         ? currentUserInfo.portfolio.length > 0 
+         : typeof currentUserInfo.portfolio === 'string' && currentUserInfo.portfolio.trim().length > 0)
+      : false;
+    console.log("Portfolio valid:", isPortfolioValid, currentUserInfo?.portfolio);
+
+    // Handle both string and array for certificate
+    const isCertificateValid = currentUserInfo?.cartificate 
+      ? (Array.isArray(currentUserInfo.cartificate) 
+         ? currentUserInfo.cartificate.length > 0 
+         : typeof currentUserInfo.cartificate === 'string' && currentUserInfo.cartificate.trim().length > 0)
+      : false;
+    console.log("Certificate valid:", isCertificateValid, currentUserInfo?.cartificate);
+
+    const isAboutMeValid = isStringValid(currentUserInfo?.about_me);
+    console.log("About me valid:", isAboutMeValid, currentUserInfo?.about_me);
+
+    // Check overall profile completeness
+    const isProfileComplete = 
       isPersonalInfoValid &&
       isAddressInfoValid &&
       isServicesValid &&
       isPortfolioValid &&
       isCertificateValid &&
-      isAboutMeValid
-    ) {
+      isAboutMeValid;
+
+    console.log("Profile complete:", isProfileComplete);
+
+    // Perform redirection based on profile completeness
+    if (isProfileComplete) {
+      console.log("Redirecting to home page");
       router.push("/");
     } else {
-      router.push("/dashboard/user-profile"); 
+      console.log("Redirecting to profile completion page");
+      router.push("/dashboard/user-profile");
     }
   };
 
-  // Define a reusable validation function
-  const isValid = (data) => {
-    if (!data) return false;
-    return Object.values(data).every((value) => {
-      if (Array.isArray(value)) {
-        return value.length > 0; 
-      }
-      if (typeof value === "string") {
-        return value.trim().length > 0; 
-      }
-      return value !== null && value !== undefined; 
-    });
-  };
-
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
     // Reset errors
@@ -82,6 +128,7 @@ export default function LoginPage() {
 
     let hasError = false;
     const newErrors = { email: "", password: "" };
+    
     if (!email.trim()) {
       newErrors.email = "Email is required";
       hasError = true;
@@ -90,6 +137,7 @@ export default function LoginPage() {
       newErrors.password = "Password is required";
       hasError = true;
     }
+    
     if (hasError) {
       setErrors(newErrors);
       return;
@@ -104,33 +152,35 @@ export default function LoginPage() {
       if (response.success) {
         toast.success(response.message || "Login successful!");
 
-        // Check for stored selections
+        // Handle stored selections for redirects
         const storedUsers = localStorage.getItem("selectedUsers");
         const storedService = localStorage.getItem("selectedService");
         const redirectUserId = localStorage.getItem("redirectUserId");
         const redirectPath = localStorage.getItem("redirectPath");
 
+        // If there are stored selections, handle those first
         if (storedUsers && storedService) {
-          // Check if redirect path exists (for service-list)
           if (redirectPath) {
             localStorage.removeItem("redirectPath");
             router.push(redirectPath);
+            return; // Exit early to avoid profile validation redirect
           } else {
             router.push("/#service-categories");
+            return; // Exit early to avoid profile validation redirect
           }
         } else if (redirectUserId) {
           localStorage.removeItem("redirectUserId");
           router.push(`/service-result/${redirectUserId}`);
+          return; // Exit early to avoid profile validation redirect
         }
 
-        // After successful login, check if the profile is complete and redirect
-        if (!isCurrentUserLoading) {
-          validateProfileAndRedirect(); // Re-check and perform the correct redirection
-        }
+        // Only do profile validation redirect if no other redirects are needed
+        // The useEffect will handle this automatically when currentUserInfo is available
+        
       } else {
         toast.error(response.message || "Login failed");
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Login error:", error);
       const errorMessage = error?.data?.message || "Login failed";
       toast.error(errorMessage);
@@ -138,12 +188,16 @@ export default function LoginPage() {
   };
 
   if (isCurrentUserLoading || isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center  px-4">
-      <div className="max-w-[1224px] w-full flex flex-col md:flex-row ounded-lg overflow-hidden shadow-lg">
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="max-w-[1224px] w-full flex flex-col md:flex-row rounded-lg overflow-hidden shadow-lg">
         {/* Left Illustration */}
         <div className="hidden md:flex items-center justify-center w-1/2 p-6">
           <Image
@@ -154,7 +208,7 @@ export default function LoginPage() {
         </div>
 
         {/* Right Login Form */}
-        <div className="w-full md:w-1/2  p-8">
+        <div className="w-full md:w-1/2 p-8">
           <h1 className="text-[32px] font-medium leading-[126%] tracking-[-0.96px] heading_color mb-6">
             Login to your account
           </h1>
@@ -236,6 +290,7 @@ export default function LoginPage() {
             <button
               type="submit"
               className="w-full primary_color hover:opacity-90 text-white py-2 rounded-full font-medium transition-all cursor-pointer"
+              disabled={isLoading}
             >
               {isLoading ? "Logging in..." : "Log in ↗"}
             </button>

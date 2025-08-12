@@ -100,7 +100,7 @@ function VerifyOTPContent() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-2 sm:px-4">
+    <div className="min-h-screen container flex items-center justify-center px-2 sm:px-4">
       <div className="w-full flex flex-col md:flex-row overflow-hidden bg-white md:bg-transparent md:shadow-none md:rounded-none md:max-w-none max-w-md mx-auto">
         {/* Left Illustration */}
         <div className="hidden md:flex items-center justify-center w-1/2 p-6">
